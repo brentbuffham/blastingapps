@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>TNT Equivalence Calculator</title>
+    <link rel="shortcut icon" href=href="favicon48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+</script>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 10px;
+                padding: 0px;
+                background-color: black;
+            }
+            
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: white;
+            }
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border-radius: 10px;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: firebrick;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: red;
+            }
+            .button-2 {
+                background-color: cadetblue;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: red;
+            } 
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: red;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: red;
+            }
+            /* Button 4 END */
+            
+            .button-5 {
+                background-color: rgb(75, 108, 164);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-5:hover,
+            .button-5:focus {
+                background-color: red;
+            }
+            
+            .button-6 {
+                background-color: rgb(164, 75, 75);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-6:hover,
+            .button-6:focus {
+                background-color: red;
+            }
+            
+            .coffeebtn {
+                background-color: red;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 60%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            input[type=option] {
+                width: 250px;
+                font-size: 18px;
+            }
+            
+            input[type=select] {
+                width: 250px;
+                font-size: 18px;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+        <div class="vl"></div>
+        <p class="p1">
+            <b>
+                <font size="6">TNT Equivalence</font>
+            </b><br>
+            <font size="1">Created by Brent Buffham &#169; 2021</font><br>
+            <i>
+                <font size="1">Currently only available in Metric Units</font>
+            </i>
+            <br><br>
+            <a class="button-1" href="index.html">Go Back...</a>
+            <br><br>
+            <b>Select the Explosive Type</b> <br>
+            <!-- Product Selection Start-->
+
+            <select name="products" id="products" style="width:200px; height:30px; font-size: 16px;">
+                <!-- Values are RWS-MJ/kg Use split of regex to get the values.-->
+                <option value="100-3.7">Generic ANFO</option>
+                <option value="092-3.4">Generic 20%Emulsion</option>
+                <option value="089-3.3">Generic 30%Emulsion</option>
+                <option value="086-3.2">Generic 40%Emulsion</option>
+                <option value="084-3.1">Generic 50%Emulsion</option>
+                <option value="081-3.0">Generic 60%Emulsion</option>
+                <option value="077-2.8">Generic 70%Emulsion</option>
+                <option value="068-2.5">Generic 100%Emulsion</option>
+                <option value="000-0.0">Manual Entry</option>
+            </select>
+            <br>
+            <br>
+            <!-- Radio Selection Ended-->
+            <!-- inputs Specs -->
+            <b>Inputs</b> <br>
+            <input type="number" step="0.1" min="0.1" max="800.0" id="massValue" name="massValue" value="100.0">
+            <label id="vLbl">Mass of Bulk Explosive Product (kg)</label><br>
+            <br>
+            <b>Manual Settings</b> <br>
+            <input type="number" step="0.1" min="0" max="10.0" id="manualMJKGValue" name="manualMJKGValue" value="3.9" disabled="disable">
+            <label id="vLbl">MegaJoules per Kilogram (MJ/kg)</label><br>
+            <!--
+            <input type="number" step="0.1" min="0" max="300" id="manualRWSValue" name="manualRWSValue" value="100.0">
+            <label id="vLbl">Relative Weight Strength (RWS)</label><br>-->
+            <br>
+            <label id="additionalCommentsLbl">Additional Comments ...</label><br>
+            <textarea id="additionalComments" name="additionalComments" cols="45" rows="5" placeholder="Write additional information here..."></textarea>
+            <br><br>
+
+            <!-- TNT -->
+            <label id="label1">01) TNT Equivalence = </label>
+            <label id="answer1">24.75</label>
+            <label id="measure1"> kg</label><br>
+
+            <!-- kCal -->
+            <label id="label2">02) Selected Explosive kCal = </label>
+            <label id="answer2">297</label>
+            <label id="measure2"> kCal</label><br>
+
+            <!-- MJ -->
+            <label id="label3">03) Selected Explosive MJ = </label>
+            <label id="answer3">297</label>
+            <label id="measure3"> MJ/kg</label><br>
+            <br>
+            <script>
+                //Declare Variables
+                const convertValue = 0.238663;
+                const convertFactor = 1.09;
+                var prods;
+                var selectedProd;
+                var textSelected
+                var mass;
+                var manualMJ;
+                var manualRWS;
+                var selectMJ;
+                var selectRWS;
+                var mjs;
+
+                //calculations
+                var tntKiloCalCalc;
+                var tntRWSCalc;
+                var kiloCal;
+                var rws;
+
+                window.onload = calc();
+
+
+                //Change Event on Pattern Type
+                document.getElementById('products').onchange = function() {
+                    calc();
+                };
+                document.getElementById('massValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('manualMJKGValue').onchange = function() {
+                    calc();
+                };
+                /*
+                document.getElementById('manualRWSValue').onchange = function() {
+                    calc();
+                };
+                */
+
+                function calc() {
+                    prods = document.getElementById('products');
+                    selectedProd = prods.options[prods.selectedIndex].value;
+                    textSelected = prods.options[prods.selectedIndex].text;
+                    mass = parseFloat(document.getElementById('massValue').value);
+                    selectMJ = parseFloat(selectedProd.substr(4, 7));
+                    selectRWS = parseFloat(selectedProd.substr(1, 3));
+                    manualMJ = parseFloat(document.getElementById('manualMJKGValue').value);
+                    //manualRWS = parseFloat(document.getElementById('manualRWSValue').value);
+
+                    if (selectMJ == 0.0) {
+                        document.getElementById('manualMJKGValue').disabled = false;
+                        mjs = manualMJ
+                        kiloCal = manualMJ * convertValue;
+                        console.log('manual: kCal/gram = ' + kiloCal);
+                    } else {
+                        mjs = selectMJ
+                        kiloCal = selectMJ * convertValue;
+                        console.log('selected: kCal/gram = ' + kiloCal);
+                        document.getElementById('manualMJKGValue').disabled = true;
+                    }
+                    if (selectRWS == 0) {
+                        rws = manualRWS;
+                    } else {
+                        rws = selectRWS;
+                    }
+
+                    tntKiloCalCalc = (mass * kiloCal) / convertFactor;
+                    tntRWSCalc = (mass * (rws / 115));
+
+                    document.getElementById('answer1').innerHTML = tntKiloCalCalc.toFixed(3);
+                    document.getElementById('answer2').innerHTML = kiloCal.toFixed(3);
+                    document.getElementById('answer3').innerHTML = mjs.toFixed(3);
+
+                    return;
+                }
+
+
+                function email() {
+                    //Email Body Text Goes Here   
+                    var line01 = "%0D%0A%0D%0AExplosive Type = " + textSelected;
+                    var line02 = "%0D%0AExplosive Mass (kg) = " + mass.toFixed(2);
+                    var line03 = "%0D%0AMegajoules per Kilogram (MJ/kg) = " + mjs.toFixed(2);
+                    var line04 = "%0D%0ATNT Equivalence (kg) = " + tntKiloCalCalc.toFixed(2);
+                    var line05 = "%0D%0AAddition Comments = " + document.getElementById('additionalComments')
+                        .value + "%0D%0A";
+
+                    var line = "%0D%0A%0D%0A%0D%0ABrent%20Buffham.%202021";
+
+                    window.location.href =
+                        'mailto:?subject=TNT%20Equivalence%20Calculation&body=TNT%20Equivilence%20Calculation' +
+                        line01 + line02 + line03 + line04 + line05 + line;
+
+                }
+            </script>
+            <br>
+
+            <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+            <br><br><br>
+            <b>Information and Context</b><br>
+            <font size="1">
+                TNT Equivalence is based on the below formula.<br> &nbsp;&nbsp;&nbsp;&nbsp;&there4; 1 MJ/kg is equal to 0.238663 KCal/g<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Generic ANFO at 3.7MJ/kg is equal to 0.883055 kCal/g<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                ISEE 17th Edition confirms 1kg of ANFO at 0.880 kCal/g<br> Conversion values closely align (with respect to rounding).<br>
+                <br>Calculation:<br>&nbsp;&nbsp;&nbsp; &there4; TNT = (Explosive Mass x (MJ per kg x 0.238663) ) / 1.09<br> <br>
+                <i>Note: Many calculations use the value of 0.880kCal, there is a ~3kg difference on 1000kg conversion.</i>
+
+                <br><br> Brent Buffham &#169; 2021.</font><br>
+            <br>
+
+            <div style="text-align:center; font-family:Helvetica">
+                <img src="Coffee48.png">
+                <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                <img src="Coffee48.png">
+
+            </div>
+            <br><br>
+
+        </p>
+    </form>
+</body>

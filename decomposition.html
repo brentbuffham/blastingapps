@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML Ideal Decomposition of Nitro Methane</title>
+    <link rel="shortcut icon" href=href="favicon48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 10px;
+                padding: 0px;
+                background-color: black;
+            }
+            
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: white;
+            }
+            
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border-radius: 10px;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: firebrick;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: red;
+            }
+            /* Button 1 END */
+            /* Button 2 START */
+            
+            .button-2 {
+                background-color: cadetblue;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: red;
+            }
+            /* Button 2 END */
+            /* Button 3 START */
+            
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: red;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: red;
+            }
+            /* Button 4 END */
+            
+            .coffeebtn {
+                background-color: red;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 60%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+        <div class="vl"></div>
+        <p class="p1">
+
+            <b>
+                <font size="6">Ideal Decomposition of Nitromethane</font>
+            </b><br>
+            <font size="1">Created by Brent Buffham &#169; 2021</font><br>
+            <i>
+                <font size="1">Currently only available in Metric Units</font>
+            </i>
+            <br><br>
+            <a class="button-1" href="index.html">Go Back...</a>
+            <br><br>
+            <b>Calculate the Output in Tonnes of Carbon</b> <br>
+            <br>
+            <font size="1" color="red">
+                Please be aware this is a proxy equation and in NO way suggests the use of nitromethane. Nitromethane has a history of injury during the 1970-1980s and this equation is only used for the purpose of showing Carbon output of modern explosives.
+            </font><br>
+            <br>
+            <!-- inputs Specs -->
+            <b>Inputs</b> <br>
+            <input type="number" step="1.00" min="0.00" max="200000.00" id="eValue" name="eValue" value="400.00">
+            <label id="eLbl">Equivalent Explosive Tonnes (T)</label><br>
+            <br>
+            <input type="number" step="1.00" min="0.00" max="200000.00" id="hiddenValue" name="hiddenValue" value="000" hidden>
+            <label id="additionalCommentsLbl">Additional Comments ...</label><br>
+            <!--This below is a spare as with only one input the Enter button would not work-->
+            <textarea id="additionalComments" name="additionalComments" cols="45" rows="5" placeholder="Write additional information here..."></textarea>
+            <br><br>
+            <b>Start Components</b> <br>
+            <!-- Ammonium Nitrate -->
+            <label id="label1">01) Ammonium Nitrate = </label>
+            <label id="answer1">24.75</label>
+            <label id="measure1"> T</label><br>
+
+            <!-- Nitro Methane -->
+            <label id="label2">02) Nitro Methane = </label>
+            <label id="answer2">297</label>
+            <label id="measure2"> T</label><br>
+            <br>
+
+            <b>End Components</b> <br>
+            <!-- N2 -->
+            <label id="label3">03) Nitrogen (N2) = </label>
+            <label id="answer3">849.42</label>
+            <label id="measure3"> Tonnes</label><br>
+
+            <!-- CO2 -->
+            <label id="label4">04) Water (H2O) = </label>
+            <label id="answer4">24.75</label>
+            <label id="measure4"> T</label><br>
+
+            <!-- Water -->
+            <label id="label5">05) Carbon Dioxide (CO2) = </label>
+            <label id="answer5">297</label>
+            <label id="measure5"> T</label><br>
+
+            <!-- Carbon -->
+            <label id="label6">06) Carbon Dioxide (CO2) = </label>
+            <label id="answer6">849.42</label>
+            <label id="measure6"> kg</label><br>
+            <!-- Carbon -->
+            <label id="label7">07) Carbon Dioxide (CO2) = </label>
+            <label id="answer7">13.2</label>
+            <label id="measure7"> g</label><br>
+            <br>
+            <!-- Carbon -->
+            <label id="label8">08) Tonnes of Carbon = </label>
+            <label id="answer8">13.2</label>
+            <label id="measure8"> T</label><br>
+
+
+            <script>
+                //Declare Variables
+                var explosiveValue;
+                var waterValueTON;
+                var nitrogenGasValueTON;
+                var carbonDioxideValueG;
+                var carbonDioxideValueKG;
+                var carbonDioxideValueTON;
+                var percentCarbonInCO2;
+                var hydrogen = 1.01;
+                var oxygen = 16.00;
+                var carbon = 12.01;
+                var nitrogen = 14.01;
+                var carbonDioxide = carbon + oxygen + oxygen;
+                var water = hydrogen + hydrogen + oxygen;
+                var nitrogenGas = nitrogen + nitrogen;
+                var ammoniumNitrate = nitrogen + (hydrogen * 4) + nitrogen + (oxygen * 3);
+                var nitroMethane = carbon + (hydrogen * 3) + nitrogen + (oxygen * 2);
+                var carbonTON;
+                var nitroMethaneTON;
+                var ammoniumNitrateTON;
+                var checkValue1, checkValue2;
+
+                //calculations
+                var multiplyFactor;
+
+                window.onload = calc();
+
+                //To disable the Enter button un cooment the preventEvent()...
+                document.getElementById('eValue').onkeydown = function(e) {
+                    if (e.keyCode == 13) {
+                        //event.preventDefault();
+
+                    }
+                };
+                //Change Event
+                document.getElementById('eValue').onchange = function() {
+                    explosiveValue = parseFloat(document.getElementById('eValue').value);
+                    calc();
+                };
+
+                function calc() {
+                    //This below is the decomposition formula.
+                    //     3NH4NO3 + 2CH3NO2 -> 4N2 + 2CO2 + 9H2O
+                    //Get the Explosives in Tonnes
+                    //explosiveValue = parseFloat(document.getElementById('eValue').value);
+                    //Get the Mass per moles in Explosive tones ratio
+                    multiplyFactor = ((explosiveValue * 1000) * 1000) / ((3 * ammoniumNitrate) + (2 * nitroMethane));
+                    //Calculate the Grams of CO2
+                    carbonDioxideValueG = (carbonDioxide * 2) * multiplyFactor;
+                    //Calculate the kilograms CO2 
+                    carbonDioxideValueKG = carbonDioxideValueG / 1000;
+                    //Calculate the kilograms CO2 
+                    carbonDioxideValueTON = carbonDioxideValueKG / 1000;
+                    //Calculate the percent Carbon in CO2
+                    percentCarbonInCO2 = carbon / carbonDioxide;
+                    //Calculate the Tonnes of Carbon
+                    carbonTON = carbonDioxideValueTON * percentCarbonInCO2;
+
+                    waterValueTON = ((((9 * water) * multiplyFactor) / 1000) / 1000);
+                    nitrogenGasValueTON = ((((4 * nitrogenGas) * multiplyFactor) / 1000) / 1000);
+                    nitroMethaneTON = ((((2 * nitroMethane) * multiplyFactor) / 1000) / 1000);
+                    ammoniumNitrateTON = ((((3 * ammoniumNitrate) * multiplyFactor) / 1000) / 1000);
+
+                    checkValue1 = nitroMethaneTON + ammoniumNitrateTON;
+                    checkValue2 = carbonDioxideValueTON + waterValueTON + nitrogenGasValueTON;
+
+                    //1
+                    document.getElementById('answer1').innerHTML = ammoniumNitrateTON.toFixed(4);
+                    //2
+                    document.getElementById('answer2').innerHTML = nitroMethaneTON.toFixed(4);
+                    //3
+                    document.getElementById('answer3').innerHTML = nitrogenGasValueTON.toFixed(2);
+                    //4
+                    document.getElementById('answer4').innerHTML = waterValueTON.toFixed(2);
+                    //5
+                    document.getElementById('answer5').innerHTML = carbonDioxideValueTON.toFixed(2);
+                    //6
+                    document.getElementById('answer6').innerHTML = carbonDioxideValueKG.toFixed(1);
+                    //7
+                    document.getElementById('answer7').innerHTML = carbonDioxideValueG.toFixed(1);
+                    //8
+                    document.getElementById('answer8').innerHTML = carbonTON.toFixed(4);
+
+                    console.log('Tonnes In (3NH4NO3 + 2CH3NO2) = ' + checkValue1);
+                    console.log('Tonnes Out (4N2 + 2CO2 + 9H2O) = ' + checkValue2);
+
+                    return;
+                }
+
+
+                function email() {
+                    //Email Body Text Goes Here   
+                    var line01 = "%0D%0A%0D%0AExplosive Tonnes (T) = " + parseFloat(document.getElementById('eValue')
+                        .value);
+                    var line02 = "%0D%0AAmmonium Nitrate Ammount (T) = " + ammoniumNitrateTON.toFixed(4);
+                    var line03 = "%0D%0ANitro Methane Ammount (m) = " + nitroMethaneTON.toFixed(4);
+                    var line04 = "%0D%0ANitrogen Gas (T) = " + nitrogenGasValueTON.toFixed(2);
+                    var line05 = "%0D%0AWater (T) = " + waterValueTON.toFixed(2);
+                    var line06 = "%0D%0A%0D%0ACarbon Dioxide (T) = " + carbonDioxideValueTON.toFixed(2);
+                    var line07 = "%0D%0ACarbon Dioxide (kg) = " + carbonDioxideValueKG.toFixed(1);
+                    var line08 = "%0D%0ACarbon Dioxide (g) = " + carbonDioxideValueG.toFixed(1);
+                    var line09 = "%0D%0A%0D%0ACarbon (T) = " + carbonTON.toFixed(4);
+                    var line10 = "%0D%0AAddition Comments = " + document.getElementById('additionalComments')
+                        .value + "%0D%0A";
+
+                    var line =
+                        "%0D%0A%0D%0A%0D%0ABrent%20Buffham.%202021";
+
+                    window.location.href =
+                        'mailto:?subject=Carbon%20Output&body=Ideal%20Decomposition%20of%20Nitro%20Methane%20-%20Carbon%20Output' +
+                        line01 + line02 + line03 + line04 + line05 + line06 + line07 + line08 + line09 + line10 + line;
+
+                }
+            </script>
+            <br>
+
+            <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+            <br><br>
+
+            <br>
+            <font size="3">
+                Decomposition Equation:
+                <br><br> 3NH4NO3 + 2CH3NO2 -> 4N2 + 2CO2 + 9H2O
+            </font>
+            <br><br><br>
+            <font size="1">
+                This calculator provides the Tonnes of Carbon emitted from the ideal decomposition of Nitromethane. Created code is in HTML/JS/CSS.
+                <br> Thank you.
+                <br><br> Brent Buffham &#169; 2021.</font><br>
+            <br>
+
+            <div style="text-align:center; font-family:Helvetica">
+                <img src="Coffee48.png">
+                <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                <img src="Coffee48.png">
+
+            </div>
+            <br><br>
+
+        </p>
+    </form>
+</body>

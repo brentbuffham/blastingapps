@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML Richards & Moores Flyrock Equation</title>
+    <link rel="shortcut icon" href=href="favicon48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+</script>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 10px;
+                padding: 0px;
+                background-color: black;
+            }
+            
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: white;
+            }
+            /*
+                    .vl {
+                        border-left: 1px solid white;
+                        height: 2000px;
+                        position: absolute;
+                        left: 400px;
+                        margin-left: -3px;
+                        top: 0;
+                    }
+                    */
+            
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border-radius: 10px;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: firebrick;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: red;
+            }
+            /* Button 1 END */
+            /* Button 2 START */
+            
+            .button-2 {
+                background-color: cadetblue;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: red;
+            }
+            /* Button 2 END */
+            /* Button 3 START */
+            
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: red;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: red;
+            }
+            /* Button 4 END */
+            
+            .button-5 {
+                background-color: rgb(75, 108, 164);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-5:hover,
+            .button-5:focus {
+                background-color: red;
+            }
+            
+            .button-6 {
+                background-color: rgb(164, 75, 75);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-6:hover,
+            .button-6:focus {
+                background-color: red;
+            }
+            
+            .coffeebtn {
+                background-color: red;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 60%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+        <div class="vl"></div>
+        <p class="p1">
+
+            <b>
+                <font size="6">Flyrock Equation</font>
+            </b><br>
+            <font size="1">Richard and Moore Flyrock Equation<br>Created by Brent Buffham &#169; 2021</font><br>
+            <i>
+                <font size="1">Currently only available in Metric Units</font>
+            </i>
+            <br><br>
+            <a class="button-1" href="index.html">Go Back...</a>
+            <br><br>
+
+            <b>Inputs</b> <br><br>
+            <input type="number" step="1" min="0.0" max="800.0" id="rockValue" name="rockValue" value="20.00">
+            <label id="rockLbl">Site Rock Constant (K)</label><br>
+            <input type="number" step="0.5" min="0.0" max="50.0" id="minFaceBurdenValue" name="minFaceBurdenValue" value="4.0">
+            <label id="burdenLbl">Minimum Face Burden (m)</label><br>
+            <input type="number" step="0.5" min="0.0" max="50.0" id="stemmingLengthValue" name="stemmingLengthValue" value="3.0">
+            <label id="burdenLbl">Stemming Length (m)</label><br>
+            <input type="number" step="0.001" min="0.000" max="1.000" id="diameterValue" name="diameterValue" value="0.165">
+            <label id="diameterLbl">Blast Hole Diameter (m)</label><br>
+            <input type="number" step="1" min="0.0" max="89.00" id="angleValue" name="angleValue" value="0.0">
+            <label id="diameterLbl">Blast Hole Angle (&#176;)</label><br>
+            <input type="number" step="0.01" min="0.0" max="3.00" id="productDensityValue" name="productDensityValue" value="0.82">
+            <label id="productDensityLbl">Product Density (kg/L)</label><br>
+            <input type="number" step="0.5" min="0.00" max="10.00" id="safety1Value" name="safety1Value" value="1.5">
+            <label id="safety1Lbl">Safety Multiplier Equipment (sf1)</label><br>
+            <input type="number" step="0.5" min="0.00" max="10.00" id="safety2Value" name="safety2Value" value="2.5">
+            <label id="safety2Lbl">Safety Multiplier Personnel (sf2)</label>
+            <br>
+            <br>
+            <label id="additionalCommentsLbl">Additional Comments ...</label><br>
+            <textarea id="additionalComments" name="additionalComments" cols="45" rows="5" placeholder="Write additional information here..."></textarea>
+            <br><br>
+
+            <!-- Pattern Area -->
+            <label id="label0">01) Front Throw = </label>
+            <label id="answer0">24.75</label>
+            <label id="measure0"> m</label><br>
+
+            <!-- Pattern Volume -->
+            <label id="label1">02) Rear Throw = </label>
+            <label id="answer1">297</label>
+            <label id="measure1"> m</label><br>
+
+            <!-- Pattern Tonnes -->
+            <label id="label2">03) Stemming Ejection = </label>
+            <label id="answer2">849.42</label>
+            <label id="measure2"> m</label><br>
+            <br>
+            <!-- Hole Influence Area -->
+            <label id="label3">04) Clearance Front Equipment = </label>
+            <label id="answer3">24.75</label>
+            <label id="measure3"> m</label><br>
+
+            <!-- Hole Influence Volume -->
+            <label id="label4">05) Clearance Rear Equipment = </label>
+            <label id="answer4">297</label>
+            <label id="measure4"> m</label><br>
+            <br>
+            <!-- Hole Influence Tonnes -->
+            <label id="label5">06) Clearance Front Personnel = </label>
+            <label id="answer5">849.42</label>
+            <label id="measure5"> m</label><br>
+
+            <!-- Hole Length -->
+            <label id="label6">07) Clearance Rear Personnel = </label>
+            <label id="answer6">13.2</label>
+            <label id="measure6"> m</label><br>
+
+
+            <script>
+                //Declare Variables
+                var kValue, mFBValue, stemValue, diamValue, angleValue, prodDValue, sf1Value, sf2Value;
+                //calculations
+                var front, rear, eject, equipFront, equipRear, persFront, persRear, mass, holeRadius,
+                    sinAngleVar, valToMulFront, valToMulRear;
+
+                window.onload = calc();
+
+
+                //Change Event on Pattern Type
+                document.getElementById('rockValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('minFaceBurdenValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('stemmingLengthValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('diameterValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('angleValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('productDensityValue').onchange = function() {
+                    calc();
+                };
+                document.getElementById('safety1Value').onchange = function() {
+                    calc();
+                };
+                document.getElementById('safety2Value').onchange = function() {
+                    calc();
+                };
+
+                function calc() {
+
+                    kValue = parseFloat(document.getElementById('rockValue').value);
+                    mFBValue = parseFloat(document.getElementById('minFaceBurdenValue').value);
+                    stemValue = parseFloat(document.getElementById('stemmingLengthValue').value);
+                    diamValue = parseFloat(document.getElementById('diameterValue').value);
+                    angleValue = parseFloat(document.getElementById('angleValue').value);
+                    prodDValue = parseFloat(document.getElementById('productDensityValue').value);
+                    sf1Value = parseFloat(document.getElementById('safety1Value').value);
+                    sf2Value = parseFloat(document.getElementById('safety2Value').value);
+
+                    sinAngleVar = 2 * (Math.sin((angleValue) * (Math.PI / 180)));
+                    holeRadius = (diamValue * 1000) / 2;
+                    mass = ((Math.PI * Math.pow(holeRadius, 2)) / 1000) * prodDValue;
+                    //      POWER   (B45,2    ) / 9.8 * POWER   ((POWER   (B36,0.5)    /B13     ), 2.6)
+                    front = Math.pow(kValue, 2) / 9.8 * Math.pow((Math.pow(mass, 0.5) / mFBValue), 2.6);
+                    //     POWER   (B45^2)      /9.8 * ((  POWER(B36)/B13)^2.6)*(SIN(RADIANS(2*(90-B18))))
+                    rear = Math.pow(kValue, 2) / 9.8 * Math.pow((Math.pow(mass, 0.5) / mFBValue), 2.6) * sinAngleVar;
+                    eject = Math.pow(kValue, 2) / 9.8 * Math.pow((Math.pow(mass, 0.5) / stemValue), 2.6);
+
+                    if (front > eject) {
+                        valToMulFront = front;
+                    } else {
+                        valToMulFront = eject;
+                    }
+
+                    if (rear > eject) {
+                        valToMulRear = rear;
+                    } else {
+                        valToMulRear = eject;
+                    }
+
+                    equipFront = valToMulFront * sf1Value;
+                    equipRear = valToMulRear * sf1Value;
+                    persFront = valToMulFront * sf2Value;
+                    persRear = valToMulRear * sf2Value;
+
+                    //1
+                    document.getElementById('answer0').innerHTML = front.toFixed(1);
+                    //2
+                    document.getElementById('answer1').innerHTML = rear.toFixed(1);
+                    //3
+                    document.getElementById('answer2').innerHTML = eject.toFixed(1);
+                    //4
+                    document.getElementById('answer3').innerHTML = equipFront.toFixed(1);
+                    //5
+                    document.getElementById('answer4').innerHTML = equipRear.toFixed(1);
+                    //6
+                    document.getElementById('answer5').innerHTML = persFront.toFixed(1);
+                    //7
+                    document.getElementById('answer6').innerHTML = persRear.toFixed(1);
+
+                    return;
+                }
+
+                //Declare Variables
+                //var kValue, mFBValue, stemValue, diamValue, angleValue, prodDValue, sf1Value, sf2Value;
+                //calculations
+                //var front, rear, eject, equipFront, equipRear, persFront, persRear, mass, holeRadius,
+                //    sinAngleVar, valToMulFront, valToMulRear;
+
+                function email() {
+                    //Email Body Text Goes Here   
+                    var line01 = "%0D%0A%0D%0ASite Rock Constant (K) = " + kValue.toFixed(2);
+                    var line02 = "%0D%0AMinimum Face Burden (m) = " + mFBValue.toFixed(2);
+                    var line03 = "%0D%0AStemming Length (m) = " + stemValue.toFixed(2);
+                    var line04 = "%0D%0ABlast Hole Diameter (m) = " + diamValue.toFixed(3);
+                    var line05 = "%0D%0ABlast Hole Angle (degs) = " + angleValue.toFixed(2);
+                    var line06 = "%0D%0AProduct Density (kg/L) = " + prodDValue.toFixed(2);
+                    var line07 = "%0D%0ASafety Factor Equipment (factor) = " + sf1Value.toFixed(2);
+                    var line08 = "%0D%0ASafet Factor Personnel (factor) = " + sf2Value.toFixed(2);
+                    var line09 = "%0D%0AFront Throw (m)= " + front.toFixed(1);
+                    var line10 = "%0D%0ARear Throw (m)= " + rear.toFixed(1);
+                    var line11 = "%0D%0AStemming Ejection (m) = " + eject.toFixed(1);
+                    var line12 = "%0D%0AClearance Front Equipment (m) = " + equipFront.toFixed(1);
+                    var line13 = "%0D%0AClearance Rear Equipment (m) = " + equipRear.toFixed(1);
+                    var line14 = "%0D%0AClearance Front Personnel (m) = " + persFront.toFixed(1);
+                    var line15 = "%0D%0AClearance Rear Personnel (m) = " + persRear.toFixed(1);
+
+                    var line16 = "%0D%0AAddition Comments = " + document.getElementById('additionalComments')
+                        .value + "%0D%0A";
+
+                    var line =
+                        "%0D%0A%0D%0A%0D%0AThis%20calculator%20is%20based%20on%20Moore%20and%20Richards%20Flyrock%20work.%0D%0ABrent%20Buffham.%202021";
+
+                    window.location.href =
+                        'mailto:?subject=Overpressure%20Calculations%20and%20Statistics&body=Overpressure%20Calculations%20and%20Statistics' +
+                        line01 + line02 + line03 + line04 + line05 + line06 + line07 + line08 + line09 + line10 +
+                        line11 + line12 + line13 + line14 + line15 + line16 + line;
+
+                }
+            </script>
+            <br>
+
+            <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+            <br><br><br>
+
+
+            <font size="1">
+                This calculator is based on A.J.Moore and A.B.Richards work on Flyrock. You can download the associated paper from the ISEE libary.
+                <br> Thank you.
+                <br><br> Brent Buffham &#169; 2021.</font><br>
+            <br>
+
+            <div style="text-align:center; font-family:Helvetica">
+                <img src="Coffee48.png">
+                <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                <img src="Coffee48.png">
+
+            </div>
+            <br><br>
+
+        </p>
+    </form>
+</body>

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML BlastCalc - Simple - IMPERIAL</title>
+    <link rel="shortcut icon" href="favicon48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+</script>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+              width: 100%;
+              height: 100%;
+              margin: 10px;
+              padding: 0px;
+              background: repeating-linear-gradient(to bottom, rgb(255, 210, 210), rgb(255, 210, 210) 10px, white 10px, white 20px);
+              
+            }
+            .blue-rectangle {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 150px;
+              height: 80px;
+              background-color: rgb(200, 200, 255);
+              z-index: -1;
+            }
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: rgb(0, 0, 0);
+            }
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border-radius: 10px;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .coffeebtn {
+                background-color: rgb(17, 0, 255);
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 60%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: rgb(0, 162, 255);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 47%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: darkred;
+            }
+            /* Button 1 END */
+            /* Button 2 START */
+            
+            .button-2 {
+                background-color: rgb(184, 53, 53);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 47%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: darkblue;
+            }
+            /* Button 2 END */
+            /* Button 3 START */
+            
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: blue;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: blue;
+            }
+            /* Button 4 END */
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+        <body>
+            <div class="blue-rectangle"></div>
+        </body>
+        <div class="vl"></div>
+
+        <p class="p1">
+            <b>
+                <font size="3">HTML BlastCalc - Simple - IMPERIAL</font>
+            </b><br>
+            <font size="1">Created by Brent Buffham &#169; 2023 - Imperial Units</font>
+            </i>
+            <br>
+            <a class="button-1" href="index.html">Go Back...</a>
+            <a class="button-2" href="blastingsimple.html">Metric Simple</a>
+            <br>
+            <b>Pattern Properties</b> <br>
+            <input type="number" step="0.5" min="0.1" max="100.0" id="burden" name="burden" value="13">
+            <label id="burdenLbl">Burden (ft)</label><br>
+            <input type="number" step="0.5" min="0.1" max="100.0" id="spacing" name="spacing" value="16">
+            <label id="spacingLbl">Spacing (ft)</label>
+            <br>
+            <input type="number" step="0.5" min="1" max="200.0" id="bench" name="bench" value="40.0">
+            <label id="benchLbl">Bench Height (ft)</label>
+            <br>
+            <input type="number" step="1" min="1" max="20000" id="holes" name="holes" value="300">
+            <label id="holesLbl">Number of Holes (integer)</label>
+            <br>
+
+            <!-- Hole Specs -->
+            <b>Hole Properties</b> <br>
+            <input type="number" step="0.1" min="0.0" max="100.0" id="stemming" name="stemming" value="10">
+            <label id="stemmingLbl">Stemming (ft)</label>
+            <br>
+            <input type="number" step="1" min="0.0" max="45.0" id="angle" name="angle" value="0.00">
+            <label id="angleLbl">Angle (&#176;) <i><small>[vertical = 0&#176;]</small></i></label>
+            <br>
+            <input type="number" step="0.1" min="0.0" max="100.0" id="subdrill" name="subdrill" value="5">
+            <label id="subdrillLbl">Sub Drill (ft)</label>
+            <br>
+            <input type="number" step="0.1" min="0.25" max="100.0" id="diameter" name="diameter" value="6.5">
+            <label id="diameterLbl">Diameter (in)</label>
+            <br>
+
+            <!-- Product Specs -->
+            <b>Explosive Properties</b> <br>
+            <input type="number" step="10" min="0.1" max="400.00" id="productDensity" name="productDensity" value="51.3">
+            <label id="productDensityLbl">Av. Inhole Density (lb/ft^3)</label>
+            <br>
+
+            <!-- Rock Specs -->
+            <b>Rock Properties</b> <br>
+            <input type="number" step="10" min="0.1" max="400.0" id="rockDensity" name="rockDensity" value="165.0">
+            <label id="rockDensityLbl">Rock Density (lb/ft^3)</label>
+            <br><br>
+
+            <b>Results</b><br><br>
+
+            <b>Area</b><br>
+            <label id="label0">&#9679 Pattern Area = </label>
+            <label id="answer0">24.75</label>
+            <label id="measure0"> yd^2</label><br>
+
+            <br>
+            <b>Volume</b><br>
+            <label id="label18">&#9679 Total Blast Rock Volume = </label>
+            <label id="answer18">000.00</label>
+            <label id="measure18"> yd^3</label><br>
+            <label id="label13">&#9679 Hole Charge Length Volume = </label>
+            <label id="answer13">849.42</label>
+            <label id="measure13"> ft^3</label><br>
+            <label id="label7">&#9679 Hole cubic feet Per Yard = </label>
+            <label id="answer7">849.42</label>
+            <label id="measure7"> ft^3</label><br>
+            <br>
+
+            <b>Explosives</b>
+            <br>
+
+            <label id="label17">&#9679 Total Explosives = </label>
+            <label id="answer17">000.00</label>
+            <label id="measure17"> lb</label><br>
+            <label id="label14">&#9679 Hole Charge Length Mass = </label>
+            <label id="answer14">849.42</label>
+            <label id="measure14"> lb</label><br>
+            <label id="label15">&#9679 Charge per yard mass = </label>
+            <label id="answer15">000.00</label>
+            <label id="measure15"> lb</label><br>
+            <br>
+            <b>Mass</b><br>
+            <label id="label19">&#9679 Total Blast Rock Tons = </label>
+            <label id="answer19">000.00</label>
+            <label id="measure19"> Ton</label><br>
+            <br>
+
+            <b>Powder Factors</b><br>
+            <label id="label20">&#9679 Powder Factor Volume = </label>
+            <label id="answer20">000.00</label>
+            <label id="measure20"> lb/yd^3</label><br>
+
+            <label id="label21">&#9679 Powder Factor Tons = </label>
+            <label id="answer21">000.00</label>
+            <label id="measure21"> lb/Ton</label><br>
+            <br>
+
+            <b>Lengths</b><br>
+            <label id="label6">&#9679 Hole Length = </label>
+            <label id="answer6">13.2</label>
+            <label id="measure6"> ft</label><br>
+            <label id="label11">&#9679 Total Drill Yards = </label>
+            <label id="answer11">849.42</label>
+            <label id="measure11"> yd</label><br>
+            <label id="label16">&#9679 Total Charge Yards = </label>
+            <label id="answer16">000.00</label>
+            <label id="measure16"> yd</label><br>
+
+            <br>
+
+            <script>
+                //Declare Variables
+                var burdenVar;
+                var spacingVar;
+                var benchVar;
+                var numberHoles;
+                var stemmingVar;
+                var angleVar;
+                var subdrillVar;
+                var diameterVar;
+                var prodDensityVar;
+                var rockDensityVar;
+
+                //calculations
+                //Area
+                var patternArea;
+                //Volume
+                var totalBlastRockVol;
+                var chargeVolumeVar;
+                var volPerFootVar;
+                var volPerYardVar
+                //Explosives
+                var totalExplosives;
+                var chargeMassVar;
+                var chargePerYard;
+                //Mass
+                var totalBlastRockTon;
+                //Powderfactors
+                var powderFactorVol;
+                var powderFactorTon;
+                //Lengths
+                var holeLength;
+                var totalDrillYards;
+                var totalChargeYards;
+
+                var sinAngleVar;
+                var verticalLength;
+                var holeRadiusInches;
+
+                window.onload = myCalc();
+
+                document.getElementById('burden').onchange = function() {myCalc();};
+                document.getElementById('spacing').onchange = function() {myCalc();};
+                document.getElementById('bench').onchange = function() {myCalc();};
+                document.getElementById('holes').onchange = function() {myCalc();};
+                document.getElementById('stemming').onchange = function() {myCalc();};
+                document.getElementById('angle').onchange = function() {myCalc();};
+                document.getElementById('subdrill').onchange = function() {myCalc();};
+                document.getElementById('diameter').onchange = function() {myCalc();};
+                document.getElementById('productDensity').onchange = function() {myCalc();};
+                document.getElementById('rockDensity').onchange = function() {myCalc();};
+
+                //Calculate All Results
+                function myCalc() {
+
+                    //Variables
+                    burdenVar               = parseFloat(document.getElementById('burden').value);
+                    spacingVar              = parseFloat(document.getElementById('spacing').value);
+                    benchVar                = parseFloat(document.getElementById('bench').value);
+                    numberHoles             = parseFloat(document.getElementById('holes').value);
+                    stemmingVar             = parseFloat(document.getElementById('stemming').value);
+                    angleVar                = parseFloat(document.getElementById('angle').value);
+                    subdrillVar             = parseFloat(document.getElementById('subdrill').value);
+                    diameterVar             = parseFloat(document.getElementById('diameter').value);
+                    rockDensityVar          = parseFloat(document.getElementById('rockDensity').value);
+                    prodDensityVar          = parseFloat(document.getElementById('productDensity').value);
+
+                    //calculations
+                    patternArea             = ((burdenVar * spacingVar) * 0.1111111111) * numberHoles;
+                    sinAngleVar             = Math.sin((90 - angleVar) * (Math.PI / 180));
+                    verticalLength          = benchVar + subdrillVar;
+                    holeLength              = verticalLength / sinAngleVar;
+                    holeRadiusInches        = (diameterVar / 2);
+                    volPerFootVar           = Math.PI * Math.pow(holeRadiusInches / 12, 2);
+                    volPerYardVar           = volPerFootVar * 3;
+                    volPerHoleVar           = volPerFootVar * holeLength;
+                    volPerStemmingLength    = volPerFootVar * stemmingVar;
+                    chargeVolumeVar         = volPerHoleVar - volPerStemmingLength;
+                    chargeMassVar           = chargeVolumeVar * prodDensityVar;
+                    totalDrillYards         = (holeLength * 0.3333333333) * numberHoles;
+                    chargePerYard           = volPerYardVar * prodDensityVar;
+                    totalChargeYards        = ((holeLength - stemmingVar) * 0.3333333333) * numberHoles;
+                    totalExplosives         = chargeMassVar * numberHoles;
+                    totalBlastRockVol       = ((burdenVar * spacingVar * benchVar) * 0.037037037) * numberHoles;
+                    totalBlastRockTon       = totalBlastRockVol * 27 * rockDensityVar / 2000;
+                    powderFactorVol         = totalExplosives / totalBlastRockVol;
+                    powderFactorTon         = totalExplosives / totalBlastRockTon;
+
+                    //var usTons = (volumeCubicYards * densityPoundsPerCubicFoot) / 2000;
+                    
+                    /* console.log( */
+                    /*     //Variables */
+                    /*     "burdenVar            : "+ burdenVar           +"\n"+ */
+                    /*     "spacingVar           : "+ spacingVar          +"\n"+ */
+                    /*     "benchVar             : "+ benchVar            +"\n"+ */
+                    /*     "numberHoles          : "+ numberHoles         +"\n"+ */
+                    /*     "stemmingVar          : "+ stemmingVar         +"\n"+ */
+                    /*     "angleVar             : "+ angleVar            +"\n"+ */
+                    /*     "subdrillVar          : "+ subdrillVar         +"\n"+ */
+                    /*     "diameterVar          : "+ diameterVar         +"\n"+ */
+                    /*     "rockDensityVar       : "+ rockDensityVar      +"\n"+ */
+                    /*     "prodDensityVar       : "+ prodDensityVar      +"\n"+ */
+                    /*     //calculations:  */
+                    /*     "patternArea          : "+ patternArea         +"\n"+ */
+                    /*     "sinAngleVar          : "+ sinAngleVar         +"\n"+ */
+                    /*     "verticalLength       : "+ verticalLength      +"\n"+ */
+                    /*     "holeLength           : "+ holeLength          +"\n"+ */
+                    /*     "holeRadiusInches     : "+ holeRadiusInches    +"\n"+ */
+                    /*     "volPerFootVar        : "+ volPerFootVar       +"\n"+ */
+                    /*     "volPerYardVar        : "+ volPerYardVar       +"\n"+ */
+                    /*     "volPerHoleVar        : "+ volPerHoleVar       +"\n"+ */
+                    /*     "volPerStemmingLength : "+ volPerStemmingLength+"\n"+ */
+                    /*     "chargeVolumeVar      : "+ chargeVolumeVar     +"\n"+ */
+                    /*     "chargeMassVar        : "+ chargeMassVar       +"\n"+ */
+                    /*     "totalDrillYards      : "+ totalDrillYards     +"\n"+ */
+                    /*     "chargePerYard        : "+ chargePerYard       +"\n"+ */
+                    /*     "totalChargeYards     : "+ totalChargeYards    +"\n"+ */
+                    /*     "totalExplosives      : "+ totalExplosives     +"\n"+ */
+                    /*     "totalBlastRockVol    : "+ totalBlastRockVol   +"\n"+ */
+                    /*     "totalBlastRockTon    : "+ totalBlastRockTon   +"\n"+ */
+                    /*     "powderFactorVol      : "+ powderFactorVol     +"\n"+ */
+                    /*     "powderFactorTon      : "+ powderFactorTon     +"\n" */
+                    /* ); */
+                    
+                    console.log('Calculations Triggered...');
+                    //Area
+                    document.getElementById('answer0').innerHTML = patternArea.toFixed(2);
+                    //Volume 
+                    document.getElementById('answer18').innerHTML = totalBlastRockVol.toFixed(2);
+                    document.getElementById('answer13').innerHTML = chargeVolumeVar.toFixed(2);
+                    document.getElementById('answer7').innerHTML = volPerYardVar.toFixed(2);
+                    //Explosives
+                    document.getElementById('answer17').innerHTML = totalExplosives.toFixed(2);
+                    document.getElementById('answer14').innerHTML = chargeMassVar.toFixed(2);
+                    document.getElementById('answer15').innerHTML = chargePerYard.toFixed(2);
+                    //Mass
+                    document.getElementById('answer19').innerHTML = totalBlastRockTon.toFixed(2);
+                    //Powderfactors
+                    document.getElementById('answer20').innerHTML = powderFactorVol.toFixed(2);
+                    document.getElementById('answer21').innerHTML = powderFactorTon.toFixed(2);
+                    //Lengths
+                    document.getElementById('answer6').innerHTML = holeLength.toFixed(2);
+                    document.getElementById('answer11').innerHTML = totalDrillYards.toFixed(2);
+                    document.getElementById('answer16').innerHTML = totalChargeYards.toFixed(2);
+
+                    return;
+                }
+
+                function email() {
+                    //Email Body Text Goes Here   
+                    var line01 = "%0D%0A%0D%0ABurden%20(ft)%20=%20" + burdenVar.toFixed(2);
+                    var line02 = "%0D%0ASpacing%20(ft)%20=%20" + spacingVar.toFixed(2);
+                    var line03 = "%0D%0ABench Height (ft) = " + benchVar.toFixed(2);
+                    var line04 = "%0D%0ANumber of holes (#) = " + numberHoles;
+                    var line05 = "%0D%0AStemming Length (ft) = " + stemmingVar.toFixed(2);
+                    var line06 = "%0D%0AAngle (degs) = " + angleVar.toFixed(2);
+                    var line07 = "%0D%0ASub Drill (ft) = " + subdrillVar.toFixed(2);
+                    var line08 = "%0D%0ADiameter (in) = " + diameterVar.toFixed(3);
+                    var line09 = "%0D%0AProduct Density (lb/ft^3) = " + prodDensityVar.toFixed(2);
+                    var line10 = "%0D%0ARock Density (lb/ft^3) = " + rockDensityVar.toFixed(2) +
+                        "%0D%0A"
+                    var line11 = "%0D%0APattern Area (yd^2) = " + patternArea.toFixed(2) +
+                        "%0D%0A"
+                    var line12 = "%0D%0ATotal Blast Rock Volume (yd^3) = " + totalBlastRockVol.toFixed(2);
+                    var line13 = "%0D%0AHole Charge Length Volume (ft^3) = " + chargeVolumeVar.toFixed(2);
+                    var line14 = "%0D%0AHole Volume Per Yard (ft^3) = " + volPerYardVar.toFixed(2) +
+                        "%0D%0A";
+                    var line15 = "%0D%0ATotal Explosives (lb) = " + totalExplosives.toFixed(2);
+                    var line16 = "%0D%0AHole Charge Length Mass (lb) = " + chargeMassVar.toFixed(2);
+                    var line17 = "%0D%0ACharge per Yard Mass (lb) = " + chargePerYard.toFixed(2) +
+                        "%0D%0A";
+                    var line18 = "%0D%0ATotal Blast Rock Tonnes (Ton) = " + totalBlastRockTon.toFixed(2); +
+                    "%0D%0A";
+                    var line19 = "%0D%0APowder Factor Volume (lb/yd^3) = " + powderFactorVol.toFixed(2);
+                    var line20 = "%0D%0APowder Factor Tonnes (lb/Ton) = " + powderFactorTon.toFixed(2) +
+                        "%0D%0A";
+                    var line21 = "%0D%0AHole Length (ft) = " + holeLength.toFixed(2);
+                    var line22 = "%0D%0ATotal Drill Yards (yd) = " + totalDrillYardsVar.toFixed(2);
+                    var line23 = "%0D%0ATotal Charge Yards (yd) = " + totalChargeYards.toFixed(2);
+                    var line24 =
+                        "%0D%0A%0D%0A%0D%0AThis%20calculator%20was%20first%20published%20as%20BlastCalc%20on%20the%20Apple%20App%20Store%20as%20a%20native%20iPhone%20and%20iPad%20app%20in%202010.%20Now%20re-coded%20for%20you%20to%20enjoy.%0D%0ABrent%20Buffham.%202021";
+
+                    window.location.href =
+                        'mailto:?subject=Blasting%20Calculations%20and%20Statistics&body=Blasting%20Calculations%20and%20Statistics' +
+                        line01 + line02 + line03 + line04 + line05 + line06 + line07 + line08 + line09 + line10 +
+                        line11 + line12 + line13 + line14 + line15 + line16 + line17 + line18 + line19 + line20 +
+                        line21 + line22 + line23 + line24;
+                }
+            </script>
+            <br>
+
+            <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+            <br><br><br>
+
+            <font size="1">
+                This calculator was first published as "BlastCalc" on the Apple iOS App Store as a native iPhone and iPad app in 2010. The publisher was Chin-Apse Pty. Ltd. This is app was something of great use to many people. It is a simple calculator of common blasting
+                ratios and statistics. modern browsers support HTML and CSS better now, as such the app that died on the Apple Store can now live again. Created code is in HTML/JS/CSS.
+                <br> Thank you.
+                <br><br> Brent Buffham &#169; 2023.</font><br>
+            <br>
+
+            <div style="text-align:center; font-family:Helvetica">
+                <img src="Coffee48.png">
+                <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                <img src="Coffee48.png">
+
+            </div>
+            <br><br><br><br>
+
+
+        </p>
+    </form>
+</body>
+
+</html>

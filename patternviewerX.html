@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Pattern Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://unpkg.com/d3-delaunay@6.0.1"></script>
+  <script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
+  <!-- Customise the showPopups-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+  <!-- Include Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+
+  <script src="https://apis.google.com/js/platform.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+  </script>
+
+</head>
+
+<body>
+  <div class="container">
+    <img src="kirra-icon.png" alt="Kirra" />
+    <b>
+      <font size="3">&nbsp;&nbsp;Kirra - Blasting App</font>
+    </b>
+    <div class="spacer"></div>
+    <!--Zoom In-->
+    <button id="zoomInButton">+</button>
+    <!--Zoom Out-->
+    <button id="zoomOutButton">-</button>
+    <!--Reset Zoom-->
+    <button id="resetZoomButton">R</button>&nbsp;&nbsp;
+    <a class="button-1" id="buttonGoBack" href="index.html">&#8592;</a>
+  </div>
+
+  <div class="dark-mode-toggle">
+    <span class="sun-icon">&#9728;&nbsp;&nbsp;</span>
+    <input type="checkbox" id="dark-mode-toggle" placeholder="Toggle mode" />
+    <label for="dark-mode-toggle"> </label>
+    <span class="moon-icon">&nbsp;&nbsp;&#127768;</span>
+    &nbsp;&nbsp;
+    <input type="file" id="fileInput" accept=".csv" placeholder="Choose a CSV file">
+  </div>
+
+
+  <!--Connector-->
+  Edit Ties
+  <label class="switch">
+    <input type="checkbox" id="addConnectorButton" placeholder="connectorSwitch">
+    <span class="slider round"></span>
+  </label>
+  <input type="number2" step="1" min="0" max="1000" id="delay" name="delay" value="25" placeholder="Delay Amount">
+  <!-- Add a colour picker-->
+  <input type="color" id="connectorColour" name="connectorColour" value="#ff0000" placeholder="Delay Colour">
+
+  <button class="accordion">Hole Options</button>
+  <div class="panel">
+    <div class="switch-container">
+      <label for="addHoleSwitch">Add Hole</label>
+      <label class="switch">
+        <input type="checkbox" id="addHoleSwitch" placeholder="Add Switch">
+        <span class="slider round"></span>
+      </label>
+      <!--<button id="addHoleButton">&#9673;+</button>-->
+      <div class="spacer"></div>
+      <label for="deleteHoleSwitch">Delete Hole</label>
+      <label class="switch">
+        <input type="checkbox" id="deleteHoleSwitch" placeholder="Deleted Switch">
+        <span class="slider round"></span>
+      </label>
+      <button id="deleteHoleButton">&#9673;-</button>
+    </div>
+    <button class="accordion">Edit Holes</button>
+    <div class="panel">
+    <div class="button-container-3col">
+      <div class="switch-container">
+        <label for="editEastingButton">Edit Easting (X)</label>
+        <label class="switch">
+          <input type="checkbox" id="editEastingButton" placeholder="editEasting">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="switch-container">
+        <label for="editNorthingButton">Edit Northing (Y)</label>
+        <label class="switch">
+          <input type="checkbox" id="editNorthingButton" placeholder="editNorthing">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="switch-container">
+        <label for="editElevationButton">Edit Elevation (Z)</label>
+        <label class="switch">
+          <input type="checkbox" id="editElevationButton" placeholder="editElevation">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <a class="label2" id="holeEastingLabel">Hole Easting(X):</a>
+      <a class="label2" id="holeNorthingLabel">Hole Northing(Y):</a>
+      <a class="label2" id="holeElevationLabel">Hole Elevation(Z):</a>
+      <input type="range" step="0.1" min="-20" max="20" id="holeEastingSlider" name="holeX" value="0"
+        placeholder="Hole X">
+      <input type="range" step="0.1" min="-20" max="20" id="holeNorthingSlider" name="holeY" value="0"
+        placeholder="Hole Y">
+      <input type="range" step="0.1" min="-20" max="20" id="holeElevationSlider" name="holeZ" value="0"
+        placeholder="Hole Z">
+      <div class="switch-container">
+        <label for="editLengthButton">Edit Length</label>
+        <label class="switch">
+          <input type="checkbox" id="editLengthButton" placeholder="editLength">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="switch-container">
+        <label for="editAngleButton">Edit Angle</label>
+        <label class="switch">
+          <input type="checkbox" id="editAngleButton" placeholder="editAngle">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <div class="switch-container">
+        <label for="editBearingButton">Edit Bearing</label>
+        <label class="switch">
+          <input type="checkbox" id="editBearingButton" placeholder="editBearing">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <a class="label2" id="holeLengthLabel">Hole Length:</a>
+      <a class="label2" id="holeAngleLabel">Hole Angle:</a>
+      <a class="label2" id="holeBearingLabel">Hole Bearing:</a>
+      <input type="range" step="0.1" min="0.0" max="100" id="holeLengthSlider" name="holeLength" value="10"
+        placeholder="Hole Length">
+      <input type="range" step="1" min="0" max="60" id="holeAngleSlider" name="holeAngle" value="0"
+        placeholder="Hole Angle">
+      <input type="range" step="0.5" min="0" max="360" id="holeBearingSlider" name="holeBearing" value="0"
+        placeholder="Hole Bearing">
+        </div>
+    </div>
+  </div>
+  
+
+  <!-- THESE BUTTONS ARE HIDDEN UNTIL THEY ARE DEVELOPED IN THE STYLES.CSS change "display: none" -->
+  <!--Add a new blast pattern - to be developed in future-->
+  <a class="button-notinuse" id="addBlastButton" name="blastButton" value="B"
+    title="Add a Blast - Feature Not in Use">B</a>
+  <!--Add a new blast pattern in poly - to be developed in future-->
+  <a class="button-notinuse" id="addPolyBlastButton" name="polyButton" value="P"
+    title="Add a Blast in a polygon - Feature Not in Use">P</a>
+
+
+
+  <!--Canvas-->
+  <div class="canvas-container">
+    <canvas id="canvas"></canvas>
+    <div class="radio-buttons-custom">
+      <input type="radio" id="display1" name="display" value="Hole ID" placeholder="Hole ID" checked>
+      <label for="display1" class="icon-button" data-content="#" title="Hole ID"></label>
+      <input type="radio" id="display2" name="display" value="Hole Length" placeholder="Hole Length">
+      <label for="display2" class="icon-button" data-content="|&#8616;|" title="Hole Length"></label>
+      <input type="radio" id="display3" name="display" value="Angle" placeholder="Angle">
+      <label for="display3" class="icon-button" data-content="|&#8736;|" title="Hole Angle"></label>
+      <input type="radio" id="display4" name="display" value="Dip" placeholder="Dip">
+      <label for="display4" class="icon-button" data-content="|&#8737;|" title="Hole Dip"></label>
+      <input type="radio" id="display5" name="display" value="Bearing" placeholder="Bearing">
+      <label for="display5" class="icon-button" data-content="|&#10227;|" title="Hole Bearing"></label>
+      <input type="radio" id="display5A" name="display" value="Ties" placeholder="Ties">
+      <label for="display5A" class="icon-button" data-content="&#8632;"title="Hole and Ties"></label>
+      <input type="radio" id="display6" name="display" value="Connectors" placeholder="Connectors">
+      <label for="display6" class="icon-button" data-content="&#8633;" title="Delay Value and Ties"></label>
+      <input type="radio" id="display7" name="display" value="Times" placeholder="Times">
+      <label for="display7" class="icon-button" data-content="&#9201;" title="Hole Time and Ties"></label>
+      <input type="radio" id="display8" name="display" value="Contours" placeholder="Contours">
+      <label for="display8" class="icon-button" data-content="&#10999;|" title="Contours and Times"></label>
+      <input type="radio" id="display8A" name="display" value="Relief" placeholder="relief">
+      <label for="display8A" class="icon-button" data-content="&#9653;" title="Relief"></label>
+      <input type="radio" id="display9" name="display" value="xlocation" placeholder="xlocation">
+      <label for="display9" class="icon-button" data-content="&#9395;" title="Hole X Location"></label>
+      <input type="radio" id="display10" name="display" value="ylocation" placeholder="ylocation">
+      <label for="display10" class="icon-button" data-content="&#9396;" title="Hole Y Location"></label>
+      <input type="radio" id="display11" name="display" value="zlocation" placeholder="zlocation">
+      <label for="display11" class="icon-button" data-content="&#9397;" title="Hole Z Location"></label>
+    </div>
+
+    <button class="accordion">View Controls</button>
+    <div class="panel">
+      <div class="button-container-2col">
+        <a class="label3" id="fontLabel">Font Size : </a>
+        <a class="label3" id="connLabel">Tie Size : </a>
+        <input type="range" id="fontSlider" min="1" max="100" value="10" step="1" placeholder="Select font size">
+        <input type="range" id="connSlider" min="1" max="20" value="3" step="0.5" placeholder="Select connector size">
+        <a class="label3" id="toeLabel">Toe Size : </a>
+        <a class="label3" id="intervalLabel">Interval : </a>
+        <input type="range" id="toeSlider" min="1" max="50" value="3" step="0.5" placeholder="Select toe circle size">
+        <input type="range" id="intervalSlider" min="25" max="1000" value="100" step="5"
+          placeholder="Adjust the Interval">
+      </div>
+    </div>
+    
+    <button class="accordion" id="timeAccordian">Time Window & Animate</button>
+    <div class="panel">
+      <div class="button-container-3col">
+        <a class="label4" id="play">PLAY</a>
+        <a class="label4" id="stop">STOP</a>
+        <input type="range" step="0.1" min="0.01" max="25" value="1" id="playSpeed" placeholder="Select play speed">
+      </div>
+      <div class="button-container-1col">
+        <div class="chart-container" id="timeChart"></div>
+        <a class="label3" id="timeRangeLabel">Time window : 8 ms</a>
+        <input type="range" min="1" max="25" value="8" id="timeRange" placeholder="Select time window size">
+      </div>
+    </div>
+</div>
+
+    <button class="accordion">Output Files</button>
+    <div class="panel">
+      <div class="button-container-2col">
+        <a class="label4" id="saveAs">This is a 10 column file that can be imported by the App. Use it like a version
+          save.</a>
+        <a class="label4" id="saveAll">This outputs additional columns like Length, Dip, Angle, bearing and Initiation
+          time.</a>
+      </div>
+    </div>
+
+    <button class="accordion">Example Files</button>
+    <div class="panel">
+      <br><a href="/TieInTest1.csv"> Download test tie in file 1</a>
+      <br><a href="/TieInTest2.csv"> Download test tie in file 2</a>
+      <br><a href="/TieInTest3.csv"> Download test tie in file 3</a>
+      <br><a href="/blastingapps-xyz-converter.xlsx"> Download the conversion excel tool</a><br><br>
+    </div>
+
+    <a href="https://www.buymeacoffee.com/BrentBuffham">
+      <img
+        src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"
+        alt="Buy me a coffee" />
+    </a>
+    <font size="1"><i>Created by Brent Buffham &#169; 2023. Input a CSV file: (ID, X, Y, Z) or (ID, X, Y, Z, toeX, toeY,
+        toeZ) or to display timing (ID, X, Y, Z, toeX, ToeY, ToeZ, FromHole, Delay, Colour)</font></i><br>
+    <script src="patternviewer.js"></script>
+
+</body>
+
+</html>

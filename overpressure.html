@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>HTML Overpressure Scaled Distance</title>
+    <link rel="shortcut icon" href=href="overpressure48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+</script>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 10px;
+                padding: 0px;
+                background-color: black;
+            }
+            
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: white;
+            }
+            /*
+                    .vl {
+                        border-left: 1px solid white;
+                        height: 2000px;
+                        position: absolute;
+                        left: 400px;
+                        margin-left: -3px;
+                        top: 0;
+                    }
+                    */
+            
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border-radius: 10px;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: firebrick;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: red;
+            }
+            /* Button 1 END */
+            /* Button 2 START */
+            
+            .button-2 {
+                background-color: cadetblue;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: red;
+            }
+            /* Button 2 END */
+            /* Button 3 START */
+            
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: red;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: red;
+            }
+            /* Button 4 END */
+            
+            .button-5 {
+                background-color: rgb(75, 108, 164);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-5:hover,
+            .button-5:focus {
+                background-color: red;
+            }
+            
+            .button-6 {
+                background-color: rgb(164, 75, 75);
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 46%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-6:hover,
+            .button-6:focus {
+                background-color: red;
+            }
+            
+            .coffeebtn {
+                background-color: red;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 60%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+        <div class="vl"></div>
+        <p class="p1">
+
+            <img src="overpressure48.png">
+
+            <b>
+                <font size="6">HTML Overpressure</font>
+            </b><br>
+            <font size="1">Created by Brent Buffham &#169; 2021</font><br>
+            <i>
+                <font size="1">Currently only available in Metric Units</font>
+            </i>
+            <br><br>
+            <a class="button-1" href="index.html">Go Back...</a>
+            <br><br>
+            <a class="button-5" href="vibration.html">Vibration</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="button-6" href="blasting.html">Blasting</a>
+            <br><br>
+            <b>Select the Calculation</b> <br>
+            <!-- Radio Selection Start-->
+            <input type="radio" id="calcRadio1" name="calcRadios" value="V" checked>
+            <label id="vRadioLbl">Decibels</label><br>
+            <input type="radio" id="calcRadio2" name="calcRadios" value="K">
+            <label id="kRadioLbl">Site K Constant</label><br>
+            <input type="radio" id="calcRadio3" name="calcRadios" value="D">
+            <label id="dRadioLbl">Distance (m)</label><br>
+            <input type="radio" id="calcRadio4" name="calcRadios" value="W">
+            <label id="wRadioLbl">Weight Influencing Charge (kg)</label><br>
+            <input type="radio" id="calcRadio5" name="calcRadios" value="A">
+            <label id="aRadioLbl">Site a Constant</label><br>
+            <input type="radio" id="calcRadio6" name="calcRadios" value="B">
+            <label id="bRadioLbl">Site b Constant</label><br>
+            <br>
+            <!-- Radio Selection Ended-->
+            <!-- inputs Specs -->
+            <b>Inputs</b> <br>
+            <input type="number" step="0.1" min="0.1" max="800.0" id="dbValue" name="dbValue" value="120.00" disabled="disabled">
+            <label id="vLbl">Decibels (dB)</label><br>
+            <input type="number" step="1" min="1" max="500.0" id="kValue" name="kValue" value="37">
+            <label id="kLbl">Site K Constant (K)</label><br>
+            <input type="number" step="0.1" min="0.0" max="10000.0" id="dValue" name="dValue" value="930.1">
+            <label id="dLbl">Lineal Distance to Site (m)</label><br>
+            <input type="number" step="1" min="0.1" max="20000" id="wValue" name="wValue" value="140.00">
+            <label id="wLbl">Weight Influencing Charge (kg)</label><br>
+            <input type="number" step="0.01" min="-5.00" max="0" id="aValue" name="aValue" value="-1.45">
+            <label id="aLbl">Attenuation Value (a)</label><br>
+            <input type="number" step="0.001" min="0" max="1" id="bValue" name="bValue" value="0.3333">
+            <label id="bLbl">Beta Value (b)</label>
+            <br>
+            <br>
+            <label id="additionalCommentsLbl">Additional Comments ...</label><br>
+            <textarea id="additionalComments" name="additionalComments" cols="45" rows="5" placeholder="Write additional information here..."></textarea>
+            <br><br>
+
+            <script>
+                //Declare Variables
+                var dbValue;
+                var kValue;
+                var dValue;
+                var wValue;
+                var bValue;
+                var aValue;
+
+                //calculations
+                var decibelCalc;
+                var kConstantCalc;
+                var distanceCalc;
+                var weightCalc;
+                var attenuationCalc;
+                var betaCalc;
+                var holes;
+                var rows;
+
+                var calcRadioChecked;
+
+                window.onload = calcDB();
+
+
+                //Change Event on Pattern Type
+                document.getElementById('calcRadio1').onchange = function() {
+                    calcDB();
+                };
+                document.getElementById('calcRadio2').onchange = function() {
+                    calcK();
+                };
+                document.getElementById('calcRadio3').onchange = function() {
+                    calcD();
+                };
+                document.getElementById('calcRadio4').onchange = function() {
+                    calcW();
+                };
+                document.getElementById('calcRadio5').onchange = function() {
+                    calcA();
+                };
+                document.getElementById('calcRadio6').onchange = function() {
+                    calcB();
+                };
+                document.getElementById('dbValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        kValue = parseFloat(document.getElementById('dbValue').value);
+                        document.getElementById('kValue').value = calcK();
+                    }
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        kValue = parseFloat(document.getElementById('dbValue').value);
+                        document.getElementById('dValue').value = calcD();
+                    }
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        kValue = parseFloat(document.getElementById('dbValue').value);
+                        document.getElementById('wValue').value = calcW();
+                    }
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        kValue = parseFloat(document.getElementById('dbValue').value);
+                        document.getElementById('aValue').value = calcA();
+                    }
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        kValue = parseFloat(document.getElementById('dbValue').value);
+                        document.getElementById('bValue').value = calcB();
+                    }
+
+                };
+                document.getElementById('kValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        document.getElementById('dbValue').value = calcDB();
+                    }
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        document.getElementById('dValue').value = calcD();
+                    }
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        document.getElementById('wValue').value = calcW();
+                    }
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        document.getElementById('aValue').value = calcA();
+                    }
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        document.getElementById('bValue').value = calcB();
+                    }
+
+                };
+                document.getElementById('dValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        document.getElementById('dbValue').value = calcDB();
+                    }
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        kValue = parseFloat(document.getElementById('dValue').value);
+                        document.getElementById('kValue').value = calcK();
+                    }
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        kValue = parseFloat(document.getElementById('dValue').value);
+                        document.getElementById('wValue').value = calcW();
+                    }
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        kValue = parseFloat(document.getElementById('dValue').value);
+                        document.getElementById('aValue').value = calcA();
+                    }
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        kValue = parseFloat(document.getElementById('dValue').value);
+                        document.getElementById('bValue').value = calcB();
+                    }
+
+                };
+                document.getElementById('wValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        dValue = parseFloat(document.getElementById('wValue').value);
+                        document.getElementById('dbValue').value = calcDB();
+                    }
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        kValue = parseFloat(document.getElementById('wValue').value);
+                        document.getElementById('kValue').value = calcK();
+                    }
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        kValue = parseFloat(document.getElementById('wValue').value);
+                        document.getElementById('dValue').value = calcD();
+                    }
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        kValue = parseFloat(document.getElementById('wValue').value);
+                        document.getElementById('aValue').value = calcA();
+                    }
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        kValue = parseFloat(document.getElementById('wValue').value);
+                        document.getElementById('bValue').value = calcB();
+                    }
+
+                };
+
+                document.getElementById('aValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        dValue = parseFloat(document.getElementById('aValue').value);
+                        document.getElementById('dbValue').value = calcDB();
+                    }
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        kValue = parseFloat(document.getElementById('aValue').value);
+                        document.getElementById('kValue').value = calcK();
+                    }
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        kValue = parseFloat(document.getElementById('aValue').value);
+                        document.getElementById('dValue').value = calcD();
+                    }
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        kValue = parseFloat(document.getElementById('aValue').value);
+                        document.getElementById('wValue').value = calcW();
+                    }
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        kValue = parseFloat(document.getElementById('aValue').value);
+                        document.getElementById('bValue').value = calcB();
+                    }
+
+                };
+
+                document.getElementById('bValue').onchange = function() {
+
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        dValue = parseFloat(document.getElementById('bValue').value);
+                        document.getElementById('dbValue').value = calcDB();
+                    }
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        kValue = parseFloat(document.getElementById('bValue').value);
+                        document.getElementById('kValue').value = calcK();
+                    }
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        kValue = parseFloat(document.getElementById('bValue').value);
+                        document.getElementById('dValue').value = calcD();
+                    }
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        kValue = parseFloat(document.getElementById('bValue').value);
+                        document.getElementById('wValue').value = calcW();
+                    }
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        kValue = parseFloat(document.getElementById('bValue').value);
+                        document.getElementById('aValue').value = calcA();
+                    }
+
+                };
+
+                function calcDB() {
+                    document.getElementById('dbValue').setAttribute('disabled', 'disabled');
+
+                    //dbValue = parseFloat(document.getElementById('dbValue').value);
+                    kValue = parseFloat(document.getElementById('kValue').value);
+                    dValue = parseFloat(document.getElementById('dValue').value);
+                    wValue = parseFloat(document.getElementById('wValue').value);
+                    aValue = parseFloat(document.getElementById('aValue').value);
+                    bValue = parseFloat(document.getElementById('bValue').value);
+
+                    decibelCalc = 20 * Math.log10((((kValue * Math.pow((dValue / (Math.pow(wValue, (bValue)))),
+                        aValue))) * 1000 / (2 * Math.pow(10, -5))));
+
+                    //document.getElementById('dbValue').innerHTML = vibrationCalc.toFixed(2);
+                    if (document.getElementById('calcRadio1').checked === true) {
+                        document.getElementById('kValue').disabled = false;
+                        document.getElementById('dValue').disabled = false;
+                        document.getElementById('wValue').disabled = false;
+                        document.getElementById('aValue').disabled = false;
+                        document.getElementById('bValue').disabled = false;
+                    }
+                    return decibelCalc.toFixed(2);
+                }
+
+                function calcK() {
+                    document.getElementById('kValue').setAttribute('disabled', 'disabled');
+
+                    dbValue = parseFloat(document.getElementById('dbValue').value);
+                    //kValue = parseFloat(document.getElementById('kValue').value); 
+                    dValue = parseFloat(document.getElementById('dValue').value);
+                    wValue = parseFloat(document.getElementById('wValue').value);
+                    aValue = parseFloat(document.getElementById('aValue').value);
+                    bValue = parseFloat(document.getElementById('bValue').value);
+
+                    kConstantCalc = ((((1000000000 * 0.00002) * Math.pow(10, dbValue / 20) / 1000000000) / 1000) / Math.pow(dValue / Math.pow(wValue, bValue), aValue));
+
+                    //document.getElementById('kValue').innerHTML = vibrationCalc.toFixed(2);
+                    if (document.getElementById('calcRadio2').checked === true) {
+                        document.getElementById('dbValue').disabled = false;
+                        document.getElementById('dValue').disabled = false;
+                        document.getElementById('wValue').disabled = false;
+                        document.getElementById('aValue').disabled = false;
+                        document.getElementById('bValue').disabled = false;
+                    }
+                    return kConstantCalc.toFixed(2);
+                }
+
+                function calcD() {
+                    document.getElementById('dValue').setAttribute('disabled', 'disabled');
+
+                    dbValue = parseFloat(document.getElementById('dbValue').value);
+                    kValue = parseFloat(document.getElementById('kValue').value);
+                    //dValue = parseFloat(document.getElementById('dValue').value);  
+                    wValue = parseFloat(document.getElementById('wValue').value);
+                    aValue = parseFloat(document.getElementById('aValue').value);
+                    bValue = parseFloat(document.getElementById('bValue').value);
+
+                    distanceCalc = Math.pow((((1000000000 * 0.00002) * Math.pow(10, (dbValue / 20)) /
+                        1000000000 / kValue) / 1000), 1 / aValue) * Math.pow(wValue, (bValue));
+
+                    //document.getElementById('dValue').innerHTML = distanceCalc.toFixed(2);
+                    if (document.getElementById('calcRadio3').checked === true) {
+                        document.getElementById('dbValue').disabled = false;
+                        document.getElementById('kValue').disabled = false;
+                        document.getElementById('wValue').disabled = false;
+                        document.getElementById('aValue').disabled = false;
+                        document.getElementById('bValue').disabled = false;
+                    }
+                    return distanceCalc.toFixed(2);
+                }
+
+                function calcW() {
+                    document.getElementById('wValue').setAttribute('disabled', 'disabled');
+
+                    dbValue = parseFloat(document.getElementById('dbValue').value);
+                    kValue = parseFloat(document.getElementById('kValue').value);
+                    dValue = parseFloat(document.getElementById('dValue').value);
+                    //wValue = parseFloat(document.getElementById('wValue').value); 
+                    aValue = parseFloat(document.getElementById('aValue').value);
+                    bValue = parseFloat(document.getElementById('bValue').value);
+
+                    weightCalc = Math.pow((dValue / Math.pow(((((1000000000 * 0.00002) * Math.pow(10, ((
+                        dbValue) / 20)) / 1000000000) / 1000) / kValue), 1 / aValue)), (1 / bValue));
+                    //document.getElementById('wValue').innerHTML = weightCalc.toFixed(2);
+                    if (document.getElementById('calcRadio4').checked === true) {
+                        document.getElementById('dbValue').disabled = false;
+                        document.getElementById('kValue').disabled = false;
+                        document.getElementById('dValue').disabled = false;
+                        document.getElementById('aValue').disabled = false;
+                        document.getElementById('bValue').disabled = false;
+                    }
+                    return weightCalc.toFixed(2);
+                }
+
+                function calcA() {
+                    document.getElementById('aValue').setAttribute('disabled', 'disabled');
+
+                    dbValue = parseFloat(document.getElementById('dbValue').value);
+                    kValue = parseFloat(document.getElementById('kValue').value);
+                    dValue = parseFloat(document.getElementById('dValue').value);
+                    wValue = parseFloat(document.getElementById('wValue').value);
+                    //aValue = parseFloat(document.getElementById('aValue').value); 
+                    bValue = parseFloat(document.getElementById('bValue').value);
+
+                    attenuationCalc = Math.log10((((1000000000 * 0.00002) * Math.pow(10, ((dbValue) / 20)) /
+                        1000000000) / 1000) / kValue) / (Math.log10(dValue / Math.pow(wValue, (bValue))));
+                    //document.getElementById('aValue').innerHTML = attenuationCalc.toFixed(2);
+                    if (document.getElementById('calcRadio5').checked === true) {
+                        document.getElementById('dbValue').disabled = false;
+                        document.getElementById('kValue').disabled = false;
+                        document.getElementById('dValue').disabled = false;
+                        document.getElementById('wValue').disabled = false;
+                        document.getElementById('bValue').disabled = false;
+                    }
+                    return attenuationCalc.toFixed(3);
+                }
+
+                function calcB() {
+                    document.getElementById('bValue').setAttribute('disabled', 'disabled');
+
+                    dbValue = parseFloat(document.getElementById('dbValue').value);
+                    kValue = parseFloat(document.getElementById('kValue').value);
+                    dValue = parseFloat(document.getElementById('dValue').value);
+                    wValue = parseFloat(document.getElementById('wValue').value);
+                    aValue = parseFloat(document.getElementById('aValue').value);
+                    //bValue = parseFloat(document.getElementById('bValue').value); 
+
+                    betaCalc = Math.log10(dValue * (Math.pow((kValue / (((1000000000 * 0.00002) * Math.pow(10, (
+                        (dbValue) / 20)) / 1000000000) / 1000)), (1 / aValue)))) / Math.log10(wValue);
+                    //document.getElementById('bValue').innerHTML = vibrationCalc.toFixed(2);
+                    if (document.getElementById('calcRadio6').checked === true) {
+                        document.getElementById('dbValue').disabled = false;
+                        document.getElementById('kValue').disabled = false;
+                        document.getElementById('dValue').disabled = false;
+                        document.getElementById('wValue').disabled = false;
+                        document.getElementById('aValue').disabled = false;
+                    }
+                    return betaCalc.toFixed(4);
+                }
+
+                function email() {
+                    //Email Body Text Goes Here   
+                    var line01 = "%0D%0A%0D%0ADecibels%20(dB)%20=%20" + calcDB();
+                    var line02 = "%0D%0ASite%20K%20Constant%20(K)%20=%20" + kValue;
+                    var line03 = "%0D%0ADistance (m) = " + dValue;
+                    var line04 = "%0D%0AWeight Influencing Charge MIC (kg) = " + wValue;
+                    var line05 = "%0D%0ASite Attenuation Value = " + aValue;
+                    var line06 = "%0D%0ASite Beta Value = " + bValue;
+                    var line07 = "%0D%0AAddition Comments = " + document.getElementById('additionalComments')
+                        .value + "%0D%0A";
+
+                    var line =
+                        "%0D%0A%0D%0A%0D%0AThis%20calculator%20was%20first%20published%20as%20VibeSD%20on%20the%20Apple%20App%20Store%20as%20a%20native%20iPhone%20and%20iPad%20app%20in%202010.%20Now%20re-coded%20for%20you%20to%20enjoy.%0D%0ABrent%20Buffham.%202021";
+
+                    window.location.href =
+                        'mailto:?subject=Overpressure%20Calculations%20and%20Statistics&body=Overpressure%20Calculations%20and%20Statistics' +
+                        line01 + line02 + line03 + line04 + line05 + line06 + line07 + line;
+
+                }
+            </script>
+            <br>
+
+            <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+            <br><br><br>
+
+            <br>
+            <img src="overpressure300.png"><br>
+            <font size="1">
+                This calculator was first published as "VibeSD" Ovepressure section on the Apple iOS App Store as a native iPhone and iPad app in 2010. The publisher was Chin-Apse Pty. Ltd. This is app was something of great use to many people. It is a simple calculator
+                of the Scaled Distance Vibration formula in AS2187.2 Appendix J of the Australian Standards. Modern browsers support HTML and CSS better now, as such the app that died on the Apple Store can now live again. Created code is in HTML/JS/CSS.
+                <br> Thank you.
+                <br><br> Brent Buffham &#169; 2021.</font><br>
+            <br>
+
+            <div style="text-align:center; font-family:Helvetica">
+                <img src="Coffee48.png">
+                <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                <img src="Coffee48.png">
+
+            </div>
+            <br><br>
+
+        </p>
+    </form>
+</body>

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Calculations</title>
+    <link rel="shortcut icon" href="favicon48.png">
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<body bgcolor="#000000" text="white">
+    <form name="calculator">
+        <style>
+            body {
+                width: 100%;
+                height: 100%;
+                margin: 10px;
+                padding: 0px;
+                background-color: black;
+            }
+            
+            .p1 {
+                font-family: 'Helvetica', monospace;
+                color: white;
+            }
+            /*
+            .vl {
+                border-left: 1px solid white;
+                height: 2000px;
+                position: absolute;
+                left: 400px;
+                margin-left: -3px;
+                top: 0;
+            }
+            */
+            
+            input[type=button],
+            input[type=reset] {
+                background-color: #4CAF50;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .coffeebtn {
+                background-color: greenyellow;
+                border: none;
+                color: #000000;
+                padding: 5px 5px;
+                width: 75%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .blastbtn {
+                background-color: darkorange;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .blast2btn {
+                background-color: darkred;
+                border: none;
+                color: #ffffff;
+                padding: 5px 5px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 20px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            .button-1 {
+                background-color: firebrick;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-1:hover,
+            .button-1:focus {
+                background-color: red;
+            }
+            /* Button 1 END */
+            /* Button 2 START */
+            
+            .button-2 {
+                background-color: cadetblue;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-2:hover,
+            .button-2:focus {
+                background-color: red;
+            }
+            /* Button 2 END */
+            /* Button 3 START */
+            
+            .button-3 {
+                background-color: coral;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 97%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-3:hover,
+            .button-3:focus {
+                background-color: red;
+            }
+            /* Button 3 END */
+            /* Button 4 START */
+            
+            .button-4 {
+                background-color: lightseagreen;
+                border-radius: 10px;
+                border-style: none;
+                box-sizing: border-box;
+                color: #FFFFFF;
+                cursor: pointer;
+                display: inline-block;
+                /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                font-size: 20px;
+                font-weight: 500;
+                height: 40px;
+                width: 70%;
+                line-height: 20px;
+                list-style: none;
+                margin: 0;
+                outline: none;
+                padding: 10px 16px;
+                position: relative;
+                text-align: center;
+                text-decoration: none;
+                transition: color 100ms;
+                vertical-align: baseline;
+                user-select: none;
+                -webkit-user-select: none;
+                touch-action: manipulation;
+            }
+            
+            .button-4:hover,
+            .button-4:focus {
+                background-color: red;
+            }
+            /* Button 4 END */
+            
+            input[type=submit] {
+                background-color: cornflowerblue;
+                border: none;
+                color: #ffffff;
+                padding: 15px 40px;
+                width: 97%;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 24px;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+            
+            input[type=number] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=text] {
+                cursor: pointer;
+                width: 100px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+            
+            input[type=radio] {
+                border: 0px;
+                width: 10%;
+                height: 2em;
+            }
+            
+            .box {
+                cursor: pointer;
+                width: 250px;
+                color: #333;
+                font-size: 18px;
+                text-align: center;
+                position: relative;
+            }
+        </style>
+
+        <p class="p1">
+            <b>
+                <font size="6">CALCULATIONS BlastCalc and VibeSD</font>
+            </b><br>
+            <font size="1">Created by Brent Buffham &#169; 2021</font><br>
+            <i>
+                <font size="1">Currently only available in Metric Units</font>
+            </i>
+            <br>
+            <br>
+            <br>
+            <a class="button-1" href="blasting.html">Blasting Calculator</a>
+            <br>
+            <br>
+            <a class="button-2" href="vibration.html">Vibration Calculator</a>
+            <br>
+            <br>
+            <a class="button-3" href="index.html">Go Back</a>
+            <br>
+            <!-- comment -->
+            <br>
+
+            <font size="5">
+                <b>Calculations used in the Applications.</b>
+                <br>
+                <font size="2"><i>
+                        These are written in a Microsoft Excel Format for you to easily consume into your Excel sheets.
+                        <br>
+                        Replace the words with the appropriate cell Reference.</i><br><br>
+                </font>
+                <font size="1">
+                    <b>Vibration Scaled Distance</b> <i> - Formula from the AS2187.2 Appendix J.</i>
+                    <br>Variables =
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;VIBRATION (millimeters/second),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;KCONSTANT(1-10000),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DISTANCE (meters),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WEIGHT (kilograms),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AVALUE (> -1.0; Generally -1.6),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BVALUE (0.5 [square root]
+                    <br>Calculations =
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VIBRATION = KCONSTANT * ( DISTANCE / ( POWER( WEIGHT, BVALUE ) ) )^AVALUE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; KCONSTANT = VIBRATION / ( DISTANCE / POWER( WEIGHT, BVALUE) )^AVALUE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DISTANCE = POWER( ( VIBRATION / KCONSTANT ) , 1 / AVALUE )* POWER( WEIGHT, BVALUE )
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; WEIGHT = POWER( DISTANCE / POWER( ( VIBRATION / KCONSTANT) , 1 / AVALUE ),(1/BVALUE ))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; AVALUE = LOG( VIBRATION / KCONSTANT) / LOG( DISTANCE / POWER( WEIGHT, BVALUE ))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; BVALUE = LOG( DISTANCE * (POWER( ( KCONSTANT / VIBRATION ) , ( 1 / AVALUE )))) / LOG( WEIGHT )
+                    <br> <br>
+                    <b>Blasting Calculations</b> <i> - Various Sources.</i>
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; HOLE INFLUENCE AREA = BURDEN * SPACING
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; HOLE INFLUENCE VOLUME = HOLE INFLUENCE AREA * BENCH HEIGHT
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; HOLE INFLUENCE TONNES = HOLE INFLUENCE AREA * ROCK DENSITY
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; PATTERN AREA = HOLE INFLUENCE AREA * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; UNCHARGED VOLUME = PATTERN AREA * (STEMMING LENGTH + INERT LENGTH)
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; UNCHARGED TONNES = UNCHARGED VOLUME * ROCK DENSITY
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SIN ANGLE = SIN((90-HOLE ANGLE) * (PI() /180))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VERTICAL LENGTH = BENCH HEIGHT + SUBDRILL LENGTH
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; HOLE LENGTH = VERTICAL LENGTH / SIN ANGLE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; HOLE RADIUS = (DIAMETER / 2) * 1000
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VOLUME PER METER = (PI() * POWER(HOLE RADIUS, 2)) / 1000
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VOLUME PER HOLE = VOLUME PER METER * HOLE LENGTH
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VOLUME PER STEMMING LENGTH = VOLUME PER METER * STEMMING LENGTH
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; STEMMING MASS = VOLUME PER STEMMING LENGTH * STEMMING DENSITY
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VOLUME PER INERT LENGTH = VOLUME PER METER * INERT LENGTH
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; CHARGE VOLUME = VOLUME PER HOLE - VOLUME PER INERT - volPerStemmingLength
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; CHARGE MASS = CHARGE VOLUME * PRODUCT DENSITY
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TOTAL DRILL METERS = HOLE LENGTH * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VOLUME PER INERT ZONE = VOLUME PER INERT LENGTH * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; CHARGE MASS PER METER = VOLUME PER METER * PRODUCT DENSITY
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TOTAL CHARGE METERS = (HOLE LENGTH - INERT LENGTH - STEMMING LENGTH) * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TOTAL EXPLOSIVE MASS = CHARGE MASS * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TOTAL BLAST ROCK VOLUME = HOLE INFLUENCE VOLUME * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TOTAL BLAST ROCK TONNES = HOLE INFLUENCE TONNES * NUMBER OF HOLES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; POWDER FACTOR VOLUME = TOTAL EXPLOSIVE MASS / TOTAL BLAST ROCK VOLUME
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; POWDER FACTOR TONNES = TOTAL EXPLOSIVE MASS /TOTAL BLAST ROCK TONNES
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; VERTICAL ENERGY = (HOLE LENGTH - INERT LENGTH - STEMMING LENGTH) / HOLE LENGTH * 100
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; BURDEN STIFFNESS = BENCH HEIGHT / BURDEN
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SPACING SPEED = SPACING DELAY TIME / SPACING
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; BURDEN SPEED = BURDEN DELAY TIME / BURDEN
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; STAGGERED HYPOTENUSE = POWER(POWER(BURDEN,2) + POWER((SPACING/2),2), 0.5 )
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SQUARE HYPOTENUSE = POWER(POWER(BURDEN,2) + POWER(SPACING,2), 0.5 )
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TIMING RELIEF STAGGERED = (SPACING DELAY TIME + BURDEN DELAY TIME) / STAGGERED HYPOTENUSE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; TIMING RELIEF SQUARE = (SPACING DELAY TIME + BURDEN DELAY TIME) / SQUARE HYPOTENUSE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SDoBCONSTANT1 = 0.0005
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SDoBCONSTANT2 = 0.00923
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SDoBCONSTANT3 = 1/3
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETER IN MM = DIAMETER * 1000
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETER IN METERS = DIAMETER
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; LIMIT M VALUE GREATER THAN 100MM = 10
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; LIMIT M VALUE LESS THAN OR EQUAL TO 100MM = 8
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; M VALUE UNLIMITED = (HOLE LENGTH - STEMMING LENGTH) / DIAMETER IN MM
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; M VALUE = MIN(IF(DIAMETER IN MM &lt; 100, 8, 10), (HOLE LENGTH - STEMMING LENGTH) / DIAMETER IN MM)
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; SCALED DEPTH OF BURIAL = (STEMMING LENGTH + (SDoBCONSTANT1 * M VALUE * DIAMETER IN MM) / (SDoBCONSTANT2 * DIAMETER IN MM * POWER((M VALUE * PRODUCT DENSITY),SDoBCONSTANT3))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETERS PER STEMMING LENGTH = STEMMING LENGTH / DIAMETER IN METERS;
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETERS PER SUDRILL LENGTH = SUBDRILL LENGTH// DIAMETER IN METERS
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETERS PER SPACING LENGTH = SPACING / DIAMETER IN METERS
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETERS PER BURDEN LENGTH = BURDEN / DIAMETER IN METERS
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DIAMETERS PER BENCH HEIGHT = BENCH HEIGHT// DIAMETER IN METERS
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; ANFO AMOUNT = TOTAL EXPLOSIVE MASS * ANFO PERCENTAGE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; EMULSION OR MATRIX AMOUNT = TOTAL EXPLOSIVE MASS * EMULSION OR MATRIX PERCENTAGE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; FUEL OIL AMOUNT = ANFO AMOUNT * FUEL OIL PERCENTAGE
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; AMMONIUM NITRATE AMOUNT = ANFO AMOUNT - FUEL OIL AMOUNT
+                    <br>
+                    <br>
+                    <b>Overpressure Scaled Distance</b> <i> - Formula from the AS2187.2 Appendix J.</i>
+                    <br>Variables =
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DECIBELS (millimeters/second),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;KCONSTANT(1-100),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;DISTANCE (meters),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;WEIGHT (kilograms),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;AVALUE (> -1.0; Generally -1.45),
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;BVALUE (0.3333 [cube root]
+                    <br>Calculations =
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DECIBELS = =20 * LOG10((((KCONSTANT * POWER((DISTANCE / (POWER(WEIGHT, (AVALUE)))),BVALUE))) * 1000 / (2 * POWER(10, -5))))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; KCONSTANT = =((((1000000000 * 0.00002) * POWER(10, DECIBELS / 20) / 1000000000) / 1000) / POWER(DISTANCE / POWER(WEIGHT, BVALUE), AVALUE))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; DISTANCE = POWER((((1000000000 * 0.00002) * POWER(10, (DECIBELS / 20)) /1000000000 / KCONSTANT) / 1000), 1 / AVALUE) * POWER(WEIGHT, (BVALUE))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; WEIGHT = POWER((DISTANCE / POWER(((((1000000000 * 0.00002) * POWER(10, (( DECIBELS) / 20)) / 1000000000) / 1000) / KCONSTANT), 1 / AVALUE)), (1 / BVALUE))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; AVALUE = LOG10((((1000000000 * 0.00002) * POWER(10, ((DECIBELS) / 20)) / 1000000000) / 1000) / KCONSTANT) / (LOG10(DISTANCE / POWER(WEIGHT, (BVALUE))))
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull; BVALUE = LOG10(DISTANCE * (POWER((KCONSTANT / (((1000000000 * 0.00002) * POWER(10, ( (DECIBELS) / 20)) / 1000000000) / 1000)), (1 / AVALUE)))) /LOG10(WEIGHT)
+                    <br> <br>
+                    <br>
+                    <b>Ideal Decomposition of Nitromethane</b> <i> Chemistry Ideal and only relavant for a sense check.</i>
+                    <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;3NH4NO3 + 2CH3NO2 -> 4N2 + 2CO2 + 9H2O
+                    <br>
+                </font>
+                <font size="2">
+                    <br> <br> Thank you.
+                    <br><br> Brent Buffham &#169; 2021.</font><br>
+
+
+                <br>
+
+                <div style="text-align:center; font-family:Helvetica">
+                    <img src="Coffee48.png">
+                    <a class="button-4" href="https://www.buymeacoffee.com/BrentBuffham/">$ Buy Brent a Coffee $</a>
+                    <img src="Coffee48.png">
+
+                </div>
+                <br><br><br><br>
+
+
+        </p>
+    </form>
+</body>
+
+</html>

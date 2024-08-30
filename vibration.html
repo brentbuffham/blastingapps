@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>HTML Vibration Scaled Distance</title>
+        <meta name="viewport" content="width=device-width, intial-scale=1">
+    </head>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+
+        gtag('config', 'G-NKJ7R9CK09');
+    </script>
+
+    <body background-color="#000000" text="white">
+        <form name="calculator">
+            <style>
+                body {
+                    width: 100%;
+                    height: 100%;
+                    margin: 10px;
+                    padding: 0px;
+                    background-color: black;
+                }
+
+                .p1 {
+                    font-family: 'Helvetica', monospace;
+                    color: white;
+                }
+
+                /*
+                    .vl {
+                        border-left: 1px solid white;
+                        height: 2000px;
+                        position: absolute;
+                        left: 400px;
+                        margin-left: -3px;
+                        top: 0;
+                    }
+                    */
+
+                input[type=button],
+                input[type=reset] {
+                    background-color: #4CAF50;
+                    border-radius: 10px;
+                    border: none;
+                    color: #ffffff;
+                    padding: 5px 5px;
+                    width: 97%;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 20px;
+                    margin: 4px 2px;
+                    cursor: pointer;
+                }
+
+                input[type=submit] {
+                    background-color: cornflowerblue;
+                    border: none;
+                    color: #ffffff;
+                    padding: 15px 40px;
+                    width: 97%;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 24px;
+                    margin: 4px 2px;
+                    cursor: pointer;
+                }
+
+                .button-1 {
+                    background-color: firebrick;
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 97%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-1:hover,
+                .button-1:focus {
+                    background-color: red;
+                }
+
+                /* Button 1 END */
+                /* Button 2 START */
+
+                .button-2 {
+                    background-color: cadetblue;
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 97%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-2:hover,
+                .button-2:focus {
+                    background-color: red;
+                }
+
+                /* Button 2 END */
+                /* Button 3 START */
+
+                .button-3 {
+                    background-color: coral;
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 97%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-3:hover,
+                .button-3:focus {
+                    background-color: red;
+                }
+
+                /* Button 3 END */
+                /* Button 4 START */
+
+                .button-4 {
+                    background-color: lightseagreen;
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 70%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-4:hover,
+                .button-4:focus {
+                    background-color: red;
+                }
+
+                /* Button 4 END */
+
+                .button-5 {
+                    background-color: rgb(75, 108, 164);
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 46%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-5:hover,
+                .button-5:focus {
+                    background-color: red;
+                }
+
+                .button-6 {
+                    background-color: rgb(164, 75, 75);
+                    border-radius: 10px;
+                    border-style: none;
+                    box-sizing: border-box;
+                    color: #FFFFFF;
+                    cursor: pointer;
+                    display: inline-block;
+                    /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+                    font-size: 20px;
+                    font-weight: 500;
+                    height: 40px;
+                    width: 46%;
+                    line-height: 20px;
+                    list-style: none;
+                    margin: 0;
+                    outline: none;
+                    padding: 10px 16px;
+                    position: relative;
+                    text-align: center;
+                    text-decoration: none;
+                    transition: color 100ms;
+                    vertical-align: baseline;
+                    user-select: none;
+                    -webkit-user-select: none;
+                    touch-action: manipulation;
+                }
+
+                .button-6:hover,
+                .button-6:focus {
+                    background-color: red;
+                }
+
+                .coffeebtn {
+                    background-color: red;
+                    border: none;
+                    color: #ffffff;
+                    padding: 5px 5px;
+                    width: 60%;
+                    text-align: center;
+                    text-decoration: none;
+                    display: inline-block;
+                    font-size: 20px;
+                    margin: 4px 2px;
+                    cursor: pointer;
+                }
+
+                input[type=number] {
+                    cursor: pointer;
+                    width: 100px;
+                    color: #333;
+                    font-size: 18px;
+                    text-align: center;
+                    position: relative;
+                }
+
+                input[type=text] {
+                    cursor: pointer;
+                    width: 100px;
+                    color: #333;
+                    font-size: 18px;
+                    text-align: center;
+                    position: relative;
+                }
+
+                input[type=radio] {
+                    border: 0px;
+                    width: 10%;
+                    height: 2em;
+                }
+
+                .box {
+                    cursor: pointer;
+                    width: 250px;
+                    color: #333;
+                    font-size: 18px;
+                    text-align: center;
+                    position: relative;
+                }
+            </style>
+            <div class="vl"></div>
+
+            <p class="p1">
+                <b>
+                    <font size="6">HTML Vibration</font>
+                </b><br>
+                <font size="1">Created by Brent Buffham &#169; 2021</font><br>
+                <i>
+                    <font size="1">Currently only available in Metric Units</font>
+                </i>
+                <br><br>
+                <a class="button-1" href="index.html">Go Back...</a>
+                <br><br>
+                <a class="button-5" href="overpressure.html">Overpressure</a>&nbsp;&nbsp;&nbsp;&nbsp;<a class="button-6" href="blasting.html">Blasting</a>
+                <br><br>
+                <b>Select the Calculation</b> <br>
+                <!-- Radio Selection Start-->
+                <input type="radio" id="calcRadio1" name="calcRadios" value="V" checked placeholder="V">
+                <label id="vRadioLbl">Peak Particle Vibration (mm/s)</label><br>
+                <input type="radio" id="calcRadio2" name="calcRadios" value="K" placeholder="K">
+                <label id="kRadioLbl">Site K Constant</label><br>
+                <input type="radio" id="calcRadio3" name="calcRadios" value="D" placeholder="D">
+                <label id="dRadioLbl">Distance (m)</label><br>
+                <input type="radio" id="calcRadio4" name="calcRadios" value="W" placeholder="W">
+                <label id="wRadioLbl">Weight Influencing Charge (kg)</label><br>
+                <input type="radio" id="calcRadio5" name="calcRadios" value="A" placeholder="b"> <!-- is altered to (b) -->
+                <label id="aRadioLbl">Site b Constant</label><br>
+                <input type="radio" id="calcRadio6" name="calcRadios" value="B" placeholder="n"> <!-- is altered to (n) -->
+                <label id="bRadioLbl">Site Weight Indice Constant</label><br>
+                <br>
+                <!-- Radio Selection Ended-->
+                <!-- inputs Specs -->
+                <b>Inputs</b> <br>
+                <input type="number" step="0.1" min="0.1" max="800.0" id="vValue" name="vValue" value="5.11" disabled="disabled" placeholder="mm/s">
+                <label id="vLbl">Peak Particle Vibration (mm/s)</label><br>
+                <input type="number" step="1" min="0.1" max="10000.0" id="kValue" name="kValue" value="1000" placeholder="K">
+                <label id="kLbl">Site K Constant (K)</label><br>
+                <input type="number" step="0.1" min="0.0" max="10000.0" id="dValue" name="dValue" value="320.0" placeholder="meters">
+                <label id="dLbl">Lineal Distance to Site (m)</label><br>
+                <input type="number" step="1" min="0.1" max="20000" id="wValue" name="wValue" value="140.00" placeholder="kilograms">
+                <label id="wLbl">Weight Influencing Charge (kg)</label><br>
+                <input type="number" step="0.01" min="-5.00" max="0" id="aValue" name="aValue" value="-1.60" placeholder="-1.6">
+                <label id="aLbl">Attenuation Value (b)</label><br>
+                <input type="number" step="0.01" min="0" max="1" id="bValue" name="bValue" value="0.5" placeholder="-0.5">
+                <label id="bLbl">Weight indice Value (n)</label>
+                <br>
+                <br>
+                <label id="additionalCommentsLbl">Additional Comments ...</label><br>
+                <textarea id="additionalComments" name="additionalComments" cols="45" rows="5" placeholder="Write additional information here..."></textarea>
+                <br><br>
+
+                <script>
+                    //Declare Variables
+                    var vValue;
+                    var kValue;
+                    var dValue;
+                    var wValue;
+                    var bValue;
+                    var aValue;
+
+                    //calculations
+                    var vibrationCalc;
+                    var kConstantCalc;
+                    var distanceCalc;
+                    var weightCalc;
+                    var attenuationCalc;
+                    var betaCalc;
+                    var holes;
+                    var rows;
+
+                    var calcRadioChecked;
+
+                    window.onload = calcV();
+
+
+                    //Change Event on Pattern Type
+                    document.getElementById('calcRadio1').onchange = function () {
+                        calcV();
+                    };
+                    document.getElementById('calcRadio2').onchange = function () {
+                        calcK();
+                    };
+                    document.getElementById('calcRadio3').onchange = function () {
+                        calcD();
+                    };
+                    document.getElementById('calcRadio4').onchange = function () {
+                        calcW();
+                    };
+                    document.getElementById('calcRadio5').onchange = function () {
+                        calcA();
+                    };
+                    document.getElementById('calcRadio6').onchange = function () {
+                        calcB();
+                    };
+                    document.getElementById('vValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            kValue = parseFloat(document.getElementById('vValue').value);
+                            document.getElementById('kValue').value = calcK();
+                        }
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            kValue = parseFloat(document.getElementById('vValue').value);
+                            document.getElementById('dValue').value = calcD();
+                        }
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            kValue = parseFloat(document.getElementById('vValue').value);
+                            document.getElementById('wValue').value = calcW();
+                        }
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            kValue = parseFloat(document.getElementById('vValue').value);
+                            document.getElementById('aValue').value = calcA();
+                        }
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            kValue = parseFloat(document.getElementById('vValue').value);
+                            document.getElementById('bValue').value = calcB();
+                        }
+
+                    };
+                    document.getElementById('kValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            kValue = parseFloat(document.getElementById('kValue').value);
+                            document.getElementById('vValue').value = calcV();
+                        }
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            kValue = parseFloat(document.getElementById('kValue').value);
+                            document.getElementById('dValue').value = calcD();
+                        }
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            kValue = parseFloat(document.getElementById('kValue').value);
+                            document.getElementById('wValue').value = calcW();
+                        }
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            kValue = parseFloat(document.getElementById('kValue').value);
+                            document.getElementById('aValue').value = calcA();
+                        }
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            kValue = parseFloat(document.getElementById('kValue').value);
+                            document.getElementById('bValue').value = calcB();
+                        }
+
+                    };
+                    document.getElementById('dValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            dValue = parseFloat(document.getElementById('dValue').value);
+                            document.getElementById('vValue').value = calcV();
+                        }
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            kValue = parseFloat(document.getElementById('dValue').value);
+                            document.getElementById('kValue').value = calcK();
+                        }
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            kValue = parseFloat(document.getElementById('dValue').value);
+                            document.getElementById('wValue').value = calcW();
+                        }
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            kValue = parseFloat(document.getElementById('dValue').value);
+                            document.getElementById('aValue').value = calcA();
+                        }
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            kValue = parseFloat(document.getElementById('dValue').value);
+                            document.getElementById('bValue').value = calcB();
+                        }
+
+                    };
+                    document.getElementById('wValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            dValue = parseFloat(document.getElementById('wValue').value);
+                            document.getElementById('vValue').value = calcV();
+                        }
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            kValue = parseFloat(document.getElementById('wValue').value);
+                            document.getElementById('kValue').value = calcK();
+                        }
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            kValue = parseFloat(document.getElementById('wValue').value);
+                            document.getElementById('dValue').value = calcD();
+                        }
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            kValue = parseFloat(document.getElementById('wValue').value);
+                            document.getElementById('aValue').value = calcA();
+                        }
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            kValue = parseFloat(document.getElementById('wValue').value);
+                            document.getElementById('bValue').value = calcB();
+                        }
+
+                    };
+
+                    document.getElementById('aValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            dValue = parseFloat(document.getElementById('aValue').value);
+                            document.getElementById('vValue').value = calcV();
+                        }
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            kValue = parseFloat(document.getElementById('aValue').value);
+                            document.getElementById('kValue').value = calcK();
+                        }
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            kValue = parseFloat(document.getElementById('aValue').value);
+                            document.getElementById('dValue').value = calcD();
+                        }
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            kValue = parseFloat(document.getElementById('aValue').value);
+                            document.getElementById('wValue').value = calcW();
+                        }
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            kValue = parseFloat(document.getElementById('aValue').value);
+                            document.getElementById('bValue').value = calcB();
+                        }
+
+                    };
+
+                    document.getElementById('bValue').onchange = function () {
+
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            dValue = parseFloat(document.getElementById('bValue').value);
+                            document.getElementById('vValue').value = calcV();
+                        }
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            kValue = parseFloat(document.getElementById('bValue').value);
+                            document.getElementById('kValue').value = calcK();
+                        }
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            kValue = parseFloat(document.getElementById('bValue').value);
+                            document.getElementById('dValue').value = calcD();
+                        }
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            kValue = parseFloat(document.getElementById('bValue').value);
+                            document.getElementById('wValue').value = calcW();
+                        }
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            kValue = parseFloat(document.getElementById('bValue').value);
+                            document.getElementById('aValue').value = calcA();
+                        }
+
+                    };
+
+                    function calcV() {
+                        document.getElementById('vValue').setAttribute('disabled', 'disabled');
+
+                        //vValue = parseFloat(document.getElementById('vValue').value);
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        wValue = parseFloat(document.getElementById('wValue').value);
+                        aValue = parseFloat(document.getElementById('aValue').value); //is altered to (b)
+                        bValue = parseFloat(document.getElementById('bValue').value); //is altered to (n)
+
+                        vibrationCalc = kValue * Math.pow(dValue / Math.pow(wValue, bValue), aValue);
+
+                        //document.getElementById('vValue').innerHTML = vibrationCalc.toFixed(2);
+                        if (document.getElementById('calcRadio1').checked === true) {
+                            document.getElementById('kValue').disabled = false;
+                            document.getElementById('dValue').disabled = false;
+                            document.getElementById('wValue').disabled = false;
+                            document.getElementById('aValue').disabled = false; //is altered to (b)
+                            document.getElementById('bValue').disabled = false; //is altered to (n)
+                        }
+                        return vibrationCalc.toFixed(2);
+                    }
+
+                    function calcK() {
+                        document.getElementById('kValue').setAttribute('disabled', 'disabled');
+
+                        vValue = parseFloat(document.getElementById('vValue').value);
+                        //kValue = parseFloat(document.getElementById('kValue').value); 
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        wValue = parseFloat(document.getElementById('wValue').value);
+                        aValue = parseFloat(document.getElementById('aValue').value); //is altered to (b)
+                        bValue = parseFloat(document.getElementById('bValue').value); //is altered to (n)
+
+                        kConstantCalc = vValue / Math.pow(dValue / Math.pow(wValue, bValue), aValue);
+
+                        //document.getElementById('kValue').innerHTML = vibrationCalc.toFixed(2);
+                        if (document.getElementById('calcRadio2').checked === true) {
+                            document.getElementById('vValue').disabled = false;
+                            document.getElementById('dValue').disabled = false;
+                            document.getElementById('wValue').disabled = false;
+                            document.getElementById('aValue').disabled = false; //is altered to (b)
+                            document.getElementById('bValue').disabled = false;     //is altered to (n)
+                        }
+                        return kConstantCalc.toFixed(2);
+                    }
+
+                    function calcD() {
+                        document.getElementById('dValue').setAttribute('disabled', 'disabled');
+
+                        vValue = parseFloat(document.getElementById('vValue').value);
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        //dValue = parseFloat(document.getElementById('dValue').value);  
+                        wValue = parseFloat(document.getElementById('wValue').value);
+                        aValue = parseFloat(document.getElementById('aValue').value); //is altered to (b)
+                        bValue = parseFloat(document.getElementById('bValue').value);   //is altered to (n)
+
+                        distanceCalc = Math.pow(wValue, bValue) * Math.pow((vValue / kValue), (1 / aValue));
+
+                        //document.getElementById('dValue').innerHTML = distanceCalc.toFixed(2);
+                        if (document.getElementById('calcRadio3').checked === true) {
+                            document.getElementById('vValue').disabled = false;
+                            document.getElementById('kValue').disabled = false;
+                            document.getElementById('wValue').disabled = false;
+                            document.getElementById('aValue').disabled = false; //is altered to (b)
+                            document.getElementById('bValue').disabled = false; //is altered to (n)
+                        }
+                        return distanceCalc.toFixed(2);
+                    }
+
+                    function calcW() {
+                        document.getElementById('wValue').setAttribute('disabled', 'disabled');
+
+                        vValue = parseFloat(document.getElementById('vValue').value);
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        //wValue = parseFloat(document.getElementById('wValue').value); 
+                        aValue = parseFloat(document.getElementById('aValue').value);
+                        bValue = parseFloat(document.getElementById('bValue').value);
+
+                        weightCalc = Math.pow(dValue / Math.pow((vValue / kValue), (1 / aValue)), (1 / bValue));
+                        //document.getElementById('wValue').innerHTML = weightCalc.toFixed(2);
+                        if (document.getElementById('calcRadio4').checked === true) {
+                            document.getElementById('vValue').disabled = false;
+                            document.getElementById('kValue').disabled = false;
+                            document.getElementById('dValue').disabled = false;
+                            document.getElementById('aValue').disabled = false;
+                            document.getElementById('bValue').disabled = false;
+                        }
+                        return weightCalc.toFixed(2);
+                    }
+
+                    function calcA() {
+                        document.getElementById('aValue').setAttribute('disabled', 'disabled');
+
+                        vValue = parseFloat(document.getElementById('vValue').value);
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        wValue = parseFloat(document.getElementById('wValue').value);
+                        //aValue = parseFloat(document.getElementById('aValue').value); 
+                        bValue = parseFloat(document.getElementById('bValue').value); //is altered to (n)
+
+                        attenuationCalc = Math.log(vValue / kValue) / Math.log(dValue / Math.pow(wValue, bValue));
+                        //document.getElementById('aValue').innerHTML = attenuationCalc.toFixed(2);
+                        if (document.getElementById('calcRadio5').checked === true) {
+                            document.getElementById('vValue').disabled = false;
+                            document.getElementById('kValue').disabled = false;
+                            document.getElementById('dValue').disabled = false;
+                            document.getElementById('wValue').disabled = false; //is altered to (b)
+                            document.getElementById('bValue').disabled = false; //is altered to (n)
+                        }
+                        return attenuationCalc.toFixed(3);
+                    }
+
+                    function calcB() {
+                        document.getElementById('bValue').setAttribute('disabled', 'disabled');
+
+                        vValue = parseFloat(document.getElementById('vValue').value);
+                        kValue = parseFloat(document.getElementById('kValue').value);
+                        dValue = parseFloat(document.getElementById('dValue').value);
+                        wValue = parseFloat(document.getElementById('wValue').value);
+                        aValue = parseFloat(document.getElementById('aValue').value);//is altered to (b)
+                        //bValue = parseFloat(document.getElementById('bValue').value); 
+
+                        betaCalc = Math.log(dValue * Math.pow((kValue / vValue), (1 / aValue))) / Math.log(wValue);
+                        //document.getElementById('bValue').innerHTML = vibrationCalc.toFixed(2);
+                        if (document.getElementById('calcRadio6').checked === true) {
+                            document.getElementById('vValue').disabled = false;
+                            document.getElementById('kValue').disabled = false;
+                            document.getElementById('dValue').disabled = false;
+                            document.getElementById('wValue').disabled = false;
+                            document.getElementById('aValue').disabled = false; //is altered to (b)
+                        }
+                        return betaCalc.toFixed(4);
+                    }
+
+                    function email() {
+                        //Email Body Text Goes Here   
+                        var line01 = "%0D%0A%0D%0AVibration%20PPV%20(mm/s)%20=%20" + calcV();
+                        var line02 = "%0D%0ASite%20K%20Constant%20(K)%20=%20" + kValue;
+                        var line03 = "%0D%0ADistance (m) = " + dValue;
+                        var line04 = "%0D%0AWeight Influencing Charge MIC (kg) = " + wValue;
+                        var line05 = "%0D%0ASite Attenuation Value = " + aValue;
+                        var line06 = "%0D%0ASite n Value = " + bValue;
+                        var line07 = "%0D%0AAddition Comments = " + document.getElementById('additionalComments')
+                            .value + "%0D%0A";
+
+                        var line =
+                            "%0D%0A%0D%0A%0D%0AThis%20calculator%20was%20first%20published%20as%20VibeSD%20on%20the%20Apple%20App%20Store%20as%20a%20native%20iPhone%20and%20iPad%20app%20in%202010.%20Now%20re-coded%20for%20you%20to%20enjoy.%0D%0ABrent%20Buffham.%202021";
+
+                        window.location.href =
+                            'mailto:?subject=Vibration%20Calculations%20and%20Statistics&body=Vibration%20Calculations%20and%20Statistics' +
+                            line01 + line02 + line03 + line04 + line05 + line06 + line07 + line;
+
+                    }
+                </script>
+                <br>
+
+                <input type="button" value="SEND CALCS BY EMAIL" onClick="email()">
+                <br><br><br>
+            <div style="text-align: center; font-family: Helvetica;" <br>
+                <svg xmlns="http://www.w3.org/2000/svg" width="auto" height="200" viewBox="0 0 80 100" fill="#ffffff">
+                    <path
+                        d="m82.1,55.74c.1-.25.25-.38.45-.38.1,0,.18.03.23.08.05.05.11.08.18.08.94,0,1.69-2.39,2.22-7.18.37-3.35.56-6.3.56-8.85,0-8.09-.54-13.96-1.62-17.59-.07-.25-.37-1.04-.91-2.37-.54-1.33-.81-2.05-.81-2.16,0-1.01.61-1.51,1.82-1.51.61,0,1.28,1.37,2.02,4.1,1.45,5.18,2.17,10.94,2.17,17.27,0,2.99-.37,6.64-1.11,10.95-.88,5.22-1.94,8.53-3.18,9.93-.13.18-.3.27-.51.27-1.01,0-1.52-.88-1.52-2.64Z" />
+                    <path
+                        d="m47.58,36.31c0-6.3.86-11.78,2.58-16.46.71-1.91,1.35-2.86,1.92-2.86.3,0,1.1.31,2.38.92v.97c-2.59.93-3.89,5.99-3.89,15.16,0,3.49.18,7.07.55,10.74.47,5.18,1.16,8.4,2.1,9.66.33.43.75.72,1.25.86v.92c0,.36-.21.7-.63,1.03-.42.32-.8.49-1.14.49-.37,0-.64-.04-.81-.11-1.45-1.73-2.58-5.11-3.39-10.14-.61-3.88-.91-7.61-.91-11.17Z" />
+                    <path
+                        d="m61.02,38.65c-.07.11-.17.16-.31.16-.07,0-.12-.01-.15-.03-.03-.02-.07-.03-.12-.03-.63,0-1.13,1.01-1.49,3.02-.25,1.41-.37,2.65-.37,3.73,0,3.41.36,5.88,1.09,7.41.04.11.25.44.61,1,.36.56.54.86.54.91,0,.42-.41.64-1.22.64-.41,0-.86-.58-1.36-1.73-.97-2.18-1.46-4.6-1.46-7.27,0-1.26.25-2.79.75-4.61.59-2.2,1.3-3.59,2.14-4.18.09-.08.2-.11.34-.11.68,0,1.02.37,1.02,1.11Z" />
+                    <path
+                        d="m78.67,46.83c0,2.65-.58,4.96-1.73,6.93-.48.8-.91,1.2-1.29,1.2-.2,0-.74-.13-1.6-.39v-.41c1.74-.39,2.61-2.52,2.61-6.39,0-1.47-.12-2.98-.37-4.52-.31-2.18-.78-3.54-1.41-4.07-.22-.18-.5-.3-.84-.36v-.39c0-.15.14-.3.42-.43.28-.14.54-.2.76-.2.25,0,.43.02.54.05.97.73,1.73,2.15,2.27,4.27.41,1.64.61,3.2.61,4.7Z" />
+                    <path
+                        d="m61.08,44.27c0-.58.05-.96.15-1.15s.3-.29.6-.29c.4,0,.67.23.82.67.15.45.35,1.6.59,3.44.32,2.5.82,3.75,1.5,3.75.36,0,.71-.42,1.05-1.26.34-.84.63-2.03.87-3.57.18-1.26.33-2.07.46-2.44.13-.37.32-.56.58-.56.02,0,.05,0,.1.02.05.01.09.02.14.02.32.04.55.2.69.48.14.28.26.83.36,1.65.16,1.24.4,2.37.72,3.39.32,1.02.6,1.53.84,1.53.44,0,.81-.41,1.11-1.23.3-.82.45-1.83.45-3.03,0-1.02.03-1.67.1-1.96.07-.29.23-.44.5-.44.14,0,.25.01.33.03.36.04.6.18.74.42.13.24.21.73.25,1.47.02.16.03.39.03.69,0,1.66-.36,3.08-1.09,4.26-.73,1.18-1.54,1.77-2.45,1.77-.76,0-1.41-.44-1.95-1.32-.36-.6-.61-.9-.75-.9-.02,0-.03.02-.03.06,0,.26-.33.76-.99,1.5-.6.68-1.33,1.02-2.19,1.02-.72,0-1.31-.26-1.77-.78-.38-.44-.77-1.46-1.16-3.04-.39-1.59-.6-2.98-.61-4.19Z" />
+                    <path d="m80.34,32.62c-1.38.05-5.49.07-12.31.07s-10.94-.02-12.34-.07c-1.4-.05-2.11-.19-2.11-.44,0-.21.3-.35.91-.44.6-.09,1.88-.17,3.83-.26,3.51-.11,6.75-.16,9.71-.16s6.14.05,9.65.16c1.95.08,3.23.17,3.83.26.6.09.91.24.91.44,0,.25-.69.39-2.08.44Z" />
+                    <path
+                        d="m69.51,14.94c.16-.2.5-.3,1.02-.3.2,0,.32.04.36.12,0,.02,0,.34.03.96.02.62.05,1.54.09,2.75.04,1.21.08,2.38.12,3.52.06,1.98.09,3.46.09,4.44,0,1.08-.04,1.81-.12,2.19-.08.38-.22.61-.42.69-.16.04-.31.06-.45.06-.32,0-.56-.07-.72-.21-.14-.12-.3-.18-.48-.18s-.43.11-.75.33c-.52.38-1.19.57-2.01.57-1.14,0-2.03-.35-2.67-1.05-.42-.44-.69-.89-.79-1.35-.11-.46-.17-1.33-.17-2.61,0-1.7.23-2.97.67-3.83.45-.85,1.22-1.42,2.29-1.72.36-.12.66-.18.9-.18.42,0,.93.23,1.53.69l1.2.87v-2.76c0-1.86.09-2.86.27-3Zm-1.98,6.72c-.54-.36-.97-.54-1.29-.54s-.68.21-1.08.63c-.58.66-.87,1.71-.87,3.15,0,.78.1,1.48.31,2.1.21.62.5,1,.89,1.14.16.04.29.06.39.06.46,0,.98-.2,1.55-.6.57-.4.98-.88,1.24-1.44.22-.44.33-.92.33-1.44,0-1.34-.49-2.36-1.47-3.06Z" />
+                    <path
+                        d="m78.36,37.21v-.5c0-.54.03-.88.09-1.02.06-.14.18-.21.38-.21.14,0,.28.04.42.14.14.09.22.2.26.33.08.24.16.36.25.36s.25-.08.47-.23c.32-.22.69-.32,1.09-.32.71,0,1.34.34,1.89,1.03.55.68.83,1.51.83,2.48,0,1.32-.27,1.98-.8,1.98-.22,0-.36-.08-.41-.24s-.08-.56-.08-1.2c0-.83-.12-1.51-.37-2.06-.25-.55-.55-.82-.91-.82s-.66.17-.85.51c-.19.34-.38.99-.54,1.94-.14.74-.26,1.22-.36,1.43-.1.21-.25.31-.46.31-.58,0-.88-1.3-.89-3.91Z" />
+                    <path
+                        d="m89.67,13.16c.08-.2.25-.31.51-.31.01,0,.03,0,.05,0,.02,0,.04,0,.05,0,.16.02.27.1.33.23s.08.39.08.78c0,.13-.01.58-.04,1.35l-.06,2.29,1.12-.34c.49-.16.96-.23,1.4-.23.8,0,1.43.25,1.9.76.47.5.7,1.2.7,2.09,0,.44-.05.77-.14.96-.1.2-.31.42-.65.68-.7.53-1.58.79-2.64.79-.39,0-.74-.04-1.04-.13-.27-.07-.47-.11-.59-.11-.19,0-.31.12-.37.36-.04.11-.1.2-.19.28-.09.08-.17.12-.25.12h-.02l-.04-.02c-.22-.08-.33-1.31-.33-3.69v-.95c.03-2.94.1-4.58.22-4.91Zm4.41,5.18c-.2-.19-.56-.29-1.08-.29-.7,0-1.22.14-1.54.43-.19.17-.37.47-.53.91-.16.44-.24.81-.24,1.11,0,.18.03.29.08.34.14.1.68.14,1.65.14.58,0,1-.03,1.26-.09.26-.06.45-.19.59-.38.18-.2.26-.5.26-.88,0-.53-.15-.96-.45-1.3Z" />
+                    <path
+                        d="m25.47,36.81c0,.07-.01.17-.04.32s-.04.24-.04.29c-.24.07-.37.1-.39.1-.06,0-.18-.05-.36-.14s-.3-.14-.33-.14c-.5-.17-1.86-.25-4.08-.25-.88,0-1.58.04-2.12.13-.17.03-.49.14-.98.33-.48.19-.75.28-.81.28-.13,0-.28-.12-.45-.37-.17-.25-.25-.43-.25-.55v-.66c1.36-.08,2.71-.16,4.05-.23,1.64-.1,3-.15,4.08-.15.39,0,.78.09,1.16.27.38.18.57.44.57.78Zm0,3.59c-5.33.25-8.06.38-8.21.38-1.1,0-1.65-.26-1.65-.78,0-.07.01-.17.04-.31.03-.14.05-.24.07-.29l.36-.1c.17,0,.42.02.75.05.34.03.59.05.75.05.39,0,.99-.03,1.79-.1s1.41-.1,1.82-.1c.2,0,.51.02.91.05.4.03.69.05.88.05.24,0,.58-.06,1.01-.19.43-.13.75-.19.98-.19.13,0,.25.1.35.31.1.2.15.37.15.51v.66Z" />
+                    <path
+                        d="m30.57,26.24c.08-.37.36-.56.84-.56.13,0,.23.01.28.04.4.08.67.43.82,1.06.15.63.27,1.98.38,4.06l.28,4.92,2.52-2.4c1.41-1.28,2.55-2.53,3.4-3.76.59-.88,1.29-1.32,2.12-1.32.51,0,.76.23.76.68s-.49,1.37-1.48,2.76c-.99,1.39-1.95,2.52-2.88,3.4l-1.36,1.16,2,2.04c.93.99,1.7,2.19,2.3,3.6.6,1.41.9,2.72.9,3.92,0,.69-.25,1.04-.76,1.04-.19,0-.33-.01-.44-.04-.45-.05-.79-.23-1-.52-.21-.29-.39-.8-.52-1.52-.29-1.89-.85-3.34-1.68-4.34-.83-1-1.85-1.5-3.08-1.5-.53,0-.93.53-1.18,1.58-.25,1.05-.45,3.01-.58,5.86-.05,1.28-.15,2.1-.28,2.46-.13.36-.43.58-.88.66-.05,0-.11,0-.16.02-.05.01-.09.02-.12.02-.16,0-.28-.05-.36-.14-.08-.09-.15-.29-.2-.6-.05-.31-.09-.73-.12-1.28-.03-.55-.04-1.29-.04-2.22,0-.51.03-2.84.08-7,.16-7.73.31-11.76.44-12.08Z" />
+                    <path
+                        d="m2.24,28.4c.21-.48.48-.72.8-.72s.65.21,1,.64c.37.37,1.2,2.91,2.48,7.6,1.28,4.48,2.07,6.72,2.36,6.72.24,0,.95-2.45,2.12-7.36,1.07-4.69,1.79-7.17,2.16-7.44.11-.05.21-.08.32-.08.35,0,.64.12.88.36.21.16.32.49.32,1,0,.77-.39,2.79-1.16,6.04-.93,4.03-1.8,6.89-2.6,8.6-.8,1.71-1.65,2.56-2.56,2.56-.32,0-.57-.04-.74-.12-.17-.08-.38-.35-.62-.82-.24-.47-.47-1.05-.68-1.74-.21-.69-.55-1.81-1-3.36-.35-1.2-.83-2.83-1.44-4.9-.61-2.07-.99-3.31-1.12-3.74-.37-1.17-.56-2.12-.56-2.84,0-.21.01-.35.04-.4Z" />
+                </svg>
+                <br>
+                <br>
+                <a class="button-3" href="Vibration_Calculator.zip" download>Download JAVA .jar file</a><br><br>
+                <a class="button-2" href="https://www.saiglobal.com/PDFTemp/Previews/OSH/as/as2000/2100/2187.2-2006.pdf">PDF link to the AS2187.2</a><br><br>
+                <font size="1">
+                    This calculator was first published as "VibeSD" on the Apple iOS App Store as a native iPhone and iPad app in 2010. The publisher was Chin-Apse Pty. Ltd. This is app was something of great use to many people. It is a simple calculator of the Scaled Distance
+                    Vibration formula in AS2187.2 Appendix J of the Australian Standards. Modern browsers support HTML and CSS better now, as such the app that died on the Apple Store can now live again. Created code is in HTML/JS/CSS.
+                    <br> Thank you.
+                    <br><br> Brent Buffham &#169; 2021.
+                </font><br>
+                <br>
+
+                <a href="https://www.buymeacoffee.com/BrentBuffham">
+                    <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
+                </a>
+                <br><br>
+
+                </p>
+        </form>
+    </body>
