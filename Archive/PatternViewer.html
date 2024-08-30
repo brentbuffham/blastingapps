@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pattern Viewer</title>
+    <meta name="viewport" content="width=device-width, intial-scale=1">
+</head>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NKJ7R9CK09"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-NKJ7R9CK09');
+</script>
+
+<body bgcolor="#000000" text="white">
+    <style>
+        /* Style for file input button */
+        
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 10px;
+            padding: 0px;
+            background-color: black;
+        }
+        
+        .p1 {
+            font-family: 'Helvetica', monospace;
+            color: white;
+        }
+        
+        input[type="file"] {
+            background-color: #294db1;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            height: 25px;
+            width: calc(100% - 62px);
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        /* Style for zoom in/out/reset buttons */
+        
+        button[id="zoomInButton"] {
+            background-color: #4CAF50;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        /* Style for zoom in button */
+        
+        button[id="zoomOutButton"] {
+            background-color: #af5c4c;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        
+        button[id="resetZoomButton"] {
+            background-color: #aaaf4c;
+            border-radius: 10px;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        
+        .p1 {
+            font-family: 'Helvetica', monospace;
+            color: white;
+        }
+        
+        .button-1 {
+            background-color: firebrick;
+            border-radius: 10px;
+            border-style: none;
+            box-sizing: border-box;
+            color: #FFFFFF;
+            cursor: pointer;
+            display: inline-block;
+            /*font-family: "Haas Grot Text R Web", "Helvetica Neue", Helvetica, Arial, sans-serif; */
+            font-size: 20px;
+            font-weight: 500;
+            height: 40px;
+            width: calc(100% - 20px);
+            line-height: 20px;
+            list-style: none;
+            margin: 0;
+            outline: none;
+            padding: 10px 16px;
+            position: relative;
+            text-align: center;
+            text-decoration: none;
+            transition: color 100ms;
+            vertical-align: baseline;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        
+        .button-1:hover,
+        .button-1:focus {
+            background-color: red;
+        }
+        
+        canvas {
+            border: 1px solid white;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+    <p class="p1">
+        <b>
+        <font size="3">HTML Pattern Viewer</font>
+    </b><br>
+        <font size="1"><b></b>Created by Brent Buffham &#169; 2023 - Accepts a CSV file of ID, X, Y, Z<b></font>
+        </i>
+        <br>
+        <a class="button-1" href="index.html">Go Back...</a>
+        <br>
+        <input type="file" id="fileInput" accept=".csv">
+        <br>
+        <canvas id="canvas" ></canvas>
+        <br>
+        <button id="zoomInButton">Zoom In</button>
+        <button id="zoomOutButton">Zoom Out</button>
+        <button id="resetZoomButton">Reset Zoom</button>
+
+        <script>
+            const canvas = document.getElementById('canvas');
+            const padding = 20; // add 20 pixels of padding
+            canvas.width = window.innerWidth - padding * 2; // subtract twice the padding from the window width
+            canvas.height = window.innerHeight - padding * 12; // subtract twice the padding from the window height
+            console.log('Canvas dimensions:', canvas.width, canvas.height);
+            const ctx = canvas.getContext('2d');
+            let scale = 5; // adjust the scale to fit the points in the canvas
+            let points = [];
+
+            let currentScale = scale; // declare a variable to store the current scale
+
+
+
+            document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+            document.getElementById('zoomInButton').addEventListener('click', zoomIn);
+            document.getElementById('zoomOutButton').addEventListener('click', zoomOut);
+            document.getElementById('resetZoomButton').addEventListener('click', resetZoom);
+
+            let centroidX = 0;
+            let centroidY = 0;
+
+            // Declare variables to track the current mouse position and whether the mouse is being dragged
+            let isDragging = false;
+            let lastMouseX, lastMouseY;
+
+            // Add event listeners for mouse down, move, and up events
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', handleMouseUp);
+
+            let isTouchDragging = false;
+            let touchStartX, touchStartY;
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+
+            function handleMouseDown(event) {
+                isDragging = true;
+                lastMouseX = event.clientX;
+                lastMouseY = event.clientY;
+            }
+
+            function handleMouseMove(event) {
+                if (isDragging) {
+                    let deltaX, deltaY;
+
+                    deltaX = event.clientX - lastMouseX;
+                    deltaY = event.clientY - lastMouseY;
+                    lastMouseX = event.clientX;
+                    lastMouseY = event.clientY;
+                    // Adjust the centroid of the points by the amount the mouse moved
+                    centroidX -= deltaX / currentScale;
+                    centroidY += deltaY / currentScale;
+
+                    drawPoints(points);
+                }
+            }
+
+            function handleMouseUp(event) {
+                isDragging = false;
+            }
+
+            function handleTouchStart(event) {
+                if (event.touches.length !== 1) {
+                    return;
+                }
+                isTouchDragging = true;
+                touchStartX = event.touches[0].clientX;
+                touchStartY = event.touches[0].clientY;
+            }
+
+            function handleTouchMove(event) {
+                if (!isTouchDragging) {
+                    return;
+                }
+                event.preventDefault();
+                let touchX = event.touches[0].clientX;
+                let touchY = event.touches[0].clientY;
+                let deltaX = touchX - touchStartX;
+                let deltaY = touchY - touchStartY;
+                touchStartX = touchX;
+                touchStartY = touchY;
+                centroidX -= deltaX / currentScale;
+                centroidY += deltaY / currentScale;
+
+                drawPoints(points);
+            }
+
+            function handleTouchEnd(event) {
+                isTouchDragging = false;
+            }
+
+            function handleFileUpload(event) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(event) {
+                    const data = event.target.result;
+                    const points = parseCSV(data);
+                    panX = 0; // reset panning offset
+                    panY = 0; // reset panning offset
+                    // Calculate centroid of points
+                    let sumX = 0;
+                    let sumY = 0;
+                    for (let i = 0; i < points.length; i++) {
+                        sumX += points[i].x;
+                        sumY += points[i].y;
+                    }
+                    centroidX = sumX / points.length;
+                    centroidY = sumY / points.length;
+                    drawPoints(points);
+                }
+
+                reader.readAsText(file);
+                console.log('File uploaded!');
+            }
+
+            function parseCSV(data) {
+                const lines = data.split('\n');
+                //const points = [];
+
+                let minX = Infinity;
+                let minY = Infinity;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const values = lines[i].split(',');
+
+                    if (values.length === 4) { // check if it has the correct number of values
+                        const id = values[0];
+                        const x = parseFloat(values[1]);
+                        const y = parseFloat(values[2]);
+                        const z = parseFloat(values[3]);
+
+                        if (!isNaN(x) && !isNaN(y) && !isNaN(z)) { // check if they are valid numbers
+                            points.push({
+                                id,
+                                x,
+                                y,
+                                z
+                            });
+                            minX = Math.min(minX, x);
+                            minY = Math.min(minY, y);
+                        }
+                    }
+                }
+                console.log(points);
+                return points;
+            }
+
+            function drawPoints(points) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = 'red'; // set the fill color to red
+                ctx.strokeStyle = 'red'; // set the stroke color to red
+
+                console.log('Drawing points:', points);
+
+                for (let i = 0; i < points.length; i++) {
+                    const x = (points[i].x - centroidX) * currentScale + canvas.width / 2; // adjust x position
+                    const y = (-points[i].y + centroidY) * currentScale + canvas.height / 2; // adjust y position
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, 2 * Math.PI);
+
+                    if(currentScale > 15){
+                        ctx.font = "40px Arial";
+                    }                    
+                    else if(currentScale > 10 && currentScale <=15){
+                        ctx.font = "30px Arial";
+                    }
+                    else if(currentScale > 7 && currentScale <=10){
+                        ctx.font = "20px Arial";
+                    }
+                    else if(currentScale <= 7 ){
+                        ctx.font = "10px Arial";
+                    }
+                    ctx.fillStyle = 'cyan';
+                    ctx.fillText(points[i].id, x + 1, y - 5); // display the point id next to it
+                    ctx.fillStyle = 'white';
+                    ctx.fill(); // fill the circle with the fill color
+                    ctx.stroke(); // draw the circle border with the stroke color
+                }
+            }
+
+            function zoomIn() {
+                currentScale += 0.5; // increase the current scale by 0.25
+                drawPoints(points);
+            }
+
+            function zoomOut() {
+                currentScale = Math.max(0.25, currentScale - 1); // decrease the current scale by 0.25, but not below 1
+                drawPoints(points);
+            }
+
+            function resetZoom() {
+                currentScale = scale; // reset the current scale to the original scale
+                console.log('Scale:', currentScale);
+                drawPoints(points);
+            }
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                drawPoints(points);
+            });
+        </script>
+</body>
+
+</html>
