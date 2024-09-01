@@ -214,8 +214,8 @@ const switches = [
 	deleteTextDraw,
 	measuredLengthSwitch,
 	measuredMassSwitch,
-	measuredCommentSwitch
-	//selectionModeButton
+	measuredCommentSwitch,
+	selectionModeButton
 ];
 // Boolean set to False
 function setAllBoolsToFalse() {
@@ -699,7 +699,7 @@ deleteHoleSwitch.addEventListener("change", function() {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		//setSelectionModeToFalse();
 		deleteHoleSwitch.checked = true;
 		isDeletingHole = true;
 		isAddingPattern = false;
@@ -4184,9 +4184,9 @@ function getClickedHole(clickX, clickY) {
 }
 
 function getMultipleClickedHoles(clickX, clickY) {
-	// if (!selectionMode) {
-	// 	return selectedMultipleHoles;
-	// }
+	if (!selectionMode) {
+		return selectedMultipleHoles;
+	}
 
 	const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
 	const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY;
@@ -4226,7 +4226,7 @@ function getMultipleClickedHoles(clickX, clickY) {
 	let angleAverage = 0;
 	let bearingAverage = 0;
 
-	if (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing) {
+	if (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing) {
 		console.log("Selected Multiple Holes: ", selectedMultipleHoles);
 		selectedMultipleHoles.forEach(hole => {
 			// Average the values of the selected holes in the selectedMultipleHoles array
@@ -6334,6 +6334,10 @@ function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, 
 
 		currentRow++;
 	}
+	// Reset the pattern adding state
+	isAddingPattern = false;
+	//make the switch off
+	addPatternSwitch.checked = false;
 	//updateCentroids();
 	resetZoom();
 }
@@ -7196,6 +7200,7 @@ function handleEastingEditClick(event) {
 			}
 		}
 		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+
 		if (multipleClickedHoles.length > 0 && selectionMode) {
 			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
 			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
