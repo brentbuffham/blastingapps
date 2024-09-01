@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20231215 @ 1640 AWST
+// Last Modified: 20240801 @ 1940 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
