@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20231215 @ 1640 AWST
+// Last Modified: 2024 September 8th @ 1250AM AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -67,6 +67,7 @@ let createNewEntity = true; // Flag to create a new entity
 let initialMouseX = 0;
 let initialMouseY = 0;
 let intervalAmount = document.getElementById("intervalSlider").value;
+let firstMovementSize = document.getElementById("firstMovementSlider").value;
 let connectAmount = document.getElementById("connectSlider").value;
 let contourLevel = 0;
 let minX;
@@ -74,6 +75,8 @@ let minY;
 let worldX = null;
 let worldY = null;
 let contourLines = [];
+let contourLinesArray = [];
+let directionArrows = [];
 let epsilon = 1;
 let holeTimes = {};
 let deleteRenumberStart = document.getElementById("deleteRenumberStart").value;
@@ -91,6 +94,7 @@ let isElevationEditing = false;
 let isDisplayingContours = false;
 let isDisplayingSlopeTriangles = false;
 let isDisplayingReliefTriangles = false;
+let isDisplayingDirectionArrows = false;
 let isTypeEditing = false;
 let fixToeLocation = false;
 //drawing tool booleans
@@ -120,7 +124,6 @@ let selectionMode = false; // Selection mode is set to single hole by default
 
 let maxEdgeLength = 15;
 let clickedHole; // Declare clickedHole outside the event listener
-let contourLinesArray = [];
 let timingWindowHolesSelected = [];
 let selectedMultipleHoles = [];
 let isPlaying = false; // To track whether the animation is playing
@@ -237,6 +240,7 @@ function setAllBoolsToFalse() {
 	isDisplayingContours = false;
 	isDisplayingSlopeTriangles = false;
 	isDisplayingReliefTriangles = false;
+	isDisplayingDirectionArrows = false;
 	isTypeEditing = false;
 	isDrawingPoint = false;
 	isDrawingLine = false;
@@ -285,6 +289,7 @@ const option7B = document.getElementById("display7B");
 const option8 = document.getElementById("display8");
 const option8A = document.getElementById("display8A"); //Slope
 const option8B = document.getElementById("display8B"); //Relief
+const option8C = document.getElementById("display8C"); //FirstMovements
 const option9 = document.getElementById("display9");
 const option10 = document.getElementById("display10");
 const option11 = document.getElementById("display11");
@@ -712,7 +717,9 @@ deleteHoleSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	} else {
@@ -727,7 +734,9 @@ deleteHoleSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -748,7 +757,10 @@ addHoleSwitch.addEventListener("change", function() {
 		canvas.addEventListener("touchstart", handleHoleAddingClick);
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
+
 		drawData(points, selectedHole);
 	} else {
 		isAddingHole = false;
@@ -763,7 +775,9 @@ addHoleSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -789,7 +803,9 @@ addPatternSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	} else {
@@ -809,7 +825,9 @@ addPatternSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -1149,7 +1167,9 @@ editEastingSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -1207,7 +1227,9 @@ holeEastingSlider.addEventListener("input", function() {
 	if (points.length > 0) {
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
 	}
 });
 
@@ -1239,7 +1261,9 @@ editNorthingSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -1298,7 +1322,9 @@ holeNorthingSlider.addEventListener("input", function() {
 	if (points.length > 0) {
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
 	}
 });
 
@@ -1328,7 +1354,9 @@ editElevationSwitch.addEventListener("change", function() {
 		if (points.length > 0) {
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		drawData(points, selectedHole);
 	}
@@ -1386,7 +1414,9 @@ holeElevationSlider.addEventListener("input", function() {
 	if (points.length > 0) {
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
 	}
 });
 
@@ -1767,7 +1797,21 @@ const intervalSlider = document.getElementById("intervalSlider");
 intervalSlider.addEventListener("input", function() {
 	intervalAmount = document.getElementById("intervalSlider").value;
 	intervalLabel.textContent = "Interval : " + intervalAmount + "ms";
-	contourLinesArray = recalculateContours(points, deltaX, deltaY);
+	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+	// directionArrows now contains the arrow data for later drawing
+
+	drawData(points, selectedHole);
+});
+// Access the slider element and add an event listener to track changes
+const firstMovementSlider = document.getElementById("firstMovementSlider");
+firstMovementSlider.addEventListener("input", function() {
+	firstMovementSize = document.getElementById("firstMovementSlider").value;
+	firstMovementLabel.textContent = "First Movement Size : " + firstMovementSize;
+	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+	// directionArrows now contains the arrow data for later drawing
+
 	drawData(points, selectedHole);
 });
 // Access the slider element and add an event listener to track changes
@@ -1833,6 +1877,10 @@ option8A.addEventListener("change", function() {
 });
 option8B.addEventListener("change", function() {
 	isDisplayingReliefTriangles = true;
+	drawData(points, selectedHole);
+});
+option8C.addEventListener("change", function() {
+	isDisplayingDirectionArrows = true;
 	drawData(points, selectedHole);
 });
 option9.addEventListener("change", function() {
@@ -2111,7 +2159,10 @@ async function handleFileUpload(event) {
 			centroidX = sumX / points.length;
 			centroidY = sumY / points.length;
 			try {
-				contourLinesArray = recalculateContours(points, deltaX, deltaY); // Recalculate contour lines
+				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+				// directionArrows now contains the arrow data for later drawing
+
 				const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 				drawData(points, selectedHole);
 				countPoints = points.length;
@@ -3427,7 +3478,41 @@ function updateSurfaceTimes(combinedHoleID, time, surfaces, holeTimes, visited =
 	}
 	visited.delete(combinedHoleID);
 }
+// function delaunayContours(contourData, contourLevel, maxEdgeLength) {
+// 	// Filter out points where holeTime is null
+// 	const filteredContourData = contourData.filter(point => point.holeTime !== null);
 
+// 	// Compute Delaunay triangulation
+// 	const delaunay = d3.Delaunay.from(filteredContourData.map(point => [point.x, point.y]));
+// 	const triangles = delaunay.triangles; // Access the triangles property directly
+
+// 	const contourLines = [];
+
+// 	for (let i = 0; i < triangles.length; i += 3) {
+// 		const contourLine = [];
+
+// 		for (let j = 0; j < 3; j++) {
+// 			const p1 = contourData[triangles[i + j]];
+// 			const p2 = contourData[triangles[i + (j + 1) % 3]];
+
+// 			// Calculate distance between p1 and p2
+// 			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+// 			//If the distance is larger than 20 don't draw the line.
+// 			if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
+// 				const point = interpolate(p1, p2, contourLevel);
+// 				contourLine.push(point);
+// 			}
+// 		}
+
+// 		if (contourLine.length === 2) {
+// 			contourLines.push(contourLine);
+// 		}
+// 	}
+
+// 	//console.log(contourLines);
+
+// 	return contourLines;
+// }
 function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 	// Filter out points where holeTime is null
 	const filteredContourData = contourData.filter(point => point.holeTime !== null);
@@ -3437,17 +3522,56 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 	const triangles = delaunay.triangles; // Access the triangles property directly
 
 	const contourLines = [];
+	directionArrows = []; // Initialize an array to store the arrows
 
 	for (let i = 0; i < triangles.length; i += 3) {
 		const contourLine = [];
 
+		const p1 = contourData[triangles[i]];
+		const p2 = contourData[triangles[i + 1]];
+		const p3 = contourData[triangles[i + 2]];
+
+		// Calculate the centroid of the triangle (average of x, y coordinates)
+		const centroidX = (p1.x + p2.x + p3.x) / 3;
+		const centroidY = (p1.y + p2.y + p3.y) / 3;
+
+		// Calculate the vector representing the slope (using Z differences)
+		// We'll calculate two vectors: p1->p2 and p1->p3 to get a slope direction
+		const v1X = p2.x - p1.x;
+		const v1Y = p2.y - p1.y;
+		const v1Z = p2.z - p1.z; // Time difference between p1 and p2
+
+		const v2X = p3.x - p1.x;
+		const v2Y = p3.y - p1.y;
+		const v2Z = p3.z - p1.z; // Time difference between p1 and p3
+
+		// Now we calculate the cross product of these two vectors to get the slope normal
+		const slopeX = v1Y * v2Z - v1Z * v2Y;
+		const slopeY = v1Z * v2X - v1X * v2Z;
+		const slopeZ = v1X * v2Y - v1Y * v2X;
+
+		// Normalize the slope vector (we don't care about the Z component for 2D projection)
+		const slopeLength = Math.sqrt(slopeX * slopeX + slopeY * slopeY);
+		const normSlopeX = slopeX / slopeLength;
+		const normSlopeY = slopeY / slopeLength;
+
+		// Calculate the end point for the arrow based on the normalized slope
+		const arrowLength = 2; // Arrow length
+		const arrowEndX = centroidX - normSlopeX * firstMovementSize;
+		const arrowEndY = centroidY - normSlopeY * firstMovementSize;
+
+		// Store the arrow (start at the centroid, end at the calculated slope direction)
+		directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+
+		// Process the contour lines (unchanged logic)
 		for (let j = 0; j < 3; j++) {
 			const p1 = contourData[triangles[i + j]];
 			const p2 = contourData[triangles[i + (j + 1) % 3]];
 
 			// Calculate distance between p1 and p2
 			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-			//If the distance is larger than 20 don't draw the line.
+
+			// If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
 			if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
 				const point = interpolate(p1, p2, contourLevel);
 				contourLine.push(point);
@@ -3459,9 +3583,11 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 		}
 	}
 
-	//console.log(contourLines);
+	const interval = 1; // Keep every arrow
+	directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
 
-	return contourLines;
+	// Return both contour lines and the newly created arrows
+	return { contourLines, directionArrows };
 }
 
 //NOT IN USE - YET
@@ -3824,6 +3950,50 @@ function drawText(x, y, text, color) {
 	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
 	ctx.fillStyle = color;
 	ctx.fillText(text, x, y);
+}
+
+function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour, connScale) {
+	try {
+		// Set up the arrow parameters
+		var arrowWidth = firstMovementSize / 4 * currentScale; // Width of the arrowhead
+		var arrowLength = 2 * (firstMovementSize / 4) * currentScale; // Length of the arrowhead
+		var tailWidth = arrowWidth * 0.7; // Width of the tail (adjust as needed)
+		const angle = Math.atan2(endY - startY, endX - startX); // Angle of the arrow
+
+		// Set the stroke and fill colors
+		ctx.strokeStyle = strokeColour; // Stroke color (black outline)
+		ctx.fillStyle = fillColour; // Fill color (goldenrod)
+
+		// Begin drawing the arrow as a single path
+		ctx.beginPath();
+
+		// Move to the start point of the arrow
+		ctx.moveTo(startX + tailWidth / 2 * Math.sin(angle), startY - tailWidth / 2 * Math.cos(angle)); // Top-left corner of the tail
+
+		// Draw to the end point of the tail (top-right corner)
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) + tailWidth / 2 * Math.sin(angle), endY - arrowLength * Math.sin(angle) - tailWidth / 2 * Math.cos(angle));
+
+		// Draw the right base of the arrowhead
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
+
+		// Draw the tip of the arrowhead
+		ctx.lineTo(endX, endY);
+
+		// Draw the left base of the arrowhead
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle));
+
+		// Draw back to the bottom-right corner of the tail
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) - tailWidth / 2 * Math.sin(angle), endY - arrowLength * Math.sin(angle) + tailWidth / 2 * Math.cos(angle));
+
+		// Draw to the bottom-left corner of the tail
+		ctx.lineTo(startX - tailWidth / 2 * Math.sin(angle), startY + tailWidth / 2 * Math.cos(angle));
+
+		ctx.closePath();
+		ctx.fill(); // Fill the arrow with color
+		ctx.stroke(); // Outline the arrow with a stroke
+	} catch (error) {
+		console.error("Error while drawing arrow:", error);
+	}
 }
 
 function drawArrow(startX, startY, endX, endY, color, connScale) {
@@ -4458,13 +4628,18 @@ function getClickedHole(clickX, clickY) {
 			}
 		}
 		if (isDisplayingContours) {
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
 		}
 		if (isDisplayingSlopeTriangles) {
 			[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
 		}
 		if (isDisplayingReliefTriangles) {
 			[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+		}
+		if (isDisplayingDirectionArrows) {
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 		}
 		// If no hole is clicked or found within the threshold
 		// Reset only the firstSelectedHole
@@ -4615,7 +4790,10 @@ function handleConnectorClick(event) {
 					points[clickedHoleIndex].colourHexDecimal = getJSColourHex();
 				}
 				fromHoleStore = null;
-				contourLinesArray = recalculateContours(points, deltaX, deltaY);
+				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+				// directionArrows now contains the arrow data for later drawing
+
 				drawData(points, selectedHole);
 			}
 		}
@@ -4636,7 +4814,9 @@ function handleConnectorClick(event) {
 				// Reset the fromHole and exit add connector mode
 				fromHoleStore = null;
 
-				contourLinesArray = recalculateContours(points, deltaX, deltaY); // Recalculate contour lines
+				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+				// directionArrows now contains the arrow data for later drawing
 
 				drawData(points, selectedHole);
 				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
@@ -5022,7 +5202,9 @@ function deleteSelectedHole() {
 		// Recalculate dependent data structures
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
 
 		// Redraw the data
 		drawData(points, null); // Pass null since the selected hole no longer exists
@@ -5058,7 +5240,10 @@ function deleteSelectedPattern() {
 			// Recalculate contour lines
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
+
 			drawData(points, selectedHole);
 		} else {
 			drawData(points, selectedHole);
@@ -5084,7 +5269,10 @@ function deleteSelectedAllPatterns() {
 			// Recalculate contour lines
 			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 			calculateTimes(points);
-			contourLinesArray = recalculateContours(points, deltaX, deltaY);
+			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+			// directionArrows now contains the arrow data for later drawing
+
 			drawData(points, selectedHole);
 		} else {
 			drawData(points, selectedHole);
@@ -7556,16 +7744,185 @@ function handleElevationEditClick(event) {
 	}
 }
 
+// function recalculateContours(points, deltaX, deltaY) {
+// 	try {
+// 		const contourData = [];
+// 		holeTimes = calculateTimes(points);
+// 		timeChart();
+
+// 		// Prepare contour data
+// 		for (let i = 0; i < holeTimes.length; i++) {
+// 			const [entityName, holeID] = holeTimes[i][0].split(":::");
+// 			const time = holeTimes[i][1];
+
+// 			const point = points.find(p => p.entityName === entityName && p.holeID === holeID);
+
+// 			if (point) {
+// 				contourData.push({
+// 					x: point.startXLocation,
+// 					y: point.startYLocation,
+// 					z: time
+// 				});
+// 			}
+// 		}
+
+// 		if (contourData.length === 0) {
+// 			throw new Error("No valid contour data points found.");
+// 		}
+
+// 		const maxHoleTime = Math.max(...contourData.map(point => point.z));
+
+// 		// Initialize directionArrows array to store the arrows
+// 		directionArrows = [];
+
+// 		// Calculate contour lines and store them in contourLinesArray
+// 		contourLinesArray = [];
+// 		let interval = maxHoleTime < 350 ? 25 : maxHoleTime < 700 ? 100 : 250;
+// 		interval = parseInt(intervalAmount);
+
+// 		// Variable to store the previous contour line and the first contour line
+// 		let previousContourLine = null;
+// 		let firstContourLine = null;
+
+// 		// Iterate over contour levels
+// 		for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
+// 			const contourLines = delaunayContours(contourData, contourLevel, maxEdgeLength);
+// 			const epsilon = 1; // Adjust this value to control the level of simplification
+// 			const simplifiedContourLines = contourLines.map(line => simplifyLine(line, epsilon));
+// 			contourLinesArray.push(simplifiedContourLines);
+
+// 			// Handle the first contour line using Method 1
+// 			if (!firstContourLine) {
+// 				firstContourLine = simplifiedContourLines[0]; // Store the first contour line
+
+// 				for (const contourLine of simplifiedContourLines) {
+// 					for (let i = 0; i < contourLine.length - 1; i++) {
+// 						const p1 = contourLine[i];
+// 						const p2 = contourLine[i + 1];
+
+// 						// Calculate distance between points
+// 						//const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+// 						// Skip if p1 and p2 are too close (tiny segment)
+// 						const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+// 						if (distance < 0.01) continue;
+
+// 						// Place arrows every 2 meters along the contour line
+// 						if (distance >= 2) {
+// 							const numArrows = Math.floor(distance / 2);
+
+// 							for (let j = 0; j < numArrows; j++) {
+// 								const t = (j + 0.5) / numArrows; // Position along the contour line
+
+// 								const arrowStartX = p1.x + t * (p2.x - p1.x);
+// 								const arrowStartY = p1.y + t * (p2.y - p1.y);
+
+// 								// Calculate perpendicular direction for the arrow
+// 								let perpX = -(p1.y - p2.y);
+// 								let perpY = p1.x - p2.x;
+
+// 								// Normalize the perpendicular vector
+// 								const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
+// 								perpX /= perpLength;
+// 								perpY /= perpLength;
+
+// 								// Calculate end point of the arrow, proportional shift (25ms)
+// 								const arrowEndX = arrowStartX + perpX * (interval / (interval / 3));
+// 								const arrowEndY = arrowStartY + perpY * (interval / (interval / 3));
+
+// 								// Store the arrow parameters in the directionArrows array
+// 								directionArrows.push([arrowStartX, arrowStartY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+// 							}
+// 						}
+// 					}
+// 				}
+// 			} else {
+// 				// Handle subsequent contour lines using Method 2 (nearest point on previous contour line)
+// 				for (const contourLine of simplifiedContourLines) {
+// 					for (let i = 0; i < contourLine.length - 1; i++) {
+// 						const p1 = contourLine[i];
+// 						const p2 = contourLine[i + 1];
+
+// 						// Calculate the distance between points on the current contour line
+// 						//const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+// 						// Skip if p1 and p2 are too close (tiny segment)
+// 						const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+// 						if (distance < 0.01) continue;
+
+// 						// Place arrows every 2 meters along the contour line
+// 						if (distance >= 2) {
+// 							const numArrows = Math.floor(distance / 2);
+
+// 							for (let j = 0; j < numArrows; j++) {
+// 								const t = (j + 0.5) / numArrows; // Position along the contour line
+
+// 								const arrowStartX = p1.x + t * (p2.x - p1.x);
+// 								const arrowStartY = p1.y + t * (p2.y - p1.y);
+
+// 								// Find the nearest point on the previous contour line
+// 								let nearestPoint = previousContourLine.reduce(
+// 									(nearest, current) => {
+// 										const dist = Math.sqrt(Math.pow(current.x - arrowStartX, 2) + Math.pow(current.y - arrowStartY, 2));
+// 										return dist < nearest.dist ? { point: current, dist: dist } : nearest;
+// 									},
+// 									{ point: null, dist: Infinity }
+// 								).point;
+
+// 								// Handle the case where nearestPoint is null
+// 								if (!nearestPoint) continue;
+
+// 								// Calculate the vector from the current contour line to the previous one
+// 								const dirX = nearestPoint.x - arrowStartX;
+// 								const dirY = nearestPoint.y - arrowStartY;
+
+// 								// Calculate the perpendicular vector to the current contour line (p1, p2)
+// 								let perpX = -(p2.y - p1.y);
+// 								let perpY = p2.x - p1.x;
+
+// 								// Normalize the perpendicular vector
+// 								const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
+// 								perpX /= perpLength;
+// 								perpY /= perpLength;
+
+// 								// Adjust the perpendicular vector to point in the direction of the previous contour line
+// 								const dotProduct = dirX * perpX + dirY * perpY;
+// 								if (dotProduct < 0) {
+// 									// Flip direction if pointing the wrong way
+// 									perpX = -perpX;
+// 									perpY = -perpY;
+// 								}
+
+// 								// Calculate end point of the arrow, proportional shift (25ms)
+// 								const arrowEndX = arrowStartX + perpX * (interval / (interval / 3));
+// 								const arrowEndY = arrowStartY + perpY * (interval / (interval / 3));
+
+// 								// Store the arrow parameters in the directionArrows array
+// 								directionArrows.push([arrowStartX, arrowStartY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+// 							}
+// 						}
+// 					}
+// 				}
+// 			}
+
+// 			// Update previousContourLine for the next iteration, and ensure it's flattened if nested
+// 			previousContourLine = simplifiedContourLines.flat().filter(Boolean); // Avoid null points in contour lines
+// 		}
+
+// 		// Return both contour lines and direction arrows
+// 		return { contourLinesArray, directionArrows };
+// 	} catch (err) {
+// 		console.error(err);
+// 	}
+// }
+
 function recalculateContours(points, deltaX, deltaY) {
 	try {
 		const contourData = [];
 		holeTimes = calculateTimes(points);
-		// Update chart data
 		timeChart();
-		//Plotly.relayout("timeChart", {
-		//	width: newWidthRight - 50
-		//});
 
+		// Prepare contour data
 		for (let i = 0; i < holeTimes.length; i++) {
 			const [entityName, holeID] = holeTimes[i][0].split(":::");
 			const time = holeTimes[i][1];
@@ -7581,33 +7938,32 @@ function recalculateContours(points, deltaX, deltaY) {
 			}
 		}
 
-		// Only proceed if contourData array is not empty
 		if (contourData.length === 0) {
 			throw new Error("No valid contour data points found.");
 		}
 
-		// Find the maximum holeTime value
 		const maxHoleTime = Math.max(...contourData.map(point => point.z));
 
 		// Calculate contour lines and store them in contourLinesArray
 		contourLinesArray = [];
+		directionArrows = [];
 		let interval = maxHoleTime < 350 ? 25 : maxHoleTime < 700 ? 100 : 250;
 		interval = parseInt(intervalAmount);
+
+		// Iterate over contour levels
 		for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
-			const contourLines = delaunayContours(contourData, contourLevel, maxEdgeLength);
+			const { contourLines, directionArrows } = delaunayContours(contourData, contourLevel, maxEdgeLength);
 			const epsilon = 1; // Adjust this value to control the level of simplification
 			const simplifiedContourLines = contourLines.map(line => simplifyLine(line, epsilon));
 			contourLinesArray.push(simplifiedContourLines);
+
+			//console.log("contourLinesArray: ", contourLinesArray);
+			//console.log("directionArrows: ", directionArrows);
 		}
-
-		// Adjust the centroid coordinates based on the delta offset
-		//centroidX += deltaX / currentScale;
-		//centroidY += deltaY / currentScale;
-
-		return contourLinesArray;
+		// Return both contour lines
+		return { contourLinesArray, directionArrows };
 	} catch (err) {
 		console.error(err);
-		// Optionally, handle the error more gracefully here
 	}
 }
 
@@ -8180,6 +8536,25 @@ function drawData(points, selectedHole) {
 		drawReliefLegend(strokeColour);
 	}
 
+	if (document.getElementById("display8C").checked === true) {
+		//console.log("Drawing Direction Arrows");
+		//console.log("First Movement:", directionArrows);
+		connScale = document.getElementById("connSlider").value;
+		for (let i = 0; i < directionArrows.length; i++) {
+			const arrow = directionArrows[i];
+			const startX = (arrow[0] - centroidX) * currentScale + canvas.width / 2;
+			const startY = (-arrow[1] + centroidY) * currentScale + canvas.height / 2;
+			const endX = (arrow[2] - centroidX) * currentScale + canvas.width / 2;
+			const endY = (-arrow[3] + centroidY) * currentScale + canvas.height / 2;
+			const colour = arrow[4];
+			const arrowScale = arrow[5];
+			//console.log("Drawing Arrow:", startX, ", ", startY, ", ", endX, ", ", endY, ", ", colour, ", ", arrowScale);
+			ctx.strokeStyle = colour;
+			ctx.lineWidth = 1;
+			drawDirectionArrow(startX, startY, endX, endY, colour, strokeColour, arrowScale);
+		}
+	}
+
 	if (document.getElementById("display8").checked === true || document.getElementById("display7A").checked === true || document.getElementById("display7B").checked === true) {
 		// NEW CODE - Further performance improvements
 		ctx.lineWidth = 3;
@@ -8528,7 +8903,10 @@ function refreshPoints() {
 		points = parseCSV(csvString, null);
 		//updateCentroids();
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
+
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 
 		drawData(points, selectedHole);
@@ -8537,10 +8915,7 @@ function refreshPoints() {
 		const pointsMap = new Map();
 		for (const point of points) {
 			if (!pointsMap.has(point.entityName)) {
-				pointsMap.set(point.entityName, {
-					entityName: point.entityName,
-					data: []
-				});
+				pointsMap.set(point.entityName, { entityName: point.entityName, data: [] });
 			}
 			pointsMap.get(point.entityName).data.push(point);
 		}
@@ -8569,7 +8944,10 @@ function loadHolesFromLocalStorage() {
 		console.log(points);
 		updateCentroids();
 		calculateTimes(points);
-		contourLinesArray = recalculateContours(points, deltaX, deltaY);
+		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+
+		// directionArrows now contains the arrow data for later drawing
+
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		drawData(points, selectedHole);
 		//console.log the points array in a blob for each entityname
