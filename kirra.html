@@ -410,52 +410,54 @@
 		<!--START CANVAS AND MODE DISPLY BUTTONS-->
 		<div class="canvas-container">
 			<canvas id="canvas"></canvas>
-			<div class="radio-buttons-custom">
-				<input type="radio" id="display1" name="display" value="Hole ID" placeholder="Hole ID" checked>
+			<div class="toggle-buttons-custom">
+				<input type="checkbox" id="display1" name="display" value="Hole ID" placeholder="Hole ID" checked>
 				<label for="display1" class="icon-button" data-content="#" title="Hole ID"></label>
-				<input type="radio" id="display2" name="display" value="Hole Length" placeholder="Hole Length">
+				<input type="checkbox" id="display2" name="display" value="Hole Length" placeholder="Hole Length">
 				<label for="display2" class="icon-button" data-content="|&#8616;|" title="Hole Length"></label>
-				<input type="radio" id="display2A" name="display" value="Hole Diameter" placeholder="Hole Diameter">
+				<input type="checkbox" id="display2A" name="display" value="Hole Diameter" placeholder="Hole Diameter">
 				<label for="display2A" class="icon-button" data-content="|&#10672;|" title="Hole Diameter"></label>
-				<input type="radio" id="display3" name="display" value="Angle" placeholder="Angle">
+				<input type="checkbox" id="display3" name="display" value="Angle" placeholder="Angle">
 				<label for="display3" class="icon-button" data-content="|&#8736;|" title="Hole Angle"></label>
-				<input type="radio" id="display4" name="display" value="Dip" placeholder="Dip">
+				<input type="checkbox" id="display4" name="display" value="Dip" placeholder="Dip">
 				<label for="display4" class="icon-button" data-content="|&#8737;|" title="Hole Dip"></label>
-				<input type="radio" id="display5" name="display" value="Bearing" placeholder="Bearing">
+				<input type="checkbox" id="display5" name="display" value="Bearing" placeholder="Bearing">
 				<label for="display5" class="icon-button" data-content="|&#10227;|" title="Hole Bearing"></label>
-				<input type="radio" id="display5A" name="display" value="Ties" placeholder="Ties">
-				<label for="display5A" class="icon-button" data-content="&#8632;" title="Hole and Ties"></label>
-				<input type="radio" id="display6" name="display" value="Connectors" placeholder="Connectors">
-				<label for="display6" class="icon-button" data-content="&#8633;" title="Delay Value and Ties"></label>
-				<input type="radio" id="display6A" name="display" value="TimesOnly" placeholder="TimesOnly">
+				<input type="checkbox" id="display5A" name="display" value="Ties" placeholder="Ties">
+				<label for="display5A" class="icon-button" data-content="&#8632;" title="Ties"></label>
+				<input type="checkbox" id="display6" name="display" value="Connectors" placeholder="Delay Value">
+				<label for="display6" class="icon-button" data-content="&#8633;" title="Delay Value"></label>
+				<input type="checkbox" id="display6A" name="display" value="TimesOnly" placeholder="TimesOnly">
 				<label for="display6A" class="icon-button" data-content="&#9202;" title="Hole Time"></label>
-				<input type="radio" id="display7" name="display" value="Times" placeholder="Times">
+				<input type="checkbox" id="display7" name="display" value="Times" placeholder="Times">
+				<!-- 
 				<label for="display7" class="icon-button" data-content="&#8986;" title="Hole Time and Ties"></label>
-				<input type="radio" id="display7A" name="display" value="ContoursWithTies" placeholder="Contours With Ties">
+				<input type="checkbox" id="display7A" name="display" value="ContoursWithTies" placeholder="Contours With Ties">
 				<label for="display7A" class="icon-button" data-content="&#10999;T" title="Contours with Ties"></label>
-				<input type="radio" id="display7B" name="display" value="ContoursWithDelay" placeholder="Contours With Delay">
+				<input type="checkbox" id="display7B" name="display" value="ContoursWithDelay" placeholder="Contours With Delay">
 				<label for="display7B" class="icon-button" data-content="&#10999;&#8616;" title="Contours with Delay"></label>
-				<input type="radio" id="display8" name="display" value="Contours" placeholder="Contours">
-				<label for="display8" class="icon-button" data-content="&#10999;|" title="Contours and Times"></label>
-				<input type="radio" id="display8A" name="display" value="Slope" placeholder="slope">
+				-->
+				<input type="checkbox" id="display8" name="display" value="Contours" placeholder="Contours">
+				<label for="display8" class="icon-button" data-content="&#10999;|" title="Contours"></label>
+				<input type="checkbox" id="display8A" name="display" value="Slope" placeholder="slope">
 				<label for="display8A" class="icon-button" data-content="&#9655;" title="Slope"></label>
-				<input type="radio" id="display8B" name="display" value="Relief" placeholder="relief">
+				<input type="checkbox" id="display8B" name="display" value="Relief" placeholder="relief">
 				<label for="display8B" class="icon-button" data-content="&#9654;" title="Relief"></label>
-				<input type="radio" id="display8C" name="display" value="direction" placeholder="direction">
+				<input type="checkbox" id="display8C" name="display" value="direction" placeholder="direction">
 				<label for="display8C" class="icon-button" data-content="&#8694;" title="First Movement"></label>
-				<input type="radio" id="display9" name="display" value="xlocation" placeholder="xlocation">
+				<input type="checkbox" id="display9" name="display" value="xlocation" placeholder="xlocation">
 				<label for="display9" class="icon-button" data-content="&#9395;" title="Hole X Location"></label>
-				<input type="radio" id="display10" name="display" value="ylocation" placeholder="ylocation">
+				<input type="checkbox" id="display10" name="display" value="ylocation" placeholder="ylocation">
 				<label for="display10" class="icon-button" data-content="&#9396;" title="Hole Y Location"></label>
-				<input type="radio" id="display11" name="display" value="zlocation" placeholder="zlocation">
+				<input type="checkbox" id="display11" name="display" value="zlocation" placeholder="zlocation">
 				<label for="display11" class="icon-button" data-content="&#9397;" title="Hole Z Location"></label>
-				<input type="radio" id="display12" name="display" value="holeType" placeholder="holeType">
+				<input type="checkbox" id="display12" name="display" value="holeType" placeholder="holeType">
 				<label for="display12" class="icon-button" data-content="&#9417;" title="Hole Type"></label>
-				<input type="radio" id="display13" name="display" value="measure" placeholder="measure">
+				<input type="checkbox" id="display13" name="display" value="measure" placeholder="measure">
 				<label for="display13" class="icon-button" data-content="{L}" title="Measured Length"></label>
-				<input type="radio" id="display14" name="display" value="mass" placeholder="mass">
+				<input type="checkbox" id="display14" name="display" value="mass" placeholder="mass">
 				<label for="display14" class="icon-button" data-content="{m}" title="Measured Mass"></label>
-				<input type="radio" id="display15" name="display" value="comment" placeholder="comment">
+				<input type="checkbox" id="display15" name="display" value="comment" placeholder="comment">
 				<label for="display15" class="icon-button" data-content="{c}" title="Comment"></label>
 			</div>
 		</div>
