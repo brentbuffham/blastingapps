@@ -864,6 +864,11 @@ label {
   display: none;
 }
 
+/* Hide default radio button */
+.toggle-buttons-custom input[type="checkbox"] {
+  display: none;
+}
+
 /* Style the icon button */
 .icon-button {
   display: inline-block;
@@ -895,6 +900,13 @@ label {
 /* Style the selected (checked) button */
 .radio-buttons-custom input[type="radio"]:checked+.icon-button {
   background-color: red;
+  /* Set the selected color */
+}
+
+/* Style the selected (checked) button */
+.toggle-buttons-custom input[type="checkbox"]:checked+.icon-button {
+  background-color: red;
+  border-color: red;
   /* Set the selected color */
 }
 
