@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 2024 September 8th @ 1250AM AWST
+// Last Modified: 20240917 @ 2204 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -283,9 +283,9 @@ const option5 = document.getElementById("display5");
 const option5A = document.getElementById("display5A");
 const option6 = document.getElementById("display6");
 const option6A = document.getElementById("display6A");
-const option7 = document.getElementById("display7");
-const option7A = document.getElementById("display7A");
-const option7B = document.getElementById("display7B");
+//const option7 = document.getElementById("display7");
+//const option7A = document.getElementById("display7A");
+//const option7B = document.getElementById("display7B");
 const option8 = document.getElementById("display8");
 const option8A = document.getElementById("display8A"); //Slope
 const option8B = document.getElementById("display8B"); //Relief
@@ -1858,7 +1858,7 @@ option6.addEventListener("change", function() {
 option6A.addEventListener("change", function() {
 	drawData(points, selectedHole);
 });
-option7.addEventListener("change", function() {
+/*option7.addEventListener("change", function() {
 	drawData(points, selectedHole);
 });
 option7A.addEventListener("change", function() {
@@ -1867,6 +1867,7 @@ option7A.addEventListener("change", function() {
 option7B.addEventListener("change", function() {
 	drawData(points, selectedHole);
 });
+*/
 option8.addEventListener("change", function() {
 	isDisplayingContours = true;
 	drawData(points, selectedHole);
@@ -3560,9 +3561,13 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 		const arrowEndX = centroidX - normSlopeX * firstMovementSize;
 		const arrowEndY = centroidY - normSlopeY * firstMovementSize;
 
-		// Store the arrow (start at the centroid, end at the calculated slope direction)
-		directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+		// Get the triangle's surface area
+		const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
 
+		if (surfaceArea > 0.2) {
+			// Store the arrow (start at the centroid, end at the calculated slope direction)
+			directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+		}
 		// Process the contour lines (unchanged logic)
 		for (let j = 0; j < 3; j++) {
 			const p1 = contourData[triangles[i + j]];
@@ -3946,10 +3951,19 @@ function drawHexagon(x, y, sideLength, fillColour, strokeColour) {
 	ctx.lineWidth = 5;
 	ctx.stroke(); // draw the hexagon border with the stroke colour
 }
+//Left-align the text
 function drawText(x, y, text, color) {
 	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
 	ctx.fillStyle = color;
 	ctx.fillText(text, x, y);
+}
+// Right-align the text by calculating the text width
+function drawRightAlignedText(x, y, text, color) {
+	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
+	const textWidth = ctx.measureText(text).width;
+	ctx.fillStyle = color;
+	// Draw the text at an x position minus the text width for right alignment
+	drawText(x - textWidth, y, text, color);
 }
 
 function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour, connScale) {
@@ -4628,18 +4642,34 @@ function getClickedHole(clickX, clickY) {
 			}
 		}
 		if (isDisplayingContours) {
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+			try {
+				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+			} catch (error) {
+				console.warn("Error calculating contour lines:", error);
+			}
 
 			// directionArrows now contains the arrow data for later drawing
 		}
 		if (isDisplayingSlopeTriangles) {
-			[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+			try {
+				[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+			} catch (error) {
+				console.warn("Error calculating Delaunay triangles:", error);
+			}
 		}
 		if (isDisplayingReliefTriangles) {
-			[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+			try {
+				[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+			} catch (error) {
+				console.warn("Error calculating Delaunay triangles:", error);
+			}
 		}
 		if (isDisplayingDirectionArrows) {
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+			try {
+				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+			} catch (error) {
+				console.warn("Error calculating contour lines:", error);
+			}
 		}
 		// If no hole is clicked or found within the threshold
 		// Reset only the firstSelectedHole
@@ -8499,15 +8529,36 @@ function drawData(points, selectedHole) {
 	}
 
 	/*** DRAW POINTS ***/
+	//display toggles
+	const holeID_display = document.getElementById("display1").checked; //1
+	const holeLen_display = document.getElementById("display2").checked; //2
+	const holeDia_display = document.getElementById("display2A").checked; //3
+	const holeAng_display = document.getElementById("display3").checked; //4
+	const holeDip_display = document.getElementById("display4").checked; //5
+	const holeBea_display = document.getElementById("display5").checked; //6
+	const connector_display = document.getElementById("display5A").checked; //7
+	const delayValue_display = document.getElementById("display6").checked; //8
+	const initiationTime_display = document.getElementById("display6A").checked; //9
+	//const display7 = document.getElementById("display7").checked; //redundant //10
+	//const display7A = document.getElementById("display7A").checked; //redundant  //11
+	//const display7B = document.getElementById("display7B").checked; //redundant //12
+	const contour_display = document.getElementById("display8").checked; //13
+	const slopeMap_display = document.getElementById("display8A").checked; //14
+	const burdenRelief_display = document.getElementById("display8B").checked; //15
+	const firsMovement_display = document.getElementById("display8C").checked; //16
+	const xValue_display = document.getElementById("display9").checked; //17
+	const yValue_display = document.getElementById("display10").checked; //18
+	const zValue_display = document.getElementById("display11").checked; //19
+	const holeType_display = document.getElementById("display12").checked; //20
+	const measuredLength_display = document.getElementById("display13").checked; //21
+	const measuredMass_display = document.getElementById("display14").checked; //22
+	const measuredComment_display = document.getElementById("display15").checked; //23
 
 	// Set the colors dynamically based on the mode
 	ctx.fillStyle = fillColour;
 	ctx.strokeStyle = strokeColour;
-	if (document.getElementById("display8A").checked === true) {
-		const centroid = {
-			x: centroidX,
-			y: centroidY
-		};
+	if (slopeMap_display === true) {
+		const centroid = { x: centroidX, y: centroidY };
 
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		drawDelauanySlopeMap(resultTriangles, centroid, strokeColour);
@@ -8520,11 +8571,8 @@ function drawData(points, selectedHole) {
 	}
 	ctx.fillStyle = fillColour;
 	ctx.strokeStyle = strokeColour;
-	if (document.getElementById("display8B").checked === true) {
-		const centroid = {
-			x: centroidX,
-			y: centroidY
-		};
+	if (burdenRelief_display === true) {
+		const centroid = { x: centroidX, y: centroidY };
 
 		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 		drawDelauanyBurdenRelief(reliefTriangles, centroid, strokeColour);
@@ -8536,7 +8584,7 @@ function drawData(points, selectedHole) {
 		drawReliefLegend(strokeColour);
 	}
 
-	if (document.getElementById("display8C").checked === true) {
+	if (firsMovement_display === true) {
 		//console.log("Drawing Direction Arrows");
 		//console.log("First Movement:", directionArrows);
 		connScale = document.getElementById("connSlider").value;
@@ -8555,7 +8603,7 @@ function drawData(points, selectedHole) {
 		}
 	}
 
-	if (document.getElementById("display8").checked === true || document.getElementById("display7A").checked === true || document.getElementById("display7B").checked === true) {
+	if (contour_display === true) {
 		// NEW CODE - Further performance improvements
 		ctx.lineWidth = 3;
 
@@ -8623,21 +8671,45 @@ function drawData(points, selectedHole) {
 				const radiusInPixels = toeSizeInMeters * currentScale;
 				drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
 			}
-			if (document.getElementById("display1").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
-			} else if (document.getElementById("display2").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) + parseInt(currentFontSize), parseFloat(points[i].holeLengthCalculated).toFixed(1), depthColour);
-			} else if (document.getElementById("display2A").checked === true) {
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) - 5, parseFloat(points[i].holeDiameter).toFixed(0), "green");
-			} else if (document.getElementById("display3").checked === true) {
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) - 5, parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
-			} else if (document.getElementById("display4").checked === true) {
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) - 5, 90 - parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
-			} else if (document.getElementById("display5").checked === true) {
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) - 5, parseFloat(points[i].holeBearing).toFixed(1), "red");
-			} else if (document.getElementById("display5A").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
+			// Text offset based on hole diameter
+			const textOffset = parseInt(point.holeDiameter / 1000 * holeScale * currentScale);
+			// Right/Left side of the hole
+			const leftSideToe = parseInt(lineEndX) - textOffset;
+			const rightSideToe = parseInt(lineEndX) + textOffset;
+			const leftSideCollar = parseInt(x) - textOffset;
+			const rightSideCollar = parseInt(x) + textOffset;
+			// Top / Middle / Bottom of the hole
+			const topSideToe = parseInt(lineEndY - textOffset /*- parseInt(currentFontSize / 6)*/);
+			const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
+			const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
+			const topSideCollar = parseInt(y - textOffset /*- parseInt(currentFontSize / 6)*/);
+			const middleSideCollar = parseInt(y /*+ textOffset*/ + parseInt(currentFontSize / 2));
+			const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+
+			//Right side of the hole
+			if (holeID_display === true) {
+				drawText(rightSideCollar, topSideCollar, points[i].holeID, textFillColour);
+			}
+			if (holeDia_display === true) {
+				drawText(rightSideCollar, middleSideCollar, parseFloat(points[i].holeDiameter).toFixed(0), "green");
+			}
+			if (holeLen_display === true) {
+				drawText(rightSideCollar, bottomSideCollar, parseFloat(points[i].holeLengthCalculated).toFixed(1), depthColour);
+			}
+			//Left side of the hole
+			if (holeAng_display) {
+				drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
+			}
+			if (holeDip_display) {
+				drawRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
+			}
+			if (holeBea_display) {
+				drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(points[i].holeBearing).toFixed(1), "red");
+			}
+			if (initiationTime_display) {
+				drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
+			}
+			if (connector_display) {
 				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
 				// Find the fromHole using both splitEntityName and splitFromHoleID
 				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
@@ -8659,7 +8731,8 @@ function drawData(points, selectedHole) {
 					}
 				}
 				//console.log(points);
-			} else if (document.getElementById("display6").checked === true || document.getElementById("display7B").checked === true) {
+			}
+			if (delayValue_display) {
 				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
 				// Find the fromHole using both splitEntityName and splitFromHoleID
 				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
@@ -8675,82 +8748,29 @@ function drawData(points, selectedHole) {
 					const connColour = point.colourHexDecimal;
 					const pointDelay = point.timingDelayMilliseconds;
 
-					drawArrow(startX, startY, endX, endY, connColour, connScale);
 					drawArrowDelayText(startX, startY, endX, endY, connColour, pointDelay);
 				}
-			} else if (document.getElementById("display6A").checked === true) {
-				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
-				const startPoint = fromHole;
-				const endPoint = points.find(point => point === points[i]);
-
-				if (startPoint && endPoint) {
-					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const startY = (-startPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-					const endX = (endPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const endY = (-endPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-
-					// Times text
-					ctx.fillStyle = "red";
-					ctx.fillText(parseInt(point.holeTime), parseInt(endX) + 1, parseInt(endY) - 5);
-					//console.log(points);
-				}
-			} else if (document.getElementById("display7").checked === true || document.getElementById("display7A").checked === true) {
-				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
-				const startPoint = fromHole;
-				const endPoint = points.find(point => point === points[i]);
-
-				if (startPoint && endPoint) {
-					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const startY = (-startPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-					const endX = (endPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const endY = (-endPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-
-					const connColour = point.colourHexDecimal;
-					const pointDelay = point.timingDelayMilliseconds;
-
-					drawArrow(startX, startY, endX, endY, connColour, connScale);
-					// Times
-					ctx.fillStyle = "red";
-					ctx.fillText(parseInt(point.holeTime), parseInt(endX) + 1, parseInt(endY) - 5);
-				}
-			} else if (document.getElementById("display8").checked === true) {
-				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
-				const startPoint = fromHole;
-				const endPoint = points.find(point => point === points[i]);
-
-				if (startPoint && endPoint) {
-					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const startY = (-startPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-					const endX = (endPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const endY = (-endPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-
-					// Times text
-					ctx.fillStyle = "red";
-					ctx.fillText(parseInt(points[i].holeTime), parseInt(endX) + 1, parseInt(endY) - 5);
-				}
-			} else if (document.getElementById("display9").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, parseFloat(points[i].startXLocation).toFixed(2), textFillColour);
-			} else if (document.getElementById("display10").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, parseFloat(points[i].startYLocation).toFixed(2), textFillColour);
-			} else if (document.getElementById("display11").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, parseFloat(points[i].startZLocation).toFixed(2), textFillColour);
-			} else if (document.getElementById("display12").checked === true) {
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) - 5, points[i].holeType, "green");
-			} else if (document.getElementById("display13").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) + parseInt(currentFontSize), points[i].measuredLength, "#FF4400");
-			} else if (document.getElementById("display14").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) + parseInt(currentFontSize), points[i].measuredMass, "#FF6600");
-			} else if (document.getElementById("display15").checked === true) {
-				drawText(parseInt(x) + 1, parseInt(y) - 5, points[i].holeID, textFillColour);
-				drawText(parseInt(lineEndX) + 1, parseInt(lineEndY) + parseInt(currentFontSize), points[i].measuredComment, "#FF8800");
+			}
+			if (xValue_display) {
+				drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(points[i].startXLocation).toFixed(2), textFillColour);
+			}
+			if (yValue_display) {
+				drawRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(points[i].startYLocation).toFixed(2), textFillColour);
+			}
+			if (zValue_display) {
+				drawRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(points[i].startZLocation).toFixed(2), textFillColour);
+			}
+			if (holeType_display) {
+				drawText(rightSideCollar, middleSideCollar, points[i].holeType, "green");
+			}
+			if (measuredLength_display) {
+				drawRightAlignedText(leftSideCollar, bottomSideToe, points[i].measuredLength, "#FF4400");
+			}
+			if (measuredMass_display) {
+				drawRightAlignedText(leftSideCollar, topSideToe, points[i].measuredMass, "#FF6600");
+			}
+			if (measuredComment_display) {
+				drawText(rightSideCollar, middleSideCollar, points[i].measuredComment, "#FF8800");
 			}
 
 			if (selectedHole != null && selectedHole == points[i]) {
