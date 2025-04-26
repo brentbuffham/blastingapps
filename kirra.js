@@ -307,6 +307,154 @@ canvas.addEventListener("touchstart", handleTouchStart);
 canvas.addEventListener("touchmove", handleTouchMove);
 canvas.addEventListener("touchend", handleTouchEnd);
 
+// Event listener for the language dropdown
+document.getElementById("languageSelect").addEventListener("change", function () {
+    const selectedLanguage = this.value;
+    updateTranslations(selectedLanguage);
+});
+
+// Function to update translations
+function updateTranslations(language) {
+    // Use the inline translations object
+    const langTranslations = translations[language]?.translation;
+
+    if (langTranslations) {
+	// Update the text content of elements in the DOM
+		document.querySelector("title").textContent = langTranslations.title;
+		document.querySelector("#helpButton").title = langTranslations.help_button;
+		document.querySelector("#zoomInButton").textContent = langTranslations.zoom_in_button;
+		document.querySelector("#zoomOutButton").textContent = langTranslations.zoom_out_button;
+		document.querySelector("#resetZoomButton").textContent = langTranslations.reset_zoom_button;
+		document.querySelector("#buttonGoBack").textContent = langTranslations.go_back_button;
+		document.querySelector(".sun-icon").textContent = langTranslations.dark_mode_sun;
+		document.querySelector(".moon-icon").textContent = langTranslations.dark_mode_moon;
+		document.querySelector("#fileInput").placeholder = langTranslations.file_input_placeholder;
+		document.querySelector("#plusorminusHolesAcc span").textContent = langTranslations.plus_minus_holes;
+		document.querySelector("#addPatternLabel").textContent = langTranslations.add_pattern_label;
+		document.querySelector("#addHoleLabel").textContent = langTranslations.add_hole_label;
+		document.querySelector("#deleteHoleLabel").textContent = langTranslations.delete_label;
+		document.querySelector("#deleteHoleButton").textContent = langTranslations.delete_hole_button;
+		document.querySelector("#deletePatternButton").textContent = langTranslations.delete_pattern_button;
+		document.querySelector("#deleteAllPatternsButton").textContent = langTranslations.delete_all_patterns_button;
+		document.querySelector("label[for='renumberHoles']").textContent = langTranslations.renumber_holes_label;
+		document.querySelector("label[for='deleteRenumberStart']").textContent = langTranslations.delete_renumber_start_label;
+		document.querySelector("#editHolesAcc").textContent = langTranslations.edit_holes;
+		document.querySelector("#editBlastNameLabel").textContent = langTranslations.edit_blast_name_label;
+		document.querySelector("#editLengthPopupLabel").textContent = langTranslations.edit_length_popup_label;
+		document.querySelector("#editHoleTypePopupLabel").textContent = langTranslations.edit_hole_type_popup_label;
+		document.querySelector("#selectionModeLabel").textContent = langTranslations.selection_mode_label;
+		document.querySelector("#editEastingButton").textContent = langTranslations.edit_easting_label;
+		document.querySelector("#holeEastingLabel").textContent = langTranslations.hole_easting_label;
+		document.querySelector("#editNorthingButton ").textContent = langTranslations.edit_northing_label;
+		document.querySelector("#holeNorthingLabel").textContent = langTranslations.hole_northing_label;
+		document.querySelector("#editElevationButton ").textContent = langTranslations.edit_elevation_label;
+		document.querySelector("#holeElevationLabel").textContent = langTranslations.hole_elevation_label;
+		document.querySelector("#editDiameterButton").textContent = langTranslations.edit_diameter_label;
+		document.querySelector("#holeDiameterLabel").textContent = langTranslations.hole_diameter_label;
+		document.querySelector("#editLengthButton").textContent = langTranslations.edit_length_label;
+		document.querySelector("#holeLengthLabel").textContent = langTranslations.hole_length_label;
+		document.querySelector("#editAngleButton").textContent = langTranslations.edit_angle_label;
+		document.querySelector("#holeAngleLabel").textContent = langTranslations.hole_angle_label;
+		document.querySelector("#editBearingButton").textContent = langTranslations.edit_bearing_label;
+		document.querySelector("#holeBearingLabel").textContent = langTranslations.hole_bearing_label;
+		document.querySelector("#recordActualsAcc span").textContent = langTranslations.record_actuals;
+		document.querySelector("#recordLengthPopupLabel").textContent = langTranslations.record_length_popup_label;
+		document.querySelector("#editMassPopupLabel").textContent = langTranslations.record_mass_popup_label;
+		document.querySelector("#recordCommentPopupLabel").textContent = langTranslations.record_comment_popup_label;
+		document.querySelector("#viewControlsAcc span").textContent = langTranslations.view_controls;
+		document.querySelector("#fontLabel").textContent = langTranslations.font_size_label;
+		document.querySelector("#connLabel").textContent = langTranslations.tie_size_label;
+		document.querySelector("#toeLabel").textContent = langTranslations.toe_size_label;
+		document.querySelector("#holeLabel").textContent = langTranslations.hole_adjust_label;
+		document.querySelector("#intervalLabel").textContent = langTranslations.interval_label;
+		document.querySelector("#firstMovementLabel").textContent = langTranslations.first_movement_label;
+		document.querySelector("#outputfilesAcc").textContent = langTranslations.output_files;
+		document.querySelector("#save_holes_label").textContent = langTranslations.save_holes_label;
+		document.querySelector("#saveHoles").textContent = langTranslations.save_holes_button;
+		document.querySelector("#save_kad_label").textContent = langTranslations.save_kad_label;
+		document.querySelector("#saveKAD").textContent = langTranslations.save_kad_button;
+		document.querySelector("#save_all_label").textContent = langTranslations.save_all_label;
+		document.querySelector("#saveAll").textContent = langTranslations.save_all_button;
+		document.querySelector("#save_measures_label").textContent = langTranslations.save_measures_label;
+		document.querySelector("#saveMeasures").textContent = langTranslations.save_measures_button;
+		document.querySelector("#saveIREDES").textContent = langTranslations.save_iredes_button;
+		document.querySelector("#saveAQM").textContent = langTranslations.save_aqm_button;
+		document.querySelector("#exampleFilesAcc span").textContent = langTranslations.example_helper_files;
+		document.querySelector("#testfile1").textContent = langTranslations.download_test_tie_1;
+		document.querySelector("#testfile2").textContent = langTranslations.download_test_tie_2;
+		document.querySelector("#testfile3").textContent = langTranslations.download_test_tie_3;
+		document.querySelector("#testfile4").textContent = langTranslations.download_kad_pitshell;
+		document.querySelector("#testfile5").textContent = langTranslations.download_kad_pitshell_ios;
+		document.querySelector("#testfile6").textContent = langTranslations.download_kad_blastmaster;
+		document.querySelector("#testfile7").textContent = langTranslations.download_kad_blastmaster_ios;
+		document.querySelector("#testfile8").textContent = langTranslations.download_conversion_tool;
+		document.querySelector("#aboutAcc").textContent = langTranslations.about_title;
+		document.querySelector("#aboutPanel").textContent = langTranslations.about_content;
+		const connectorsText = document.querySelector("#connectorsAcc span");
+			if (connectorsText) {
+    			connectorsText.textContent = langTranslations.connectors;
+			}
+		console.log(document.querySelector("#connectorsAcc span"));
+		document.querySelector("#singleTie").textContent = langTranslations.single_tie_label;
+		document.querySelector("#multiTie").textContent = langTranslations.multi_tie_label;
+		document.querySelector("#delayLabel").textContent = langTranslations.delay_label;
+		document.querySelector("#connectorColour").textContent = langTranslations.colour_label;
+		document.querySelector("#connectLabel").textContent = langTranslations.connect_distance_label;
+		document.querySelector("#animateAcc").textContent = langTranslations.animate_firing;
+		document.querySelector("#play").textContent = langTranslations.play_button;
+		document.querySelector("#stop").textContent = langTranslations.stop_button;
+		document.querySelector("#timeWindowAcc span").textContent = langTranslations.time_window;
+		document.querySelector("#timeRangeLabel").textContent = langTranslations.time_range_label;
+		document.querySelector("#drawingTools").textContent = langTranslations.drawing_tools;
+		document.querySelector("#elevationName").textContent = langTranslations.elevation_label;
+		document.querySelector("#colourLabel").textContent = langTranslations.drawing_colour_label;
+		document.querySelector("#lineWidthLabel").textContent = langTranslations.line_width_label;
+		document.querySelector("#pointDraw").textContent = langTranslations.point_draw_label;
+		document.querySelector("#lineDraw").textContent = langTranslations.line_draw_label;
+		document.querySelector("#polyDraw").textContent = langTranslations.poly_draw_label;
+		document.querySelector("#circleDraw").textContent = langTranslations.circle_draw_label;
+		document.querySelector("#drawingRadiusLabel").textContent = langTranslations.drawing_radius_label;
+		document.querySelector("#textDraw").textContent = langTranslations.text_draw_label;
+		document.querySelector("#textLabel").textContent = langTranslations.text_label;
+		document.querySelector("#commonMath1").textContent = langTranslations.common_math_label
+		document.querySelector("#commonMath2").textContent = langTranslations.common_math_examples;
+		document.querySelector("#drawingRemovalAcc span").textContent = langTranslations.drawing_removal;
+		document.querySelector("#pointDeleteLabel").textContent = langTranslations.point_delete_label;
+		document.querySelector("#lineDeleteLabel").textContent = langTranslations.line_delete_label;
+		document.querySelector("#polyDeleteLabel").textContent = langTranslations.poly_delete_label;
+		document.querySelector("#circleDeleteLabel").textContent = langTranslations.circle_delete_label;
+		document.querySelector("#textDeleteLabel").textContent = langTranslations.text_delete_label;
+		document.querySelector("#deletePointButton").textContent = langTranslations.delete_point_button;
+		document.querySelector("#deleteObjectButton").textContent = langTranslations.delete_object_button;
+		document.querySelector("#deleteAllButton").textContent = langTranslations.delete_all_button;
+		document.querySelector("#buymeacoffeelabel").textContent = langTranslations.buy_coffee_alt;
+		document.querySelector("#bugButton").textContent = langTranslations.report_bug_button;
+		document.querySelector("label[for='display1']").title = langTranslations.display_hole_id_title;
+		document.querySelector("label[for='display2']").title = langTranslations.display_hole_length_title;
+		document.querySelector("label[for='display2A']").title = langTranslations.display_hole_diameter_title;
+		document.querySelector("label[for='display3']").title = langTranslations.display_angle_title;
+		document.querySelector("label[for='display4']").title = langTranslations.display_dip_title;
+		document.querySelector("label[for='display5']").title = langTranslations.display_bearing_title;
+		document.querySelector("label[for='display5A']").title = langTranslations.display_ties_title;
+		document.querySelector("label[for='display6']").title = langTranslations.display_connectors_title;
+		document.querySelector("label[for='display6A']").title = langTranslations.display_times_only_title;
+		document.querySelector("label[for='display8']").title = langTranslations.display_contours_title;
+		document.querySelector("label[for='display8A']").title = langTranslations.display_slope_title;
+		document.querySelector("label[for='display8B']").title = langTranslations.display_relief_title;
+		document.querySelector("label[for='display8C']").title = langTranslations.display_direction_title;
+		document.querySelector("label[for='display9']").title = langTranslations.display_xlocation_title;
+		document.querySelector("label[for='display10']").title = langTranslations.display_ylocation_title;
+		document.querySelector("label[for='display11']").title = langTranslations.display_zlocation_title;
+		document.querySelector("label[for='display12']").title = langTranslations.display_hole_type_title;
+		document.querySelector("label[for='display13']").title = langTranslations.display_measure_title;
+		document.querySelector("label[for='display14']").title = langTranslations.display_mass_title;
+		document.querySelector("label[for='display15']").title = langTranslations.display_comment_title;
+		// Add more elements to update as needed
+	} else {
+		console.error("Translations for language ", language , " not found.");
+	}
+}
+
 //drawing elevation value
 const drawingElevation = document.getElementById("drawingElevation");
 
@@ -3180,7 +3328,6 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	const now = new Date();
 	//convert now to the computer time zone
 	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-	let xmlDataForCRC32 = "";
 	let iredesPoints = [];
 	points.forEach(point => {
 		iredesPoints.push({
@@ -3197,7 +3344,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	});
 	iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
 
-	// Format the date as YYYY-MM-DDTHH:mm:ss (e.g., 2023-09-11T13:52:43)
+	// Format the date as YYYY-MM-DDTHH:mm:ss
 	const formattedDate = now.toISOString().slice(0, 19);
 	let notes = "Notes";
 	const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generated by Kirra - https://blastingapps.xyz/kirra.html -->\n`;
@@ -3213,6 +3360,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	xml += `  <IR:Comment>${notes}</IR:Comment>\n`;
 	xml += `  <IR:Project>${siteID}(Site)</IR:Project>\n`;
 	xml += `  <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
+
 	// Drill Position Plan
 	xml += `  <DrillPosPlan IRVersion="V 1.0" IRDownwCompat="V 1.0">\n`;
 	xml += `    <IR:GenHead>\n`;
@@ -3224,6 +3372,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	xml += `    <IR:Comment>${notes}</IR:Comment>\n`;
 	xml += `    <IR:Project>${siteID}(Site)</IR:Project>\n`;
 	xml += `    <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
+
 	// Position Data
 	xml += `    <PositionData>\n`;
 	xml += `      <Coordsystem>\n`;
@@ -3247,12 +3396,6 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	xml += `            <IR:z>1.000</IR:z>\n`;
 	xml += `            <IR:w>0.000</IR:w>\n`;
 	xml += `          </IR:Col>\n`;
-	xml += `          <IR:Col>\n`;
-	xml += `            <IR:x>0.000</IR:x>\n`;
-	xml += `            <IR:y>0.000</IR:y>\n`;
-	xml += `            <IR:z>0.000</IR:z>\n`;
-	xml += `            <IR:w>1.000</IR:w>\n`;
-	xml += `          </IR:Col>\n`;
 	xml += `        </IR:TMatrix>\n`;
 	xml += `        <IR:CsysType>L</IR:CsysType>\n`;
 	xml += `      </Coordsystem>\n`;
@@ -3268,7 +3411,6 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	// Holes
 	for (let i = 0; i < iredesPoints.length; i++) {
 		const iredesPoint = iredesPoints[i];
-		xmlDataForCRC32 += `${iredesPoint.holeID.trim()}, ${iredesPoint.holeID.trim()}, ${iredesPoint.startXLocation}, ${iredesPoint.startYLocation}, ${iredesPoint.startZLocation}, ${iredesPoint.endXLocation}, ${iredesPoint.endYLocation}, ${iredesPoint.endZLocation}, ${iredesPoint.holeDiameter}, ${iredesPoint.holeType.trim()}\n`;
 		xml += `    <Hole>\n`;
 		xml += `      <HoleId>${iredesPoint.holeID.trim()}</HoleId>\n`;
 		xml += `      <HoleName>${iredesPoint.holeID.trim()}</HoleName>\n`;
@@ -3284,45 +3426,15 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 		xml += `      </EndPoint>\n`;
 		xml += `      <TypeOfHole>${iredesPoint.holeType.trim()}</TypeOfHole>\n`;
 		xml += `      <DrillBitDia>${iredesPoint.holeDiameter}</DrillBitDia>\n`;
-		if (holeOptions === true && mwd === true) {
-			mwdValue = 1;
-			xml += `      <MwdOn>${mwdValue}</MwdOn>\n`;
-			xml += `      <HoleOptions xmlns:opt="opt">\n`;
-			xml += `        <opt:HoleData>\n`;
-			xml += `          <ExtendedHoleStatus>Undrilled</ExtendedHoleStatus>\n`;
-			xml += `        </opt:HoleData>\n`;
-			xml += `      </HoleOptions>\n`;
-		} else if (holeOptions === true && mwd === false) {
-			mwdValue = 0;
-			xml += `      <MwdOn>${mwdValue}</MwdOn>\n`;
-			xml += `      <HoleOptions xmlns:opt="opt">\n`;
-			xml += `        <opt:HoleData>\n`;
-			xml += `          <ExtendedHoleStatus>Undrilled</ExtendedHoleStatus>\n`;
-			xml += `        </opt:HoleData>\n`;
-			xml += `      </HoleOptions>\n`;
-		}
-		xml += `    </Hole>\n`;
 	}
-	// Placeholder for the checksum with 10 characters
-	const checksumPlaceholder = "1111111111"; // 10 spaces
-	//Create and arry storing the following (points.id, points.startXLocation, points.startYLocation, points.startZLocation, points.endXLocation, points.endYLocation, points.endZLocation, points.holeDiameter, points.holeType)
-	//const holesArray = [points.id, points.startXLocation, points.startYLocation, points.startZLocation, points.endXLocation, points.endYLocation, points.endZLocation, points.holeDiameter, points.holeType];
-	// Calculate the CRC32 checksum
-	let checksum = 0;
-	//const xmlData = xml.replace(checksumPlaceholder, ""); // Replace the placeholder with the actual checksum
-	if (chksumType === "CRC32") {
-		checksum = crc32(xmlDataForCRC32);
-	}
-	if (chksumType === "ZERO") {
-		checksum = 0;
-	}
-	if (chksumType === "NONE") {
-		checksum = "";
-	}
-	// Closing
+
+	// Placeholder for the checksum with the string "0"
+	const checksumPlaceholder = "0";
+
+	// Closing the XML
 	xml += `    <EquipmentData xmlns="">\n`;
 	xml += `      <IR:OptionData />\n`;
-	xml += `      </EquipmentData>\n`;
+	xml += `    </EquipmentData>\n`;
 	xml += `  </DrillPlan>\n`;
 	xml += `  <IR:GenTrailer>\n`;
 	xml += `    <IR:FileCloseDate>${formattedDate}</IR:FileCloseDate>\n`;
@@ -3330,23 +3442,10 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	xml += `  </IR:GenTrailer>\n`;
 	xml += `</DRPPlan>`;
 
-	//if (chksumType === "DECIMAL") {
-	//	checksum = decimalChecksum(xmlData);
-	//}
-	//if (chksumType === "MD5") {
-	//	checksum = calculateMD5Checksum(xmlData);
-	//}
-	//if (chksumType === "SHA1") {
-	//	checksum = calculateSHA1Checksum(xmlData);
-	//}
-	//if (chksumType === "SHA256") {
-	//	checksum = calculateSHA256Checksum(xmlData);
-	//}
-	//if (chksumType === "VERHOEFF") {
-	//	checksum = generateVerhoeffChecksum(xmlData);
-	//}
+	// Step 1: Calculate CRC32 checksum with the "0" as the initial checksum
+	let checksum = crc32(xml.replace(checksumPlaceholder, "0"));
 
-	// Replace the placeholder with the real checksum in the XML
+	// Step 2: Replace the "0" with the actual checksum
 	xml = xml.replace(checksumPlaceholder, checksum);
 
 	return xml;
@@ -3370,9 +3469,8 @@ function crc32(str) {
 	// Ensure it's a 32-bit unsigned integer (force it to be positive)
 	crc = crc >>> 0;
 
-	// Format as a fixed-length 10-character string
-	const result = crc.toString(10).padStart(10, "0");
-	return result;
+	// Return the CRC32 as a string
+	return crc.toString(10);
 }
 
 function decimalChecksum(str) {
@@ -8632,11 +8730,14 @@ function drawData(points, selectedHole) {
 		}
 	}
 	if (points !== null) {
+		ctx.fillStyle = "red";
+		ctx.font = "12px Arial"; // Set the font size to 12pt Roboto-Regular
+		ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
 		for (let i = 0; i < points.length; i++) {
 			const point = points[i];
-			ctx.fillStyle = "red";
-			ctx.font = "18px Arial"; // Set the font size to 20px
-			ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
+			// ctx.fillStyle = "red";
+			// ctx.font = "18px Arial"; // Set the font size to 20px
+			// ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
 			const x = (points[i].startXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
 			const y = (-points[i].startYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
 			const lineStartX = x;
