@@ -711,6 +711,13 @@ label {
   position: relative;
 }
 
+.label2c {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  text-align: center;
+  position: relative;
+}
+
 .label3 {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 10px;
