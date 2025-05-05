@@ -218,7 +218,7 @@ const switches = [
 	measuredLengthSwitch,
 	measuredMassSwitch,
 	measuredCommentSwitch,
-	selectionModeButton
+	selectionModeButton,
 ];
 // Boolean set to False
 function setAllBoolsToFalse() {
@@ -266,6 +266,7 @@ document.getElementById("deletePointButton").addEventListener("click", deleteSel
 document.getElementById("deleteObjectButton").addEventListener("click", deleteSelectedObject);
 document.getElementById("deleteAllButton").addEventListener("click", deleteSelectedAll);
 document.getElementById("fileInput").addEventListener("change", handleFileUpload);
+document.getElementById("fileInputDXF").addEventListener("change", handleDXFUpload);
 document.getElementById("helpButton").addEventListener("click", openHelp);
 document.getElementById("zoomInButton").addEventListener("click", zoomIn);
 document.getElementById("zoomOutButton").addEventListener("click", zoomOut);
@@ -309,17 +310,17 @@ canvas.addEventListener("touchend", handleTouchEnd);
 
 // Event listener for the language dropdown
 document.getElementById("languageSelect").addEventListener("change", function () {
-    const selectedLanguage = this.value;
-    updateTranslations(selectedLanguage);
+	const selectedLanguage = this.value;
+	updateTranslations(selectedLanguage);
 });
 
 // Function to update translations
 function updateTranslations(language) {
-    // Use the inline translations object
-    const langTranslations = translations[language]?.translation;
+	// Use the inline translations object
+	const langTranslations = translations[language]?.translation;
 
-    if (langTranslations) {
-	// Update the text content of elements in the DOM
+	if (langTranslations) {
+		// Update the text content of elements in the DOM
 		document.querySelector("title").textContent = langTranslations.title;
 		document.querySelector("#helpButton").title = langTranslations.help_button;
 		document.querySelector("#zoomInButton").textContent = langTranslations.zoom_in_button;
@@ -391,9 +392,9 @@ function updateTranslations(language) {
 		document.querySelector("#aboutAcc").textContent = langTranslations.about_title;
 		document.querySelector("#aboutPanel").textContent = langTranslations.about_content;
 		const connectorsText = document.querySelector("#connectorsAcc span");
-			if (connectorsText) {
-    			connectorsText.textContent = langTranslations.connectors;
-			}
+		if (connectorsText) {
+			connectorsText.textContent = langTranslations.connectors;
+		}
 		console.log(document.querySelector("#connectorsAcc span"));
 		document.querySelector("#singleTie").textContent = langTranslations.single_tie_label;
 		document.querySelector("#multiTie").textContent = langTranslations.multi_tie_label;
@@ -416,7 +417,7 @@ function updateTranslations(language) {
 		document.querySelector("#drawingRadiusLabel").textContent = langTranslations.drawing_radius_label;
 		document.querySelector("#textDraw").textContent = langTranslations.text_draw_label;
 		document.querySelector("#textLabel").textContent = langTranslations.text_label;
-		document.querySelector("#commonMath1").textContent = langTranslations.common_math_label
+		document.querySelector("#commonMath1").textContent = langTranslations.common_math_label;
 		document.querySelector("#commonMath2").textContent = langTranslations.common_math_examples;
 		document.querySelector("#drawingRemovalAcc span").textContent = langTranslations.drawing_removal;
 		document.querySelector("#pointDeleteLabel").textContent = langTranslations.point_delete_label;
@@ -451,7 +452,7 @@ function updateTranslations(language) {
 		document.querySelector("label[for='display15']").title = langTranslations.display_comment_title;
 		// Add more elements to update as needed
 	} else {
-		console.error("Translations for language ", language , " not found.");
+		console.error("Translations for language ", language, " not found.");
 	}
 }
 
@@ -459,10 +460,10 @@ function updateTranslations(language) {
 const drawingElevation = document.getElementById("drawingElevation");
 
 //Selection Mode
-selectionModeButton.addEventListener("change", function() {
+selectionModeButton.addEventListener("change", function () {
 	if (this.checked) {
 		//set all the other switches to false
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) {
 				switchElement.checked = false;
 				console.log("switchElements set to false when turning on: " + switchElement.id);
@@ -474,7 +475,7 @@ selectionModeButton.addEventListener("change", function() {
 	} else {
 		console.log("selectionModeButton.addEventListener unchecked");
 		selectionMode = false;
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) {
 				switchElement.checked = false;
 				console.log("switchElements set to false when turning off: " + switchElement.id);
@@ -494,29 +495,29 @@ function setSelectionModeToFalse() {
 }
 
 //Resizing the Navbar on the right
-resizeRight.addEventListener("mousedown", function() {
+resizeRight.addEventListener("mousedown", function () {
 	isResizingRight = true;
 
 	document.addEventListener("mousemove", handleMouseMove);
 	document.addEventListener("mouseup", handleMouseUp);
 });
 //Resizing the Navbar on the left
-resizeLeft.addEventListener("mousedown", function() {
+resizeLeft.addEventListener("mousedown", function () {
 	isResizingLeft = true;
 
 	document.addEventListener("mousemove", handleMouseMove);
 	document.addEventListener("mouseup", handleMouseUp);
 });
-renumberHoles.addEventListener("click", function() {
+renumberHoles.addEventListener("click", function () {
 	isRenumberingHoles = this.checked;
 });
-renumberStartListener.addEventListener("change", function() {
+renumberStartListener.addEventListener("change", function () {
 	deleteRenumberStart = parseInt(this.value);
 });
 
-measuredLengthSwitch.addEventListener("change", function() {
+measuredLengthSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -541,9 +542,9 @@ measuredLengthSwitch.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-measuredMassSwitch.addEventListener("change", function() {
+measuredMassSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -568,9 +569,9 @@ measuredMassSwitch.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-measuredCommentSwitch.addEventListener("change", function() {
+measuredCommentSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -596,10 +597,10 @@ measuredCommentSwitch.addEventListener("change", function() {
 	}
 });
 
-addPointDraw.addEventListener("change", function() {
+addPointDraw.addEventListener("change", function () {
 	if (this.checked) {
 		//switches.forEach(switchElement => (switchElement.checked = false));
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setSelectionModeToFalse();
@@ -617,9 +618,9 @@ addPointDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-addLineDraw.addEventListener("change", function() {
+addLineDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setSelectionModeToFalse();
@@ -638,9 +639,9 @@ addLineDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-addPolyDraw.addEventListener("change", function() {
+addPolyDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -658,9 +659,9 @@ addPolyDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-addCircleDraw.addEventListener("change", function() {
+addCircleDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -678,9 +679,9 @@ addCircleDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-addTextDraw.addEventListener("change", function() {
+addTextDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -699,9 +700,9 @@ addTextDraw.addEventListener("change", function() {
 	}
 });
 
-deletePointDraw.addEventListener("change", function() {
+deletePointDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -718,9 +719,9 @@ deletePointDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-deleteLineDraw.addEventListener("change", function() {
+deleteLineDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -737,9 +738,9 @@ deleteLineDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-deletePolyDraw.addEventListener("change", function() {
+deletePolyDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -756,9 +757,9 @@ deletePolyDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-deleteCircleDraw.addEventListener("change", function() {
+deleteCircleDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -775,9 +776,9 @@ deleteCircleDraw.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-deleteTextDraw.addEventListener("change", function() {
+deleteTextDraw.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -796,9 +797,9 @@ deleteTextDraw.addEventListener("change", function() {
 });
 // Event listener for the connector switch
 
-addConnectorButton.addEventListener("change", function() {
+addConnectorButton.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -821,9 +822,9 @@ addConnectorButton.addEventListener("change", function() {
 		drawData(points, selectedHole);
 	}
 });
-addMultiConnectorButton.addEventListener("change", function() {
+addMultiConnectorButton.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -848,9 +849,9 @@ addMultiConnectorButton.addEventListener("change", function() {
 });
 
 // Event listener for the delete switch
-deleteHoleSwitch.addEventListener("change", function() {
+deleteHoleSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -890,9 +891,9 @@ deleteHoleSwitch.addEventListener("change", function() {
 	}
 });
 // Event listener for the add switch
-addHoleSwitch.addEventListener("change", function() {
+addHoleSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -931,9 +932,9 @@ addHoleSwitch.addEventListener("change", function() {
 	}
 });
 // Event listener for the add pattern switch
-addPatternSwitch.addEventListener("change", function() {
+addPatternSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -981,9 +982,9 @@ addPatternSwitch.addEventListener("change", function() {
 	}
 });
 
-editHoleTypePopupSwitch.addEventListener("change", function() {
+editHoleTypePopupSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -1007,9 +1008,9 @@ editHoleTypePopupSwitch.addEventListener("change", function() {
 	}
 });
 
-editBlastNameSwitch.addEventListener("change", function() {
+editBlastNameSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -1034,9 +1035,9 @@ editBlastNameSwitch.addEventListener("change", function() {
 });
 
 // Event listener for the edit length with dialog
-editLengthPopupSwitch.addEventListener("change", function() {
+editLengthPopupSwitch.addEventListener("change", function () {
 	if (this.checked) {
-		switches.forEach(switchElement => {
+		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
@@ -1060,7 +1061,7 @@ editLengthPopupSwitch.addEventListener("change", function() {
 	}
 });
 // Event listener for the edit hole Length switch
-editDiameterSwitch.addEventListener("change", function() {
+editDiameterSwitch.addEventListener("change", function () {
 	if (this.checked) {
 		isDiameterEditing = true;
 		addConnectorButton.checked = false;
@@ -1086,11 +1087,11 @@ editDiameterSwitch.addEventListener("change", function() {
 	}
 	// Access the slider element and add an event listener to track changes
 	const holeDiameterSlider = document.getElementById("holeDiameterSlider");
-	holeDiameterSlider.addEventListener("input", function() {
+	holeDiameterSlider.addEventListener("input", function () {
 		if (isDiameterEditing) {
 			let newHoleDiameter = parseFloat(holeDiameterSlider.value);
 			if (selectedHole) {
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
@@ -1102,7 +1103,7 @@ editDiameterSwitch.addEventListener("change", function() {
 				}
 			}
 			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach(hole => {
+				selectedMultipleHoles.forEach((hole) => {
 					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
 					holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
 
@@ -1115,7 +1116,7 @@ editDiameterSwitch.addEventListener("change", function() {
 	});
 });
 // Event listener for the edit hole Length switch
-editLengthSwitch.addEventListener("change", function() {
+editLengthSwitch.addEventListener("change", function () {
 	//console.log("editLengthSwitch");
 	if (this.checked) {
 		//console.log("editLengthSwitch checked");
@@ -1144,11 +1145,11 @@ editLengthSwitch.addEventListener("change", function() {
 	}
 	// Access the slider element and add an event listener to track changes
 	const holeLengthSlider = document.getElementById("holeLengthSlider");
-	holeLengthSlider.addEventListener("input", function() {
+	holeLengthSlider.addEventListener("input", function () {
 		if (isLengthEditing) {
 			let newHoleLength = parseFloat(holeLengthSlider.value);
 			if (selectedHole) {
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
@@ -1160,7 +1161,7 @@ editLengthSwitch.addEventListener("change", function() {
 				}
 			}
 			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach(hole => {
+				selectedMultipleHoles.forEach((hole) => {
 					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
 					holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
 
@@ -1173,7 +1174,7 @@ editLengthSwitch.addEventListener("change", function() {
 	});
 });
 // Event listener for the edit hole Angle switch
-editAngleSwitch.addEventListener("change", function() {
+editAngleSwitch.addEventListener("change", function () {
 	//console.log("editAngleSwitch");
 	if (this.checked) {
 		//console.log("editAngleSwitch checked");
@@ -1202,11 +1203,11 @@ editAngleSwitch.addEventListener("change", function() {
 	}
 	// Access the slider element and add an event listener to track changes
 	const holeAngleSlider = document.getElementById("holeAngleSlider");
-	holeAngleSlider.addEventListener("input", function() {
+	holeAngleSlider.addEventListener("input", function () {
 		if (isAngleEditing) {
 			let newHoleAngle = parseFloat(holeAngleSlider.value);
 			if (selectedHole) {
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//console.log("clickedHole - " + "Hole Angle : " + newHoleAngle + '°');
@@ -1218,7 +1219,7 @@ editAngleSwitch.addEventListener("change", function() {
 				}
 			}
 			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach(hole => {
+				selectedMultipleHoles.forEach((hole) => {
 					//console.log("clickedHole - " + "Hole Angle : " + newHoleAngle + '°');
 					holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
 
@@ -1231,7 +1232,7 @@ editAngleSwitch.addEventListener("change", function() {
 	});
 });
 // Event listener for the edit hole Bearing switch
-editBearingSwitch.addEventListener("change", function() {
+editBearingSwitch.addEventListener("change", function () {
 	//console.log("editBearingSwitch");
 	if (this.checked) {
 		addConnectorButton.checked = false;
@@ -1259,11 +1260,11 @@ editBearingSwitch.addEventListener("change", function() {
 	}
 	// Access the slider element and add an event listener to track changes
 	const holeBearingSlider = document.getElementById("holeBearingSlider");
-	holeBearingSlider.addEventListener("input", function() {
+	holeBearingSlider.addEventListener("input", function () {
 		if (isBearingEditing) {
 			let newHoleBearing = parseFloat(holeBearingSlider.value);
 			if (selectedHole) {
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
@@ -1275,7 +1276,7 @@ editBearingSwitch.addEventListener("change", function() {
 				}
 			}
 			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach(hole => {
+				selectedMultipleHoles.forEach((hole) => {
 					//console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
 					holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
 
@@ -1288,7 +1289,7 @@ editBearingSwitch.addEventListener("change", function() {
 	});
 });
 /// Event listener for the edit hole Easting switch
-editEastingSwitch.addEventListener("change", function() {
+editEastingSwitch.addEventListener("change", function () {
 	if (this.checked) {
 		console.log("editEastingSwitch checked");
 		isEastingEditing = true;
@@ -1324,13 +1325,13 @@ editEastingSwitch.addEventListener("change", function() {
 });
 // Access the slider element and add an event listener to track changes
 const holeEastingSlider = document.getElementById("holeEastingSlider");
-holeEastingSlider.addEventListener("input", function() {
+holeEastingSlider.addEventListener("input", function () {
 	let newHoleEasting = parseFloat(holeEastingSlider.value);
 	holeEastingLabel.textContent = "Hole Easting (X): " + newHoleEasting.toFixed(2) + "mE";
 
 	if (selectedHole) {
 		// Update the easting of the individual selected hole
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (fixToeLocation == true) {
 			if (index !== -1) {
 				points[index].startXLocation = newHoleEasting;
@@ -1361,7 +1362,7 @@ holeEastingSlider.addEventListener("input", function() {
 		let averageEasting = sumEasting / selectedMultipleHoles.length;
 		let eastingDelta = newHoleEasting - averageEasting;
 
-		selectedMultipleHoles.forEach(hole => {
+		selectedMultipleHoles.forEach((hole) => {
 			hole.startXLocation += eastingDelta;
 			// Assuming endXLocation should also be updated based on the new easting
 			hole.endXLocation += eastingDelta;
@@ -1382,7 +1383,7 @@ holeEastingSlider.addEventListener("input", function() {
 });
 
 /// Event listener for the edit hole Easting switch
-editNorthingSwitch.addEventListener("change", function() {
+editNorthingSwitch.addEventListener("change", function () {
 	if (this.checked) {
 		console.log("editNorthingSwitch checked");
 		isNorthingEditing = true;
@@ -1419,13 +1420,13 @@ editNorthingSwitch.addEventListener("change", function() {
 
 // Access the slider element and add an event listener to track changes
 const holeNorthingSlider = document.getElementById("holeNorthingSlider");
-holeNorthingSlider.addEventListener("input", function() {
+holeNorthingSlider.addEventListener("input", function () {
 	let newHoleNorthing = parseFloat(holeNorthingSlider.value);
 	holeNorthingLabel.textContent = "Hole Northing (Y): " + newHoleNorthing.toFixed(2) + "mN";
 
 	if (selectedHole) {
 		// Update the easting of the individual selected hole
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (fixToeLocation == true) {
 			if (index !== -1) {
 				points[index].startYLocation = newHoleNorthing;
@@ -1456,7 +1457,7 @@ holeNorthingSlider.addEventListener("input", function() {
 		let averageNorthing = sumNorthing / selectedMultipleHoles.length;
 		let northingDelta = newHoleNorthing - averageNorthing;
 
-		selectedMultipleHoles.forEach(hole => {
+		selectedMultipleHoles.forEach((hole) => {
 			hole.startYLocation += northingDelta;
 			// Assuming endYLocation should also be updated based on the new northing
 			hole.endYLocation += northingDelta;
@@ -1477,7 +1478,7 @@ holeNorthingSlider.addEventListener("input", function() {
 });
 
 /// Event listener for the edit hole Elevation switch
-editElevationSwitch.addEventListener("change", function() {
+editElevationSwitch.addEventListener("change", function () {
 	if (this.checked) {
 		isElevationEditing = true;
 		addConnectorButton.checked = false;
@@ -1511,13 +1512,13 @@ editElevationSwitch.addEventListener("change", function() {
 });
 // Access the slider element and add an event listener to track changes
 const holeElevationSlider = document.getElementById("holeElevationSlider");
-holeElevationSlider.addEventListener("input", function() {
+holeElevationSlider.addEventListener("input", function () {
 	let newHoleElevation = parseFloat(holeElevationSlider.value);
 	holeElevationLabel.textContent = "Hole Elevation (Z): " + newHoleElevation.toFixed(2) + "m";
 
 	if (selectedHole) {
 		// Update the easting of the individual selected hole
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (fixToeLocation == true) {
 			if (index !== -1) {
 				points[index].startZLocation = newHoleElevation;
@@ -1548,7 +1549,7 @@ holeElevationSlider.addEventListener("input", function() {
 		let averageElevation = sumElevation / selectedMultipleHoles.length;
 		let elevationDelta = newHoleElevation - averageElevation;
 
-		selectedMultipleHoles.forEach(hole => {
+		selectedMultipleHoles.forEach((hole) => {
 			hole.startZLocation += elevationDelta;
 			// Assuming endZLocation should also be updated based on the new elevation
 			hole.endZLocation += elevationDelta;
@@ -1572,7 +1573,7 @@ function resizeChart() {
 	if (Array.isArray(holeTimes)) {
 		const newWidth = document.documentElement.clientWidth;
 		Plotly.relayout(timeChartObject, {
-			width: newWidth
+			width: newWidth,
 		});
 	}
 }
@@ -1581,7 +1582,7 @@ window.addEventListener("resize", resizeChart);
 var acc = document.getElementsByClassName("accordion");
 var i;
 for (i = 0; i < acc.length; i++) {
-	acc[i].addEventListener("click", function() {
+	acc[i].addEventListener("click", function () {
 		/* Toggle between adding and removing the "active" class,
     to highlight the button that controls the panel */
 		this.classList.toggle("active");
@@ -1604,18 +1605,18 @@ function isIOS() {
 	const userAgent = navigator.userAgent.toLowerCase();
 	return /iphone|ipad|ipod/.test(userAgent);
 }
-document.getElementById("saveKAD").addEventListener("click", function() {
+document.getElementById("saveKAD").addEventListener("click", function () {
 	//mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap];//including holes
 	//mapData = [kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //excluding holes
 	exportKADFile(mapData);
 });
-document.getElementById("saveHoles").addEventListener("click", function() {
+document.getElementById("saveHoles").addEventListener("click", function () {
 	if (isIOS()) {
 		const csv = convertPointsTo14ColumnCSV();
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
+			type: "text/csv;charset=utf-8",
 		});
 
 		// Create a URL for the Blob
@@ -1712,13 +1713,13 @@ document.getElementById("saveHoles").addEventListener("click", function() {
 	}
 }); */
 
-document.getElementById("saveAll").addEventListener("click", function() {
+document.getElementById("saveAll").addEventListener("click", function () {
 	if (isIOS()) {
 		const csv = convertPointsToAllDataCSV();
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
+			type: "text/csv;charset=utf-8",
 		});
 
 		// Create a URL for the Blob
@@ -1762,19 +1763,19 @@ document.getElementById("saveAll").addEventListener("click", function() {
 		document.body.removeChild(link);
 	}
 });
-document.getElementById("saveIREDES").addEventListener("click", function() {
+document.getElementById("saveIREDES").addEventListener("click", function () {
 	saveIREDESPopup();
 });
-document.getElementById("saveAQM").addEventListener("click", function() {
+document.getElementById("saveAQM").addEventListener("click", function () {
 	saveAQMPopup();
 });
-document.getElementById("saveMeasures").addEventListener("click", function() {
+document.getElementById("saveMeasures").addEventListener("click", function () {
 	if (isIOS()) {
 		const csv = convertPointsToActualDataCSV();
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
+			type: "text/csv;charset=utf-8",
 		});
 
 		// Create a URL for the Blob
@@ -1828,7 +1829,7 @@ const canvasContainer = document.querySelector(".canvas-container");
 
 canvasContainer.addEventListener(
 	"wheel",
-	function(event) {
+	function (event) {
 		const mouseX = event.clientX;
 		const mouseY = event.clientY;
 		const isMouseInsideCanvas = isMouseInside(mouseX, mouseY, canvas);
@@ -1871,28 +1872,28 @@ canvasContainer.addEventListener(
 			if (deltaX < 0 && deltaY < 0) {
 				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
 				// console.log("Upper Left Quadrant: Mouse is above and to the left of the canvas center");
-				centroidX -= offsetX / currentScale * (1 - zoomFactor);
-				centroidY += offsetY / currentScale * (1 - zoomFactor);
+				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
 			} else if (deltaX < 0 && deltaY > 0) {
 				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
 				// console.log("Lower Left Quadrant: Mouse is below and to the left of the canvas center");
-				centroidX -= offsetX / currentScale * (1 - zoomFactor);
-				centroidY += offsetY / currentScale * (1 - zoomFactor);
+				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
 			} else if (deltaX > 0 && deltaY < 0) {
 				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
 				// console.log("Upper Right Quadrant: Mouse is above and to the right of the canvas center");
-				centroidX -= offsetX / currentScale * (1 - zoomFactor);
-				centroidY += offsetY / currentScale * (1 - zoomFactor);
+				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
 			} else if (deltaX > 0 && deltaY > 0) {
 				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
 				// console.log("Lower Right Quadrant: Mouse is below and to the right of the canvas center");
-				centroidX -= offsetX / currentScale * (1 - zoomFactor);
-				centroidY += offsetY / currentScale * (1 - zoomFactor);
+				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
 			} else {
 				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
 				// console.log("Center: Mouse is in the center region of the canvas");
-				centroidX -= offsetX / currentScale * (1 - zoomFactor);
-				centroidY -= offsetY / currentScale * (1 - zoomFactor);
+				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+				centroidY -= (offsetY / currentScale) * (1 - zoomFactor);
 			}
 
 			// Ensure the currentScale does not go below a minimum value
@@ -1902,13 +1903,13 @@ canvasContainer.addEventListener(
 		}
 	},
 	{
-		passive: false
+		passive: false,
 	}
 );
 
 // Access the slider element and add an event listener to track changes
 const slider = document.getElementById("toeSlider");
-slider.addEventListener("input", function() {
+slider.addEventListener("input", function () {
 	// Calculate the toe size in meters by using the slider value directly
 	const toeSizeInMeters = parseFloat(this.value);
 
@@ -1919,7 +1920,7 @@ slider.addEventListener("input", function() {
 	drawData(points, selectedHole, toeSizeInMeters);
 });
 const holeSlider = document.getElementById("holeSlider");
-holeSlider.addEventListener("input", function() {
+holeSlider.addEventListener("input", function () {
 	////console.log('Slider value:', this.value);
 	holeScale = document.getElementById("holeSlider").value;
 	holeLabel.textContent = "Hole Adjust : " + parseFloat(holeScale).toFixed(1);
@@ -1927,14 +1928,14 @@ holeSlider.addEventListener("input", function() {
 });
 // Access the slider element and add an event listener to track changes
 const connSlider = document.getElementById("connSlider");
-connSlider.addEventListener("input", function() {
+connSlider.addEventListener("input", function () {
 	////console.log('Connector value:', this.value);
 	connScale = document.getElementById("connSlider").value;
 	connLabel.textContent = "Tie Size : " + parseFloat(connScale).toFixed(1);
 	drawData(points, selectedHole);
 });
 const fontSlider = document.getElementById("fontSlider");
-fontSlider.addEventListener("input", function() {
+fontSlider.addEventListener("input", function () {
 	currentFontSize = this.value;
 	currentFontSize = document.getElementById("fontSlider").value;
 	fontLabel.textContent = "Font Size : " + currentFontSize + "px";
@@ -1942,7 +1943,7 @@ fontSlider.addEventListener("input", function() {
 });
 // Access the slider element and add an event listener to track changes
 const intervalSlider = document.getElementById("intervalSlider");
-intervalSlider.addEventListener("input", function() {
+intervalSlider.addEventListener("input", function () {
 	intervalAmount = document.getElementById("intervalSlider").value;
 	intervalLabel.textContent = "Interval : " + intervalAmount + "ms";
 	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
@@ -1953,7 +1954,7 @@ intervalSlider.addEventListener("input", function() {
 });
 // Access the slider element and add an event listener to track changes
 const firstMovementSlider = document.getElementById("firstMovementSlider");
-firstMovementSlider.addEventListener("input", function() {
+firstMovementSlider.addEventListener("input", function () {
 	firstMovementSize = document.getElementById("firstMovementSlider").value;
 	firstMovementLabel.textContent = "First Movement Size : " + firstMovementSize;
 	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
@@ -1964,46 +1965,46 @@ firstMovementSlider.addEventListener("input", function() {
 });
 // Access the slider element and add an event listener to track changes
 const connectSlider = document.getElementById("connectSlider");
-connectSlider.addEventListener("input", function() {
+connectSlider.addEventListener("input", function () {
 	connectAmount = document.getElementById("connectSlider").value;
 	connectLabel.textContent = "Connect Distance : " + connectAmount + "m";
 });
 
 const timeSlider = document.getElementById("timeRange");
-timeSlider.addEventListener("input", function() {
+timeSlider.addEventListener("input", function () {
 	////console.log('Connector value:', this.value);
 	timeRange = document.getElementById("timeRange").value;
 	timeRangeLabel.textContent = "Time window :" + timeRange + "ms";
 	timeChart();
 	Plotly.relayout("timeChart", {
-		width: newWidthRight - 50
+		width: newWidthRight - 50,
 	});
 });
-option1.addEventListener("change", function() {
+option1.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option2.addEventListener("change", function() {
+option2.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option2A.addEventListener("change", function() {
+option2A.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option3.addEventListener("change", function() {
+option3.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option4.addEventListener("change", function() {
+option4.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option5.addEventListener("change", function() {
+option5.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option5A.addEventListener("change", function() {
+option5A.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option6.addEventListener("change", function() {
+option6.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option6A.addEventListener("change", function() {
+option6A.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
 /*option7.addEventListener("change", function() {
@@ -2016,41 +2017,41 @@ option7B.addEventListener("change", function() {
 	drawData(points, selectedHole);
 });
 */
-option8.addEventListener("change", function() {
+option8.addEventListener("change", function () {
 	isDisplayingContours = true;
 	drawData(points, selectedHole);
 });
-option8A.addEventListener("change", function() {
+option8A.addEventListener("change", function () {
 	isDisplayingSlopeTriangles = true;
 	drawData(points, selectedHole);
 });
-option8B.addEventListener("change", function() {
+option8B.addEventListener("change", function () {
 	isDisplayingReliefTriangles = true;
 	drawData(points, selectedHole);
 });
-option8C.addEventListener("change", function() {
+option8C.addEventListener("change", function () {
 	isDisplayingDirectionArrows = true;
 	drawData(points, selectedHole);
 });
-option9.addEventListener("change", function() {
+option9.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option10.addEventListener("change", function() {
+option10.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option11.addEventListener("change", function() {
+option11.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option12.addEventListener("change", function() {
+option12.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option13.addEventListener("change", function() {
+option13.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option14.addEventListener("change", function() {
+option14.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
-option15.addEventListener("change", function() {
+option15.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
 let touchStartTime;
@@ -2088,7 +2089,7 @@ function handleMouseMove(event) {
 	if (isResizingRight) {
 		newWidthRight = window.innerWidth - event.clientX;
 		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50
+			width: newWidthRight - 50,
 		});
 		document.getElementById("sidenavRight").style.width = newWidthRight + "px";
 	}
@@ -2259,7 +2260,7 @@ async function handleFileUpload(event) {
 
 	const reader = new FileReader();
 
-	reader.onload = async function(event) {
+	reader.onload = async function (event) {
 		const data = event.target.result;
 		// Check if the file is a KAD file
 		if (file.name.endsWith(".kad") || file.name.endsWith(".KAD") || file.name.endsWith(".txt") || file.name.endsWith(".TXT")) {
@@ -2376,7 +2377,7 @@ function parseCSV(data, blastNameValue) {
 			const verticalObject = {
 				x: 0,
 				y: 0,
-				z: 1
+				z: 1,
 			};
 			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
 			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
@@ -2412,7 +2413,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2449,7 +2450,7 @@ function parseCSV(data, blastNameValue) {
 			const verticalObject = {
 				x: 0,
 				y: 0,
-				z: 1
+				z: 1,
 			};
 			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
 			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
@@ -2485,7 +2486,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2527,7 +2528,7 @@ function parseCSV(data, blastNameValue) {
 			const verticalObject = {
 				x: 0,
 				y: 0,
-				z: 1
+				z: 1,
 			};
 			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
 			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
@@ -2563,7 +2564,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2593,7 +2594,7 @@ function parseCSV(data, blastNameValue) {
 			const verticalObject = {
 				x: 0,
 				y: 0,
-				z: 1
+				z: 1,
 			};
 			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
 			const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
@@ -2633,7 +2634,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2658,7 +2659,7 @@ function parseCSV(data, blastNameValue) {
 			const verticalObject = {
 				x: 0,
 				y: 0,
-				z: 1
+				z: 1,
 			};
 			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
 			const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
@@ -2701,7 +2702,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2757,7 +2758,7 @@ function parseCSV(data, blastNameValue) {
 					measuredMass,
 					measuredMassTimeStamp,
 					measuredComment,
-					measuredCommentTimeStamp
+					measuredCommentTimeStamp,
 				});
 				minX = Math.min(minX, startXLocation);
 				minY = Math.min(minY, startYLocation);
@@ -2786,6 +2787,172 @@ function parseCSV(data, blastNameValue) {
 	calculateTimes(points);
 	return points;
 }
+
+async function handleDXFUpload(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	const reader = new FileReader();
+	reader.onload = function (e) {
+		const dxfContent = e.target.result;
+		try {
+			const parser = new DxfParser();
+			const dxf = parser.parseSync(dxfContent);
+			parseDXFtoKadMaps(dxf);
+		} catch (error) {
+			console.error("DXF parsing failed:", error);
+			alert("Error parsing DXF file.");
+		}
+	};
+	reader.readAsText(file);
+}
+
+// DXF entity parser with unique entities and fixed color mapping
+function parseDXFtoKadMaps(dxf) {
+	const gradientColors = ["#880000", "#FF0000", "#FF8000", "#FFFF00", "#40FF00", "#00FFFF", "#00BFFF", "#0080FF", "#BF00FF"];
+
+	function getDXFColor(colorIndex) {
+		if (!colorIndex || colorIndex < 1) return "#000000";
+		return gradientColors[(colorIndex - 1) % gradientColors.length];
+	}
+
+	let entityCount = {
+		point: 0,
+		line: 0,
+		poly: 0,
+		circle: 0,
+		text: 0,
+	};
+
+	dxf.entities.forEach((ent) => {
+		const color = getDXFColor(ent.color);
+
+		if (ent.type === "POINT") {
+			const entityName = `pointEntity_${++entityCount.point}`;
+			kadPointsMap.set(entityName, {
+				name: entityName,
+				entityType: "point",
+				data: [
+					{
+						entityName,
+						entityType: "point",
+						pointID: 1,
+						pointXLocation: ent.position.x,
+						pointYLocation: ent.position.y,
+						pointZLocation: ent.position.z || 0,
+						colour: color,
+					},
+				],
+			});
+		} else if (ent.type === "LINE") {
+			const entityName = `lineEntity_${++entityCount.line}`;
+			kadLinesMap.set(entityName, {
+				name: entityName,
+				entityType: "line",
+				data: [
+					{
+						entityName,
+						entityType: "line",
+						pointID: 1,
+						pointXLocation: ent.start.x,
+						pointYLocation: ent.start.y,
+						pointZLocation: ent.start.z || 0,
+						pointXTarget: ent.end.x,
+						pointYTarget: ent.end.y,
+						pointZTarget: ent.end.z || 0,
+						lineWidth: 1,
+						colour: color,
+					},
+				],
+			});
+		} else if (ent.type === "POLYLINE" || ent.type === "LWPOLYLINE") {
+			const entityName = `polyEntity_${++entityCount.poly}`;
+			kadPolygonsMap.set(entityName, {
+				name: entityName,
+				entityType: "poly",
+				data: [],
+			});
+
+			const dataArray = kadPolygonsMap.get(entityName).data;
+			ent.vertices.forEach((v, i) => {
+				dataArray.push({
+					entityName,
+					entityType: "poly",
+					pointID: i + 1,
+					pointXLocation: v.x,
+					pointYLocation: v.y,
+					pointZLocation: v.z || 0,
+					lineWidth: 1,
+					colour: color,
+				});
+			});
+
+			if (ent.closed || ent.shape) {
+				const v = ent.vertices[0];
+				dataArray.push({
+					entityName,
+					entityType: "poly",
+					pointID: dataArray.length + 1,
+					pointXLocation: v.x,
+					pointYLocation: v.y,
+					pointZLocation: v.z || 0,
+					lineWidth: 1,
+					colour: color,
+				});
+			}
+		} else if (ent.type === "CIRCLE") {
+			const entityName = `circleEntity_${++entityCount.circle}`;
+			kadCirclesMap.set(entityName, {
+				name: entityName,
+				entityType: "circle",
+				data: [
+					{
+						entityName,
+						entityType: "circle",
+						pointID: 1,
+						pointXLocation: ent.center.x,
+						pointYLocation: ent.center.y,
+						pointZLocation: ent.center.z || 0,
+						radius: ent.radius,
+						lineWidth: 1,
+						colour: color,
+					},
+				],
+			});
+		} else if (ent.type === "TEXT" || ent.type === "MTEXT") {
+			const pos = ent.startPoint || ent.textAlignPoint || ent.position;
+			if (!pos) return;
+			const entityName = `textEntity_${++entityCount.text}`;
+			kadTextsMap.set(entityName, {
+				name: entityName,
+				entityType: "text",
+				data: [
+					{
+						entityName,
+						entityType: "text",
+						pointID: 1,
+						pointXLocation: pos.x,
+						pointYLocation: pos.y,
+						pointZLocation: pos.z || 0,
+						text: ent.text,
+						colour: color,
+					},
+				],
+			});
+		}
+	});
+
+	console.log("DXF parsed into KAD maps:", {
+		Points: kadPointsMap,
+		Lines: kadLinesMap,
+		Polygons: kadPolygonsMap,
+		Circles: kadCirclesMap,
+		Texts: kadTextsMap,
+	});
+
+	if (typeof drawData === "function") drawData(points, selectedHole);
+}
+
 function fileFormatPopup(error) {
 	console.log("File format error");
 	Swal.fire({
@@ -2805,9 +2972,9 @@ function fileFormatPopup(error) {
 			confirmButton: "confirm",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			//console.log("Confirmed");
 			return; // Exit the function
@@ -2822,8 +2989,6 @@ const kadPolygonsMap = new Map();
 const kadLinesMap = new Map();
 const kadCirclesMap = new Map();
 const kadTextsMap = new Map();
-
-// ???.kad files are kirra app native files that contain blast hole data and drawing data
 
 function parseKADFile(fileData) {
 	const dataLines = fileData.split("\n");
@@ -2910,7 +3075,7 @@ function parseKADFile(fileData) {
 					kadPointsMap.set(entityName, {
 						entityName: entityName, // Store the entityName
 						entityType: entityType,
-						data: []
+						data: [],
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -2925,7 +3090,7 @@ function parseKADFile(fileData) {
 					pointXLocation: pointXLocation,
 					pointYLocation: pointYLocation,
 					pointZLocation: pointZLocation,
-					colour: colour
+					colour: colour,
 				});
 				break;
 			case "poly":
@@ -2934,7 +3099,7 @@ function parseKADFile(fileData) {
 					kadPolygonsMap.set(entityName, {
 						entityName: entityName, // Store the entityName
 						entityType: entityType,
-						data: []
+						data: [],
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -2951,7 +3116,7 @@ function parseKADFile(fileData) {
 					pointYLocation: pointYLocation,
 					pointZLocation: pointZLocation,
 					lineWidth: lineWidth,
-					colour: colour
+					colour: colour,
 				});
 				break;
 			case "line":
@@ -2960,7 +3125,7 @@ function parseKADFile(fileData) {
 					kadLinesMap.set(entityName, {
 						name: entityName, // Store the entityName
 						entityType: entityType,
-						data: []
+						data: [],
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -2977,7 +3142,7 @@ function parseKADFile(fileData) {
 					pointYLocation: pointYLocation,
 					pointZLocation: pointZLocation,
 					lineWidth: lineWidth,
-					colour: colour
+					colour: colour,
 				});
 				break;
 			case "circle":
@@ -2986,7 +3151,7 @@ function parseKADFile(fileData) {
 					kadCirclesMap.set(entityName, {
 						name: entityName, // Store the entityName
 						entityType: entityType,
-						data: []
+						data: [],
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3005,7 +3170,7 @@ function parseKADFile(fileData) {
 					pointZLocation: pointZLocation,
 					radius: radius,
 					lineWidth: lineWidth,
-					colour: colour
+					colour: colour,
 				});
 				break;
 			case "text":
@@ -3014,7 +3179,7 @@ function parseKADFile(fileData) {
 					kadTextsMap.set(entityName, {
 						name: entityName, // Store the entityName
 						entityType: entityType,
-						data: []
+						data: [],
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3031,7 +3196,7 @@ function parseKADFile(fileData) {
 					pointYLocation: pointYLocation,
 					pointZLocation: pointZLocation,
 					text: text,
-					colour: colour
+					colour: colour,
 				});
 				break;
 			default:
@@ -3160,12 +3325,12 @@ function exportKADFile(mapData) {
 	}
 	// Create a Blob with the CSV content for .kad file
 	const blobKAD = new Blob([csvContentKAD], {
-		type: "text/csv"
+		type: "text/csv",
 	});
 
 	// Create a Blob with the CSV content for .txt file
 	const blobTXT = new Blob([csvContentTXT], {
-		type: "text/plain"
+		type: "text/plain",
 	});
 
 	// Create temporary anchor elements to trigger the download for both files
@@ -3225,7 +3390,8 @@ function convertPointsToAllDataCSV() {
 	let csv = "";
 
 	// Add the CSV header if needed
-	const header = "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
+	const header =
+		"entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
 	csv += header + "\n";
 
 	// Iterate over the points array and convert each object to a CSV row
@@ -3329,7 +3495,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 	//convert now to the computer time zone
 	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
 	let iredesPoints = [];
-	points.forEach(point => {
+	points.forEach((point) => {
 		iredesPoints.push({
 			holeID: point.holeID,
 			startXLocation: point.startXLocation,
@@ -3339,7 +3505,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 			endYLocation: point.endYLocation,
 			endZLocation: point.endZLocation,
 			holeDiameter: point.holeDiameter,
-			holeType: point.holeType
+			holeType: point.holeType,
 		});
 	});
 	iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
@@ -3509,7 +3675,7 @@ function calculateTimes(points) {
 				const combinedFromHoleID = point.fromHoleID;
 				surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
 					time: 0,
-					delay: point.timingDelayMilliseconds
+					delay: point.timingDelayMilliseconds,
 				};
 
 				holeTimes[combinedHoleID] = null;
@@ -3544,7 +3710,7 @@ function calculateTimes(points) {
 		// Update points with hole times
 		for (const [combinedHoleID, time] of result) {
 			const [entityName, holeID] = combinedHoleID.split(":::");
-			const pointIndex = points.findIndex(p => p.entityName === entityName && p.holeID === holeID);
+			const pointIndex = points.findIndex((p) => p.entityName === entityName && p.holeID === holeID);
 			if (pointIndex !== -1) {
 				points[pointIndex].holeTime = time;
 			}
@@ -3614,10 +3780,10 @@ function updateSurfaceTimes(combinedHoleID, time, surfaces, holeTimes, visited =
 // }
 function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 	// Filter out points where holeTime is null
-	const filteredContourData = contourData.filter(point => point.holeTime !== null);
+	const filteredContourData = contourData.filter((point) => point.holeTime !== null);
 
 	// Compute Delaunay triangulation
-	const delaunay = d3.Delaunay.from(filteredContourData.map(point => [point.x, point.y]));
+	const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
 	const triangles = delaunay.triangles; // Access the triangles property directly
 
 	const contourLines = [];
@@ -3669,7 +3835,7 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 		// Process the contour lines (unchanged logic)
 		for (let j = 0; j < 3; j++) {
 			const p1 = contourData[triangles[i + j]];
-			const p2 = contourData[triangles[i + (j + 1) % 3]];
+			const p2 = contourData[triangles[i + ((j + 1) % 3)]];
 
 			// Calculate distance between p1 and p2
 			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
@@ -3696,10 +3862,10 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
 //NOT IN USE - YET
 function delaunayContourBurdenRelief(contourData, maxEdgeLength, angleOfInitiation) {
 	// Filter out points where holeTime is null
-	const filteredContourData = contourData.filter(point => point.holeTime !== null);
+	const filteredContourData = contourData.filter((point) => point.holeTime !== null);
 
 	// Compute Delaunay triangulation
-	const delaunay = d3.Delaunay.from(filteredContourData.map(point => [point.x, point.y]));
+	const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
 	const triangles = delaunay.triangles; // Access the triangles property directly
 
 	const reliefResults = [];
@@ -3742,7 +3908,7 @@ function delaunayContourBurdenRelief(contourData, maxEdgeLength, angleOfInitiati
 		// Store the results
 		reliefResults.push({
 			triangle: triangle, // The triangle points
-			burdenRelief: burdenRelief // Burden relief value
+			burdenRelief: burdenRelief, // Burden relief value
 		});
 	}
 
@@ -3753,7 +3919,7 @@ function interpolate(p1, p2, contourLevel) {
 	const t = (contourLevel - p1.z) / (p2.z - p1.z);
 	return {
 		x: p1.x + t * (p2.x - p1.x),
-		y: p1.y + t * (p2.y - p1.y)
+		y: p1.y + t * (p2.y - p1.y),
 	};
 }
 
@@ -3764,25 +3930,28 @@ function simplifyLine(line, epsilon) {
 	const lastPoint = line[line.length - 1];
 	const lineDistSq = (lastPoint.x - firstPoint.x) ** 2 + (lastPoint.y - firstPoint.y) ** 2;
 
-	const { maxDist, maxDistPoint } = line.slice(1, -1).reduce((result, point, i) => {
-		const distSq = pointToLineDistanceSq(point, firstPoint, lastPoint, lineDistSq);
-		if (distSq > result.maxDist) {
-			return {
-				maxDist: distSq,
-				maxDistPoint: {
-					index: i + 1,
-					point
-				}
-			};
+	const { maxDist, maxDistPoint } = line.slice(1, -1).reduce(
+		(result, point, i) => {
+			const distSq = pointToLineDistanceSq(point, firstPoint, lastPoint, lineDistSq);
+			if (distSq > result.maxDist) {
+				return {
+					maxDist: distSq,
+					maxDistPoint: {
+						index: i + 1,
+						point,
+					},
+				};
+			}
+			return result;
+		},
+		{
+			maxDist: 0,
+			maxDistPoint: {
+				index: 0,
+				point: null,
+			},
 		}
-		return result;
-	}, {
-		maxDist: 0,
-		maxDistPoint: {
-			index: 0,
-			point: null
-		}
-	});
+	);
 
 	if (Math.sqrt(maxDist) > epsilon) {
 		const left = simplifyLine(line.slice(0, maxDistPoint.index + 1), epsilon);
@@ -3820,8 +3989,8 @@ function delaunayTriangles(points, maxEdgeLength) {
 	let resultTriangles = [];
 	let reliefTriangles = [];
 	try {
-		const getX = point => parseFloat(point.startXLocation);
-		const getY = point => parseFloat(point.startYLocation);
+		const getX = (point) => parseFloat(point.startXLocation);
+		const getY = (point) => parseFloat(point.startYLocation);
 
 		// Construct the Delaunay triangulation object
 		const delaunay = Delaunator.from(points, getX, getY);
@@ -3854,13 +4023,13 @@ function delaunayTriangles(points, maxEdgeLength) {
 				resultTriangles.push([
 					[getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
 					[getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-					[getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
+					[getX(p3), getY(p3), p3.startZLocation], // [x, y, z] of point 3
 				]);
 
 				reliefTriangles.push([
 					[getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
 					[getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-					[getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
+					[getX(p3), getY(p3), p3.holeTime], // [x, y, z] of point 3
 				]);
 			}
 		}
@@ -4004,7 +4173,7 @@ function drawHiHole(x, y, radius, fillColour, strokeColour) {
 }
 
 function drawExplosion(x, y, spikes, outerRadius, innerRadius, colour1, colour2) {
-	let rotation = Math.PI / 2 * 3;
+	let rotation = (Math.PI / 2) * 3;
 	let step = Math.PI / spikes;
 	let start = rotation;
 
@@ -4030,9 +4199,9 @@ function drawExplosion(x, y, spikes, outerRadius, innerRadius, colour1, colour2)
 function drawHexagon(x, y, sideLength, fillColour, strokeColour) {
 	ctx.strokeStyle = strokeColour;
 	ctx.beginPath();
-	const rotationAngleRadians = Math.PI / 180 * 30;
+	const rotationAngleRadians = (Math.PI / 180) * 30;
 	for (let i = 0; i < 6; i++) {
-		const angle = rotationAngleRadians + Math.PI / 3 * i;
+		const angle = rotationAngleRadians + (Math.PI / 3) * i;
 		const offsetX = sideLength * Math.cos(angle);
 		const offsetY = sideLength * Math.sin(angle);
 
@@ -4067,7 +4236,7 @@ function drawRightAlignedText(x, y, text, color) {
 function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour, connScale) {
 	try {
 		// Set up the arrow parameters
-		var arrowWidth = firstMovementSize / 4 * currentScale; // Width of the arrowhead
+		var arrowWidth = (firstMovementSize / 4) * currentScale; // Width of the arrowhead
 		var arrowLength = 2 * (firstMovementSize / 4) * currentScale; // Length of the arrowhead
 		var tailWidth = arrowWidth * 0.7; // Width of the tail (adjust as needed)
 		const angle = Math.atan2(endY - startY, endX - startX); // Angle of the arrow
@@ -4080,10 +4249,10 @@ function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour
 		ctx.beginPath();
 
 		// Move to the start point of the arrow
-		ctx.moveTo(startX + tailWidth / 2 * Math.sin(angle), startY - tailWidth / 2 * Math.cos(angle)); // Top-left corner of the tail
+		ctx.moveTo(startX + (tailWidth / 2) * Math.sin(angle), startY - (tailWidth / 2) * Math.cos(angle)); // Top-left corner of the tail
 
 		// Draw to the end point of the tail (top-right corner)
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) + tailWidth / 2 * Math.sin(angle), endY - arrowLength * Math.sin(angle) - tailWidth / 2 * Math.cos(angle));
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) + (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) - (tailWidth / 2) * Math.cos(angle));
 
 		// Draw the right base of the arrowhead
 		ctx.lineTo(endX - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
@@ -4095,10 +4264,10 @@ function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour
 		ctx.lineTo(endX - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle));
 
 		// Draw back to the bottom-right corner of the tail
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) - tailWidth / 2 * Math.sin(angle), endY - arrowLength * Math.sin(angle) + tailWidth / 2 * Math.cos(angle));
+		ctx.lineTo(endX - arrowLength * Math.cos(angle) - (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) + (tailWidth / 2) * Math.cos(angle));
 
 		// Draw to the bottom-left corner of the tail
-		ctx.lineTo(startX - tailWidth / 2 * Math.sin(angle), startY + tailWidth / 2 * Math.cos(angle));
+		ctx.lineTo(startX - (tailWidth / 2) * Math.sin(angle), startY + (tailWidth / 2) * Math.cos(angle));
 
 		ctx.closePath();
 		ctx.fill(); // Fill the arrow with color
@@ -4112,7 +4281,7 @@ function drawArrow(startX, startY, endX, endY, color, connScale) {
 	//console.log(`Drawing arrow from (${startX}, ${startY}) to (${endX}, ${endY}) with color ${color}`);
 	try {
 		// Set up the arrow parameters
-		var arrowWidth = connScale / 4 * currentScale;
+		var arrowWidth = (connScale / 4) * currentScale;
 		var arrowLength = 2 * (connScale / 4) * currentScale;
 
 		// Calculate the angle of the line
@@ -4130,7 +4299,7 @@ function drawArrow(startX, startY, endX, endY, color, connScale) {
 
 		// Draw the arrowhead
 		if (endX == startX && endY == startY) {
-			var size = connScale / 4 * currentScale; // Change this value to adjust the size of the house shape
+			var size = (connScale / 4) * currentScale; // Change this value to adjust the size of the house shape
 			ctx.fillStyle = color;
 			ctx.beginPath();
 			ctx.moveTo(endX, endY); // Apex of the house
@@ -4143,8 +4312,8 @@ function drawArrow(startX, startY, endX, endY, color, connScale) {
 		} else {
 			ctx.beginPath();
 			ctx.moveTo(parseInt(endX), parseInt(endY));
-			ctx.lineTo(endX - arrowLength * Math.cos(Math.PI / 2 * 3 - angle) - arrowWidth * Math.sin(Math.PI / 2 * 3 - angle), endY - arrowLength * Math.sin(Math.PI / 2 * 3 - angle) + arrowWidth * Math.cos(Math.PI / 2 * 3 - angle));
-			ctx.lineTo(endX - arrowLength * Math.cos(Math.PI / 2 * 3 - angle) + arrowWidth * Math.sin(Math.PI / 2 * 3 - angle), endY - arrowLength * Math.sin(Math.PI / 2 * 3 - angle) - arrowWidth * Math.cos(Math.PI / 2 * 3 - angle));
+			ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) - arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) + arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
+			ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) + arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) - arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
 			ctx.closePath();
 			ctx.fill();
 		}
@@ -4193,17 +4362,17 @@ function drawDelauanySlopeMap(triangles, centroid, strokeColour) {
 		const edge1 = {
 			x: tBX - tAX,
 			y: tBY - tAY,
-			z: tBZ - tAZ
+			z: tBZ - tAZ,
 		};
 		const edge2 = {
 			x: tCX - tAX,
 			y: tCY - tAY,
-			z: tCZ - tAZ
+			z: tCZ - tAZ,
 		};
 		const edge3 = {
 			x: tCX - tBX,
 			y: tCY - tBY,
-			z: tCZ - tBZ
+			z: tCZ - tBZ,
 		};
 
 		// Calculate the maximum absolute slope angle for this triangle
@@ -4398,7 +4567,7 @@ function calculateTriangleCentroid(triangle) {
 	const triangleCentroid = {
 		x: (tAX + tBX + tCX) / 3,
 		y: (tAY + tBY + tCY) / 3,
-		z: (tAZ + tBZ + tCZ) / 3
+		z: (tAZ + tBZ + tCZ) / 3,
 	};
 	return triangleCentroid;
 }
@@ -4484,7 +4653,7 @@ function getAngleBetweenEdges(edge1, edge2) {
 	}
 
 	let angle = Math.acos(dotProduct / (magEdge1 * magEdge2));
-	return angle * 180 / Math.PI;
+	return (angle * 180) / Math.PI;
 }
 
 function getDipAngle(triangle) {
@@ -4505,7 +4674,7 @@ function getDipAngle(triangle) {
 	}
 
 	const angleRadians = Math.acos(dotProduct / magNormal);
-	const angleDegrees = angleRadians * 180 / Math.PI;
+	const angleDegrees = (angleRadians * 180) / Math.PI;
 
 	// Calculate the dip angle between the dot product and the horizontal plane (0 degrees)
 	const dipAngle = 180 - angleDegrees;
@@ -4518,7 +4687,7 @@ function getEdgeSlopeAngle(p1, p2) {
 	const dy = p2[1] - p1[1];
 	const dz = p2[2] - p1[2]; // Consider the z-axis difference for vertical deviation
 	const slopeAngleRadians = Math.atan2(dz, Math.sqrt(dx * dx + dy * dy));
-	const slopeAngleDegrees = slopeAngleRadians * 180 / Math.PI;
+	const slopeAngleDegrees = (slopeAngleRadians * 180) / Math.PI;
 	return slopeAngleDegrees;
 }
 
@@ -4534,7 +4703,7 @@ function getAngleBetweenPoints(p1, p2) {
 	const angleRadians = Math.acos((edge1[0] * edge2[0] + edge1[1] * edge2[1] + edge1[2] * edge2[2]) / (vectorMagnitude(edge1) * vectorMagnitude(edge2)));
 
 	// Convert the angle to degrees
-	const angleDegrees = angleRadians * 180 / Math.PI;
+	const angleDegrees = (angleRadians * 180) / Math.PI;
 
 	return angleDegrees;
 }
@@ -4794,12 +4963,12 @@ function getMultipleClickedHoles(clickX, clickY) {
 		}
 	}
 
-	holesWithinThreshold.forEach(hole => {
+	holesWithinThreshold.forEach((hole) => {
 		if (!selectedMultipleHoles.includes(hole)) {
 			selectedMultipleHoles.push(hole);
 			drawData(points, selectedHole);
 		} else {
-			selectedMultipleHoles = selectedMultipleHoles.filter(selectedHole => selectedHole !== hole);
+			selectedMultipleHoles = selectedMultipleHoles.filter((selectedHole) => selectedHole !== hole);
 			// Add UI feedback for deselection here
 		}
 	});
@@ -4821,7 +4990,7 @@ function getMultipleClickedHoles(clickX, clickY) {
 
 	if (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing) {
 		console.log("Selected Multiple Holes: ", selectedMultipleHoles);
-		selectedMultipleHoles.forEach(hole => {
+		selectedMultipleHoles.forEach((hole) => {
 			// Average the values of the selected holes in the selectedMultipleHoles array
 			// Update slider attributes with the averaged values for each attribute
 			// Update the UI labels with the averaged values for each attribute
@@ -4909,7 +5078,7 @@ function handleConnectorClick(event) {
 			} else {
 				selectedHole = clickedHole;
 				const delay = parseInt(document.getElementById("delay").value);
-				const clickedHoleIndex = points.findIndex(point => point === clickedHole);
+				const clickedHoleIndex = points.findIndex((point) => point === clickedHole);
 
 				if (clickedHoleIndex !== -1) {
 					// Use the new combined format for fromHoleID
@@ -5002,7 +5171,7 @@ function connectPointsInLine(pointsInLine) {
 	// Connect each point to the previous point
 	for (let i = 1; i < pointsInLine.length; i++) {
 		const point = pointsInLine[i];
-		const pointIndex = points.findIndex(p => p === point);
+		const pointIndex = points.findIndex((p) => p === point);
 
 		if (pointIndex !== -1) {
 			// Debugging: Log the connection being made
@@ -5111,7 +5280,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 		const newEntity = {
 			entityName: `${entityName}_offset`, // Modify this as needed
 			entityType: entityType,
-			data: []
+			data: [],
 		};
 
 		let prevPoint = null;
@@ -5151,7 +5320,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 				pointYLocation: offsetY,
 				pointZLocation: point.pointZLocation,
 				lineWidth: point.lineWidth,
-				colour: point.colour
+				colour: point.colour,
 			});
 
 			if (extendIfNecessary && prevPoint) {
@@ -5167,7 +5336,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 						pointYLocation: offsetY,
 						pointZLocation: point.pointZLocation,
 						lineWidth: point.lineWidth,
-						colour: point.colour
+						colour: point.colour,
 					});
 				}
 			}
@@ -5240,7 +5409,7 @@ function deleteSelectedAll() {
 
 function deletePointInMap(map, pointToDelete) {
 	for (const [entityName, entity] of map) {
-		const dataIndex = entity.data.findIndex(point => {
+		const dataIndex = entity.data.findIndex((point) => {
 			return point.pointID === pointToDelete.pointID && point.entityName === entityName && point.pointXLocation === pointToDelete.pointXLocation && point.pointYLocation === pointToDelete.pointYLocation;
 		});
 
@@ -5319,7 +5488,7 @@ function deleteSelectedHole() {
 		console.log("Deleting Hole ID:", selectedHole.holeID, "in:", selectedHole.entityName);
 
 		// Filter out the selected hole
-		points = points.filter(point => point !== selectedHole);
+		points = points.filter((point) => point !== selectedHole);
 
 		// Renumber holes if necessary
 		if (isRenumberingHoles) {
@@ -5349,7 +5518,7 @@ function deleteSelectedPattern() {
 	if (isDeletingHole) {
 		if (selectedHole !== null) {
 			// find the selected holeIDs entityName
-			let entityNameToDelete = points.find(point => point === selectedHole).entityName;
+			let entityNameToDelete = points.find((point) => point === selectedHole).entityName;
 
 			// Remove holes with the same entityName from kadHolesMap
 			for (const [entityName, entity] of kadHolesMap) {
@@ -5359,7 +5528,7 @@ function deleteSelectedPattern() {
 			}
 
 			// Remove holes with the same entityName from the points array
-			points = points.filter(point => point.entityName !== entityNameToDelete);
+			points = points.filter((point) => point.entityName !== entityNameToDelete);
 
 			// Reset the selected holeID
 			selectedHole = null;
@@ -5436,7 +5605,7 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
 	const oldToNewHoleIDMap = new Map();
 
 	// Renumber holes and keep track of old to new IDs
-	points.forEach(point => {
+	points.forEach((point) => {
 		if (point.entityName === selectedEntityName) {
 			oldToNewHoleIDMap.set(point.holeID, startNumber);
 			point.holeID = startNumber++;
@@ -5444,7 +5613,7 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
 	});
 
 	// Update fromHoleID references
-	points.forEach(point => {
+	points.forEach((point) => {
 		if (point.fromHoleID) {
 			const [entity, oldHoleID] = point.fromHoleID.split(":::");
 			if (entity === selectedEntityName && oldToNewHoleIDMap.has(oldHoleID)) {
@@ -5532,7 +5701,7 @@ function addKADPoint() {
 			pointXLocation: pointXLocation, //3
 			pointYLocation: pointYLocation, //4
 			pointZLocation: pointZLocation, //5
-			colour: colour //6
+			colour: colour, //6
 		};
 
 		// Add the point to kadPointsMap
@@ -5540,7 +5709,7 @@ function addKADPoint() {
 			kadPointsMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: []
+				data: [],
 			});
 		}
 		kadPointsMap.get(entityName).data.push(pointObject);
@@ -5598,7 +5767,7 @@ function addKADLine() {
 			pointYLocation: pointYLocation,
 			pointZLocation: pointZLocation,
 			lineWidth: lineWidth,
-			colour: colour
+			colour: colour,
 		};
 
 		// Add the point to kadPointsMap
@@ -5606,7 +5775,7 @@ function addKADLine() {
 			kadLinesMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: []
+				data: [],
 			});
 		}
 		kadLinesMap.get(entityName).data.push(lineObject);
@@ -5664,7 +5833,7 @@ function addKADPoly() {
 			pointYLocation: pointYLocation,
 			pointZLocation: pointZLocation,
 			lineWidth: lineWidth,
-			colour: colour
+			colour: colour,
 		};
 
 		// Add the point to kadPointsMap
@@ -5672,7 +5841,7 @@ function addKADPoly() {
 			kadPolygonsMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: []
+				data: [],
 			});
 		}
 		kadPolygonsMap.get(entityName).data.push(polyObject);
@@ -5732,7 +5901,7 @@ function addKADCircle() {
 			pointZLocation: pointZLocation,
 			radius: radius,
 			lineWidth: lineWidth,
-			colour: colour
+			colour: colour,
 		};
 
 		// Add the point to kadPointsMap
@@ -5740,7 +5909,7 @@ function addKADCircle() {
 			kadCirclesMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: []
+				data: [],
 			});
 		}
 		kadCirclesMap.get(entityName).data.push(circleObject);
@@ -5802,7 +5971,7 @@ function addKADText() {
 			pointYLocation: pointYLocation,
 			pointZLocation: pointZLocation,
 			text: text,
-			colour: colour
+			colour: colour,
 		};
 
 		// Add the point to kadPointsMap
@@ -5810,7 +5979,7 @@ function addKADText() {
 			kadTextsMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: []
+				data: [],
 			});
 		}
 		kadTextsMap.get(entityName).data.push(textObject);
@@ -6025,7 +6194,7 @@ function saveAQMPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
+			icon: "swal2-icon",
 		},
 		preConfirm: () => {
 			// Get user input values
@@ -6080,8 +6249,8 @@ function saveAQMPopup() {
 			savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
 			savedAQMPopupSettings.columnOrderArray = columnOrderArray;
 			localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-		}
-	}).then(result => {
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
 			const fileNameInput = document.getElementById("fileName");
@@ -6107,8 +6276,8 @@ function saveAQMPopup() {
 						confirmButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon"
-					}
+						icon: "swal2-icon",
+					},
 				});
 				return; // Exit the function
 			}
@@ -6144,7 +6313,7 @@ function saveAQMPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([aqm], {
-					type: "text/csv;charset=utf-8"
+					type: "text/csv;charset=utf-8",
 				});
 				// Create a URL for the Blob
 				const url = URL.createObjectURL(blob);
@@ -6263,9 +6432,9 @@ function saveIREDESPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
 			const fileNameInput = document.getElementById("fileName");
@@ -6300,8 +6469,8 @@ function saveIREDESPopup() {
 						//cancelButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon"
-					}
+						icon: "swal2-icon",
+					},
 				});
 				return; // Exit the function
 			}
@@ -6311,7 +6480,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Plan ID",
 					text: "Please enter a Drill Plan ID.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6321,7 +6490,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Site ID",
 					text: "Please enter a Site ID.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6332,7 +6501,7 @@ function saveIREDESPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([xmlContent], {
-					type: "text/xml;charset=utf-8"
+					type: "text/xml;charset=utf-8",
 				});
 
 				// Create a URL for the Blob
@@ -6388,7 +6557,7 @@ function addHolePopup() {
 		type: savedAddHolePopupSettings.type || "Production",
 		length: savedAddHolePopupSettings.length || 0,
 		angle: savedAddHolePopupSettings.angle || 0,
-		bearing: savedAddHolePopupSettings.bearing || 0
+		bearing: savedAddHolePopupSettings.bearing || 0,
 	};
 
 	Swal.fire({
@@ -6425,9 +6594,9 @@ function addHolePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
 			const customHoleID = document.getElementById("customHoleID").value;
@@ -6447,8 +6616,8 @@ function addHolePopup() {
 						cancelButton: "Try Again",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "error"
-					}
+						icon: "error",
+					},
 				});
 				return; // Exit the function
 			}
@@ -6461,7 +6630,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid Diameter",
 					text: "Please enter an diameter between 0 and 1000 millimeters.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6473,7 +6642,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid Type",
 					text: "Please enter a Type.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6484,7 +6653,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid Elevation",
 					text: "Please enter an elevation between -2000 and 8000 meters.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6495,7 +6664,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid length",
 					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6507,7 +6676,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid Angle",
 					text: "Please enter an angle between 0 and 60 degrees.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6519,7 +6688,7 @@ function addHolePopup() {
 				Swal.fire({
 					title: "Invalid Bearing",
 					text: "Please enter an bearing between 0 and 360 degrees.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			}
@@ -6533,7 +6702,7 @@ function addHolePopup() {
 				type: typeValue,
 				length: lengthValue,
 				angle: angleValue,
-				bearing: bearingValue
+				bearing: bearingValue,
 			};
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
@@ -6594,7 +6763,7 @@ function addPatternPopup(worldX, worldY) {
 		burden: savedAddPatternPopupSettings.burden || 3.0,
 		spacing: savedAddPatternPopupSettings.spacing || 3.3,
 		rows: savedAddPatternPopupSettings.rows || 6,
-		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
+		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10,
 	};
 
 	//${lastValues.}
@@ -6652,10 +6821,10 @@ function addPatternPopup(worldX, worldY) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
+			icon: "swal2-icon",
+		},
 	})
-		.then(result => {
+		.then((result) => {
 			if (result.isConfirmed) {
 				// Retrieve values from the input fields
 				const entityName = document.getElementById("blastName").value;
@@ -6682,7 +6851,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6692,7 +6861,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Offset",
 						text: "Please enter an offset between -1 and 1.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6702,7 +6871,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Name Type",
 						text: "Please enter a Name Type.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6712,7 +6881,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Row Orientation",
 						text: "Please enter a row orientation between 0 and 359.999 degrees.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6722,7 +6891,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid X",
 						text: "Please enter an X value in meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6732,7 +6901,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Y",
 						text: "Please enter an Y value in meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6742,7 +6911,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Z",
 						text: "Please enter an Z value in meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6752,7 +6921,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Diameter",
 						text: "Please enter an diameter between 0 and 1000 millimeters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6762,7 +6931,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Type",
 						text: "Please enter a Type.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6772,7 +6941,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Angle",
 						text: "Please enter an angle between 0 and 60 degrees.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6782,7 +6951,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Bearing",
 						text: "Please enter an bearing between 0 and 360 degrees.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6792,7 +6961,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Length",
 						text: "Please enter an length between 0 and 200 meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6802,7 +6971,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Burden",
 						text: "Please enter an burden between 0.1 and 50 meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6812,7 +6981,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Spacing",
 						text: "Please enter an spacing between 0.1 and 50 meters.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6822,7 +6991,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Rows",
 						text: "Please enter an rows between 1 and 500.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6832,7 +7001,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Holes Per Row",
 						text: "Please enter an holes per row between 1 and 500.",
-						icon: "error"
+						icon: "error",
 					});
 					return; // Exit the function
 				}
@@ -6853,7 +7022,7 @@ function addPatternPopup(worldX, worldY) {
 					burden: burden,
 					spacing: spacing,
 					rows: rows,
-					holesPerRow: holesPerRow
+					holesPerRow: holesPerRow,
 				};
 				localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
@@ -6978,7 +7147,7 @@ function incrementLetter(str) {
 
 async function editBlastNamePopupAsync() {
 	if (selectedHole) {
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (index !== -1) {
 			clickedHole = points[index];
 			blastNameValue = clickedHole.entityName;
@@ -7003,8 +7172,8 @@ async function editBlastNamePopupAsync() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
+			icon: "swal2-icon",
+		},
 	});
 
 	if (result.isConfirmed) {
@@ -7022,8 +7191,8 @@ async function editBlastNamePopupAsync() {
 					confirmButton: "confirm",
 					content: "swal2-content",
 					htmlContainer: "swal2-html-container",
-					icon: "swal2-icon"
-				}
+					icon: "swal2-icon",
+				},
 			});
 			return editBlastNamePopupAsync(); // Open the popup again
 		}
@@ -7053,9 +7222,9 @@ function editHoleLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
 			const lengthValue = parseFloat(lengthInput.value);
@@ -7064,12 +7233,12 @@ function editHoleLengthPopup() {
 				Swal.fire({
 					title: "Invalid length",
 					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error"
+					icon: "error",
 				});
 				return; // Exit the function
 			} else if (selectedHole) {
 				// Use the obtained values to add the hole
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
@@ -7115,15 +7284,15 @@ function measuredLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
 			const lengthValue = parseFloat(lengthInput.value);
 			if (selectedHole) {
 				console.log("selectedHole: " + selectedHole.holeID + " | Hole Length : " + lengthValue + "m");
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//set the pointstype to the new value
@@ -7158,15 +7327,15 @@ function measuredMassPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const massInput = document.getElementById("mass");
 			const massValue = massInput.value;
 			if (selectedHole) {
 				// Use the obtained values to add the hole
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//set the pointstype to the new value
@@ -7185,7 +7354,7 @@ function measuredMassPopup() {
 function measuredCommentPopup() {
 	if (selectedHole) {
 		// Use the obtained values to add the hole
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (index !== -1) {
 			clickedHole = points[index];
 		}
@@ -7211,15 +7380,15 @@ function measuredCommentPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const commentInput = document.getElementById("comment");
 			const commentValue = commentInput.value;
 			if (selectedHole) {
 				// Use the obtained values to add the hole
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//set the pointstype to the new value
@@ -7264,7 +7433,7 @@ function handleBlastNameClick(event) {
 }
 function editBlastNamePopup(selectedHole) {
 	if (selectedHole) {
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (index !== -1) {
 			clickedHole = points[index];
 			blastNameValue = clickedHole.entityName;
@@ -7291,15 +7460,15 @@ function editBlastNamePopup(selectedHole) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const blastNameInput = document.getElementById("blastName");
 			blastNameValue = blastNameInput.value.trim();
 			const allHoleBlastNames = document.getElementById("allHoleBlastNames").checked;
 			allHoleBlastNamesValue = allHoleBlastNames;
-			const index = points.findIndex(point => point === selectedHole);
+			const index = points.findIndex((point) => point === selectedHole);
 			if (index !== -1) {
 				drawData(points, selectedHole);
 				// Get the current entity name before any changes
@@ -7314,7 +7483,7 @@ function editBlastNamePopup(selectedHole) {
 				}
 				if (allHoleBlastNamesValue === true) {
 					// Update all holes with the same current entity name
-					points.forEach(point => {
+					points.forEach((point) => {
 						if (point.entityName === currentEntityName) {
 							console.log("Before:point.fromHoleID : " + point.fromHoleID);
 							point.entityName = blastNameValue;
@@ -7331,7 +7500,7 @@ function editBlastNamePopup(selectedHole) {
 				if (!pointsMap.has(point.entityName)) {
 					pointsMap.set(point.entityName, {
 						entityName: point.entityName,
-						data: []
+						data: [],
 					});
 				}
 				pointsMap.get(point.entityName).data.push(point);
@@ -7348,7 +7517,7 @@ function editBlastNamePopup(selectedHole) {
 function editHoleTypePopup() {
 	if (selectedHole) {
 		// Use the obtained values to add the hole
-		const index = points.findIndex(point => point === selectedHole);
+		const index = points.findIndex((point) => point === selectedHole);
 		if (index !== -1) {
 			clickedHole = points[index];
 		}
@@ -7374,15 +7543,15 @@ function editHoleTypePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then(result => {
+			icon: "swal2-icon",
+		},
+	}).then((result) => {
 		if (result.isConfirmed) {
 			const typeInput = document.getElementById("type");
 			const typeValue = typeInput.value;
 			if (selectedHole) {
 				// Use the obtained values to add the hole
-				const index = points.findIndex(point => point === selectedHole);
+				const index = points.findIndex((point) => point === selectedHole);
 				if (index !== -1) {
 					clickedHole = points[index];
 					//set the pointstype to the new value
@@ -7425,8 +7594,8 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
 	startXLocation = parseFloat(startXLocation);
 	startYLocation = parseFloat(startYLocation);
 	startZLocation = parseFloat(startZLocation);
-	let endXLocation = parseFloat(startXLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos((450 - bearing) % 360 * (Math.PI / 180)));
-	let endYLocation = parseFloat(startYLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin((450 - bearing) % 360 * (Math.PI / 180)));
+	let endXLocation = parseFloat(startXLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
+	let endYLocation = parseFloat(startYLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
 	let endZLocation = parseFloat(startZLocation - length * Math.cos(angle * (Math.PI / 180)));
 	// Check if endXLocation, endYLocation, or endZLocation is NaN
 	if (isNaN(endXLocation)) {
@@ -7487,7 +7656,7 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
 		measuredMass: measuredMass,
 		measuredMassTimeStamp: measuredMassTimeStamp,
 		measuredComment: measuredComment,
-		measuredCommentTimeStamp: measuredCommentTimeStamp
+		measuredCommentTimeStamp: measuredCommentTimeStamp,
 	});
 	console.log("Added Hole: " + newHoleID);
 	console.log(
@@ -7548,7 +7717,7 @@ function debugPoints(points) {
 		if (!pointsMap.has(point.entityName)) {
 			pointsMap.set(point.entityName, {
 				entityName: point.entityName,
-				data: []
+				data: [],
 			});
 		}
 		pointsMap.get(point.entityName).data.push(point);
@@ -8055,13 +8224,13 @@ function recalculateContours(points, deltaX, deltaY) {
 			const [entityName, holeID] = holeTimes[i][0].split(":::");
 			const time = holeTimes[i][1];
 
-			const point = points.find(p => p.entityName === entityName && p.holeID === holeID);
+			const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
 
 			if (point) {
 				contourData.push({
 					x: point.startXLocation,
 					y: point.startYLocation,
-					z: time
+					z: time,
 				});
 			}
 		}
@@ -8070,7 +8239,7 @@ function recalculateContours(points, deltaX, deltaY) {
 			throw new Error("No valid contour data points found.");
 		}
 
-		const maxHoleTime = Math.max(...contourData.map(point => point.z));
+		const maxHoleTime = Math.max(...contourData.map((point) => point.z));
 
 		// Calculate contour lines and store them in contourLinesArray
 		contourLinesArray = [];
@@ -8082,7 +8251,7 @@ function recalculateContours(points, deltaX, deltaY) {
 		for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
 			const { contourLines, directionArrows } = delaunayContours(contourData, contourLevel, maxEdgeLength);
 			const epsilon = 1; // Adjust this value to control the level of simplification
-			const simplifiedContourLines = contourLines.map(line => simplifyLine(line, epsilon));
+			const simplifiedContourLines = contourLines.map((line) => simplifyLine(line, epsilon));
 			contourLinesArray.push(simplifiedContourLines);
 
 			//console.log("contourLinesArray: ", contourLinesArray);
@@ -8104,12 +8273,12 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 	let holeBearing = clickedHole.holeBearing;
 	let endX, endY, endZ;
 	// Include entityName in the search to get the index of the clicked hole within the points array
-	const index = points.findIndex(point => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
+	const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
 
 	if (modeLAB === 1) {
 		//Length
-		endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos((450 - holeBearing) % 360 * (Math.PI / 180));
-		endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin((450 - holeBearing) % 360 * (Math.PI / 180));
+		endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+		endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
 		endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
 		// Update the points array with the new values
 		if (index !== -1) {
@@ -8123,8 +8292,8 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 	} else if (modeLAB === 2) {
 		//hole angle
 		//calculate the endXYZ based on the new hole angle
-		endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos((450 - holeBearing) % 360 * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin((450 - holeBearing) % 360 * (Math.PI / 180));
+		endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+		endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
 		endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
 		//Update the points array with the new values
 		if (index !== -1) {
@@ -8135,8 +8304,8 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 		}
 	} else if (modeLAB === 3) {
 		//Calculate the endXYZ based on the new hole bearing
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos((450 - newValue) % 360 * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin((450 - newValue) % 360 * (Math.PI / 180));
+		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
+		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
 		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
 		//Update the points array with the new values
 		if (index !== -1) {
@@ -8151,8 +8320,8 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 		clickedHole.startXLocation = newValue;
 		clickedHole.endXLocation += deltaX;
 		//calculate the new toe XYZ based on the new startXlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos((450 - holeBearing) % 360 * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin((450 - holeBearing) % 360 * (Math.PI / 180));
+		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
 		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
 		// Update the points array with the new values
 		if (index !== -1) {
@@ -8167,8 +8336,8 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 		clickedHole.startYLocation = newValue;
 		clickedHole.endYLocation += deltaY;
 		//calculate the new toe XYZ based on the new startYlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos((450 - holeBearing) % 360 * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin((450 - holeBearing) % 360 * (Math.PI / 180));
+		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
 		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
 		// Update the points array with the new values
 		if (index !== -1) {
@@ -8183,8 +8352,8 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 		clickedHole.startZLocation = newValue;
 		clickedHole.endZLocation += deltaZ;
 		//calculate the new toe XYZ based on the new startZlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos((450 - holeBearing) % 360 * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin((450 - holeBearing) % 360 * (Math.PI / 180));
+		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
 		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
 
 		// Update the points array with the new values
@@ -8205,13 +8374,13 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 	return {
 		endX,
 		endY,
-		endZ
+		endZ,
 	};
 }
 
 function timeChart() {
 	if (Array.isArray(holeTimes)) {
-		const times = holeTimes.map(time => time[1]);
+		const times = holeTimes.map((time) => time[1]);
 		const maxTime = Math.max(...times);
 		const timeRange = parseInt(document.getElementById("timeRange").value);
 		const numBins = Math.ceil(maxTime / timeRange);
@@ -8231,10 +8400,12 @@ function timeChart() {
 			responsive: true,
 			displayModeBar: true,
 			modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
+			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
 		};
 
-		const binEdges = Array(numBins).fill(0).map((_, index) => index * timeRange);
+		const binEdges = Array(numBins)
+			.fill(0)
+			.map((_, index) => index * timeRange);
 
 		// Create an array to store the holeID for each bin
 		const holeIDs = Array(numBins).fill(null);
@@ -8246,24 +8417,24 @@ function timeChart() {
 			holeIDs[binIndex].push(`${point.entityName}:${point.holeID}`);
 		}
 		// Create an array to store the concatenated holeID strings for each bin
-		const holeIDTexts = holeIDs.map(ids => (ids ? ids.join(", ") : ""));
+		const holeIDTexts = holeIDs.map((ids) => (ids ? ids.join(", ") : ""));
 
 		// Create text for hover labels using entity name and hole ID
-		const entityholeIDTexts = holeIDs.map(bin => {
+		const entityholeIDTexts = holeIDs.map((bin) => {
 			if (bin) {
 				return bin
-					.map(combinedID => {
+					.map((combinedID) => {
 						// Split the combinedID into entityName and holeID
 						const [entityName, holeID] = combinedID.split(":");
 						// Find the point associated with both entityName and holeID
-						const point = points.find(p => p.entityName === entityName && p.holeID === holeID);
+						const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
 						// Check if point is found to avoid undefined values
 						if (point) {
 							return `${point.entityName}:${point.holeID}`;
 						}
 						return "";
 					})
-					.filter(text => text) // Filter out any empty strings
+					.filter((text) => text) // Filter out any empty strings
 					.join(", ");
 			} else {
 				return "";
@@ -8278,12 +8449,12 @@ function timeChart() {
 				y: counts,
 				type: "bar",
 				marker: {
-					color: defaultColour
+					color: defaultColour,
 				},
 				// Use the holeIDs array as the text property for hover labels
 				text: entityholeIDTexts, //holeIDTexts,
-				hoverinfo: "y+text" // Show the y-value and the custom text when hovering
-			}
+				hoverinfo: "y+text", // Show the y-value and the custom text when hovering
+			},
 		];
 		const maxHolesPerBin = Math.max(...counts); // Calculate the maximum holes per bin
 		// Add 1 to provide space at the top
@@ -8293,53 +8464,53 @@ function timeChart() {
 				text: "Time Window Chart",
 				xanchor: "right",
 				font: {
-					size: 10 // Set the title font size
-				}
+					size: 10, // Set the title font size
+				},
 			},
 			plot_bgcolor: noneColour,
 			paper_bgcolor: noneColour,
 			font: {
-				color: textFillColour
+				color: textFillColour,
 			},
 			modebar: {
 				orientation: "v",
 				bgcolor: noneColour,
 				color: "rgba(255, 0, 0, 0.4)",
 				activecolor: "red",
-				position: "left"
+				position: "left",
 			},
 			margin: {
 				l: 5,
 				r: 50,
 				b: 25,
 				t: 25,
-				pad: 2
+				pad: 2,
 			},
 			xaxis: {
 				title: {
 					text: "milliseconds (ms)",
 					font: {
-						size: 10 // Set the y-axis label font size
-					}
+						size: 10, // Set the y-axis label font size
+					},
 				},
-				showgrid: true
+				showgrid: true,
 			},
 			yaxis: {
 				title: {
 					text: "Holes Firing",
 					font: {
-						size: 10 // Set the y-axis label font size
-					}
+						size: 10, // Set the y-axis label font size
+					},
 				},
 				showgrid: true,
 				//set the yaxis title to the right of the chart
 				automargin: true,
 				//set the font size of the yaxis title
-				range: [0, maxYValue - 0.5]
+				range: [0, maxYValue - 0.5],
 				// Ensure y-axis values are whole integers
 			},
 			height: 380,
-			width: 280
+			width: 280,
 		};
 
 		Plotly.newPlot("timeChart", data, layout, config);
@@ -8349,22 +8520,22 @@ function timeChart() {
 		// Outside of your event listener, define a variable to keep track of the last clicked index
 		let lastClickedIndex = null;
 		// Box and Lasso Selection Listener
-		chart.on("plotly_selected", function(eventData) {
+		chart.on("plotly_selected", function (eventData) {
 			if (eventData && eventData.points) {
-				const selectedPoints = eventData.points.map(p => p.pointNumber);
+				const selectedPoints = eventData.points.map((p) => p.pointNumber);
 				const newColours = defaultColour.map((color, index) => (selectedPoints.includes(index) ? "lime" : color));
 				Plotly.restyle("timeChart", { "marker.color": [newColours] });
 
 				timingWindowHolesSelected = selectedPoints
-					.flatMap(index => {
+					.flatMap((index) => {
 						return holeIDs[index]
-							? holeIDs[index].map(combinedID => {
+							? holeIDs[index].map((combinedID) => {
 									const [entityName, holeID] = combinedID.split(":");
-									return points.find(p => p.entityName === entityName && p.holeID === holeID);
-								})
+									return points.find((p) => p.entityName === entityName && p.holeID === holeID);
+							  })
 							: [];
 					})
-					.filter(point => point !== undefined);
+					.filter((point) => point !== undefined);
 
 				console.log("Selected Holes:", timingWindowHolesSelected);
 				drawData(points, selectedHole);
@@ -8376,7 +8547,7 @@ function timeChart() {
 		});
 
 		// Single Bar Click Event
-		chart.on("plotly_click", function(data) {
+		chart.on("plotly_click", function (data) {
 			if (data.points && data.points.length > 0) {
 				const clickedIndex = data.points[0].pointIndex;
 				const clickedBarColor = "lime";
@@ -8398,11 +8569,11 @@ function timeChart() {
 
 				timingWindowHolesSelected = holeIDs[clickedIndex]
 					? holeIDs[clickedIndex]
-							.map(combinedID => {
+							.map((combinedID) => {
 								const [entityName, holeID] = combinedID.split(":");
-								return points.find(p => p.entityName === entityName && p.holeID === holeID);
+								return points.find((p) => p.entityName === entityName && p.holeID === holeID);
 							})
-							.filter(point => point !== undefined)
+							.filter((point) => point !== undefined)
 					: [];
 
 				console.log("timingWindowHolesSelected:", timingWindowHolesSelected);
@@ -8415,7 +8586,7 @@ function timeChart() {
 		});
 
 		// Reset Selection Event
-		chart.on("plotly_deselect", function() {
+		chart.on("plotly_deselect", function () {
 			// Reset the bar colors to the default color
 			Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
 
@@ -8442,7 +8613,7 @@ const playButton = document.getElementById("play");
 playButton.addEventListener("click", () => {
 	refreshPoints();
 	updatePlaySpeed(); // Update play speed
-	const maxTime = Math.max(...holeTimes.map(time => time[1])); // Get the max time
+	const maxTime = Math.max(...holeTimes.map((time) => time[1])); // Get the max time
 	isPlaying = true;
 	// Clear previous animation interval before starting a new one
 	clearInterval(animationInterval);
@@ -8457,7 +8628,7 @@ playButton.addEventListener("click", () => {
 	// Start the animation loop
 	animationInterval = setInterval(() => {
 		if (currentTime <= maxTime + (playSpeed + playSpeed * 15)) {
-			timingWindowHolesSelected = points.filter(point => point.holeTime <= currentTime);
+			timingWindowHolesSelected = points.filter((point) => point.holeTime <= currentTime);
 			drawData(points, timingWindowHolesSelected); // Call drawPoints with the updated selectedHolesArray
 			currentTime += animationStep;
 		} else {
@@ -8752,17 +8923,17 @@ function drawData(points, selectedHole) {
 				drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, strokeColour);
 			}
 			// Highlight for the animation
-			if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find(p => p.entityName === point.entityName && p.holeID === point.holeID)) {
+			if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
 				const highlightColor = "rgba(255, 150, 0, 0.7)"; // Color for playing animation
 				const highlightColor2 = "rgba(200, 200, 0, 0.7)"; // Color for playing animation
-				drawHiHole(x, y, 10 + parseInt(point.holeDiameter / 400 * holeScale * currentScale), highlightColor, highlightColor);
+				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 400) * holeScale * currentScale), highlightColor, highlightColor);
 				//drawHexagon(x, y, 10 + parseInt(point.holeDiameter / 200 * holeScale * currentScale), highlightColor, highlightColor);
 				//drawExplosion(x, y, 10, 10 + parseInt(point.holeDiameter / 150 * holeScale * currentScale), 10 + parseInt(point.holeDiameter / 450 * holeScale * currentScale), highlightColor2, highlightColor);
 			}
 
 			// Highlight for timeChart selection
-			if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find(p => p.entityName === point.entityName && p.holeID === point.holeID)) {
-				drawHiHole(x, y, 10 + parseInt(point.holeDiameter / 500 * holeScale * currentScale), "red", "red");
+			if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "red", "red");
 			}
 
 			ctx.lineWidth = 1; // Reset stroke width for non-selected holes
@@ -8773,7 +8944,7 @@ function drawData(points, selectedHole) {
 				drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
 			}
 			// Text offset based on hole diameter
-			const textOffset = parseInt(point.holeDiameter / 1000 * holeScale * currentScale);
+			const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
 			// Right/Left side of the hole
 			const leftSideToe = parseInt(lineEndX) - textOffset;
 			const rightSideToe = parseInt(lineEndX) + textOffset;
@@ -8813,9 +8984,9 @@ function drawData(points, selectedHole) {
 			if (connector_display) {
 				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
 				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
+				const fromHole = points.find((point) => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
 				const startPoint = fromHole;
-				const endPoint = points.find(point => point === points[i]);
+				const endPoint = points.find((point) => point === points[i]);
 
 				if (startPoint && endPoint) {
 					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
@@ -8836,9 +9007,9 @@ function drawData(points, selectedHole) {
 			if (delayValue_display) {
 				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
 				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find(point => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
+				const fromHole = points.find((point) => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
 				const startPoint = fromHole;
-				const endPoint = points.find(point => point === points[i]);
+				const endPoint = points.find((point) => point === points[i]);
 
 				if (startPoint && endPoint) {
 					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
@@ -8876,7 +9047,7 @@ function drawData(points, selectedHole) {
 
 			if (selectedHole != null && selectedHole == points[i]) {
 				if (firstSelectedHole == null) {
-					drawHiHole(x, y, 10 + parseInt(points[i].holeDiameter / 900 * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
+					drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
 					ctx.fillStyle = "rgba(255, 0, 150, .8)";
 					ctx.font = "18px Arial"; // Set the font size for the selected hole text
 					if (isDiameterEditing || isLengthEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole) {
@@ -8885,7 +9056,7 @@ function drawData(points, selectedHole) {
 						ctx.fillText("2nd Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName, 2, 20);
 					}
 				} else {
-					drawHiHole(x, y, 10 + parseInt(points[i].holeDiameter / 900 * holeScale * currentScale), "rgba(0, 255, 0, 0.2)", "rgba(0, 190, 0, .8)");
+					drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(0, 255, 0, 0.2)", "rgba(0, 190, 0, .8)");
 					ctx.fillStyle = "rgba(0, 190, 0, .8)";
 					ctx.font = "18px Arial"; // Set the font size for the selected hole text
 					ctx.fillText("1st Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName, 2, 20);
@@ -8897,11 +9068,11 @@ function drawData(points, selectedHole) {
 				} else if (points[i].holeDiameter == 0) {
 					drawNoDiameterHole(x, y, 10, strokeColour);
 				} else {
-					drawHole(x, y, parseInt(points[i].holeDiameter / 1000 * currentScale * holeScale), fillColour, strokeColour);
+					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
 				}
-			} else if (selectedMultipleHoles != null && selectedMultipleHoles.find(p => p.entityName === point.entityName && p.holeID === point.holeID)) {
+			} else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
 				// Highlight for selected holes
-				drawHiHole(x, y, 10 + parseInt(points[i].holeDiameter / 900 * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
+				drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
 				ctx.fillText("Editing Selected Holes: " + selectedMultipleHoles.holeID, 2, 20);
 				ctx.lineWidth = 1; // Reset stroke width for non-selected holes
 				ctx.strokeStyle = strokeColour; // Reset stroke color for non-selected holes
@@ -8910,7 +9081,7 @@ function drawData(points, selectedHole) {
 				} else if (points[i].holeDiameter == 0) {
 					drawNoDiameterHole(x, y, 10, strokeColour);
 				} else {
-					drawHole(x, y, parseInt(points[i].holeDiameter / 1000 * currentScale * holeScale), fillColour, strokeColour);
+					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
 				}
 			} else {
 				ctx.lineWidth = 1; // Reset stroke width for non-selected holes
@@ -8920,7 +9091,7 @@ function drawData(points, selectedHole) {
 				} else if (points[i].holeDiameter == 0) {
 					drawNoDiameterHole(x, y, 10, strokeColour);
 				} else {
-					drawHole(x, y, parseInt(points[i].holeDiameter / 1000 * currentScale * holeScale), fillColour, strokeColour);
+					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
 				}
 			}
 
@@ -8937,7 +9108,7 @@ function getMousePos(canvas, evt) {
 	lastMouseY = evt.clientY;
 	return {
 		x: evt.clientX - rect.left,
-		y: evt.clientY - rect.top
+		y: evt.clientY - rect.top,
 	};
 }
 
@@ -8968,7 +9139,7 @@ function resetZoom() {
 ///SAVE and LOAD POINTS ARRAY TO LOCAL STORAGE /////////////////////////////////
 function saveHolesToLocalStorage(points) {
 	if (points !== null) {
-		const lines = points.map(point => {
+		const lines = points.map((point) => {
 			//01 = ${point.entityName},
 			//02 = ${point.entityType},
 			//03 = ${point.holeID},
@@ -9191,7 +9362,7 @@ function clearLoadedData() {
 	localStorage.removeItem("kirraDataPoints");
 }
 // Listen for changes in the kirraDataPoints key
-window.addEventListener("storage", function(event) {
+window.addEventListener("storage", function (event) {
 	if (event.key === "kirraDataPoints") {
 		console.log("kirraDataPoints changed");
 	} else {
@@ -9404,7 +9575,7 @@ function openNavRight() {
 		sidenavRight.style.height = "350px";
 		//resize the timechart
 		plotly.relayout("timeChart", {
-			width: 280
+			width: 280,
 		});
 	} else {
 		body.style.marginRight = "315px"; // Push body to the left
@@ -9418,7 +9589,7 @@ function openNavRight() {
 		timeChart();
 		newWidthRight = 315;
 		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50
+			width: newWidthRight - 50,
 		});
 	}
 }
@@ -9487,7 +9658,8 @@ function updatePopup() {
 	</svg>
 		<br>
 			<label class="labelWhite18">Update:</label>
-			<br><label class="labelWhite18">NEW FEATURES - Simple Burden Relief </label>
+			<br><label class="labelWhite18">NEW FEATURES - DXF Support - BETA </label>
+			<br><label class="labelWhite18">             - localisation Support </label>
 			<br><label class="labelWhite12c"> </label>
 			<br><label class="labelWhite12c">EXISTING BUGS - Northing Adjust On/Off.</label>
 			<br><label class="labelWhite12c">IMPROVEMENT - Help! User Manual Link</label>
@@ -9506,14 +9678,14 @@ function updatePopup() {
           <button class="button-bug">Report Bug / Request Feature</button>
         </a>
 	  `,
-		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
-	}).then(result => {
+		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" },
+	}).then((result) => {
 		if (result.isConfirmed) {
 		}
 	});
 }
 // Add an event listener for the "DOMContentLoaded" event
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 	// Call the updatePopup function when the page is fully loaded
 	updatePopup();
 });
