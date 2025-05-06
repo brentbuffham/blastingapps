@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20240917 @ 2204 AWST
+// Last Modified: 20250506 @ 2224 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -2767,23 +2767,7 @@ function parseCSV(data, blastNameValue) {
 			//return points;
 		}
 	}
-	// Set the centroid to the center of the data
-	//NOT IN USE YET
-	//convert points array to the holeKadMap
-	//for (let i = 0; i < points.length; i++) {
-	//	const holeID = points[i].holeID;
-	//	const entityName = points[i].entityName;
-	//	const entityType = points[i].entityType;
-	//
-	//	if (!kadHolesMap.has(entityName)) {
-	//		kadHolesMap.set(entityName, {
-	//			entityName: entityName,
-	//			entityType: entityType,
-	//			data: []
-	//		});
-	//	}
-	//	kadHolesMap.get(entityName).data.push(points[i]);
-	//}
+
 	calculateTimes(points);
 	return points;
 }
@@ -2807,150 +2791,261 @@ async function handleDXFUpload(event) {
 	reader.readAsText(file);
 }
 
-// DXF entity parser with unique entities and fixed color mapping
 function parseDXFtoKadMaps(dxf) {
-	const gradientColors = ["#880000", "#FF0000", "#FF8000", "#FFFF00", "#40FF00", "#00FFFF", "#00BFFF", "#0080FF", "#BF00FF"];
-
-	function getDXFColor(colorIndex) {
-		if (!colorIndex || colorIndex < 1) return "#000000";
-		return gradientColors[(colorIndex - 1) % gradientColors.length];
-	}
-
-	let entityCount = {
-		point: 0,
-		line: 0,
-		poly: 0,
-		circle: 0,
-		text: 0,
+	// 1) seed counters so we never collide with existing entries
+	var counts = {
+		point: kadPointsMap.size,
+		line: kadLinesMap.size,
+		poly: kadPolygonsMap.size,
+		circle: kadCirclesMap.size,
+		text: kadTextsMap.size,
 	};
 
-	dxf.entities.forEach((ent) => {
-		const color = getDXFColor(ent.color);
+	// 2) kirra.js centroid offsets
+	var offsetX = 0; //centroidX || 0;
+	var offsetY = 0; //centroidY || 0;
 
-		if (ent.type === "POINT") {
-			const entityName = `pointEntity_${++entityCount.point}`;
-			kadPointsMap.set(entityName, {
-				name: entityName,
-				entityType: "point",
-				data: [
-					{
-						entityName,
-						entityType: "point",
-						pointID: 1,
-						pointXLocation: ent.position.x,
-						pointYLocation: ent.position.y,
-						pointZLocation: ent.position.z || 0,
-						colour: color,
-					},
-				],
-			});
-		} else if (ent.type === "LINE") {
-			const entityName = `lineEntity_${++entityCount.line}`;
-			kadLinesMap.set(entityName, {
-				name: entityName,
-				entityType: "line",
-				data: [
-					{
-						entityName,
-						entityType: "line",
-						pointID: 1,
-						pointXLocation: ent.start.x,
-						pointYLocation: ent.start.y,
-						pointZLocation: ent.start.z || 0,
-						pointXTarget: ent.end.x,
-						pointYTarget: ent.end.y,
-						pointZTarget: ent.end.z || 0,
-						lineWidth: 1,
-						colour: color,
-					},
-				],
-			});
-		} else if (ent.type === "POLYLINE" || ent.type === "LWPOLYLINE") {
-			const entityName = `polyEntity_${++entityCount.poly}`;
-			kadPolygonsMap.set(entityName, {
-				name: entityName,
-				entityType: "poly",
-				data: [],
-			});
+	// 3) raw DXF colour or bright-red fallback, but return as "#RRGGBB"
+	function getColor(idx) {
+		// pick the DXF colour (decimal) or default grey
+		var dec = idx != null && idx >= 0 ? idx : 0x777777;
+		// convert to hex, pad to 6 digits, uppercase if you like
+		var hex = dec.toString(16).padStart(6, "0").toUpperCase();
+		return "#" + hex;
+	}
 
-			const dataArray = kadPolygonsMap.get(entityName).data;
-			ent.vertices.forEach((v, i) => {
-				dataArray.push({
-					entityName,
-					entityType: "poly",
-					pointID: i + 1,
-					pointXLocation: v.x,
-					pointYLocation: v.y,
-					pointZLocation: v.z || 0,
-					lineWidth: 1,
-					colour: color,
-				});
-			});
+	// 4) iterate over every entity
+	dxf.entities.forEach(function (ent) {
+		var t = ent.type.toUpperCase();
+		var color = getColor(ent.color);
+		console.log("Entity type:", t, "\nEntity name:", ent.name, "\nColor:", color, "\n\n");
 
-			if (ent.closed || ent.shape) {
-				const v = ent.vertices[0];
-				dataArray.push({
-					entityName,
-					entityType: "poly",
-					pointID: dataArray.length + 1,
-					pointXLocation: v.x,
-					pointYLocation: v.y,
-					pointZLocation: v.z || 0,
-					lineWidth: 1,
-					colour: color,
+		// POINT or VERTEX
+		if (t === "POINT" || t === "VERTEX") {
+			var x = (ent.position && ent.position.x != null ? ent.position.x : ent.x) - offsetX;
+			var y = (ent.position && ent.position.y != null ? ent.position.y : ent.y) - offsetY;
+			var z = (ent.position && ent.position.z != null ? ent.position.z : ent.z) || 0;
+			if (x == null || y == null) {
+				console.warn("POINT/VERTEX missing coords:", ent);
+			} else {
+				var name = ent.name || "pointEntity_" + ++counts.point;
+				kadPointsMap.set(name, {
+					name: name,
+					entityType: "point",
+					data: [
+						{
+							entityName: name,
+							entityType: "point",
+							pointID: 1,
+							pointXLocation: x,
+							pointYLocation: y,
+							pointZLocation: z,
+							colour: color,
+						},
+					],
 				});
 			}
-		} else if (ent.type === "CIRCLE") {
-			const entityName = `circleEntity_${++entityCount.circle}`;
-			kadCirclesMap.set(entityName, {
-				name: entityName,
-				entityType: "circle",
-				data: [
-					{
-						entityName,
-						entityType: "circle",
-						pointID: 1,
-						pointXLocation: ent.center.x,
-						pointYLocation: ent.center.y,
-						pointZLocation: ent.center.z || 0,
-						radius: ent.radius,
+		}
+		// INSERT → single point
+		else if (t === "INSERT") {
+			if (!ent.position) {
+				console.warn("INSERT missing position:", ent);
+			} else {
+				var xi = ent.position.x - offsetX;
+				var yi = ent.position.y - offsetY;
+				var zi = ent.position.z || 0;
+				var nameI = ent.name || "pointEntity_" + ++counts.point;
+				kadPointsMap.set(nameI, {
+					name: nameI,
+					entityType: "point",
+					data: [
+						{
+							entityName: nameI,
+							entityType: "point",
+							pointID: 1,
+							pointXLocation: xi,
+							pointYLocation: yi,
+							pointZLocation: zi,
+							colour: color,
+						},
+					],
+				});
+			}
+		}
+		// LINE → always first two vertices
+		else if (t === "LINE") {
+			var v = ent.vertices;
+			if (!v || v.length < 2) {
+				console.warn("LINE missing vertices:", ent);
+			} else {
+				var v0 = v[0],
+					v1 = v[1];
+				var nameL = ent.name || "lineEntity_" + ++counts.line;
+				kadLinesMap.set(nameL, {
+					name: nameL,
+					entityType: "line",
+					data: [
+						{
+							entityName: nameL,
+							entityType: "line",
+							pointID: 1,
+							pointXLocation: v0.x - offsetX,
+							pointYLocation: v0.y - offsetY,
+							pointZLocation: v0.z || 0,
+							pointXTarget: v1.x - offsetX,
+							pointYTarget: v1.y - offsetY,
+							pointZTarget: v1.z || 0,
+							lineWidth: 1,
+							colour: color,
+						},
+					],
+				});
+			}
+		}
+		// LWPOLYLINE or POLYLINE → always polygon
+		else if (t === "LWPOLYLINE" || t === "POLYLINE") {
+			var verts = ent.vertices || ent.controlPoints || [];
+			if (!verts.length) {
+				console.warn("POLYLINE missing vertices:", ent);
+			} else {
+				var nameP = ent.name || "polyEntity_" + ++counts.poly;
+				kadPolygonsMap.set(nameP, {
+					name: nameP,
+					entityType: "poly",
+					data: [],
+				});
+				var dataP = kadPolygonsMap.get(nameP).data;
+				verts.forEach(function (v, i) {
+					dataP.push({
+						entityName: nameP,
+						entityType: "poly",
+						pointID: i + 1,
+						pointXLocation: v.x - offsetX,
+						pointYLocation: v.y - offsetY,
+						pointZLocation: v.z || 0,
 						lineWidth: 1,
 						colour: color,
-					},
-				],
-			});
-		} else if (ent.type === "TEXT" || ent.type === "MTEXT") {
-			const pos = ent.startPoint || ent.textAlignPoint || ent.position;
-			if (!pos) return;
-			const entityName = `textEntity_${++entityCount.text}`;
-			kadTextsMap.set(entityName, {
-				name: entityName,
-				entityType: "text",
-				data: [
-					{
-						entityName,
-						entityType: "text",
-						pointID: 1,
-						pointXLocation: pos.x,
-						pointYLocation: pos.y,
-						pointZLocation: pos.z || 0,
-						text: ent.text,
+						closed: false,
+					});
+				});
+				// close if flagged
+				if (ent.closed || ent.shape) {
+					var v0p = verts[0];
+					dataP.push({
+						entityName: nameP,
+						entityType: "poly",
+						pointID: dataP.length + 1,
+						pointXLocation: v0p.x - offsetX,
+						pointYLocation: v0p.y - offsetY,
+						pointZLocation: v0p.z || 0,
+						lineWidth: 1,
 						colour: color,
-					},
-				],
-			});
+						closed: true,
+					});
+				}
+			}
+		}
+		// CIRCLE
+		else if (t === "CIRCLE") {
+			if (!ent.center) {
+				console.warn("CIRCLE missing center:", ent);
+			} else {
+				var nameC = ent.name || "circleEntity_" + ++counts.circle;
+				kadCirclesMap.set(nameC, {
+					name: nameC,
+					entityType: "circle",
+					data: [
+						{
+							entityName: nameC,
+							entityType: "circle",
+							pointID: 1,
+							pointXLocation: ent.center.x - offsetX,
+							pointYLocation: ent.center.y - offsetY,
+							pointZLocation: ent.center.z || 0,
+							radius: ent.radius,
+							lineWidth: 1,
+							colour: color,
+						},
+					],
+				});
+			}
+		}
+		// ELLIPSE sampled as closed polygon
+		else if (t === "ELLIPSE") {
+			if (!ent.center) {
+				console.warn("ELLIPSE missing center:", ent);
+			} else {
+				var nameE = ent.name || "polyEntity_" + ++counts.poly;
+				kadPolygonsMap.set(nameE, {
+					name: nameE,
+					entityType: "poly",
+					data: [],
+				});
+				var dataE = kadPolygonsMap.get(nameE).data;
+				var segs = 64;
+				for (var i = 0; i < segs; i++) {
+					var ang = ent.startAngle + (ent.endAngle - ent.startAngle) * (i / (segs - 1));
+					var px = ent.center.x + ent.xRadius * Math.cos(ang) - offsetX;
+					var py = ent.center.y + ent.yRadius * Math.sin(ang) - offsetY;
+					var closed = true;
+					dataE.push({
+						entityName: nameE,
+						entityType: "poly",
+						pointID: i + 1,
+						pointXLocation: px,
+						pointYLocation: py,
+						pointZLocation: ent.center.z || 0,
+						lineWidth: 1,
+						colour: color,
+						closed: closed,
+					});
+				}
+				// close loop
+				dataE.push(Object.assign({}, dataE[0], { pointID: dataE.length + 1 }));
+			}
+		}
+		// TEXT or MTEXT
+		else if (t === "TEXT" || t === "MTEXT") {
+			var pos = ent.startPoint || ent.position;
+			if (!pos) {
+				console.warn("TEXT missing position:", ent);
+			} else {
+				var nameT = ent.name || "textEntity_" + ++counts.text;
+				kadTextsMap.set(nameT, {
+					name: nameT,
+					entityType: "text",
+					data: [
+						{
+							entityName: nameT,
+							entityType: "text",
+							pointID: 1,
+							pointXLocation: pos.x - offsetX,
+							pointYLocation: pos.y - offsetY,
+							pointZLocation: pos.z || 0,
+							text: ent.text,
+							colour: color,
+						},
+					],
+				});
+			}
+		}
+		// anything else → skip
+		else {
+			console.warn("Unsupported DXF entity:", ent.type);
 		}
 	});
 
-	console.log("DXF parsed into KAD maps:", {
-		Points: kadPointsMap,
-		Lines: kadLinesMap,
-		Polygons: kadPolygonsMap,
-		Circles: kadCirclesMap,
-		Texts: kadTextsMap,
+	console.log("Appended to KAD maps:", {
+		points: kadPointsMap,
+		lines: kadLinesMap,
+		polys: kadPolygonsMap,
+		circles: kadCirclesMap,
+		texts: kadTextsMap,
 	});
-
-	if (typeof drawData === "function") drawData(points, selectedHole);
+	//console.log("DXF parsed successfully");
+	//call drawData and reset the view
+	//drawData();
+	resetZoom();
 }
 
 function fileFormatPopup(error) {
@@ -3004,71 +3099,6 @@ function parseKADFile(fileData) {
 
 		// Parsing logic for different entity types
 		switch (entityType) {
-			//KAD Holes not used
-			//case "hole":
-			//	// Create an empty entity object if it doesn't exist
-			//	if (!kadHolesMap.has(entityName)) {
-			//		kadHolesMap.set(entityName, {
-			//			name: entityName, // Store the entityName
-			//			entityType: entityType,
-			//			data: []
-			//		});
-			//	}
-			//	const holeID = row[2];
-			//	const startXLocation = parseFloat(row[3]);
-			//	const startYLocation = parseFloat(row[4]);
-			//	const startZLocation = parseFloat(row[5]);
-			//	const endXLocation = parseFloat(row[6]);
-			//	const endYLocation = parseFloat(row[7]);
-			//	const endZLocation = parseFloat(row[8]);
-			//	const holeDiameter = parseFloat(row[9]);
-			//	const holeType = row[10];
-			//	const fromHoleID = row[11];
-			//	const timingDelayMilliseconds = parseInt(row[12]);
-			//	const colourDelay = row[13].replace(/\r$/, "");
-			//
-			//	if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-			//		// Check if they are valid numbers
-			//		const holeLengthCalculated = Math.sqrt(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2));
-			//
-			//		const deltaXAmount = endXLocation - startXLocation;
-			//		const deltaYAmount = endYLocation - startYLocation;
-			//		const deltaZAmount = endZLocation - startZLocation;
-			//
-			//		const dotProduct = deltaXAmount * 0 + deltaYAmount * 0 + deltaZAmount * 1;
-			//		const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-			//
-			//		const epsilon = 1e-10;
-			//		const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-			//		const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-			//
-			//		const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360;
-			//
-			//		// Push the parsed data into the entity's data array
-			//		kadHolesMap.get(entityName).data.push({
-			//			entityName: entityName,
-			//			entityType: entityType,
-			//			holeID: holeID,
-			//			startXLocation: startXLocation,
-			//			startYLocation: startYLocation,
-			//			startZLocation: startZLocation,
-			//			endXLocation: endXLocation,
-			//			endYLocation: endYLocation,
-			//			endZLocation: endZLocation,
-			//			holeDiameter: holeDiameter,
-			//			holeType: holeType,
-			//			fromHoleID: fromHoleID,
-			//			timingDelayMilliseconds: timingDelayMilliseconds,
-			//			colourHexDecimal: colourDelay,
-			//			holeLengthCalculated: holeLengthCalculated,
-			//			holeAngle: holeAngle,
-			//			holeBearing: holeBearing
-			//		});
-			//
-			//		minX = Math.min(minX, startXLocation);
-			//		minY = Math.min(minY, startYLocation);
-			//	}
-			//	break;
 			case "point":
 				// Create an empty entity object if it doesn't exist
 				if (!kadPointsMap.has(entityName)) {
@@ -3117,6 +3147,7 @@ function parseKADFile(fileData) {
 					pointZLocation: pointZLocation,
 					lineWidth: lineWidth,
 					colour: colour,
+					closed: closed,
 				});
 				break;
 			case "line":
@@ -4063,14 +4094,16 @@ function drawKADLines(sx, sy, ex, ey, sz, ez, lineWidth, strokeColour) {
 	ctx.stroke();
 }
 
-function drawKADPolys(sx, sy, ex, ey, sz, ez, lineWidth, strokeColour) {
+function drawKADPolys(sx, sy, ex, ey, sz, ez, lineWidth, strokeColour, isClosed) {
 	ctx.beginPath();
 	ctx.moveTo(sx, sy);
 	ctx.lineTo(ex, ey);
 	ctx.strokeStyle = strokeColour;
 	ctx.lineWidth = lineWidth;
 	ctx.stroke();
-	ctx.closePath();
+	if (isClosed) {
+		ctx.closePath();
+	}
 }
 
 //Draws a circle from the kadCirclesArray
@@ -5818,6 +5851,7 @@ function addKADPoly() {
 		const pointZLocation = document.getElementById("drawingElevation").value;
 		const lineWidth = document.getElementById("drawingLineWidth").value;
 		const colour = getJSColourHexDrawing();
+		const closed = true; // Default to closed polygon
 		//console.log("pointColour: " + colour);
 
 		if (createNewEntity) {
@@ -5834,6 +5868,7 @@ function addKADPoly() {
 			pointZLocation: pointZLocation,
 			lineWidth: lineWidth,
 			colour: colour,
+			closed: closed, // Set to true if the polygon is closed
 		};
 
 		// Add the point to kadPointsMap
@@ -8759,8 +8794,9 @@ function drawData(points, selectedHole) {
 					const x = (currentPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2;
 					const y = (-currentPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2;
 					const z = currentPoint.pointZLocation;
+					const closed = entity.data[i].closed;
 
-					drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour);
+					drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, closed);
 
 					prevX = x;
 					prevY = y;
@@ -8768,7 +8804,9 @@ function drawData(points, selectedHole) {
 				}
 
 				// Close the polygon by drawing a line back to the first point
-				drawKADPolys(prevX, prevY, (firstPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2, (-firstPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour);
+				if (entity.data[0].closed) {
+					drawKADPolys(prevX, prevY, (firstPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2, (-firstPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, true);
+				}
 			}
 		}
 	}
