@@ -151,7 +151,10 @@
 					"play_button": "PLAY............",
 					"stop_button": "STOP",
 					"time_window": "Time Window",
-					"time_range_label": "Time window : 8 ms",
+					"time_range_label": "Time window : 8ms",
+					"time_offset_label": "Time Offset : 0ms",
+					"hole_count_label": "Hole Count",
+					"measured_mass_label": "Measured Mass",
 					"drawing_tools": "Drawing Tools",
 					"elevation_label": "Elevation (z):",
 					"drawing_colour_label": "Colour:",
@@ -282,6 +285,9 @@
 					"stop_button": "Зогсоох",
 					"time_window": "Цагийн хүрээ",
 					"time_range_label": "Цагийн хүрээ : 8 мс",
+					"time_offset_label": "Цагийн зөрүү : 0 мс",
+					"hole_count_label": "Нүхний тоо",
+					"measured_mass_label": "Хэмжсэн масс",
 					"drawing_tools": "Зургийн хэрэгслүүд",
 					"elevation_label": "Өндөр (z):",
 					"drawing_colour_label": "Өнгө:",
@@ -412,6 +418,9 @@
 					"stop_button": "ARRÊTER",
 					"time_window": "Fenêtre temporelle",
 					"time_range_label": "Fenêtre temporelle : 8 ms",
+					"time_offset_label": "Décalage temporel : 0 ms",
+					"hole_count_label": "Nombre de trous",
+					"measured_mass_label": "Masse mesurée",
 					"drawing_tools": "Outils de dessin",
 					"elevation_label": "Élévation (z) :",
 					"drawing_colour_label": "Couleur :",
@@ -542,6 +551,9 @@
 					"stop_button": "Стоп",
 					"time_window": "Временное окно",
 					"time_range_label": "Временное окно: 8 мс",
+					"time_offset_label": "Временной сдвиг: 0 мс",
+					"hole_count_label": "Тооцох нүх",
+					"measured_mass_label": "Хэмжсэн масс",
 					"drawing_tools": "Инструменты рисования",
 					"elevation_label": "Высота (z):",
 					"drawing_colour_label": "Цвет:",
@@ -672,6 +684,9 @@
 					"stop_button": "Detener",
 					"time_window": "Ventana de tiempo",
 					"time_range_label": "Ventana de tiempo: 8 ms",
+					"time_offset_label": "Desplazamiento de tiempo: 0 ms",
+					"hole_count_label": "Conteo de agujeros",
+					"measured_mass_label": "Masa medida",
 					"drawing_tools": "Herramientas de dibujo",
 					"elevation_label": "Elevación (z):",
 					"drawing_colour_label": "Color:",
@@ -1233,8 +1248,22 @@
 			<span>Time Window</span></button>
 		<div class="panel">
 			<div class="chart-container" id="timeChart"></div>
-			<a class="label4" id="timeRangeLabel">Time window : 8 ms</a>
+			<a class="label2" id="timeRangeLabel">Time window : 8 ms</a>
 			<input type="range" min="1" max="25" value="8" id="timeRange" placeholder="Select time window size">
+			<a class="label2" id="timeOffsetLabel">Time Offset : 0 ms</a>
+			<input type="range" min="-25" max="25" value="0" id="timeOffset" placeholder="Select time offset">
+			<div class="radio-button-bar">
+				<div>
+					<input type="radio" id="holeCountRadio" name="displayMode" value="holeCount" title="Hole Count"
+						checked>
+					<label class="label2" id="holeCountLabel" for="holeCountRadio">Hole Count</label>
+				</div>
+				<div>
+					<input type="radio" id="measuredMassRadio" name="displayMode" value="measuredCharge"
+						title="Measured Mass">
+					<label class="label2" id="measuredMassLabel" for="measuredMassRadio">Measured Charge</label>
+				</div>
+			</div>
 		</div>
 		<button class="accordion" id="drawingTools">
 			<span>Drawing Tools</span></button>
