@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20250506 @ 2224 AWST
+// Last Modified: 20250512 @ 2237 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -299,6 +299,13 @@ const option13 = document.getElementById("display13");
 const option14 = document.getElementById("display14");
 const option15 = document.getElementById("display15");
 
+const holeCountRadio = document.getElementById("holeCountRadio");
+const measuredMassRadio = document.getElementById("measuredMassRadio");
+
+//create holeCountRadio and measureMassRadio Listener
+document.getElementById("measuredMassRadio")?.addEventListener("change", timeChart);
+document.getElementById("holeCountRadio")?.addEventListener("change", timeChart);
+
 // Add event listeners for mouse down, move, and up events
 canvas.addEventListener("mousedown", handleMouseDown);
 canvas.addEventListener("mousemove", handleMouseMove);
@@ -406,6 +413,9 @@ function updateTranslations(language) {
 		document.querySelector("#stop").textContent = langTranslations.stop_button;
 		document.querySelector("#timeWindowAcc span").textContent = langTranslations.time_window;
 		document.querySelector("#timeRangeLabel").textContent = langTranslations.time_range_label;
+		document.querySelector("#timeOffsetLabel").textContent = langTranslations.time_offset_label;
+		document.querySelector("#holeCountLabel").textContent = langTranslations.hole_count_label;
+		document.querySelector("#measuredMassLabel").textContent = langTranslations.measured_mass_label;
 		document.querySelector("#drawingTools").textContent = langTranslations.drawing_tools;
 		document.querySelector("#elevationName").textContent = langTranslations.elevation_label;
 		document.querySelector("#colourLabel").textContent = langTranslations.drawing_colour_label;
@@ -1972,14 +1982,31 @@ connectSlider.addEventListener("input", function () {
 
 const timeSlider = document.getElementById("timeRange");
 timeSlider.addEventListener("input", function () {
-	////console.log('Connector value:', this.value);
 	timeRange = document.getElementById("timeRange").value;
 	timeRangeLabel.textContent = "Time window :" + timeRange + "ms";
 	timeChart();
 	Plotly.relayout("timeChart", {
 		width: newWidthRight - 50,
+		yaxis: {
+			autorange: true, // Adjust the y-axis range to fit the data
+		},
 	});
 });
+
+// Access the slider element and add an event listener to track changes
+const timeOffsetSlider = document.getElementById("timeOffset");
+timeOffsetSlider.addEventListener("input", function () {
+	timeOffset = document.getElementById("timeOffset").value;
+	timeOffsetLabel.textContent = "Time Offset : " + timeOffset + "ms";
+	timeChart();
+	Plotly.relayout("timeChart", {
+		width: newWidthRight - 50,
+		yaxis: {
+			autorange: true, // Adjust the y-axis range to fit the data
+		},
+	});
+});
+
 option1.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
@@ -8414,227 +8441,183 @@ function calculateEndXYZ(clickedHole, newValue, modeLAB) {
 }
 
 function timeChart() {
-	if (Array.isArray(holeTimes)) {
-		const times = holeTimes.map((time) => time[1]);
-		const maxTime = Math.max(...times);
-		const timeRange = parseInt(document.getElementById("timeRange").value);
-		const numBins = Math.ceil(maxTime / timeRange);
-		let counts = [];
-		try {
-			counts = Array(numBins).fill(0);
-		} catch (error) {
-			fileFormatPopup(error);
-		}
+	if (!Array.isArray(holeTimes)) return;
 
-		for (let i = 0; i < times.length; i++) {
-			const binIndex = Math.floor(times[i] / timeRange);
+	const times = holeTimes.map((time) => time[1]);
+	const maxTime = Math.max(...times);
+	const timeRange = parseInt(document.getElementById("timeRange").value);
+	const timeOffset = parseInt(document.getElementById("timeOffset").value);
+	const numBins = Math.ceil(maxTime / timeRange);
+	const binStart = -timeOffset;
+
+	const measuredMassRadio = document.getElementById("measuredMassRadio");
+	const holeCountRadio = document.getElementById("holeCountRadio");
+	const useMass = measuredMassRadio?.checked;
+
+	let counts = Array(numBins).fill(0);
+	let massSum = Array(numBins).fill(0);
+	let validMassCount = 0;
+
+	for (let point of points) {
+		const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
+		if (binIndex >= 0 && binIndex < numBins) {
 			counts[binIndex]++;
+			const mass = Number(point.measuredMass);
+			if (useMass && !isNaN(mass) && isFinite(mass)) {
+				massSum[binIndex] += mass;
+				validMassCount++;
+			}
 		}
-
-		var config = {
-			responsive: true,
-			displayModeBar: true,
-			modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
-		};
-
-		const binEdges = Array(numBins)
-			.fill(0)
-			.map((_, index) => index * timeRange);
-
-		// Create an array to store the holeID for each bin
-		const holeIDs = Array(numBins).fill(null);
-
-		// Store the combined entityName:holeID in the corresponding bin
-		for (const point of points) {
-			const binIndex = Math.floor(point.holeTime / timeRange);
-			holeIDs[binIndex] = holeIDs[binIndex] || []; // Initialize with an empty array if not set
-			holeIDs[binIndex].push(`${point.entityName}:${point.holeID}`);
-		}
-		// Create an array to store the concatenated holeID strings for each bin
-		const holeIDTexts = holeIDs.map((ids) => (ids ? ids.join(", ") : ""));
-
-		// Create text for hover labels using entity name and hole ID
-		const entityholeIDTexts = holeIDs.map((bin) => {
-			if (bin) {
-				return bin
-					.map((combinedID) => {
-						// Split the combinedID into entityName and holeID
-						const [entityName, holeID] = combinedID.split(":");
-						// Find the point associated with both entityName and holeID
-						const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
-						// Check if point is found to avoid undefined values
-						if (point) {
-							return `${point.entityName}:${point.holeID}`;
-						}
-						return "";
-					})
-					.filter((text) => text) // Filter out any empty strings
-					.join(", ");
-			} else {
-				return "";
-			}
-		});
-
-		const defaultColour = Array(numBins).fill("red");
-
-		const data = [
-			{
-				x: binEdges,
-				y: counts,
-				type: "bar",
-				marker: {
-					color: defaultColour,
-				},
-				// Use the holeIDs array as the text property for hover labels
-				text: entityholeIDTexts, //holeIDTexts,
-				hoverinfo: "y+text", // Show the y-value and the custom text when hovering
-			},
-		];
-		const maxHolesPerBin = Math.max(...counts); // Calculate the maximum holes per bin
-		// Add 1 to provide space at the top
-		const maxYValue = maxHolesPerBin + 1;
-		const layout = {
-			title: {
-				text: "Time Window Chart",
-				xanchor: "right",
-				font: {
-					size: 10, // Set the title font size
-				},
-			},
-			plot_bgcolor: noneColour,
-			paper_bgcolor: noneColour,
-			font: {
-				color: textFillColour,
-			},
-			modebar: {
-				orientation: "v",
-				bgcolor: noneColour,
-				color: "rgba(255, 0, 0, 0.4)",
-				activecolor: "red",
-				position: "left",
-			},
-			margin: {
-				l: 5,
-				r: 50,
-				b: 25,
-				t: 25,
-				pad: 2,
-			},
-			xaxis: {
-				title: {
-					text: "milliseconds (ms)",
-					font: {
-						size: 10, // Set the y-axis label font size
-					},
-				},
-				showgrid: true,
-			},
-			yaxis: {
-				title: {
-					text: "Holes Firing",
-					font: {
-						size: 10, // Set the y-axis label font size
-					},
-				},
-				showgrid: true,
-				//set the yaxis title to the right of the chart
-				automargin: true,
-				//set the font size of the yaxis title
-				range: [0, maxYValue - 0.5],
-				// Ensure y-axis values are whole integers
-			},
-			height: 380,
-			width: 280,
-		};
-
-		Plotly.newPlot("timeChart", data, layout, config);
-
-		// Add click event listener to the plot
-		const chart = document.getElementById("timeChart");
-		// Outside of your event listener, define a variable to keep track of the last clicked index
-		let lastClickedIndex = null;
-		// Box and Lasso Selection Listener
-		chart.on("plotly_selected", function (eventData) {
-			if (eventData && eventData.points) {
-				const selectedPoints = eventData.points.map((p) => p.pointNumber);
-				const newColours = defaultColour.map((color, index) => (selectedPoints.includes(index) ? "lime" : color));
-				Plotly.restyle("timeChart", { "marker.color": [newColours] });
-
-				timingWindowHolesSelected = selectedPoints
-					.flatMap((index) => {
-						return holeIDs[index]
-							? holeIDs[index].map((combinedID) => {
-									const [entityName, holeID] = combinedID.split(":");
-									return points.find((p) => p.entityName === entityName && p.holeID === holeID);
-							  })
-							: [];
-					})
-					.filter((point) => point !== undefined);
-
-				console.log("Selected Holes:", timingWindowHolesSelected);
-				drawData(points, selectedHole);
-			} else {
-				Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
-				timingWindowHolesSelected = [];
-				drawData(points, selectedHole);
-			}
-		});
-
-		// Single Bar Click Event
-		chart.on("plotly_click", function (data) {
-			if (data.points && data.points.length > 0) {
-				const clickedIndex = data.points[0].pointIndex;
-				const clickedBarColor = "lime";
-				const defaultBarColor = "red";
-				const currentColors = data.points[0].data.marker.color.slice();
-				// Reset the color of the last clicked bar, if any
-				if (lastClickedIndex !== null) {
-					currentColors[lastClickedIndex] = defaultBarColor;
-				}
-
-				// Update the clicked bar color
-				currentColors[clickedIndex] = clickedBarColor;
-
-				// Update the chart to reflect the new colors
-				Plotly.restyle("timeChart", { "marker.color": [currentColors] });
-
-				// Update lastClickedIndex
-				lastClickedIndex = clickedIndex;
-
-				timingWindowHolesSelected = holeIDs[clickedIndex]
-					? holeIDs[clickedIndex]
-							.map((combinedID) => {
-								const [entityName, holeID] = combinedID.split(":");
-								return points.find((p) => p.entityName === entityName && p.holeID === holeID);
-							})
-							.filter((point) => point !== undefined)
-					: [];
-
-				console.log("timingWindowHolesSelected:", timingWindowHolesSelected);
-				drawData(points, selectedHole);
-			} else {
-				timingWindowHolesSelected = [];
-				lastClickedIndex = null;
-				drawData(points, selectedHole);
-			}
-		});
-
-		// Reset Selection Event
-		chart.on("plotly_deselect", function () {
-			// Reset the bar colors to the default color
-			Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
-
-			// Clear any selected holes
-			timingWindowHolesSelected = [];
-			drawData(points, selectedHole);
-
-			// Reset the last clicked index
-			lastClickedIndex = null;
-
-			console.log("Chart reset to unselected state.");
-		});
 	}
+
+	const fallbackToCount = useMass && validMassCount < 2;
+	const yValues = useMass && !fallbackToCount ? massSum : counts;
+
+	const binEdges = Array(numBins)
+		.fill(0)
+		.map((_, index) => index * timeRange + binStart);
+	const holeIDs = Array(numBins).fill(null);
+
+	for (const point of points) {
+		const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
+		if (binIndex >= 0 && binIndex < numBins) {
+			holeIDs[binIndex] = holeIDs[binIndex] || [];
+			holeIDs[binIndex].push(point.entityName + ":" + point.holeID);
+		}
+	}
+
+	const entityholeIDTexts = holeIDs.map((bin) => {
+		if (!bin) return "";
+		return bin
+			.map((combinedID) => {
+				const [entityName, holeID] = combinedID.split(":");
+				const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
+				return point ? point.entityName + ":" + point.holeID : "";
+			})
+			.filter(Boolean)
+			.join(", ");
+	});
+
+	const hoverText = entityholeIDTexts.map((text, index) => {
+		const totalMass = useMass && !fallbackToCount && massSum[index] ? massSum[index].toFixed(1) + " kg" : "";
+		return totalMass ? text + "<br>Mass: " + totalMass : text;
+	});
+
+	const defaultColour = Array(numBins).fill("red");
+
+	const chart = document.getElementById("timeChart");
+	const currentLayout = chart?._fullLayout;
+	const newYLabel = useMass && !fallbackToCount ? "Total Measured Mass (kg)" : "Holes Firing";
+	const currentYLabel = currentLayout?.yaxis?.title?.text;
+	const preserveYRange = currentYLabel === newYLabel;
+
+	const maxYValue = Math.max(...yValues) + 1;
+
+	const layout = {
+		title: {
+			text: "Time Window Chart",
+			xanchor: "right",
+			font: { size: 10 },
+		},
+		plot_bgcolor: noneColour,
+		paper_bgcolor: noneColour,
+		font: { color: textFillColour },
+		modebar: {
+			orientation: "v",
+			bgcolor: noneColour,
+			color: "rgba(255, 0, 0, 0.4)",
+			activecolor: "red",
+			position: "left",
+		},
+		margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
+		xaxis: {
+			title: { text: "milliseconds (ms)", font: { size: 10 } },
+			showgrid: true,
+			rangeslider: { visible: true, thickness: 0.1 },
+		},
+		yaxis: {
+			title: { text: newYLabel, font: { size: 10 } },
+			showgrid: true,
+			automargin: true,
+			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
+		},
+		height: 380,
+		width: 280,
+	};
+
+	const data = [
+		{
+			x: binEdges,
+			y: yValues,
+			type: "bar",
+			marker: { color: defaultColour },
+			text: hoverText,
+			hoverinfo: "text+y",
+		},
+	];
+
+	Plotly.react("timeChart", data, layout, {
+		responsive: true,
+		displayModeBar: true,
+		modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
+		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+	});
+
+	// ✅ Clear previously registered listeners
+	chart.removeAllListeners?.("plotly_selected");
+	chart.removeAllListeners?.("plotly_click");
+	chart.removeAllListeners?.("plotly_deselect");
+
+	let lastClickedIndex = null;
+
+	chart.on("plotly_selected", function (eventData) {
+		const selectedPoints = eventData?.points?.map((p) => p.pointNumber) || [];
+		const newColours = defaultColour.map((color, index) => (selectedPoints.includes(index) ? "lime" : color));
+		Plotly.restyle("timeChart", { "marker.color": [newColours] });
+
+		timingWindowHolesSelected = selectedPoints
+			.flatMap((index) => {
+				return holeIDs[index]
+					? holeIDs[index].map((combinedID) => {
+							const [entityName, holeID] = combinedID.split(":");
+							return points.find((p) => p.entityName === entityName && p.holeID === holeID);
+					  })
+					: [];
+			})
+			.filter(Boolean);
+
+		drawData(points, selectedHole);
+	});
+
+	chart.on("plotly_click", function (data) {
+		const clickedIndex = data.points?.[0]?.pointIndex;
+		if (clickedIndex == null) return;
+
+		const currentColors = data.points[0].data.marker.color.slice();
+		if (lastClickedIndex !== null) currentColors[lastClickedIndex] = "red";
+		currentColors[clickedIndex] = "lime";
+
+		Plotly.restyle("timeChart", { "marker.color": [currentColors] });
+		lastClickedIndex = clickedIndex;
+
+		timingWindowHolesSelected = holeIDs[clickedIndex]
+			? holeIDs[clickedIndex]
+					.map((combinedID) => {
+						const [entityName, holeID] = combinedID.split(":");
+						return points.find((p) => p.entityName === entityName && p.holeID === holeID);
+					})
+					.filter(Boolean)
+			: [];
+
+		drawData(points, selectedHole);
+	});
+
+	chart.on("plotly_deselect", function () {
+		Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
+		timingWindowHolesSelected = [];
+		lastClickedIndex = null;
+		drawData(points, selectedHole);
+	});
 }
 
 // Function to update the play speed
@@ -8852,7 +8835,7 @@ function drawData(points, selectedHole) {
 	const contour_display = document.getElementById("display8").checked; //13
 	const slopeMap_display = document.getElementById("display8A").checked; //14
 	const burdenRelief_display = document.getElementById("display8B").checked; //15
-	const firsMovement_display = document.getElementById("display8C").checked; //16
+	const firstMovementDisplay = document.getElementById("display8C").checked; //16
 	const xValue_display = document.getElementById("display9").checked; //17
 	const yValue_display = document.getElementById("display10").checked; //18
 	const zValue_display = document.getElementById("display11").checked; //19
@@ -8891,7 +8874,7 @@ function drawData(points, selectedHole) {
 		drawReliefLegend(strokeColour);
 	}
 
-	if (firsMovement_display === true) {
+	if (firstMovementDisplay === true) {
 		//console.log("Drawing Direction Arrows");
 		//console.log("First Movement:", directionArrows);
 		connScale = document.getElementById("connSlider").value;
@@ -8971,7 +8954,7 @@ function drawData(points, selectedHole) {
 
 			// Highlight for timeChart selection
 			if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "red", "red");
+				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "rgba(0, 255, 0, 0.5)", "rgba(0, 255, 0, 0.7)");
 			}
 
 			ctx.lineWidth = 1; // Reset stroke width for non-selected holes
