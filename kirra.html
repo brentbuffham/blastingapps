@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Last Modified 20250513 @ 2005 AWST-->
 <html lang="en">
 
 <head>
@@ -14,7 +15,7 @@
 	<!-- Customise the showPopups-->
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 	<!-- Include Plotly.js -->
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 	<link rel="stylesheet" href="styles.css">
 	<!-- CryptoJS Core -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/crypto-js.js"></script>
@@ -78,8 +79,10 @@
 					"go_back_button": "←",
 					"dark_mode_sun": "☼",
 					"dark_mode_moon": "🌙",
-					"file_input_placeholder": "CSV And KAD",
-					"file_input_placeholder_DXF": "DXF",
+					"open_import": "Open or Import Files",
+					"fileInput": "CSV And KAD",
+					"fileInputDXF": "DXF",
+					"fileInputMeasured": "CSV",
 					"plus_minus_holes": "+ or - Holes",
 					"add_pattern_label": "Add Pattern:",
 					"add_hole_label": "Adding Hole:",
@@ -211,8 +214,10 @@
 					"go_back_button": "←",
 					"dark_mode_sun": "☼",
 					"dark_mode_moon": "🌙",
-					"file_input_placeholder": "CSV болон KAD",
-					"file_input_placeholder_DXF": "DXF",
+					"open_import": "Нээх эсвэл Импортлох Файлууд",
+					"fileInput": "CSV ба KAD",
+					"fileInputDXF": "DXF",
+					"fileInputMeasured": "CSV",
 					"plus_minus_holes": "+ эсвэл - Нүхнүүд",
 					"add_pattern_label": "Загвар нэмэх:",
 					"add_hole_label": "Нүх нэмэх:",
@@ -344,8 +349,10 @@
 					"go_back_button": "←",
 					"dark_mode_sun": "☼",
 					"dark_mode_moon": "🌙",
-					"file_input_placeholder": "CSV et KAD",
-					"file_input_placeholder_DXF": "DXF",
+					"open_import": "Ouvrir ou Importer des Fichiers",
+					"fileInput": "CSV et KAD",
+					"fileInputDXF": "DXF",
+					"fileInputMeasured": "CSV",
 					"plus_minus_holes": "+ ou - Trous",
 					"add_pattern_label": "Ajouter un motif :",
 					"add_hole_label": "Ajouter un trou :",
@@ -477,8 +484,10 @@
 					"go_back_button": "←",
 					"dark_mode_sun": "☼",
 					"dark_mode_moon": "🌙",
-					"file_input_placeholder": "CSV и KAD",
-					"file_input_placeholder_DXF": "DXF",
+					"open_import": "Открыть или Импортировать Файлы",
+					"fileInput": "CSV и KAD",
+					"fileInputDXF": "DXF",
+					"fileInputMeasured": "CSV",
 					"plus_minus_holes": "+ или - Отверстия",
 					"add_pattern_label": "Добавить шаблон:",
 					"add_hole_label": "Добавить отверстие:",
@@ -610,8 +619,10 @@
 					"go_back_button": "←",
 					"dark_mode_sun": "☼",
 					"dark_mode_moon": "🌙",
-					"file_input_placeholder": "CSV y KAD",
-					"file_input_placeholder_DXF": "DXF",
+					"open_import": "Abrir o Importar Archivos",
+					"fileInput": "CSV y KAD",
+					"fileInputDXF": "DXF",
+					"fileInputMeasured": "CSV",
 					"plus_minus_holes": "+ o - Agujeros",
 					"add_pattern_label": "Agregar patrón:",
 					"add_hole_label": "Agregar agujero:",
@@ -833,15 +844,24 @@
 			<label for="dark-mode-toggle"> </label>
 			<span class="moon-icon">&nbsp;&nbsp;&#127768;</span>
 		</div>
-
-		<div class="label12" id="fileInputLabel">File Holes and kad Input</div>
-		<input type="file" id="fileInput" accept=".csv,.kad,.txt" placeholder="CSV TXT KAD">
-		<br>
-		<div class="label12" id="fileInputDXFLabel">File DXF Input</div>
-		<input type="file" id="fileInputDXF" accept=".dxf" placeholder="DXF">
-		<br>
 		<!-- Close button for the Lefthand panel-->
 		<a href="javascript:void(0)" class="closebtnL" onclick="closeNavLeft()">&times;</a>
+
+		<button class="accordion" id="openOrImportAcc">
+			<span>Open or Import files</span>
+		</button>
+		<div class="panel">
+			<div class="label12" id="fileInputLabel">File Holes and KAD Input</div>
+			<input type="file" id="fileInput" accept=".csv,.kad,.txt" placeholder="CSV TXT KAD">
+			<br>
+			<div class="label12" id="fileInputDXFLabel">File DXF Input</div>
+			<input type="file" id="fileInputDXF" accept=".dxf" placeholder="DXF">
+			<br>
+			<div class="label12" id="fileInputRecordsLabel">Measured Values Input</div>
+			<input type="file" id="fileInputMeasured" accept=".csv" placeholder="CSV">
+			<br>
+		</div>
+
 		<button class="accordion" id="plusorminusHolesAcc">
 			<span>+ or - Holes</span>
 		</button>
@@ -1249,9 +1269,9 @@
 		<div class="panel">
 			<div class="chart-container" id="timeChart"></div>
 			<a class="label2" id="timeRangeLabel">Time window : 8 ms</a>
-			<input type="range" min="1" max="25" value="8" id="timeRange" placeholder="Select time window size">
+			<input type="range" min="1" max="100" value="8" id="timeRange" placeholder="Select time window size">
 			<a class="label2" id="timeOffsetLabel">Time Offset : 0 ms</a>
-			<input type="range" min="-25" max="25" value="0" id="timeOffset" placeholder="Select time offset">
+			<input type="range" min="0" max="50" value="0" id="timeOffset" placeholder="Select time offset">
 			<div class="radio-button-bar">
 				<div>
 					<input type="radio" id="holeCountRadio" name="displayMode" value="holeCount" title="Hole Count"
