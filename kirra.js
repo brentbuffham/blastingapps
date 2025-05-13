@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20250512 @ 2237 AWST
+// Last Modified: 20250513 @ 2005 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -267,6 +267,7 @@ document.getElementById("deleteObjectButton").addEventListener("click", deleteSe
 document.getElementById("deleteAllButton").addEventListener("click", deleteSelectedAll);
 document.getElementById("fileInput").addEventListener("change", handleFileUpload);
 document.getElementById("fileInputDXF").addEventListener("change", handleDXFUpload);
+document.getElementById("fileInputMeasured").addEventListener("change", handleMeasuredUpload);
 document.getElementById("helpButton").addEventListener("click", openHelp);
 document.getElementById("zoomInButton").addEventListener("click", zoomIn);
 document.getElementById("zoomOutButton").addEventListener("click", zoomOut);
@@ -336,7 +337,10 @@ function updateTranslations(language) {
 		document.querySelector("#buttonGoBack").textContent = langTranslations.go_back_button;
 		document.querySelector(".sun-icon").textContent = langTranslations.dark_mode_sun;
 		document.querySelector(".moon-icon").textContent = langTranslations.dark_mode_moon;
+		document.querySelector("#openOrImportAcc span").textContent = langTranslations.open_import;
 		document.querySelector("#fileInput").placeholder = langTranslations.file_input_placeholder;
+		document.querySelector("#fileInputDXF").placeholder = langTranslations.file_input_placeholder_dxf;
+		document.querySelector("#fileInputMeasured").placeholder = langTranslations.file_input_placeholder_measured;
 		document.querySelector("#plusorminusHolesAcc span").textContent = langTranslations.plus_minus_holes;
 		document.querySelector("#addPatternLabel").textContent = langTranslations.add_pattern_label;
 		document.querySelector("#addHoleLabel").textContent = langTranslations.add_hole_label;
@@ -3073,6 +3077,55 @@ function parseDXFtoKadMaps(dxf) {
 	//call drawData and reset the view
 	//drawData();
 	resetZoom();
+}
+
+async function handleMeasuredUpload(event) {
+	// Measured data format: EntityName,EntityType,PointID,MeasuredLength,MeasuredLengthTimeStamp,MeasuredMass,MeasuredMassTimeStamp,MeasuredComment,MeasuredCommentTimeStamp
+
+	if (!event.target.files[0].name.endsWith(".csv")) {
+		fileFormatPopup("1");
+		return;
+	}
+	if (points.length === 0) {
+		fileFormatPopup("2");
+		return;
+	}
+
+	const file = event.target.files[0];
+	if (!file) return;
+
+	const reader = new FileReader();
+	reader.onload = function (e) {
+		const fileContent = e.target.result;
+		const lines = fileContent.split("\n").filter((line) => line.trim().length > 0);
+
+		// Skip header if present
+		const header = lines[0].toLowerCase();
+		const startIndex = header.includes("entityname") ? 1 : 0;
+
+		for (let i = startIndex; i < lines.length; i++) {
+			const cols = lines[i].split(",");
+			if (cols.length < 9) continue; // Skip malformed lines
+
+			const entityName = cols[0].trim();
+			const holeID = cols[2].trim();
+
+			// Find matching point
+			const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
+			if (point) {
+				point.measuredLength = parseFloat(cols[3]) || 0;
+				point.measuredLengthTimeStamp = cols[4].trim() || "09/05/1975 00:00:00";
+				point.measuredMass = parseFloat(cols[5]) || 0;
+				point.measuredMassTimeStamp = cols[6].trim() || "09/05/1975 00:00:00";
+				point.measuredComment = cols[7].trim();
+				point.measuredCommentTimeStamp = cols[8].trim() || "09/05/1975 00:00:00";
+			}
+		}
+
+		drawData(points, selectedHole); // Redraw to reflect updated values
+	};
+
+	reader.readAsText(file);
 }
 
 function fileFormatPopup(error) {
@@ -8476,6 +8529,12 @@ function timeChart() {
 	const binEdges = Array(numBins)
 		.fill(0)
 		.map((_, index) => index * timeRange + binStart);
+
+	const binCenters = binEdges.map((edge) => edge + timeRange / 2);
+	const xTickInterval = Math.ceil(numBins / 10); // label ~5 ticks
+	const tickvals = binCenters.filter((_, i) => i % xTickInterval === 0);
+	const ticktext = tickvals.map((center) => center - timeRange / 2 + "–" + (center + timeRange / 2));
+
 	const holeIDs = Array(numBins).fill(null);
 
 	for (const point of points) {
@@ -8534,6 +8593,8 @@ function timeChart() {
 			title: { text: "milliseconds (ms)", font: { size: 10 } },
 			showgrid: true,
 			rangeslider: { visible: true, thickness: 0.1 },
+			tickvals: "auto", //tickvals, // if you want bin ranges
+			ticktext: "~s", //ticktext, //if you want bin ranges
 		},
 		yaxis: {
 			title: { text: newYLabel, font: { size: 10 } },
@@ -8542,17 +8603,20 @@ function timeChart() {
 			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
 		},
 		height: 380,
-		width: 280,
+		width: chart.offsetWidth - 50, // ✅ dynamic width based on container,
 	};
 
 	const data = [
 		{
-			x: binEdges,
+			x: binCenters,
 			y: yValues,
 			type: "bar",
+			width: timeRange, // 🔧 match bin width
 			marker: { color: defaultColour },
 			text: hoverText,
-			hoverinfo: "text+y",
+			textposition: "none", // ✅ disables labels drawn on bars
+			//hoverinfo: "text+y",
+			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>",
 		},
 	];
 
@@ -9678,12 +9742,14 @@ function updatePopup() {
 		<path d="M65.76,119.94c0,0-0.8-2.02-2.61-2.63c-1.81-0.61-4.99-0.91-6.88-0.92s-3.11,0.63-4.16,0c-1.05-0.63-1.66-1.39-1.66-1.39" />
 	</svg>
 		<br>
-			<label class="labelWhite18">Update:</label>
-			<br><label class="labelWhite18">NEW FEATURES - DXF Support - BETA </label>
-			<br><label class="labelWhite18">             - localisation Support </label>
+			<label class="labelWhite18">Update - NEW FEATURES:</label>
+			<br><label class="labelWhite18">DXF Support for (point / vertex, insert, line, lwpolyline / polyline, circle, ellipse, text / mtext) </label>
+			<br><label class="labelWhite18">Time Window Measured Charge added</label>
+			<br><label class="labelWhite18">Time Window Visualisation Improvements</label>
+			<br><label class="labelWhite18">Upload Measured Charging using the Export format</label>
 			<br><label class="labelWhite12c"> </label>
 			<br><label class="labelWhite12c">EXISTING BUGS - Northing Adjust On/Off.</label>
-			<br><label class="labelWhite12c">IMPROVEMENT - Help! User Manual Link</label>
+			<br><label class="labelWhite12c">Is it worth a donatation? Or a reshare?</label>
 			<br><br>
 			<a href="https://www.buymeacoffee.com/BrentBuffham">
           <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
