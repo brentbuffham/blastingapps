@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20250513 @ 2005 AWST
+// Last Modified: 20250515 @ 0115 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -299,6 +299,7 @@ const option12 = document.getElementById("display12");
 const option13 = document.getElementById("display13");
 const option14 = document.getElementById("display14");
 const option15 = document.getElementById("display15");
+const option16 = document.getElementById("display16"); //pf
 
 const holeCountRadio = document.getElementById("holeCountRadio");
 const measuredMassRadio = document.getElementById("measuredMassRadio");
@@ -2085,6 +2086,10 @@ option14.addEventListener("change", function () {
 option15.addEventListener("change", function () {
 	drawData(points, selectedHole);
 });
+option16.addEventListener("change", function () {
+	drawData(points, selectedHole);
+});
+
 let touchStartTime;
 let touchDuration;
 const longPressDuration = 200; // Adjust this duration as needed
@@ -4150,6 +4155,356 @@ function delaunayTriangles(points, maxEdgeLength) {
 	} catch (err) {
 		console.log(err);
 	}
+}
+//Delaunay triangulation helper function
+function getDelaunayFromPoints(points) {
+	try {
+		return d3.Delaunay.from(
+			points,
+			function (p) {
+				return parseFloat(p.startXLocation);
+			},
+			function (p) {
+				return parseFloat(p.startYLocation);
+			}
+		);
+	} catch (err) {
+		console.log("Error in getDelaunayFromPoints:", err);
+	}
+}
+
+//Voronoi Diagram
+function getVoronoiMetrics(points) {
+	const delaunay = getDelaunayFromPoints(points);
+
+	const margin = 10; // optional
+	const xExtent = [Math.min(...points.map((p) => parseFloat(p.startXLocation))), Math.max(...points.map((p) => parseFloat(p.startXLocation)))];
+	const yExtent = [Math.min(...points.map((p) => parseFloat(p.startYLocation))), Math.max(...points.map((p) => parseFloat(p.startYLocation)))];
+
+	const voronoi = delaunay.voronoi([xExtent[0] - margin, yExtent[0] - margin, xExtent[1] + margin, yExtent[1] + margin]);
+
+	const voronoiResults = [];
+
+	for (let i = 0; i < points.length; i++) {
+		const polygon = voronoi.cellPolygon(i);
+		if (!polygon) continue;
+
+		// Area using shoelace formula
+		let area = 0;
+		for (let j = 0; j < polygon.length; j++) {
+			const [x1, y1] = polygon[j];
+			const [x2, y2] = polygon[(j + 1) % polygon.length];
+			area += x1 * y2 - x2 * y1;
+		}
+		area = Math.abs(area / 2); // in m² if coords are meters
+
+		const p = points[i];
+		const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
+		const mass = parseFloat(p.measuredMass || 0);
+		const volume = area * length;
+		const powderFactor = volume > 0 ? mass / volume : null;
+
+		voronoiResults.push({
+			index: i,
+			point: p,
+			polygon: polygon,
+			area: area,
+			length: length,
+			volume: volume,
+			mass: mass,
+			powderFactor: powderFactor,
+		});
+	}
+
+	//console.log("Returning Voronoi Metrics", voronoiResults);
+	return voronoiResults;
+}
+
+function getPFColor(pf) {
+	// Map PF to a spectrum gradient (red-yellow-green-cyan-blue-magenta)
+	const minPF = 0.2;
+	const maxPF = 2.0;
+	const ratio = Math.min(Math.max((pf - minPF) / (maxPF - minPF), 0), 1);
+
+	// Convert the ratio to a hue value (0-360)
+	const hue = ratio * 300; // Adjust the multiplier to change the color range
+
+	// Convert hue to RGB using the HSL to RGB conversion formula
+	const h = hue / 60;
+	const x = 1 - Math.abs((h % 2) - 1);
+
+	let r = 0,
+		g = 0,
+		b = 0;
+	if (h < 1) {
+		r = 1;
+		g = x;
+		b = 0;
+	} else if (h < 2) {
+		r = x;
+		g = 1;
+		b = 0;
+	} else if (h < 3) {
+		r = 0;
+		g = 1;
+		b = x;
+	} else if (h < 4) {
+		r = 0;
+		g = x;
+		b = 1;
+	} else if (h < 5) {
+		r = x;
+		g = 0;
+		b = 1;
+	} else {
+		r = 1;
+		g = 0;
+		b = x;
+	}
+
+	// Convert RGB to 0-255 range
+	r = Math.floor(r * 255);
+	g = Math.floor(g * 255);
+	b = Math.floor(b * 255);
+
+	return "rgb(" + r + "," + g + "," + b + ")";
+}
+//Draw function for Powderfactor
+function drawVoronoiPowderFactors(metrics) {
+	const ctx = canvas.getContext("2d");
+
+	for (let cell of metrics) {
+		if (!cell.polygon || cell.powderFactor == null) continue;
+
+		const color = getPFColor(cell.powderFactor);
+
+		ctx.beginPath();
+		ctx.moveTo(cell.polygon[0][0], cell.polygon[0][1]);
+		for (let j = 1; j < cell.polygon.length; j++) {
+			ctx.lineTo(cell.polygon[j][0], cell.polygon[j][1]);
+		}
+		ctx.closePath();
+		ctx.fillStyle = color;
+		ctx.fill();
+	}
+}
+
+//using resultTriangles from delaunayTriangles function create a boundingpolygon
+function createBlastBoundaryPolygon(triangles) {
+	let blastBoundaryPolygon = [];
+
+	if (triangles && triangles.length > 0) {
+		// Extract all vertices from triangles
+		let vertices = triangles.flat().map((point) => ({ x: point[0], y: point[1] }));
+
+		// Compute convex hull
+		if (vertices.length > 0) {
+			try {
+				const hull = d3.polygonHull(vertices.map((v) => [v.x, v.y]));
+
+				if (hull && hull.length > 0) {
+					blastBoundaryPolygon = hull.map((point) => ({ x: point[0], y: point[1] }));
+				}
+			} catch (error) {
+				console.error("Error computing convex hull:", error);
+				// Optionally, fall back to a simpler method or return an empty polygon
+				blastBoundaryPolygon = [];
+			}
+		}
+	}
+
+	return blastBoundaryPolygon;
+}
+
+function clipVoronoiCells(voronoiMetrics, blastBoundaryPolygon) {
+	const scale = 100000;
+	const clippedCells = [];
+
+	// Convert blast boundary to scaled path
+	const clipPath = blastBoundaryPolygon.map((p) => ({
+		X: Math.round(p.x * scale),
+		Y: Math.round(p.y * scale),
+	}));
+
+	for (let cell of voronoiMetrics) {
+		if (!cell.polygon || cell.polygon.length < 3) continue;
+
+		const subjPath = cell.polygon.map((p) => ({
+			X: Math.round((p.x || p[0]) * scale),
+			Y: Math.round((p.y || p[1]) * scale),
+		}));
+
+		const clipper = new ClipperLib.Clipper();
+		clipper.AddPath(subjPath, ClipperLib.PolyType.ptSubject, true);
+		clipper.AddPath(clipPath, ClipperLib.PolyType.ptClip, true);
+
+		const solution = new ClipperLib.Paths();
+		clipper.Execute(ClipperLib.ClipType.ctIntersection, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+
+		if (solution.length > 0) {
+			const clipped = solution[0].map((pt) => ({
+				x: pt.X / scale,
+				y: pt.Y / scale,
+			}));
+
+			// Optional: recompute area, volume, PF
+			const area = Math.abs(
+				clipped.reduce((acc, curr, i, arr) => {
+					const next = arr[(i + 1) % arr.length];
+					return acc + curr.x * next.y - next.x * curr.y;
+				}, 0) / 2
+			);
+			const volume = area * cell.length;
+			const powderFactor = volume > 0 ? cell.mass / volume : null;
+
+			clippedCells.push({
+				...cell,
+				polygon: clipped,
+				area,
+				volume,
+				powderFactor,
+			});
+		}
+	}
+
+	return clippedCells;
+}
+
+function boundaryOffset(polygon, offsetMeters) {
+	if (!polygon || polygon.length < 3) return [];
+
+	const scale = 100000; // ClipperLib works in integers, scale up for precision
+
+	// Convert to Clipper path format
+	const path = polygon.map((p) => ({
+		X: Math.round(p.x * scale),
+		Y: Math.round(p.y * scale),
+	}));
+
+	// Initialize and execute offset
+	const co = new ClipperLib.ClipperOffset();
+	co.AddPath(path, ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
+
+	const offsetPaths = [];
+	co.Execute(offsetPaths, offsetMeters * scale);
+
+	// Convert back to float points
+	if (offsetPaths.length === 0) return [];
+	return offsetPaths[0].map((p) => ({
+		x: p.X / scale,
+		y: p.Y / scale,
+	}));
+}
+
+function drawBlastBoundary(polygon, strokeColour) {
+	//convert wold coords to screen cords
+	const screenCoords = polygon.map((point) => {
+		const x = (point.x - centroidX) * currentScale + canvas.width / 2;
+		const y = (-point.y + centroidY) * currentScale + canvas.height / 2;
+		return { x, y };
+	});
+
+	ctx.beginPath();
+	ctx.moveTo(screenCoords[0].x, screenCoords[0].y);
+	for (let i = 1; i < screenCoords.length; i++) {
+		ctx.lineTo(screenCoords[i].x, screenCoords[i].y);
+	}
+	ctx.closePath();
+	ctx.strokeStyle = strokeColour;
+	ctx.lineWidth = 2;
+	ctx.stroke();
+}
+
+function offsetPolygon(polygon, offset) {
+	const result = [];
+	const n = polygon.length;
+	const quadrantRads = [];
+
+	for (let i = 0; i < n; i++) {
+		const dx = polygon[(i + 1) % n].x - polygon[i].x;
+		const dy = polygon[(i + 1) % n].y - polygon[i].y;
+		const dist = Math.sqrt(dx * dx + dy * dy);
+
+		let angle = 0;
+		if (dist > 0) {
+			if (dy >= 0 && dx >= 0) {
+				angle = Math.PI / 2 - Math.asin(dx / dist);
+			} else if (dy < 0 && dx >= 0) {
+				angle = Math.PI / 2 - Math.acos(dy / dist);
+			} else if (dy < 0 && dx < 0) {
+				angle = (3 * Math.PI) / 2 - Math.asin(-dx / dist);
+			} else {
+				angle = (3 * Math.PI) / 2 - Math.acos(-dy / dist);
+			}
+		}
+		quadrantRads.push(angle);
+	}
+
+	const offsetSegments = [];
+	for (let i = 0; i < n; i++) {
+		const theta = quadrantRads[i];
+		const dx = offset * -Math.sin(theta);
+		const dy = offset * Math.cos(theta);
+
+		const p1 = {
+			x: polygon[i].x + dx,
+			y: polygon[i].y + dy,
+		};
+		const p2 = {
+			x: polygon[(i + 1) % n].x + dx,
+			y: polygon[(i + 1) % n].y + dy,
+		};
+		offsetSegments.push([p1, p2]);
+	}
+
+	for (let i = 0; i < n; i++) {
+		const [p1a, p1b] = offsetSegments[i];
+		const [p2a, p2b] = offsetSegments[(i + 1) % n];
+
+		const denom = -(p2b.x - p2a.x) * -Math.sin(quadrantRads[i]) - Math.cos(quadrantRads[i]) * (p2b.y - p2a.y);
+
+		if (denom === 0) {
+			result.push(p1b); // fallback
+			continue;
+		}
+
+		const s = Math.cos(quadrantRads[(i + 1) % n]) * (p2b.y - p2a.y) - (p2b.x - p2a.x) * Math.sin(quadrantRads[(i + 1) % n]);
+		const t = s / denom;
+
+		const x = p1b.x + Math.cos(quadrantRads[i]) * t;
+		const y = p1b.y + Math.sin(quadrantRads[i]) * t;
+		result.push({ x: x, y: y });
+	}
+
+	return result;
+}
+
+function getAverageDistance(points) {
+	let total = 0;
+	let count = 0;
+
+	for (let i = 0; i < points.length; i++) {
+		let minDist = Infinity;
+
+		for (let j = 0; j < points.length; j++) {
+			if (i === j) continue;
+
+			const dx = points[i].startXLocation - points[j].startXLocation;
+			const dy = points[i].startYLocation - points[j].startYLocation;
+			const dist = Math.sqrt(dx * dx + dy * dy);
+
+			if (dist < minDist) {
+				minDist = dist;
+			}
+		}
+
+		if (minDist < Infinity) {
+			total += minDist;
+			count++;
+		}
+	}
+
+	return count > 0 ? total / count : 1;
 }
 
 function clearCanvas() {
@@ -8156,178 +8511,6 @@ function handleElevationEditClick(event) {
 	}
 }
 
-// function recalculateContours(points, deltaX, deltaY) {
-// 	try {
-// 		const contourData = [];
-// 		holeTimes = calculateTimes(points);
-// 		timeChart();
-
-// 		// Prepare contour data
-// 		for (let i = 0; i < holeTimes.length; i++) {
-// 			const [entityName, holeID] = holeTimes[i][0].split(":::");
-// 			const time = holeTimes[i][1];
-
-// 			const point = points.find(p => p.entityName === entityName && p.holeID === holeID);
-
-// 			if (point) {
-// 				contourData.push({
-// 					x: point.startXLocation,
-// 					y: point.startYLocation,
-// 					z: time
-// 				});
-// 			}
-// 		}
-
-// 		if (contourData.length === 0) {
-// 			throw new Error("No valid contour data points found.");
-// 		}
-
-// 		const maxHoleTime = Math.max(...contourData.map(point => point.z));
-
-// 		// Initialize directionArrows array to store the arrows
-// 		directionArrows = [];
-
-// 		// Calculate contour lines and store them in contourLinesArray
-// 		contourLinesArray = [];
-// 		let interval = maxHoleTime < 350 ? 25 : maxHoleTime < 700 ? 100 : 250;
-// 		interval = parseInt(intervalAmount);
-
-// 		// Variable to store the previous contour line and the first contour line
-// 		let previousContourLine = null;
-// 		let firstContourLine = null;
-
-// 		// Iterate over contour levels
-// 		for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
-// 			const contourLines = delaunayContours(contourData, contourLevel, maxEdgeLength);
-// 			const epsilon = 1; // Adjust this value to control the level of simplification
-// 			const simplifiedContourLines = contourLines.map(line => simplifyLine(line, epsilon));
-// 			contourLinesArray.push(simplifiedContourLines);
-
-// 			// Handle the first contour line using Method 1
-// 			if (!firstContourLine) {
-// 				firstContourLine = simplifiedContourLines[0]; // Store the first contour line
-
-// 				for (const contourLine of simplifiedContourLines) {
-// 					for (let i = 0; i < contourLine.length - 1; i++) {
-// 						const p1 = contourLine[i];
-// 						const p2 = contourLine[i + 1];
-
-// 						// Calculate distance between points
-// 						//const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-
-// 						// Skip if p1 and p2 are too close (tiny segment)
-// 						const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-// 						if (distance < 0.01) continue;
-
-// 						// Place arrows every 2 meters along the contour line
-// 						if (distance >= 2) {
-// 							const numArrows = Math.floor(distance / 2);
-
-// 							for (let j = 0; j < numArrows; j++) {
-// 								const t = (j + 0.5) / numArrows; // Position along the contour line
-
-// 								const arrowStartX = p1.x + t * (p2.x - p1.x);
-// 								const arrowStartY = p1.y + t * (p2.y - p1.y);
-
-// 								// Calculate perpendicular direction for the arrow
-// 								let perpX = -(p1.y - p2.y);
-// 								let perpY = p1.x - p2.x;
-
-// 								// Normalize the perpendicular vector
-// 								const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-// 								perpX /= perpLength;
-// 								perpY /= perpLength;
-
-// 								// Calculate end point of the arrow, proportional shift (25ms)
-// 								const arrowEndX = arrowStartX + perpX * (interval / (interval / 3));
-// 								const arrowEndY = arrowStartY + perpY * (interval / (interval / 3));
-
-// 								// Store the arrow parameters in the directionArrows array
-// 								directionArrows.push([arrowStartX, arrowStartY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
-// 							}
-// 						}
-// 					}
-// 				}
-// 			} else {
-// 				// Handle subsequent contour lines using Method 2 (nearest point on previous contour line)
-// 				for (const contourLine of simplifiedContourLines) {
-// 					for (let i = 0; i < contourLine.length - 1; i++) {
-// 						const p1 = contourLine[i];
-// 						const p2 = contourLine[i + 1];
-
-// 						// Calculate the distance between points on the current contour line
-// 						//const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-
-// 						// Skip if p1 and p2 are too close (tiny segment)
-// 						const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-// 						if (distance < 0.01) continue;
-
-// 						// Place arrows every 2 meters along the contour line
-// 						if (distance >= 2) {
-// 							const numArrows = Math.floor(distance / 2);
-
-// 							for (let j = 0; j < numArrows; j++) {
-// 								const t = (j + 0.5) / numArrows; // Position along the contour line
-
-// 								const arrowStartX = p1.x + t * (p2.x - p1.x);
-// 								const arrowStartY = p1.y + t * (p2.y - p1.y);
-
-// 								// Find the nearest point on the previous contour line
-// 								let nearestPoint = previousContourLine.reduce(
-// 									(nearest, current) => {
-// 										const dist = Math.sqrt(Math.pow(current.x - arrowStartX, 2) + Math.pow(current.y - arrowStartY, 2));
-// 										return dist < nearest.dist ? { point: current, dist: dist } : nearest;
-// 									},
-// 									{ point: null, dist: Infinity }
-// 								).point;
-
-// 								// Handle the case where nearestPoint is null
-// 								if (!nearestPoint) continue;
-
-// 								// Calculate the vector from the current contour line to the previous one
-// 								const dirX = nearestPoint.x - arrowStartX;
-// 								const dirY = nearestPoint.y - arrowStartY;
-
-// 								// Calculate the perpendicular vector to the current contour line (p1, p2)
-// 								let perpX = -(p2.y - p1.y);
-// 								let perpY = p2.x - p1.x;
-
-// 								// Normalize the perpendicular vector
-// 								const perpLength = Math.sqrt(perpX * perpX + perpY * perpY);
-// 								perpX /= perpLength;
-// 								perpY /= perpLength;
-
-// 								// Adjust the perpendicular vector to point in the direction of the previous contour line
-// 								const dotProduct = dirX * perpX + dirY * perpY;
-// 								if (dotProduct < 0) {
-// 									// Flip direction if pointing the wrong way
-// 									perpX = -perpX;
-// 									perpY = -perpY;
-// 								}
-
-// 								// Calculate end point of the arrow, proportional shift (25ms)
-// 								const arrowEndX = arrowStartX + perpX * (interval / (interval / 3));
-// 								const arrowEndY = arrowStartY + perpY * (interval / (interval / 3));
-
-// 								// Store the arrow parameters in the directionArrows array
-// 								directionArrows.push([arrowStartX, arrowStartY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-
-// 			// Update previousContourLine for the next iteration, and ensure it's flattened if nested
-// 			previousContourLine = simplifiedContourLines.flat().filter(Boolean); // Avoid null points in contour lines
-// 		}
-
-// 		// Return both contour lines and direction arrows
-// 		return { contourLinesArray, directionArrows };
-// 	} catch (err) {
-// 		console.error(err);
-// 	}
-// }
-
 function recalculateContours(points, deltaX, deltaY) {
 	try {
 		const contourData = [];
@@ -8907,6 +9090,82 @@ function drawData(points, selectedHole) {
 	const measuredLength_display = document.getElementById("display13").checked; //21
 	const measuredMass_display = document.getElementById("display14").checked; //22
 	const measuredComment_display = document.getElementById("display15").checked; //23
+	const voronoiPF_display = document.getElementById("display16").checked; // custom toggle
+
+	const tri = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+	const blastBoundaryPolygon = createBlastBoundaryPolygon(tri.resultTriangles);
+	//console.log("Blast Boundary Polygon: ", blastBoundaryPolygon);
+
+	const showBounds = false;
+	const showBounds2 = false;
+	if (showBounds) {
+		drawBlastBoundary(blastBoundaryPolygon, "red");
+	}
+	const offsetBoundaryPolygon = boundaryOffset(blastBoundaryPolygon, getAverageDistance(points) / 2);
+	//console.log("Offset Boundary Polygon: ", offsetBoundaryPolygon);
+	if (showBounds2) {
+		drawBlastBoundary(offsetBoundaryPolygon, "blue");
+	}
+
+	if (voronoiPF_display === true) {
+		//Create Legend for PF
+		// === Powder Factor Gradient Legend ===
+		const legendX = 10;
+		const legendY = canvas.height / 2 - 70;
+		const gradientWidth = 20;
+		const gradientHeight = 160;
+
+		ctx.fillStyle = "black";
+		ctx.font = "14px Arial";
+		ctx.fillText("Legend Powder Factor", legendX, legendY - 10);
+
+		// Create vertical gradient
+		const gradient = ctx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
+
+		// Define stops based on your PF color scale (0.0 to 3.0)
+		const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]; // 0 to 1 scale for gradient
+		stops.forEach((stop) => {
+			const pfValue = 0.0 + stop * 3.0;
+			gradient.addColorStop(stop, getPFColor(pfValue));
+		});
+
+		ctx.fillStyle = gradient;
+		ctx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
+
+		// Label min and max
+		ctx.fillStyle = "black";
+		ctx.textAlign = "left";
+		ctx.textBaseline = "middle";
+
+		ctx.fillText("0.0", legendX, legendY);
+		ctx.fillText("1.5", legendX, legendY + gradientHeight / 2);
+		ctx.fillText("3.0", legendX, legendY + gradientHeight);
+
+		const voronoiPFMetrics = getVoronoiMetrics(points);
+		const clippedCells = clipVoronoiCells(voronoiPFMetrics, offsetBoundaryPolygon);
+		//console.log("Clipping Result: ", clippedCells.length, "cells");
+		//console.log("Clipped Cells: ", clippedCells);
+
+		for (let cell of clippedCells) {
+			if (!cell.polygon || cell.powderFactor == null) continue;
+
+			ctx.beginPath();
+			for (let j = 0; j < cell.polygon.length; j++) {
+				const pt = cell.polygon[j];
+				const rawX = pt.x !== undefined ? pt.x : pt[0]; // handle either format
+				const rawY = pt.y !== undefined ? pt.y : pt[1];
+
+				const x = (rawX - centroidX) * currentScale + canvas.width / 2;
+				const y = (-rawY + centroidY) * currentScale + canvas.height / 2;
+
+				if (j === 0) ctx.moveTo(x, y);
+				else ctx.lineTo(x, y);
+			}
+			ctx.closePath();
+			ctx.fillStyle = getPFColor(cell.powderFactor);
+			ctx.fill();
+		}
+	}
 
 	// Set the colors dynamically based on the mode
 	ctx.fillStyle = fillColour;
@@ -9747,6 +10006,7 @@ function updatePopup() {
 			<br><label class="labelWhite18">Time Window Measured Charge added</label>
 			<br><label class="labelWhite18">Time Window Visualisation Improvements</label>
 			<br><label class="labelWhite18">Upload Measured Charging using the Export format</label>
+   			<br><label class="labelWhite18">Powderfactor Visual - BETA</label>
 			<br><label class="labelWhite12c"> </label>
 			<br><label class="labelWhite12c">EXISTING BUGS - Northing Adjust On/Off.</label>
 			<br><label class="labelWhite12c">Is it worth a donatation? Or a reshare?</label>
