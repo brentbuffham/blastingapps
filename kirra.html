@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Last Modified 20250513 @ 2005 AWST-->
+<!-- Lastmodified 20250515 -->
 <html lang="en">
 
 <head>
@@ -34,6 +34,13 @@
 
 	<!-- Include DXFParser from jsDeliver-->
 	<script src="https://cdn.jsdelivr.net/npm/dxf-parser@1.1.2/dist/dxf-parser.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/d3-polygon@3"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/clipper-lib@1.0.0/clipper.js"></script>
+
 
 
 	<script>
@@ -201,7 +208,8 @@
 					"display_hole_type_title": "Hole Type",
 					"display_measure_title": "Measured Length",
 					"display_mass_title": "Measured Mass",
-					"display_comment_title": "Comment"
+					"display_comment_title": "Comment",
+					"display_voronoi_pf_title": "Voronoi Powder Factor"
 				}
 			},
 			"mn": {
@@ -336,7 +344,8 @@
 					"display_hole_type_title": "Нүхний төрөл",
 					"display_measure_title": "Хэмжсэн урт",
 					"display_mass_title": "Хэмжсэн масс",
-					"display_comment_title": "Сэтгэгдэл"
+					"display_comment_title": "Сэтгэгдэл",
+					"display_voronoi_pf_title": "Воронойн нунтаг хүчин зүйл"
 				}
 			},
 			"fr": {
@@ -471,7 +480,8 @@
 					"display_hole_type_title": "Type de trou",
 					"display_measure_title": "Longueur mesurée",
 					"display_mass_title": "Masse mesurée",
-					"display_comment_title": "Commentaire"
+					"display_comment_title": "Commentaire",
+					"display_voronoi_pf_title": "Facteur de poudre de Voronoï"
 				}
 			},
 			"ru": {
@@ -606,7 +616,8 @@
 					"display_hole_type_title": "Тип отверстия",
 					"display_measure_title": "Измеренная длина",
 					"display_mass_title": "Измеренная масса",
-					"display_comment_title": "Комментарий"
+					"display_comment_title": "Комментарий",
+					"display_voronoi_pf_title": "Вороной, удельный расход ВВ"
 				}
 			},
 			"es": {
@@ -741,7 +752,8 @@
 					"display_hole_type_title": "Tipo de agujero",
 					"display_measure_title": "Longitud medida",
 					"display_mass_title": "Masa medida",
-					"display_comment_title": "Comentario"
+					"display_comment_title": "Comentario",
+					"display_voronoi_pf_title": "Factor de Polvo de Voronoi"
 				}
 			}
 		}
@@ -1212,6 +1224,8 @@
 			<label for="display14" class="icon-button" data-content="{m}" title="Measured Mass"></label>
 			<input type="checkbox" id="display15" name="display" value="comment" placeholder="comment">
 			<label for="display15" class="icon-button" data-content="{c}" title="Comment"></label>
+			<input type="checkbox" id="display16" name="display" value="powder factor" placeholder="PowderFactor">
+			<label for="display16" class="icon-button" data-content="{pf}" title="Powder Factor"></label>
 		</div>
 	</div>
 	<!--END CANVAS AND MODE DISPLY BUTTONS-->
