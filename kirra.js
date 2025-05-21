@@ -9434,10 +9434,10 @@ function drawData(points, selectedHole) {
 	clearCanvas();
 	ctx.imageSmoothingEnabled = false;
 
-	// Early return if points and kad*Maps are null or empty
-	if (!points || points.length === 0 || !kadPointsMap || !kadLinesMap || !kadPolygonsMap || !kadTextsMap || !kadCirclesMap) {
-		return;
-	}
+	// // Early return if points and kad*Maps are null or empty
+	// if (!points || points.length === 0 || !kadPointsMap || !kadLinesMap || !kadPolygonsMap || !kadTextsMap || !kadCirclesMap) {
+	// 	return;
+	// }
 
 	const displayOptions = getDisplayOptions();
 	const holeMap = buildHoleMap(points);
