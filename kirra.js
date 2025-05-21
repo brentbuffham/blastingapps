@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20250515 @ 0115 AWST
+// Last Modified: 20250521 @ 2310 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -301,6 +301,17 @@ const option14 = document.getElementById("display14");
 const option15 = document.getElementById("display15");
 const option16 = document.getElementById("display16"); //pf
 
+// after const option16 = …
+const allToggles = [option1, option2, option2A, option3, option4, option5, option5A, option6, option6A, option8, option8A, option8B, option8C, option9, option10, option11, option12, option13, option14, option15, option16];
+
+allToggles.forEach((opt) => {
+	if (opt)
+		opt.addEventListener("change", () => {
+			// assuming drawData is your main render function
+			drawData(points, selectedHole);
+		});
+});
+
 const holeCountRadio = document.getElementById("holeCountRadio");
 const measuredMassRadio = document.getElementById("measuredMassRadio");
 
@@ -390,6 +401,10 @@ function updateTranslations(language) {
 		document.querySelector("#saveAll").textContent = langTranslations.save_all_button;
 		document.querySelector("#save_measures_label").textContent = langTranslations.save_measures_label;
 		document.querySelector("#saveMeasures").textContent = langTranslations.save_measures_button;
+		document.querySelector("#exportHolesDXFLabel").textContent = langTranslations.export_holes_dxf_label;
+		document.querySelector("#exportHolesDXF").textContent = langTranslations.export_holes_dxf_button;
+		document.querySelector("#exportDrawingDXFLabel").textContent = langTranslations.export_dxf_drawing_label;
+		document.querySelector("#exportDrawingDXF").textContent = langTranslations.export_dxf_drawing_button;
 		document.querySelector("#saveIREDES").textContent = langTranslations.save_iredes_button;
 		document.querySelector("#saveAQM").textContent = langTranslations.save_aqm_button;
 		document.querySelector("#exampleFilesAcc span").textContent = langTranslations.example_helper_files;
@@ -1834,6 +1849,38 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
 		document.body.removeChild(link);
 	}
 });
+document.getElementById("exportHolesDXF").addEventListener("click", function () {
+	const dxf = exportHolesDXF(points);
+	const filename = "KIRRA_HOLES_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
+	downloadDXF(dxf, filename);
+});
+
+document.getElementById("exportDrawingDXF").addEventListener("click", function () {
+	const dxf = exportKADDXF();
+	const filename = "KIRRA_DRAWING_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
+	downloadDXF(dxf, filename);
+});
+
+function downloadDXF(content, filename) {
+	if (isIOS()) {
+		const blob = new Blob([content], { type: "text/dxf;charset=utf-8" });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	} else {
+		const link = document.createElement("a");
+		link.style.display = "none";
+		link.href = "data:text/dxf;charset=utf-8," + encodeURIComponent(content);
+		link.download = filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+	}
+}
 
 // Function to check if the mouse is inside the canvas
 function isMouseInside(mouseX, mouseY, canvas) {
@@ -3223,6 +3270,8 @@ function parseKADFile(fileData) {
 				pointZLocation = parseFloat(row[5]); // Z value of the point
 				lineWidth = parseFloat(row[6]); // Width of the line
 				colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+				//console.log("Parsing closed value:", row[8], "| as string:", String(row[8]).trim());
+				closed = String(row[8]).trim() === "true";
 				kadPolygonsMap.get(entityName).data.push({
 					entityName: entityName,
 					entityType: entityType,
@@ -3464,6 +3513,266 @@ function exportKADFile(mapData) {
 	aKAD.click();
 	aTXT.click();
 }
+
+function radiiBlastHoles(points, radius1) {
+	const scale = 100000; // Clipper uses integers; scale meters to avoid precision loss
+	const steps = 32; // number of segments per circle
+
+	const circlePolygons = points.map((pt) => {
+		const centerX = pt.startXLocation;
+		const centerY = pt.startYLocation;
+		const centerZ = pt.startZLocation;
+
+		const path = [];
+		for (let i = 0; i < steps; i++) {
+			const angle = (i / steps) * Math.PI * 2;
+			const x = centerX + radius1 * Math.cos(angle);
+			const y = centerY + radius1 * Math.sin(angle);
+			const z = centerZ; // keep flat for now
+			path.push({ X: Math.round(x * scale), Y: Math.round(y * scale), Z: z });
+		}
+		return path;
+	});
+
+	// Perform union using clipper-lib
+	const cpr = new ClipperLib.Clipper();
+	cpr.AddPaths(circlePolygons, ClipperLib.PolyType.ptSubject, true);
+
+	const solution = new ClipperLib.Paths();
+	const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+
+	if (!succeeded || solution.length === 0) {
+		console.warn("Clipper union failed or returned empty result.");
+		return;
+	}
+
+	// Flatten to a new polygon with averaged Z per vertex (based on nearest point)
+	const polyID = "radiiUnion_" + Date.now();
+	const unionPoints = solution[0].map((pt) => {
+		const realX = pt.X / scale;
+		const realY = pt.Y / scale;
+
+		// Nearest Z from original centers
+		let nearestZ = 0;
+		let minDist = Infinity;
+		points.forEach((p) => {
+			const dx = p.startXLocation - realX;
+			const dy = p.startYLocation - realY;
+			const dist = dx * dx + dy * dy;
+			if (dist < minDist) {
+				minDist = dist;
+				nearestZ = p.startZLocation;
+			}
+		});
+
+		return {
+			pointXLocation: realX,
+			pointYLocation: realY,
+			pointZLocation: nearestZ,
+			pointID: "",
+			lineWidth: 5,
+			colour: 1, // red
+			closed: true,
+			entityType: "poly",
+		};
+	});
+
+	// Add to kadPolygonsMap
+	kadPolygonsMap.set(polyID, {
+		entityType: "poly",
+		data: unionPoints,
+	});
+}
+
+// Create a eventlistener for the id=createRadiiFromBlastHoles button,
+// Add to the kadPolygonsMap
+// Use the id=radiiSteps Value for the steps
+// Use the id=drawingRadius value
+// Use the id=drawingLineWidth value as the line width
+// Use the id=drawingColour value for the colour
+// Union boolean should be set to true
+document.getElementById("createRadiiFromBlastHoles").addEventListener("click", function () {
+	// Get the values from the input fields
+	const radius = parseFloat(document.getElementById("drawingPolygonRadius").value);
+	const lineWidth = parseFloat(document.getElementById("drawingLineWidth").value);
+	const colour = getJSColourHexDrawing();
+	const steps = parseInt(document.getElementById("radiiSteps").value);
+	const union = true;
+	const addToMaps = true;
+	// Check if the radius is a valid number
+	if (isNaN(radius) || radius <= 0) {
+		alert("Please enter a valid radius.");
+		return;
+	}
+	// Check if the line width is a valid number
+	if (isNaN(lineWidth) || lineWidth <= 0) {
+		alert("Please enter a valid line width.");
+		return;
+	}
+	const polygon = getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth);
+	drawData(points, selectedHole); // Redraw to reflect updated values
+});
+
+// Convert hex color (e.g., #FF0000) to a DXF color index (1-255, never 0 or 256)
+function getColorInteger(hex) {
+	// Remove the '#' character if present
+	if (hex.startsWith("#")) {
+		hex = hex.slice(1);
+	}
+	// Parse the hex string as an integer
+	const intValue = parseInt(hex, 16);
+	const r = (intValue >> 16) & 0xff;
+	const g = (intValue >> 8) & 0xff;
+	const b = intValue & 0xff;
+
+	// Basic mapping for common colors
+	if (r === 255 && g === 0 && b === 0) return 1; // red
+	if (r === 255 && g === 255 && b === 0) return 2; // yellow
+	if (r === 0 && g === 255 && b === 0) return 3; // green
+	if (r === 0 && g === 255 && b === 255) return 4; // cyan
+	if (r === 0 && g === 0 && b === 255) return 5; // blue
+	if (r === 255 && g === 0 && b === 255) return 6; // magenta
+	if (r === 255 && g === 255 && b === 255) return 7; // white
+
+	// For other colors, approximate to 8-255 (never 0 or 256)
+	const gray = Math.round((r + g + b) / 3);
+	const index = Math.max(8, Math.min(255, Math.round((gray / 255) * 247) + 8));
+	console.log("Color index:", index);
+	return index;
+}
+
+/**
+ * Exports map data to a DXF (Drawing Exchange Format) string and creates a Blob for download.
+ *
+ * The function iterates through the provided map data and converts supported entities
+ * (point, line, poly, circle, text) into their corresponding DXF representations.
+ * Each entity is added to the DXF content string, which is then used to create a Blob.
+ *
+ * @param {Array<Map<string, Object>>} mapData - An array of Map objects, where each Map contains
+ *   entity names as keys and entity data objects as values. Each entity data object should have:
+ *   - {string} entityType - The type of the entity ("point", "line", "poly", "circle", "text").
+ *   - {Array<Object>} data - An array of entity-specific data objects.
+ *
+ * Entity data object structure varies by entityType:
+ *   - "point": { pointXLocation, pointYLocation, pointZLocation, colour }
+ *   - "line": { pointXLocation, pointYLocation, pointZLocation, pointXTarget, pointYTarget, pointZTarget, colour }
+ *   - "poly": { pointXLocation, pointYLocation, pointZLocation, colour }
+ *   - "circle": { pointXLocation, pointYLocation, pointZLocation, radius, colour }
+ *   - "text": { pointXLocation, pointYLocation, pointZLocation, text, colour }
+ *
+ * @returns {void}
+ */
+function exportKADDXF() {
+	let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nENTITIES\n";
+
+	const allMaps = [kadPointsMap, kadLinesMap, kadPolygonsMap, kadCirclesMap, kadTextsMap];
+
+	for (const map of allMaps) {
+		for (const [entityName, entityData] of map.entries()) {
+			const type = entityData.entityType.trim();
+			const data = entityData.data;
+
+			data.forEach((item, index) => {
+				//get the first colour of the first point in the item
+				let colour = 1;
+				colour = typeof item.colour === "string" ? getColorInteger(item.colour) : 1; // default to red if no colour is provided
+				if (type === "point") {
+					dxf += "0\nPOINT\n8\n" + entityName + "\n";
+					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+					dxf += "62\n" + colour + "\n";
+				} else if (type === "line") {
+					if (index < data.length - 1) {
+						const next = data[index + 1];
+						dxf += "0\nLINE\n8\n" + entityName + "\n";
+						dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+						dxf += "11\n" + next.pointXLocation + "\n21\n" + next.pointYLocation + "\n31\n" + next.pointZLocation + "\n";
+						dxf += "62\n" + colour + "\n";
+					}
+				} else if (type === "poly") {
+					if (index === 0 && data.length > 1) {
+						dxf += "0\nPOLYLINE\n8\n" + entityName + "\n66\n1\n70\n1\n";
+						dxf += "62\n" + colour + "\n";
+						data.forEach((pt) => {
+							dxf += "0\nVERTEX\n8\n" + entityName + "\n";
+							dxf += "10\n" + pt.pointXLocation + "\n20\n" + pt.pointYLocation + "\n30\n" + pt.pointZLocation + "\n";
+						});
+						dxf += "0\nSEQEND\n8\n" + entityName + "\n";
+					}
+				} else if (type === "circle") {
+					dxf += "0\nCIRCLE\n8\n" + entityName + "\n";
+					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+					dxf += "40\n" + item.radius + "\n";
+					dxf += "62\n" + colour + "\n";
+				} else if (type === "text") {
+					dxf += "0\nTEXT\n8\n" + entityName + "\n";
+					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+					dxf += "40\n0.5\n"; // text height
+					dxf += "50\n0.0\n"; // rotation
+					dxf += "1\n" + item.text + "\n";
+					dxf += "62\n" + colour + "\n";
+				}
+			});
+		}
+	}
+
+	dxf += "0\nENDSEC\n0\nEOF\n";
+	return dxf;
+}
+
+/**
+ * Exports an array of hole objects as a DXF file, drawing a collar circle, track line, and point for each hole.
+ *
+ * For each point in the input array:
+ * - Draws a circle at the start coordinates (if holeDiameter is provided and > 0) on the "Collar" layer named after the point's holeID.
+ * - Draws a line from the start to end coordinates on the "Track" layer named after the point's holeID.
+ * - Draws text at the start coordinates on a layer named after the point's holeID
+ *
+ * The resulting DXF content is offered as a file download in the browser.
+ *
+ * @param {Array<Object>} points - Array of hole objects to export. Each object should have the following properties:
+ *   @param {number} points[].startXLocation - X coordinate of the hole start.
+ *   @param {number} points[].startYLocation - Y coordinate of the hole start.
+ *   @param {number} points[].startZLocation - Z coordinate of the hole start.
+ *   @param {number} points[].endXLocation - X coordinate of the hole end.
+ *   @param {number} points[].endYLocation - Y coordinate of the hole end.
+ *   @param {number} points[].endZLocation - Z coordinate of the hole end.
+ *   @param {number} [points[].holeDiameter] - Diameter of the collar circle (optional).
+ *   @param {string} points[].holeID - Name of the layer for the point entity.
+ */
+function exportHolesDXF(points) {
+	let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
+	dxf += "0\nSECTION\n2\nENTITIES\n";
+
+	points.forEach((point) => {
+		const layerName = point.holeID;
+
+		if (point.holeDiameter && point.holeDiameter > 0) {
+			const radius = point.holeDiameter / 1000 / 2;
+			dxf += "0\nCIRCLE\n8\n" + layerName + "\n";
+			dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+			dxf += "40\n" + radius + "\n";
+		}
+
+		dxf += "0\nLINE\n8\n" + layerName + "\n";
+		dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+		dxf += "11\n" + point.endXLocation + "\n21\n" + point.endYLocation + "\n31\n" + point.endZLocation + "\n";
+
+		dxf += "0\nTEXT\n8\n" + layerName + "\n";
+		dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+		dxf += "40\n0.5\n"; // Text height (0.5m)
+		dxf += "50\n0.0\n"; // Text rotation (0°)
+		dxf += "1\n" + point.holeID + "\n";
+	});
+
+	dxf += "0\nENDSEC\n0\nEOF\n";
+	return dxf;
+}
+
 // Example usage
 //const mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap];
 //exportMapDataCSV(mapData);
@@ -4316,10 +4625,128 @@ function createBlastBoundaryPolygon(triangles) {
 	return blastBoundaryPolygon;
 }
 
+/**
+ * Generates polygons representing circles around given points, optionally performing a union of these circles.
+ *
+ * @param {Array<Object>} points - An array of objects, each with `startXLocation`, `startYLocation`, and `startZLocation` properties, representing the center of a circle.
+ * @param {number} steps - The number of steps to use when generating the circle polygon. Higher values result in smoother circles.
+ * @param {number} radius - The radius of the circles.
+ * @param {boolean} union - If true, performs a union of all the circle polygons using the ClipperLib library.
+ * @param {boolean} addToMaps - If true, adds the generated polygons to the `kadPolygonsMap`.
+ * @returns {Array<Array<Object>>} An array of polygons. Each polygon is an array of points, where each point is an object with `x`, `y`, and `z` properties.  Returns an empty array if the Clipper union fails.
+ */
+function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth) {
+	const scale = 100000;
+	const rawPolygons = [];
+
+	// Generate circle polygons
+	points.forEach((pt) => {
+		const cx = pt.startXLocation;
+		const cy = pt.startYLocation;
+		const z = pt.startZLocation;
+
+		const poly = [];
+		for (let i = 0; i < steps; i++) {
+			const angle = (i / steps) * Math.PI * 2;
+			const x = cx + radius * Math.cos(angle);
+			const y = cy + radius * Math.sin(angle);
+			poly.push({ x: x, y: y, z: z });
+		}
+
+		rawPolygons.push(poly);
+	});
+
+	if (!union) {
+		if (addToMaps) {
+			rawPolygons.forEach((polygon) => {
+				const polyID = "radii_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+				kadPolygonsMap.set(polyID, {
+					entityType: "poly",
+					data: polygon.map((pt) => ({
+						pointXLocation: pt.x,
+						pointYLocation: pt.y,
+						pointZLocation: pt.z,
+						pointID: "",
+						lineWidth: 5,
+						colour: 1,
+						closed: true,
+						entityType: "poly",
+					})),
+				});
+			});
+		}
+		return rawPolygons; // each point includes x, y, z
+	}
+
+	// Convert for ClipperLib union
+	const clipperPolys = rawPolygons.map((poly) =>
+		poly.map((pt) => ({
+			X: Math.round(pt.x * scale),
+			Y: Math.round(pt.y * scale),
+		}))
+	);
+
+	const cpr = new ClipperLib.Clipper();
+	cpr.AddPaths(clipperPolys, ClipperLib.PolyType.ptSubject, true);
+
+	const solution = new ClipperLib.Paths();
+	const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+
+	if (!succeeded || solution.length === 0) {
+		console.warn("Clipper union failed.");
+		return [];
+	}
+
+	// Interpolate Z using nearest original point
+	const unionedPolygons = solution.map((path) =>
+		path.map((pt) => {
+			const realX = pt.X / scale;
+			const realY = pt.Y / scale;
+
+			let nearestZ = 0;
+			let minDist = Infinity;
+			points.forEach((p) => {
+				const dx = p.startXLocation - realX;
+				const dy = p.startYLocation - realY;
+				const dist = dx * dx + dy * dy;
+				if (dist < minDist) {
+					minDist = dist;
+					nearestZ = p.startZLocation;
+				}
+			});
+
+			return { x: realX, y: realY, z: nearestZ };
+		})
+	);
+
+	if (addToMaps) {
+		unionedPolygons.forEach((polygon) => {
+			const polyID = "radiiUnion_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+			kadPolygonsMap.set(polyID, {
+				entityType: "poly",
+				data: polygon.map((pt) => ({
+					pointXLocation: pt.x,
+					pointYLocation: pt.y,
+					pointZLocation: pt.z,
+					pointID: "",
+					lineWidth: lineWidth || 5,
+					colour: colour || 1,
+					closed: true,
+					entityType: "poly",
+				})),
+			});
+		});
+	}
+
+	return unionedPolygons; // includes x, y, z
+}
+
 function clipVoronoiCells(voronoiMetrics, blastBoundaryPolygon) {
 	const scale = 100000;
 	const clippedCells = [];
 
+	//use the getRadiiPolygons function to create a polygon
+	//const blastBoundaryPolygon1 = getRadiiPolygons(points, 8, 3, true, false)[0];
 	// Convert blast boundary to scaled path
 	const clipPath = blastBoundaryPolygon.map((p) => ({
 		X: Math.round(p.x * scale),
@@ -8962,281 +9389,180 @@ function drawLegend(strokecolour) {
 	ctx.stroke();
 }
 
+function worldToCanvas(x, y) {
+	return [(x - centroidX) * currentScale + canvas.width / 2, (-y + centroidY) * currentScale + canvas.height / 2];
+}
+
+// Helper to fetch display options once
+function getDisplayOptions() {
+	return {
+		holeID: document.getElementById("display1").checked,
+		holeLen: document.getElementById("display2").checked,
+		holeDia: document.getElementById("display2A").checked,
+		holeAng: document.getElementById("display3").checked,
+		holeDip: document.getElementById("display4").checked,
+		holeBea: document.getElementById("display5").checked,
+		connector: document.getElementById("display5A").checked,
+		delayValue: document.getElementById("display6").checked,
+		initiationTime: document.getElementById("display6A").checked,
+		contour: document.getElementById("display8").checked,
+		slopeMap: document.getElementById("display8A").checked,
+		burdenRelief: document.getElementById("display8B").checked,
+		firstMovement: document.getElementById("display8C").checked,
+		xValue: document.getElementById("display9").checked,
+		yValue: document.getElementById("display10").checked,
+		zValue: document.getElementById("display11").checked,
+		holeType: document.getElementById("display12").checked,
+		measuredLength: document.getElementById("display13").checked,
+		measuredMass: document.getElementById("display14").checked,
+		measuredComment: document.getElementById("display15").checked,
+		voronoiPF: document.getElementById("display16").checked,
+	};
+}
+
+// Build hole map for quick lookup by entityName and holeID
+function buildHoleMap(points) {
+	const map = new Map();
+	for (const pt of points) {
+		map.set(pt.entityName + ":::" + pt.holeID, pt);
+	}
+	return map;
+}
+
+// Main draw function
 function drawData(points, selectedHole) {
 	clearCanvas();
-	// Disable image smoothing (anti-aliasing)
 	ctx.imageSmoothingEnabled = false;
 
+	// Early return if points is null or empty
+	if (!points || points.length === 0) {
+		return;
+	}
+
+	const displayOptions = getDisplayOptions();
+	const holeMap = buildHoleMap(points);
+
+	// Highlight single selected point if needed
 	if (selectedPoint !== null) {
-		const x = (selectedPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-		const y = (-selectedPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
+		const [x, y] = worldToCanvas(selectedPoint.pointXLocation, selectedPoint.pointYLocation);
 		drawHiHole(x, y, 10, "rgba(255, 102, 255, 0.3)", "rgba(255, 0, 255, 0.6)");
 	}
-	/*
-	// Highlight selected holes
-	selectedMultipleHoles.forEach(hole => {
-		console.log("Drawing Selected Multiple Holes: entity:", hole.entityName, " hole:", hole.holeID);
-		const x = (hole.pointXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-		const y = (-hole.pointYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
-		drawHiHole(x, y, 10, "rgba(255, 102, 255, 0.3)", "rgba(255, 0, 255, 0.6)");
-	});*/
 
-	// Draw the KAD dataset
+	// KAD POINTS
 	if (kadPointsMap.size > 0) {
 		for (const entity of kadPointsMap.values()) {
 			for (const pointData of entity.data) {
-				const x = (pointData.pointXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-				const y = (-pointData.pointYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
-				const z = pointData.pointZLocation;
-				drawKADPoints(x, y, z, pointData.colour);
+				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+				drawKADPoints(x, y, pointData.pointZLocation, pointData.colour);
 			}
 		}
 	}
 
-	// Draw the KAD dataset for lines
+	// KAD LINES
 	if (kadLinesMap.size > 0) {
 		for (const entity of kadLinesMap.values()) {
 			for (let i = 0; i < entity.data.length - 1; i++) {
-				const sx = (entity.data[i].pointXLocation - centroidX) * currentScale + canvas.width / 2;
-				const sy = (-entity.data[i].pointYLocation + centroidY) * currentScale + canvas.height / 2;
-				const ex = (entity.data[i + 1].pointXLocation - centroidX) * currentScale + canvas.width / 2;
-				const ey = (-entity.data[i + 1].pointYLocation + centroidY) * currentScale + canvas.height / 2;
-				const sz = entity.data[i].pointZLocation;
-				const ez = entity.data[i + 1].pointZLocation;
-				const lineWidth = entity.data[i].lineWidth;
-				const colour = entity.data[i].colour;
-				drawKADLines(sx, sy, ex, ey, sz, ez, lineWidth, colour);
+				const [sx, sy] = worldToCanvas(entity.data[i].pointXLocation, entity.data[i].pointYLocation);
+				const [ex, ey] = worldToCanvas(entity.data[i + 1].pointXLocation, entity.data[i + 1].pointYLocation);
+				drawKADLines(sx, sy, ex, ey, entity.data[i].pointZLocation, entity.data[i + 1].pointZLocation, entity.data[i].lineWidth, entity.data[i].colour);
 			}
 		}
 	}
-	// Draw the KAD dataset for polygons
+
+	// KAD POLYGONS
 	if (kadPolygonsMap.size > 0) {
 		for (const entity of kadPolygonsMap.values()) {
 			if (entity.data.length >= 2) {
-				// Make sure there are at least 2 points to draw a polygon
-				const firstPoint = entity.data[0]; // Get the first point to close the polygon
-				let prevX = (firstPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2;
-				let prevY = (-firstPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2;
+				const firstPoint = entity.data[0];
+				let [prevX, prevY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
 				let prevZ = firstPoint.pointZLocation;
-
 				for (let i = 1; i < entity.data.length; i++) {
 					const currentPoint = entity.data[i];
-					const x = (currentPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2;
-					const y = (-currentPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2;
+					const [x, y] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
 					const z = currentPoint.pointZLocation;
-					const closed = entity.data[i].closed;
-
+					const closed = currentPoint.closed;
 					drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, closed);
-
 					prevX = x;
 					prevY = y;
 					prevZ = z;
 				}
-
-				// Close the polygon by drawing a line back to the first point
-				if (entity.data[0].closed) {
-					drawKADPolys(prevX, prevY, (firstPoint.pointXLocation - centroidX) * currentScale + canvas.width / 2, (-firstPoint.pointYLocation + centroidY) * currentScale + canvas.height / 2, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, true);
+				if (entity.data[0].closed === true) {
+					drawKADPolys(prevX, prevY, ...worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation), prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, true);
 				}
 			}
 		}
 	}
-	//draw the KAD dataset for text
+
+	// KAD TEXT
 	if (kadTextsMap.size > 0) {
 		for (const entity of kadTextsMap.values()) {
 			for (const pointData of entity.data) {
-				const x = (pointData.pointXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-				const y = (-pointData.pointYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
-				const z = pointData.pointZLocation;
-				drawKADTexts(x, y, z, pointData.text, pointData.colour);
+				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+				drawKADTexts(x, y, pointData.pointZLocation, pointData.text, pointData.colour);
 			}
 		}
 	}
-	//draw the KAD dataset for circles
+
+	// KAD CIRCLES
 	if (kadCirclesMap.size > 0) {
 		for (const entity of kadCirclesMap.values()) {
 			for (const pointData of entity.data) {
-				const x = (pointData.pointXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-				const y = (-pointData.pointYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
-				const z = pointData.pointZLocation;
-
-				//draw the circles with the radius in the correct scale ie. 100 = 100m and 1 =1m etc
-				drawKADCircles(x, y, z, pointData.radius * currentScale, pointData.lineWidth, pointData.colour);
+				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+				drawKADCircles(x, y, pointData.pointZLocation, pointData.radius * currentScale, pointData.lineWidth, pointData.colour);
 			}
 		}
 	}
 
-	/*** DRAW POINTS ***/
-	//display toggles
-	const holeID_display = document.getElementById("display1").checked; //1
-	const holeLen_display = document.getElementById("display2").checked; //2
-	const holeDia_display = document.getElementById("display2A").checked; //3
-	const holeAng_display = document.getElementById("display3").checked; //4
-	const holeDip_display = document.getElementById("display4").checked; //5
-	const holeBea_display = document.getElementById("display5").checked; //6
-	const connector_display = document.getElementById("display5A").checked; //7
-	const delayValue_display = document.getElementById("display6").checked; //8
-	const initiationTime_display = document.getElementById("display6A").checked; //9
-	//const display7 = document.getElementById("display7").checked; //redundant //10
-	//const display7A = document.getElementById("display7A").checked; //redundant  //11
-	//const display7B = document.getElementById("display7B").checked; //redundant //12
-	const contour_display = document.getElementById("display8").checked; //13
-	const slopeMap_display = document.getElementById("display8A").checked; //14
-	const burdenRelief_display = document.getElementById("display8B").checked; //15
-	const firstMovementDisplay = document.getElementById("display8C").checked; //16
-	const xValue_display = document.getElementById("display9").checked; //17
-	const yValue_display = document.getElementById("display10").checked; //18
-	const zValue_display = document.getElementById("display11").checked; //19
-	const holeType_display = document.getElementById("display12").checked; //20
-	const measuredLength_display = document.getElementById("display13").checked; //21
-	const measuredMass_display = document.getElementById("display14").checked; //22
-	const measuredComment_display = document.getElementById("display15").checked; //23
-	const voronoiPF_display = document.getElementById("display16").checked; // custom toggle
-
-	const tri = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+	// VORONOI PF & OVERLAYS
+	const tri = delaunayTriangles(points, maxEdgeLength);
 	const blastBoundaryPolygon = createBlastBoundaryPolygon(tri.resultTriangles);
-	//console.log("Blast Boundary Polygon: ", blastBoundaryPolygon);
-
-	const showBounds = false;
-	const showBounds2 = false;
-	if (showBounds) {
-		drawBlastBoundary(blastBoundaryPolygon, "red");
-	}
 	const offsetBoundaryPolygon = boundaryOffset(blastBoundaryPolygon, getAverageDistance(points) / 2);
-	//console.log("Offset Boundary Polygon: ", offsetBoundaryPolygon);
-	if (showBounds2) {
-		drawBlastBoundary(offsetBoundaryPolygon, "blue");
+
+	// Voronoi Powder Factor
+	if (displayOptions.voronoiPF) {
+		drawPowderFactorLegendAndCells(points, offsetBoundaryPolygon);
 	}
 
-	if (voronoiPF_display === true) {
-		//Create Legend for PF
-		// === Powder Factor Gradient Legend ===
-		const legendX = 10;
-		const legendY = canvas.height / 2 - 70;
-		const gradientWidth = 20;
-		const gradientHeight = 160;
-
-		ctx.fillStyle = "black";
-		ctx.font = "14px Arial";
-		ctx.fillText("Legend Powder Factor", legendX, legendY - 10);
-
-		// Create vertical gradient
-		const gradient = ctx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
-
-		// Define stops based on your PF color scale (0.0 to 3.0)
-		const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]; // 0 to 1 scale for gradient
-		stops.forEach((stop) => {
-			const pfValue = 0.0 + stop * 3.0;
-			gradient.addColorStop(stop, getPFColor(pfValue));
-		});
-
-		ctx.fillStyle = gradient;
-		ctx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
-
-		// Label min and max
-		ctx.fillStyle = "black";
-		ctx.textAlign = "left";
-		ctx.textBaseline = "middle";
-
-		ctx.fillText("0.0", legendX, legendY);
-		ctx.fillText("1.5", legendX, legendY + gradientHeight / 2);
-		ctx.fillText("3.0", legendX, legendY + gradientHeight);
-
-		const voronoiPFMetrics = getVoronoiMetrics(points);
-		const clippedCells = clipVoronoiCells(voronoiPFMetrics, offsetBoundaryPolygon);
-		//console.log("Clipping Result: ", clippedCells.length, "cells");
-		//console.log("Clipped Cells: ", clippedCells);
-
-		for (let cell of clippedCells) {
-			if (!cell.polygon || cell.powderFactor == null) continue;
-
-			ctx.beginPath();
-			for (let j = 0; j < cell.polygon.length; j++) {
-				const pt = cell.polygon[j];
-				const rawX = pt.x !== undefined ? pt.x : pt[0]; // handle either format
-				const rawY = pt.y !== undefined ? pt.y : pt[1];
-
-				const x = (rawX - centroidX) * currentScale + canvas.width / 2;
-				const y = (-rawY + centroidY) * currentScale + canvas.height / 2;
-
-				if (j === 0) ctx.moveTo(x, y);
-				else ctx.lineTo(x, y);
-			}
-			ctx.closePath();
-			ctx.fillStyle = getPFColor(cell.powderFactor);
-			ctx.fill();
-		}
-	}
-
-	// Set the colors dynamically based on the mode
-	ctx.fillStyle = fillColour;
-	ctx.strokeStyle = strokeColour;
-	if (slopeMap_display === true) {
+	// Slope Map
+	if (displayOptions.slopeMap) {
 		const centroid = { x: centroidX, y: centroidY };
-
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+		const { resultTriangles } = delaunayTriangles(points, maxEdgeLength);
 		drawDelauanySlopeMap(resultTriangles, centroid, strokeColour);
-
-		for (let i = 0; i < resultTriangles.length; i++) {
-			const triangle = resultTriangles[i];
+		for (const triangle of resultTriangles) {
 			drawTriangleAngleText(triangle, centroid, strokeColour);
 		}
 		drawLegend(strokeColour);
 	}
-	ctx.fillStyle = fillColour;
-	ctx.strokeStyle = strokeColour;
-	if (burdenRelief_display === true) {
-		const centroid = { x: centroidX, y: centroidY };
 
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+	// Burden Relief
+	if (displayOptions.burdenRelief) {
+		const centroid = { x: centroidX, y: centroidY };
+		const { reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
 		drawDelauanyBurdenRelief(reliefTriangles, centroid, strokeColour);
-		//console.log("AfterDrawing Burden Relief", reliefTriangles);
-		for (let i = 0; i < reliefTriangles.length; i++) {
-			const triangle = reliefTriangles[i];
+		for (const triangle of reliefTriangles) {
 			drawTriangleBurdenReliefText(triangle, centroid, strokeColour);
 		}
 		drawReliefLegend(strokeColour);
 	}
 
-	if (firstMovementDisplay === true) {
-		//console.log("Drawing Direction Arrows");
-		//console.log("First Movement:", directionArrows);
+	// First Movement Direction Arrows
+	if (displayOptions.firstMovement) {
 		connScale = document.getElementById("connSlider").value;
-		for (let i = 0; i < directionArrows.length; i++) {
-			const arrow = directionArrows[i];
-			const startX = (arrow[0] - centroidX) * currentScale + canvas.width / 2;
-			const startY = (-arrow[1] + centroidY) * currentScale + canvas.height / 2;
-			const endX = (arrow[2] - centroidX) * currentScale + canvas.width / 2;
-			const endY = (-arrow[3] + centroidY) * currentScale + canvas.height / 2;
-			const colour = arrow[4];
-			const arrowScale = arrow[5];
-			//console.log("Drawing Arrow:", startX, ", ", startY, ", ", endX, ", ", endY, ", ", colour, ", ", arrowScale);
-			ctx.strokeStyle = colour;
-			ctx.lineWidth = 1;
-			drawDirectionArrow(startX, startY, endX, endY, colour, strokeColour, arrowScale);
+		for (const arrow of directionArrows) {
+			const [startX, startY] = worldToCanvas(arrow[0], arrow[1]);
+			const [endX, endY] = worldToCanvas(arrow[2], arrow[3]);
+			drawDirectionArrow(startX, startY, endX, endY, arrow[4], strokeColour, arrow[5]);
 		}
 	}
 
-	if (contour_display === true) {
-		// NEW CODE - Further performance improvements
+	// Contour Lines
+	if (displayOptions.contour) {
 		ctx.lineWidth = 3;
-
-		// Move color assignment outside of the loop if possible
-		const firstColor = "magenta";
-		for (let i = 0; i < contourLinesArray.length; i++) {
-			const contourLines = contourLinesArray[i];
-			////console.log("Drawing Contour Lines\n", contourLines);
-
-			ctx.strokeStyle = firstColor;
-
-			for (let j = 0; j < contourLines.length; j++) {
-				const line = contourLines[j];
-
-				const startX = (line[0].x - centroidX) * currentScale + canvas.width / 2;
-				const startY = (-line[0].y + centroidY) * currentScale + canvas.height / 2;
-				const endX = (line[1].x - centroidX) * currentScale + canvas.width / 2;
-				const endY = (-line[1].y + centroidY) * currentScale + canvas.height / 2;
-
-				//Draw the lines
+		ctx.strokeStyle = "magenta";
+		for (const contourLines of contourLinesArray) {
+			for (const line of contourLines) {
+				const [startX, startY] = worldToCanvas(line[0].x, line[0].y);
+				const [endX, endY] = worldToCanvas(line[1].x, line[1].y);
 				ctx.beginPath();
 				ctx.moveTo(startX, startY);
 				ctx.lineTo(endX, endY);
@@ -9244,205 +9570,244 @@ function drawData(points, selectedHole) {
 			}
 		}
 	}
-	if (points !== null) {
-		ctx.fillStyle = "red";
-		ctx.font = "12px Arial"; // Set the font size to 12pt Roboto-Regular
-		ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
-		for (let i = 0; i < points.length; i++) {
-			const point = points[i];
-			// ctx.fillStyle = "red";
-			// ctx.font = "18px Arial"; // Set the font size to 20px
-			// ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
-			const x = (points[i].startXLocation - centroidX) * currentScale + canvas.width / 2; // adjust x position
-			const y = (-points[i].startYLocation + centroidY) * currentScale + canvas.height / 2; // adjust y position
-			const lineStartX = x;
-			const lineStartY = y;
-			const lineEndX = (points[i].endXLocation - centroidX) * currentScale + canvas.width / 2;
-			const lineEndY = (centroidY - points[i].endYLocation) * currentScale + canvas.height / 2;
 
-			toeSizeInMeters = document.getElementById("toeSlider").value;
-			connScale = document.getElementById("connSlider").value;
-			ctx.strokeStyle = strokeColour;
-			if (points[i].holeAngle > 0) {
-				drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, strokeColour);
-			}
-			// Highlight for the animation
-			if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-				const highlightColor = "rgba(255, 150, 0, 0.7)"; // Color for playing animation
-				const highlightColor2 = "rgba(200, 200, 0, 0.7)"; // Color for playing animation
-				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 400) * holeScale * currentScale), highlightColor, highlightColor);
-				//drawHexagon(x, y, 10 + parseInt(point.holeDiameter / 200 * holeScale * currentScale), highlightColor, highlightColor);
-				//drawExplosion(x, y, 10, 10 + parseInt(point.holeDiameter / 150 * holeScale * currentScale), 10 + parseInt(point.holeDiameter / 450 * holeScale * currentScale), highlightColor2, highlightColor);
-			}
+	// Holes Displayed Count
+	ctx.fillStyle = "red";
+	ctx.font = "12px Arial";
+	ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 20);
 
-			// Highlight for timeChart selection
-			if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-				drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "rgba(0, 255, 0, 0.5)", "rgba(0, 255, 0, 0.7)");
-			}
+	// Main hole loop
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = strokeColour;
+	ctx.font = parseInt(currentFontSize) + "px Arial";
 
-			ctx.lineWidth = 1; // Reset stroke width for non-selected holes
-			ctx.strokeStyle = strokeColour; // Reset stroke color for non-selected holes
-			ctx.font = parseInt(currentFontSize) + "px Arial";
-			if (parseFloat(points[i].holeLengthCalculated).toFixed(1) != 0.0) {
-				const radiusInPixels = toeSizeInMeters * currentScale;
-				drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
-			}
-			// Text offset based on hole diameter
-			const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
-			// Right/Left side of the hole
-			const leftSideToe = parseInt(lineEndX) - textOffset;
-			const rightSideToe = parseInt(lineEndX) + textOffset;
-			const leftSideCollar = parseInt(x) - textOffset;
-			const rightSideCollar = parseInt(x) + textOffset;
-			// Top / Middle / Bottom of the hole
-			const topSideToe = parseInt(lineEndY - textOffset /*- parseInt(currentFontSize / 6)*/);
-			const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
-			const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
-			const topSideCollar = parseInt(y - textOffset /*- parseInt(currentFontSize / 6)*/);
-			const middleSideCollar = parseInt(y /*+ textOffset*/ + parseInt(currentFontSize / 2));
-			const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+	for (const point of points) {
+		const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
+		const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
 
-			//Right side of the hole
-			if (holeID_display === true) {
-				drawText(rightSideCollar, topSideCollar, points[i].holeID, textFillColour);
-			}
-			if (holeDia_display === true) {
-				drawText(rightSideCollar, middleSideCollar, parseFloat(points[i].holeDiameter).toFixed(0), "green");
-			}
-			if (holeLen_display === true) {
-				drawText(rightSideCollar, bottomSideCollar, parseFloat(points[i].holeLengthCalculated).toFixed(1), depthColour);
-			}
-			//Left side of the hole
-			if (holeAng_display) {
-				drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
-			}
-			if (holeDip_display) {
-				drawRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(points[i].holeAngle).toFixed(0), angleDipColour);
-			}
-			if (holeBea_display) {
-				drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(points[i].holeBearing).toFixed(1), "red");
-			}
-			if (initiationTime_display) {
-				drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
-			}
-			if (connector_display) {
-				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find((point) => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
-				const startPoint = fromHole;
-				const endPoint = points.find((point) => point === points[i]);
+		toeSizeInMeters = document.getElementById("toeSlider").value;
+		connScale = document.getElementById("connSlider").value;
 
-				if (startPoint && endPoint) {
-					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const startY = (-startPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-					const endX = (endPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const endY = (-endPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-
-					const connColour = point.colourHexDecimal;
-					try {
-						drawArrow(startX, startY, endX, endY, connColour, connScale);
-						//console.log(`Arrow drawn from ${fromHole.holeID} to ${point.holeID}`);
-					} catch (error) {
-						console.error("Error drawing arrow:", error);
-					}
-				}
-				//console.log(points);
-			}
-			if (delayValue_display) {
-				const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-				// Find the fromHole using both splitEntityName and splitFromHoleID
-				const fromHole = points.find((point) => point.entityName === splitEntityName && point.holeID === splitFromHoleID);
-				const startPoint = fromHole;
-				const endPoint = points.find((point) => point === points[i]);
-
-				if (startPoint && endPoint) {
-					const startX = (startPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const startY = (-startPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-					const endX = (endPoint.startXLocation - centroidX) * currentScale + canvas.width / 2;
-					const endY = (-endPoint.startYLocation + centroidY) * currentScale + canvas.height / 2;
-
-					const connColour = point.colourHexDecimal;
-					const pointDelay = point.timingDelayMilliseconds;
-
-					drawArrowDelayText(startX, startY, endX, endY, connColour, pointDelay);
-				}
-			}
-			if (xValue_display) {
-				drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(points[i].startXLocation).toFixed(2), textFillColour);
-			}
-			if (yValue_display) {
-				drawRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(points[i].startYLocation).toFixed(2), textFillColour);
-			}
-			if (zValue_display) {
-				drawRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(points[i].startZLocation).toFixed(2), textFillColour);
-			}
-			if (holeType_display) {
-				drawText(rightSideCollar, middleSideCollar, points[i].holeType, "green");
-			}
-			if (measuredLength_display) {
-				drawRightAlignedText(leftSideCollar, bottomSideToe, points[i].measuredLength, "#FF4400");
-			}
-			if (measuredMass_display) {
-				drawRightAlignedText(leftSideCollar, topSideToe, points[i].measuredMass, "#FF6600");
-			}
-			if (measuredComment_display) {
-				drawText(rightSideCollar, middleSideCollar, points[i].measuredComment, "#FF8800");
-			}
-
-			if (selectedHole != null && selectedHole == points[i]) {
-				if (firstSelectedHole == null) {
-					drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
-					ctx.fillStyle = "rgba(255, 0, 150, .8)";
-					ctx.font = "18px Arial"; // Set the font size for the selected hole text
-					if (isDiameterEditing || isLengthEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole) {
-						ctx.fillText("Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName, 2, 20);
-					} else if (isAddingConnector || isAddingMultiConnector) {
-						ctx.fillText("2nd Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName, 2, 20);
-					}
-				} else {
-					drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(0, 255, 0, 0.2)", "rgba(0, 190, 0, .8)");
-					ctx.fillStyle = "rgba(0, 190, 0, .8)";
-					ctx.font = "18px Arial"; // Set the font size for the selected hole text
-					ctx.fillText("1st Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName, 2, 20);
-				}
-				ctx.lineWidth = 1; // Reset stroke width for non-selected holes
-				ctx.strokeStyle = strokeColour; // Reset stroke color for non-selected holes
-				if (parseFloat(points[i].holeLengthCalculated).toFixed(1) == 0.0) {
-					drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
-				} else if (points[i].holeDiameter == 0) {
-					drawNoDiameterHole(x, y, 10, strokeColour);
-				} else {
-					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
-				}
-			} else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-				// Highlight for selected holes
-				drawHiHole(x, y, 10 + parseInt((points[i].holeDiameter / 900) * holeScale * currentScale), "rgba(255, 0, 150, 0.2)", "rgba(255, 0, 150, .8)");
-				ctx.fillText("Editing Selected Holes: " + selectedMultipleHoles.holeID, 2, 20);
-				ctx.lineWidth = 1; // Reset stroke width for non-selected holes
-				ctx.strokeStyle = strokeColour; // Reset stroke color for non-selected holes
-				if (parseFloat(points[i].holeLengthCalculated).toFixed(1) == 0.0) {
-					drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
-				} else if (points[i].holeDiameter == 0) {
-					drawNoDiameterHole(x, y, 10, strokeColour);
-				} else {
-					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
-				}
-			} else {
-				ctx.lineWidth = 1; // Reset stroke width for non-selected holes
-				ctx.strokeStyle = strokeColour; // Reset stroke color for non-selected holes
-				if (parseFloat(points[i].holeLengthCalculated).toFixed(1) == 0.0) {
-					drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
-				} else if (points[i].holeDiameter == 0) {
-					drawNoDiameterHole(x, y, 10, strokeColour);
-				} else {
-					drawHole(x, y, parseInt((points[i].holeDiameter / 1000) * currentScale * holeScale), fillColour, strokeColour);
-				}
-			}
-
-			// Update the font slider value and label with the currentFontSize
-			fontSlider.value = currentFontSize;
-			fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
+		// Draw collar-to-toe track if angled
+		if (point.holeAngle > 0) {
+			drawTrack(x, y, lineEndX, lineEndY, strokeColour);
 		}
+
+		// Highlight selected holes for animation/time window selection
+		handleHoleHighlighting(point, x, y);
+
+		// Draw toe if hole length is not zero
+		if (parseFloat(point.holeLengthCalculated).toFixed(1) != 0.0) {
+			const radiusInPixels = toeSizeInMeters * currentScale;
+			drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
+		}
+
+		// Calculate text offsets
+		const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
+		const leftSideToe = parseInt(lineEndX) - textOffset;
+		const rightSideToe = parseInt(lineEndX) + textOffset;
+		const leftSideCollar = parseInt(x) - textOffset;
+		const rightSideCollar = parseInt(x) + textOffset;
+		const topSideToe = parseInt(lineEndY - textOffset);
+		const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
+		const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
+		const topSideCollar = parseInt(y - textOffset);
+		const middleSideCollar = parseInt(y + parseInt(currentFontSize / 2));
+		const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+
+		// Draw text/labels based on displayOptions
+		drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, {
+			leftSideToe,
+			rightSideToe,
+			leftSideCollar,
+			rightSideCollar,
+			topSideToe,
+			middleSideToe,
+			bottomSideToe,
+			topSideCollar,
+			middleSideCollar,
+			bottomSideCollar,
+			holeMap,
+			displayOptions,
+		});
+
+		// Draw main hole geometry, with selection highlight logic
+		drawHoleMainShape(point, x, y, selectedHole);
+
+		// Font slider/label only needs to be updated once, after loop
+	}
+	// Update font slider and label after loop (once)
+	fontSlider.value = currentFontSize;
+	fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
+}
+
+// === Helper: Draw Powder Factor Legend and Cells ===
+function drawPowderFactorLegendAndCells(points, offsetBoundaryPolygon) {
+	const legendX = 10,
+		legendY = canvas.height / 2 - 70,
+		gradientWidth = 20,
+		gradientHeight = 160;
+	ctx.fillStyle = "black";
+	ctx.font = "14px Arial";
+	ctx.fillText("Legend Powder Factor", legendX, legendY - 10);
+	const gradient = ctx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
+	const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+	stops.forEach(function (stop) {
+		const pfValue = 0.0 + stop * 3.0;
+		gradient.addColorStop(stop, getPFColor(pfValue));
+	});
+	ctx.fillStyle = gradient;
+	ctx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
+	ctx.fillStyle = "black";
+	ctx.textAlign = "left";
+	ctx.textBaseline = "middle";
+	ctx.fillText("0.0", legendX, legendY);
+	ctx.fillText("1.5", legendX, legendY + gradientHeight / 2);
+	ctx.fillText("3.0", legendX, legendY + gradientHeight);
+	const voronoiPFMetrics = getVoronoiMetrics(points);
+	const clippedCells = clipVoronoiCells(voronoiPFMetrics, offsetBoundaryPolygon);
+	for (const cell of clippedCells) {
+		if (!cell.polygon || cell.powderFactor == null) continue;
+		ctx.beginPath();
+		for (let j = 0; j < cell.polygon.length; j++) {
+			const pt = cell.polygon[j];
+			const [x, y] = worldToCanvas(pt.x !== undefined ? pt.x : pt[0], pt.y !== undefined ? pt.y : pt[1]);
+			if (j === 0) ctx.moveTo(x, y);
+			else ctx.lineTo(x, y);
+		}
+		ctx.closePath();
+		ctx.fillStyle = getPFColor(cell.powderFactor);
+		ctx.fill();
+	}
+}
+
+// === Helper: Draw hole labels, connectors, delay text, etc. ===
+function drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, ctxObj) {
+	const { leftSideToe, rightSideToe, leftSideCollar, rightSideCollar, topSideToe, middleSideToe, bottomSideToe, topSideCollar, middleSideCollar, bottomSideCollar, holeMap, displayOptions } = ctxObj;
+
+	if (displayOptions.holeID) {
+		drawText(rightSideCollar, topSideCollar, point.holeID, textFillColour);
+	}
+	if (displayOptions.holeDia) {
+		drawText(rightSideCollar, middleSideCollar, parseFloat(point.holeDiameter).toFixed(0), "green");
+	}
+	if (displayOptions.holeLen) {
+		drawText(rightSideCollar, bottomSideCollar, parseFloat(point.holeLengthCalculated).toFixed(1), depthColour);
+	}
+	if (displayOptions.holeAng) {
+		drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.holeAngle).toFixed(0), angleDipColour);
+	}
+	if (displayOptions.holeDip) {
+		drawRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(point.holeAngle).toFixed(0), angleDipColour);
+	}
+	if (displayOptions.holeBea) {
+		drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.holeBearing).toFixed(1), "red");
+	}
+	if (displayOptions.initiationTime) {
+		drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
+	}
+	if (displayOptions.connector && point.fromHoleID) {
+		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+		if (fromHole) {
+			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+			const connColour = point.colourHexDecimal;
+			try {
+				drawArrow(startX, startY, x, y, connColour, connScale);
+			} catch (error) {
+				console.error("Error drawing arrow:", error);
+			}
+		}
+	}
+	if (displayOptions.delayValue && point.fromHoleID) {
+		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+		if (fromHole) {
+			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+			const connColour = point.colourHexDecimal;
+			const pointDelay = point.timingDelayMilliseconds;
+			drawArrowDelayText(startX, startY, x, y, connColour, pointDelay);
+		}
+	}
+	if (displayOptions.xValue) {
+		drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.startXLocation).toFixed(2), textFillColour);
+	}
+	if (displayOptions.yValue) {
+		drawRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(point.startYLocation).toFixed(2), textFillColour);
+	}
+	if (displayOptions.zValue) {
+		drawRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(point.startZLocation).toFixed(2), textFillColour);
+	}
+	if (displayOptions.holeType) {
+		drawText(rightSideCollar, middleSideCollar, point.holeType, "green");
+	}
+	if (displayOptions.measuredLength) {
+		drawRightAlignedText(leftSideCollar, bottomSideToe, point.measuredLength, "#FF4400");
+	}
+	if (displayOptions.measuredMass) {
+		drawRightAlignedText(leftSideCollar, topSideToe, point.measuredMass, "#FF6600");
+	}
+	if (displayOptions.measuredComment) {
+		drawText(rightSideCollar, middleSideCollar, point.measuredComment, "#FF8800");
+	}
+}
+
+// === Helper: Draw main hole, highlight if selected ===
+function drawHoleMainShape(point, x, y, selectedHole) {
+	const diameterPx = parseInt((point.holeDiameter / 1000) * currentScale * holeScale);
+
+	let highlightType = null;
+	let highlightColor1 = null,
+		highlightColor2 = null,
+		highlightText = null;
+
+	// Animation and selection highlighting logic
+	if (selectedHole != null && selectedHole === point) {
+		if (firstSelectedHole == null) {
+			highlightType = "selected";
+			highlightColor1 = "rgba(255, 0, 150, 0.2)";
+			highlightColor2 = "rgba(255, 0, 150, .8)";
+			highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
+		} else {
+			highlightType = "first";
+			highlightColor1 = "rgba(0, 255, 0, 0.2)";
+			highlightColor2 = "rgba(0, 190, 0, .8)";
+			highlightText = "1st Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
+		}
+	} else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+		highlightType = "multi";
+		highlightColor1 = "rgba(255, 0, 150, 0.2)";
+		highlightColor2 = "rgba(255, 0, 150, .8)";
+		highlightText = "Editing Selected Holes: " + point.holeID;
+	}
+
+	// Draw highlight, if any
+	if (highlightType) {
+		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 900) * holeScale * currentScale), highlightColor1, highlightColor2);
+		ctx.fillStyle = highlightColor2;
+		ctx.font = "18px Arial";
+		ctx.fillText(highlightText, 2, 20);
+	}
+
+	// Draw main hole/track shape (dummy, missing, or real)
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = strokeColour;
+	if (parseFloat(point.holeLengthCalculated).toFixed(1) == 0.0) {
+		drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
+	} else if (point.holeDiameter == 0) {
+		drawNoDiameterHole(x, y, 10, strokeColour);
+	} else {
+		drawHole(x, y, diameterPx, fillColour, strokeColour);
+	}
+}
+
+// === Helper: Handle Highlighting for Animation/Time Window ===
+function handleHoleHighlighting(point, x, y) {
+	if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 400) * holeScale * currentScale), "rgba(255, 150, 0, 0.7)", "rgba(200, 200, 0, 0.7)");
+	}
+	if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "rgba(0, 255, 0, 0.5)", "rgba(0, 255, 0, 0.7)");
 	}
 }
 
@@ -9633,7 +9998,7 @@ function saveKADToLocalStorage(mapData) {
 			} else if (entityData.entityType.trim() === "poly") {
 				//console.log(entityData.entityType);
 				for (const polygon of entityData.data) {
-					const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour}\n`;
+					const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour},${polygon.closed}\n`;
 					csvContentKAD += csvLine;
 				}
 			} else if (entityData.entityType.trim() === "line") {
@@ -9657,7 +10022,7 @@ function saveKADToLocalStorage(mapData) {
 			}
 		}
 	}
-	console.log("///////////////////KAD DATA//////////////");
+	console.log("///////////////////KAD DATA ON SAVE//////////////");
 	console.log("KAD Points : ", kadPointsMap);
 	console.log("KAD Lines : ", kadLinesMap);
 	console.log("KAD Polygons : ", kadPolygonsMap);
@@ -9674,7 +10039,13 @@ function loadKADFromLocalStorage() {
 		parseKADFile(csvStringKAD);
 		drawData(points, selectedHole);
 		//console.log the KAD maps
-		console.log(kadHolesMap);
+		console.log("///////////////////KAD DATA ON LOAD//////////////");
+		console.log("KAD Points : ", kadPointsMap);
+		console.log("KAD Lines : ", kadLinesMap);
+		console.log("KAD Polygons : ", kadPolygonsMap);
+		console.log("KAD Circles : ", kadCirclesMap);
+		console.log("KAD Texts : ", kadTextsMap);
+		//console.log("KAD Holes : ", kadHolesMap);
 	}
 }
 
