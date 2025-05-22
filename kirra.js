@@ -9509,14 +9509,14 @@ function drawData(points, selectedHole) {
 				globalTotalPoints += totalPoints;
 				globalDrawnPoints += drawnPoints;
 
-				console.log("Polygon entity:", entity.name || "(unnamed)");
-				console.log("Total points:", totalPoints, "| Drawn segments:", drawnPoints);
+				//console.log("Polygon entity:", entity.name || "(unnamed)");
+				//console.log("Total points:", totalPoints, "| Drawn segments:", drawnPoints);
 			}
 		}
 
-		console.log("=== KAD POLYGON DRAW STATS ===");
-		console.log("Total polygon points:", globalTotalPoints);
-		console.log("Total drawn segments:", globalDrawnPoints);
+		//console.log("=== KAD POLYGON DRAW STATS ===");
+		//console.log("Total polygon points:", globalTotalPoints);
+		//console.log("Total drawn segments:", globalDrawnPoints);
 	}
 
 	// KAD TEXT
