@@ -9469,30 +9469,39 @@ function drawData(points, selectedHole) {
 		}
 	}
 
-	// KAD POLYGONS
-	if (kadPolygonsMap.size > 0) {
-		for (const entity of kadPolygonsMap.values()) {
-			if (entity.data.length >= 2) {
-				const firstPoint = entity.data[0];
-				let [prevX, prevY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
-				let prevZ = firstPoint.pointZLocation;
-				for (let i = 1; i < entity.data.length; i++) {
-					const currentPoint = entity.data[i];
-					const [x, y] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
-					const z = currentPoint.pointZLocation;
-					const closed = currentPoint.closed;
-					drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, closed);
-					prevX = x;
-					prevY = y;
-					prevZ = z;
-				}
-				if (entity.data[0].closed === true) {
-					drawKADPolys(prevX, prevY, ...worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation), prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, true);
-				}
+	// KAD POLYGONS with zoom-based simplification
+if (kadPolygonsMap.size > 0) {
+	for (const entity of kadPolygonsMap.values()) {
+		if (entity.data.length >= 2) {
+			const points = entity.data;
+
+			const simplificationStep = Math.max(1, Math.floor(1 / currentScale));
+
+			const firstPoint = points[0];
+			let [prevX, prevY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+			let prevZ = firstPoint.pointZLocation;
+
+			for (let i = simplificationStep; i < points.length; i += simplificationStep) {
+				const currentPoint = points[i];
+				const [x, y] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+				const z = currentPoint.pointZLocation;
+				const closed = currentPoint.closed;
+
+				drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, closed);
+
+				prevX = x;
+				prevY = y;
+				prevZ = z;
+			}
+
+			// Close polygon if necessary
+			if (points[0].closed === true) {
+				const [firstX, firstY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+				drawKADPolys(prevX, prevY, firstX, firstY, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, true);
 			}
 		}
 	}
-
+}
 	// KAD TEXT
 	if (kadTextsMap.size > 0) {
 		for (const entity of kadTextsMap.values()) {
