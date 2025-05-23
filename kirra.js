@@ -10308,7 +10308,7 @@ function updatePopup() {
 		<br>
 			<label class="labelWhite18">Update - NEW FEATURES:</label>
 			<br><label class="labelWhite18">DXF Support for (point / vertex, insert, line, lwpolyline / polyline, circle, ellipse, text / mtext) </label>
-			<br><label class="labelWhite18">DXF Import and Disply imporved for Large Files</label>
+			<br><label class="labelWhite18">DXF Import and Display improved for Large Files</label>
 			<br><label class="labelWhite18">DXF Blast Hole Export</label>
 			<br><label class="labelWhite18">DXF Drawing Export</label>
    			<br><label class="labelWhite18">Radii Blast Holes for Exclusion Maps</label>
