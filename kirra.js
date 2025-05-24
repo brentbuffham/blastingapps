@@ -10481,7 +10481,7 @@ function updatePopup() {
 				<br><label class="labelWhite12c">EXISTING BUGS - Northing Adjust On/Off.</label>
 				<br><label class="labelWhite12c">NEW BUGS - Performance lag on the Voronoi Display with large blasts.</label>
 				<br><label class="labelWhite12c">NEW BUGS - Issues with Cell Clipping.</label>
-				<br><label class="labelWhite12c">Is it worth a donatation? Or a reshare?</label>
+				<br><label class="labelWhite12c">Is it worth a donation? Or a reshare?</label>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">
 	          <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
