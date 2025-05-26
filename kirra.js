@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20250525 @ 0146 AWST
+// Last Modified: 20250526 @ 1026 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -175,80 +175,80 @@ const renumberHoles = document.getElementById("renumberHoles");
 let isRenumberingHoles = false;
 
 const switches = [
-	addConnectorButton,
-	addMultiConnectorButton,
-	addPatternSwitch,
-	addHoleSwitch,
-	editAngleSwitch,
-	editBearingSwitch,
-	editEastingSwitch,
-	editNorthingSwitch,
-	editElevationSwitch,
-	editLengthSwitch,
-	editLengthPopupSwitch,
-	editTypeSwitch,
-	editBlastNameSwitch,
-	editDiameterSwitch,
-	deleteHoleSwitch,
-	modifyPointSwitch,
-	modifyCircleSwitch,
-	modifyTextSwitch,
-	offsetLinePolySwitch,
-	editHoleTypePopupSwitch,
-	addPointDraw,
-	addLineDraw,
-	addCircleDraw,
-	addPolyDraw,
-	addTextDraw,
-	deletePointDraw,
-	deleteLineDraw,
-	deleteCircleDraw,
-	deletePolyDraw,
-	deleteTextDraw,
-	measuredLengthSwitch,
-	measuredMassSwitch,
-	measuredCommentSwitch,
-	selectionModeButton
+    addConnectorButton,
+    addMultiConnectorButton,
+    addPatternSwitch,
+    addHoleSwitch,
+    editAngleSwitch,
+    editBearingSwitch,
+    editEastingSwitch,
+    editNorthingSwitch,
+    editElevationSwitch,
+    editLengthSwitch,
+    editLengthPopupSwitch,
+    editTypeSwitch,
+    editBlastNameSwitch,
+    editDiameterSwitch,
+    deleteHoleSwitch,
+    modifyPointSwitch,
+    modifyCircleSwitch,
+    modifyTextSwitch,
+    offsetLinePolySwitch,
+    editHoleTypePopupSwitch,
+    addPointDraw,
+    addLineDraw,
+    addCircleDraw,
+    addPolyDraw,
+    addTextDraw,
+    deletePointDraw,
+    deleteLineDraw,
+    deleteCircleDraw,
+    deletePolyDraw,
+    deleteTextDraw,
+    measuredLengthSwitch,
+    measuredMassSwitch,
+    measuredCommentSwitch,
+    selectionModeButton
 ];
 // Boolean set to False
 function setAllBoolsToFalse() {
-	isAddingConnector = false;
-	isAddingMultiConnector = false;
-	isAddingHole = false;
-	isAddingPattern = false;
-	isDeletingHole = false;
-	isMovingCanvas = false;
-	isDragging = false;
-	isBlastNameEditing = false;
-	isLengthEditing = false;
-	isDiameterEditing = false;
-	isAngleEditing = false;
-	isBearingEditing = false;
-	isEastingEditing = false;
-	isNorthingEditing = false;
-	isElevationEditing = false;
-	isDisplayingContours = false;
-	isDisplayingSlopeTriangles = false;
-	isDisplayingReliefTriangles = false;
-	isDisplayingDirectionArrows = false;
-	isTypeEditing = false;
-	isDrawingPoint = false;
-	isDrawingLine = false;
-	isDrawingCircle = false;
-	isDrawingPoly = false;
-	isDrawingText = false;
-	isDeletingPoint = false;
-	isDeletingLine = false;
-	isDeletingCircle = false;
-	isDeletingPoly = false;
-	isDeletingText = false;
-	isPlaying = false;
-	isModifyingPoint = false;
-	isModifyingCircle = false;
-	isModifyingText = false;
-	isOffsetLinePoly = false;
-	isMeasureRecording = false;
-	selectionMode = false; //check this
+    isAddingConnector = false;
+    isAddingMultiConnector = false;
+    isAddingHole = false;
+    isAddingPattern = false;
+    isDeletingHole = false;
+    isMovingCanvas = false;
+    isDragging = false;
+    isBlastNameEditing = false;
+    isLengthEditing = false;
+    isDiameterEditing = false;
+    isAngleEditing = false;
+    isBearingEditing = false;
+    isEastingEditing = false;
+    isNorthingEditing = false;
+    isElevationEditing = false;
+    isDisplayingContours = false;
+    isDisplayingSlopeTriangles = false;
+    isDisplayingReliefTriangles = false;
+    isDisplayingDirectionArrows = false;
+    isTypeEditing = false;
+    isDrawingPoint = false;
+    isDrawingLine = false;
+    isDrawingCircle = false;
+    isDrawingPoly = false;
+    isDrawingText = false;
+    isDeletingPoint = false;
+    isDeletingLine = false;
+    isDeletingCircle = false;
+    isDeletingPoly = false;
+    isDeletingText = false;
+    isPlaying = false;
+    isModifyingPoint = false;
+    isModifyingCircle = false;
+    isModifyingText = false;
+    isOffsetLinePoly = false;
+    isMeasureRecording = false;
+    selectionMode = false; //check this
 }
 
 // Buttons
@@ -292,11 +292,11 @@ const option16 = document.getElementById("display16"); //pf
 const allToggles = [option1, option2, option2A, option3, option4, option5, option5A, option6, option6A, option8, option8A, option8B, option8C, option9, option10, option11, option12, option13, option14, option15, option16];
 
 allToggles.forEach((opt) => {
-	if (opt)
-		opt.addEventListener("change", () => {
-			// assuming drawData is your main render function
-			drawData(points, selectedHole);
-		});
+    if (opt)
+        opt.addEventListener("change", () => {
+            // assuming drawData is your main render function
+            drawData(points, selectedHole);
+        });
 });
 
 const holeCountRadio = document.getElementById("holeCountRadio");
@@ -317,160 +317,160 @@ canvas.addEventListener("touchend", handleTouchEnd);
 
 // Event listener for the language dropdown
 document.getElementById("languageSelect").addEventListener("change", function () {
-	const selectedLanguage = this.value;
-	updateTranslations(selectedLanguage);
+    const selectedLanguage = this.value;
+    updateTranslations(selectedLanguage);
 });
 
 // Function to update translations
 function updateTranslations(language) {
-	// Use the inline translations object
-	const langTranslations = translations[language]?.translation;
+    // Use the inline translations object
+    const langTranslations = translations[language]?.translation;
 
-	if (langTranslations) {
-		// Update the text content of elements in the DOM
-		document.querySelector("title").textContent = langTranslations.title;
-		document.querySelector("#helpButton").title = langTranslations.help_button;
-		document.querySelector("#zoomInButton").textContent = langTranslations.zoom_in_button;
-		document.querySelector("#zoomOutButton").textContent = langTranslations.zoom_out_button;
-		document.querySelector("#resetZoomButton").textContent = langTranslations.reset_zoom_button;
-		document.querySelector("#buttonGoBack").textContent = langTranslations.go_back_button;
-		document.querySelector(".sun-icon").textContent = langTranslations.dark_mode_sun;
-		document.querySelector(".moon-icon").textContent = langTranslations.dark_mode_moon;
-		document.querySelector("#openOrImportAcc span").textContent = langTranslations.open_import;
-		document.querySelector("#fileInput").placeholder = langTranslations.file_input_placeholder;
-		document.querySelector("#fileInputDXF").placeholder = langTranslations.file_input_placeholder_dxf;
-		document.querySelector("#fileInputMeasured").placeholder = langTranslations.file_input_placeholder_measured;
-		document.querySelector("#plusorminusHolesAcc span").textContent = langTranslations.plus_minus_holes;
-		document.querySelector("#addPatternLabel").textContent = langTranslations.add_pattern_label;
-		document.querySelector("#addHoleLabel").textContent = langTranslations.add_hole_label;
-		document.querySelector("#deleteHoleLabel").textContent = langTranslations.delete_label;
-		document.querySelector("#deleteHoleButton").textContent = langTranslations.delete_hole_button;
-		document.querySelector("#deletePatternButton").textContent = langTranslations.delete_pattern_button;
-		document.querySelector("#deleteAllPatternsButton").textContent = langTranslations.delete_all_patterns_button;
-		document.querySelector("label[for='renumberHoles']").textContent = langTranslations.renumber_holes_label;
-		document.querySelector("label[for='deleteRenumberStart']").textContent = langTranslations.delete_renumber_start_label;
-		document.querySelector("#editHolesAcc").textContent = langTranslations.edit_holes;
-		document.querySelector("#editBlastNameLabel").textContent = langTranslations.edit_blast_name_label;
-		document.querySelector("#editLengthPopupLabel").textContent = langTranslations.edit_length_popup_label;
-		document.querySelector("#editHoleTypePopupLabel").textContent = langTranslations.edit_hole_type_popup_label;
-		document.querySelector("#selectionModeLabel").textContent = langTranslations.selection_mode_label;
-		document.querySelector("#editEastingButton").textContent = langTranslations.edit_easting_label;
-		document.querySelector("#holeEastingLabel").textContent = langTranslations.hole_easting_label;
-		document.querySelector("#editNorthingButton ").textContent = langTranslations.edit_northing_label;
-		document.querySelector("#holeNorthingLabel").textContent = langTranslations.hole_northing_label;
-		document.querySelector("#editElevationButton ").textContent = langTranslations.edit_elevation_label;
-		document.querySelector("#holeElevationLabel").textContent = langTranslations.hole_elevation_label;
-		document.querySelector("#editDiameterButton").textContent = langTranslations.edit_diameter_label;
-		document.querySelector("#holeDiameterLabel").textContent = langTranslations.hole_diameter_label;
-		document.querySelector("#editLengthButton").textContent = langTranslations.edit_length_label;
-		document.querySelector("#holeLengthLabel").textContent = langTranslations.hole_length_label;
-		document.querySelector("#editAngleButton").textContent = langTranslations.edit_angle_label;
-		document.querySelector("#holeAngleLabel").textContent = langTranslations.hole_angle_label;
-		document.querySelector("#editBearingButton").textContent = langTranslations.edit_bearing_label;
-		document.querySelector("#holeBearingLabel").textContent = langTranslations.hole_bearing_label;
-		document.querySelector("#recordActualsAcc span").textContent = langTranslations.record_actuals;
-		document.querySelector("#recordLengthPopupLabel").textContent = langTranslations.record_length_popup_label;
-		document.querySelector("#editMassPopupLabel").textContent = langTranslations.record_mass_popup_label;
-		document.querySelector("#recordCommentPopupLabel").textContent = langTranslations.record_comment_popup_label;
-		document.querySelector("#viewControlsAcc span").textContent = langTranslations.view_controls;
-		document.querySelector("#fontLabel").textContent = langTranslations.font_size_label;
-		document.querySelector("#connLabel").textContent = langTranslations.tie_size_label;
-		document.querySelector("#toeLabel").textContent = langTranslations.toe_size_label;
-		document.querySelector("#holeLabel").textContent = langTranslations.hole_adjust_label;
-		document.querySelector("#intervalLabel").textContent = langTranslations.interval_label;
-		document.querySelector("#firstMovementLabel").textContent = langTranslations.first_movement_label;
-		document.querySelector("#outputfilesAcc").textContent = langTranslations.output_files;
-		document.querySelector("#save_holes_label").textContent = langTranslations.save_holes_label;
-		document.querySelector("#saveHoles").textContent = langTranslations.save_holes_button;
-		document.querySelector("#save_kad_label").textContent = langTranslations.save_kad_label;
-		document.querySelector("#saveKAD").textContent = langTranslations.save_kad_button;
-		document.querySelector("#save_all_label").textContent = langTranslations.save_all_label;
-		document.querySelector("#saveAll").textContent = langTranslations.save_all_button;
-		document.querySelector("#save_measures_label").textContent = langTranslations.save_measures_label;
-		document.querySelector("#saveMeasures").textContent = langTranslations.save_measures_button;
-		document.querySelector("#exportHolesDXFLabel").textContent = langTranslations.export_holes_dxf_label;
-		document.querySelector("#exportHolesDXF").textContent = langTranslations.export_holes_dxf_button;
-		document.querySelector("#exportDrawingDXFLabel").textContent = langTranslations.export_dxf_drawing_label;
-		document.querySelector("#exportDrawingDXF").textContent = langTranslations.export_dxf_drawing_button;
-		document.querySelector("#saveIREDES").textContent = langTranslations.save_iredes_button;
-		document.querySelector("#saveAQM").textContent = langTranslations.save_aqm_button;
-		document.querySelector("#exampleFilesAcc span").textContent = langTranslations.example_helper_files;
-		document.querySelector("#testfile1").textContent = langTranslations.download_test_tie_1;
-		document.querySelector("#testfile2").textContent = langTranslations.download_test_tie_2;
-		document.querySelector("#testfile3").textContent = langTranslations.download_test_tie_3;
-		document.querySelector("#testfile4").textContent = langTranslations.download_kad_pitshell;
-		document.querySelector("#testfile5").textContent = langTranslations.download_kad_pitshell_ios;
-		document.querySelector("#testfile6").textContent = langTranslations.download_kad_blastmaster;
-		document.querySelector("#testfile7").textContent = langTranslations.download_kad_blastmaster_ios;
-		document.querySelector("#testfile8").textContent = langTranslations.download_conversion_tool;
-		document.querySelector("#aboutAcc").textContent = langTranslations.about_title;
-		document.querySelector("#aboutPanel").textContent = langTranslations.about_content;
-		const connectorsText = document.querySelector("#connectorsAcc span");
-		if (connectorsText) {
-			connectorsText.textContent = langTranslations.connectors;
-		}
-		console.log(document.querySelector("#connectorsAcc span"));
-		document.querySelector("#singleTie").textContent = langTranslations.single_tie_label;
-		document.querySelector("#multiTie").textContent = langTranslations.multi_tie_label;
-		document.querySelector("#delayLabel").textContent = langTranslations.delay_label;
-		document.querySelector("#connectorColour").textContent = langTranslations.colour_label;
-		document.querySelector("#connectLabel").textContent = langTranslations.connect_distance_label;
-		document.querySelector("#animateAcc").textContent = langTranslations.animate_firing;
-		document.querySelector("#play").textContent = langTranslations.play_button;
-		document.querySelector("#stop").textContent = langTranslations.stop_button;
-		document.querySelector("#timeWindowAcc span").textContent = langTranslations.time_window;
-		document.querySelector("#timeRangeLabel").textContent = langTranslations.time_range_label;
-		document.querySelector("#timeOffsetLabel").textContent = langTranslations.time_offset_label;
-		document.querySelector("#holeCountLabel").textContent = langTranslations.hole_count_label;
-		document.querySelector("#measuredMassLabel").textContent = langTranslations.measured_mass_label;
-		document.querySelector("#drawingTools").textContent = langTranslations.drawing_tools;
-		document.querySelector("#elevationName").textContent = langTranslations.elevation_label;
-		document.querySelector("#colourLabel").textContent = langTranslations.drawing_colour_label;
-		document.querySelector("#lineWidthLabel").textContent = langTranslations.line_width_label;
-		document.querySelector("#pointDraw").textContent = langTranslations.point_draw_label;
-		document.querySelector("#lineDraw").textContent = langTranslations.line_draw_label;
-		document.querySelector("#polyDraw").textContent = langTranslations.poly_draw_label;
-		document.querySelector("#circleDraw").textContent = langTranslations.circle_draw_label;
-		document.querySelector("#drawingRadiusLabel").textContent = langTranslations.drawing_radius_label;
-		document.querySelector("#textDraw").textContent = langTranslations.text_draw_label;
-		document.querySelector("#textLabel").textContent = langTranslations.text_label;
-		document.querySelector("#commonMath1").textContent = langTranslations.common_math_label;
-		document.querySelector("#commonMath2").textContent = langTranslations.common_math_examples;
-		document.querySelector("#drawingRemovalAcc span").textContent = langTranslations.drawing_removal;
-		document.querySelector("#pointDeleteLabel").textContent = langTranslations.point_delete_label;
-		document.querySelector("#lineDeleteLabel").textContent = langTranslations.line_delete_label;
-		document.querySelector("#polyDeleteLabel").textContent = langTranslations.poly_delete_label;
-		document.querySelector("#circleDeleteLabel").textContent = langTranslations.circle_delete_label;
-		document.querySelector("#textDeleteLabel").textContent = langTranslations.text_delete_label;
-		document.querySelector("#deletePointButton").textContent = langTranslations.delete_point_button;
-		document.querySelector("#deleteObjectButton").textContent = langTranslations.delete_object_button;
-		document.querySelector("#deleteAllButton").textContent = langTranslations.delete_all_button;
-		document.querySelector("#buymeacoffeelabel").textContent = langTranslations.buy_coffee_alt;
-		document.querySelector("#bugButton").textContent = langTranslations.report_bug_button;
-		document.querySelector("label[for='display1']").title = langTranslations.display_hole_id_title;
-		document.querySelector("label[for='display2']").title = langTranslations.display_hole_length_title;
-		document.querySelector("label[for='display2A']").title = langTranslations.display_hole_diameter_title;
-		document.querySelector("label[for='display3']").title = langTranslations.display_angle_title;
-		document.querySelector("label[for='display4']").title = langTranslations.display_dip_title;
-		document.querySelector("label[for='display5']").title = langTranslations.display_bearing_title;
-		document.querySelector("label[for='display5A']").title = langTranslations.display_ties_title;
-		document.querySelector("label[for='display6']").title = langTranslations.display_connectors_title;
-		document.querySelector("label[for='display6A']").title = langTranslations.display_times_only_title;
-		document.querySelector("label[for='display8']").title = langTranslations.display_contours_title;
-		document.querySelector("label[for='display8A']").title = langTranslations.display_slope_title;
-		document.querySelector("label[for='display8B']").title = langTranslations.display_relief_title;
-		document.querySelector("label[for='display8C']").title = langTranslations.display_direction_title;
-		document.querySelector("label[for='display9']").title = langTranslations.display_xlocation_title;
-		document.querySelector("label[for='display10']").title = langTranslations.display_ylocation_title;
-		document.querySelector("label[for='display11']").title = langTranslations.display_zlocation_title;
-		document.querySelector("label[for='display12']").title = langTranslations.display_hole_type_title;
-		document.querySelector("label[for='display13']").title = langTranslations.display_measure_title;
-		document.querySelector("label[for='display14']").title = langTranslations.display_mass_title;
-		document.querySelector("label[for='display15']").title = langTranslations.display_comment_title;
-		// Add more elements to update as needed
-	} else {
-		console.error("Translations for language ", language, " not found.");
-	}
+    if (langTranslations) {
+        // Update the text content of elements in the DOM
+        document.querySelector("title").textContent = langTranslations.title;
+        document.querySelector("#helpButton").title = langTranslations.help_button;
+        document.querySelector("#zoomInButton").textContent = langTranslations.zoom_in_button;
+        document.querySelector("#zoomOutButton").textContent = langTranslations.zoom_out_button;
+        document.querySelector("#resetZoomButton").textContent = langTranslations.reset_zoom_button;
+        document.querySelector("#buttonGoBack").textContent = langTranslations.go_back_button;
+        document.querySelector(".sun-icon").textContent = langTranslations.dark_mode_sun;
+        document.querySelector(".moon-icon").textContent = langTranslations.dark_mode_moon;
+        document.querySelector("#openOrImportAcc span").textContent = langTranslations.open_import;
+        document.querySelector("#fileInput").placeholder = langTranslations.file_input_placeholder;
+        document.querySelector("#fileInputDXF").placeholder = langTranslations.file_input_placeholder_dxf;
+        document.querySelector("#fileInputMeasured").placeholder = langTranslations.file_input_placeholder_measured;
+        document.querySelector("#plusorminusHolesAcc span").textContent = langTranslations.plus_minus_holes;
+        document.querySelector("#addPatternLabel").textContent = langTranslations.add_pattern_label;
+        document.querySelector("#addHoleLabel").textContent = langTranslations.add_hole_label;
+        document.querySelector("#deleteHoleLabel").textContent = langTranslations.delete_label;
+        document.querySelector("#deleteHoleButton").textContent = langTranslations.delete_hole_button;
+        document.querySelector("#deletePatternButton").textContent = langTranslations.delete_pattern_button;
+        document.querySelector("#deleteAllPatternsButton").textContent = langTranslations.delete_all_patterns_button;
+        document.querySelector("label[for='renumberHoles']").textContent = langTranslations.renumber_holes_label;
+        document.querySelector("label[for='deleteRenumberStart']").textContent = langTranslations.delete_renumber_start_label;
+        document.querySelector("#editHolesAcc").textContent = langTranslations.edit_holes;
+        document.querySelector("#editBlastNameLabel").textContent = langTranslations.edit_blast_name_label;
+        document.querySelector("#editLengthPopupLabel").textContent = langTranslations.edit_length_popup_label;
+        document.querySelector("#editHoleTypePopupLabel").textContent = langTranslations.edit_hole_type_popup_label;
+        document.querySelector("#selectionModeLabel").textContent = langTranslations.selection_mode_label;
+        document.querySelector("#editEastingButton").textContent = langTranslations.edit_easting_label;
+        document.querySelector("#holeEastingLabel").textContent = langTranslations.hole_easting_label;
+        document.querySelector("#editNorthingButton ").textContent = langTranslations.edit_northing_label;
+        document.querySelector("#holeNorthingLabel").textContent = langTranslations.hole_northing_label;
+        document.querySelector("#editElevationButton ").textContent = langTranslations.edit_elevation_label;
+        document.querySelector("#holeElevationLabel").textContent = langTranslations.hole_elevation_label;
+        document.querySelector("#editDiameterButton").textContent = langTranslations.edit_diameter_label;
+        document.querySelector("#holeDiameterLabel").textContent = langTranslations.hole_diameter_label;
+        document.querySelector("#editLengthButton").textContent = langTranslations.edit_length_label;
+        document.querySelector("#holeLengthLabel").textContent = langTranslations.hole_length_label;
+        document.querySelector("#editAngleButton").textContent = langTranslations.edit_angle_label;
+        document.querySelector("#holeAngleLabel").textContent = langTranslations.hole_angle_label;
+        document.querySelector("#editBearingButton").textContent = langTranslations.edit_bearing_label;
+        document.querySelector("#holeBearingLabel").textContent = langTranslations.hole_bearing_label;
+        document.querySelector("#recordActualsAcc span").textContent = langTranslations.record_actuals;
+        document.querySelector("#recordLengthPopupLabel").textContent = langTranslations.record_length_popup_label;
+        document.querySelector("#editMassPopupLabel").textContent = langTranslations.record_mass_popup_label;
+        document.querySelector("#recordCommentPopupLabel").textContent = langTranslations.record_comment_popup_label;
+        document.querySelector("#viewControlsAcc span").textContent = langTranslations.view_controls;
+        document.querySelector("#fontLabel").textContent = langTranslations.font_size_label;
+        document.querySelector("#connLabel").textContent = langTranslations.tie_size_label;
+        document.querySelector("#toeLabel").textContent = langTranslations.toe_size_label;
+        document.querySelector("#holeLabel").textContent = langTranslations.hole_adjust_label;
+        document.querySelector("#intervalLabel").textContent = langTranslations.interval_label;
+        document.querySelector("#firstMovementLabel").textContent = langTranslations.first_movement_label;
+        document.querySelector("#outputfilesAcc").textContent = langTranslations.output_files;
+        document.querySelector("#save_holes_label").textContent = langTranslations.save_holes_label;
+        document.querySelector("#saveHoles").textContent = langTranslations.save_holes_button;
+        document.querySelector("#save_kad_label").textContent = langTranslations.save_kad_label;
+        document.querySelector("#saveKAD").textContent = langTranslations.save_kad_button;
+        document.querySelector("#save_all_label").textContent = langTranslations.save_all_label;
+        document.querySelector("#saveAll").textContent = langTranslations.save_all_button;
+        document.querySelector("#save_measures_label").textContent = langTranslations.save_measures_label;
+        document.querySelector("#saveMeasures").textContent = langTranslations.save_measures_button;
+        document.querySelector("#exportHolesDXFLabel").textContent = langTranslations.export_holes_dxf_label;
+        document.querySelector("#exportHolesDXF").textContent = langTranslations.export_holes_dxf_button;
+        document.querySelector("#exportDrawingDXFLabel").textContent = langTranslations.export_dxf_drawing_label;
+        document.querySelector("#exportDrawingDXF").textContent = langTranslations.export_dxf_drawing_button;
+        document.querySelector("#saveIREDES").textContent = langTranslations.save_iredes_button;
+        document.querySelector("#saveAQM").textContent = langTranslations.save_aqm_button;
+        document.querySelector("#exampleFilesAcc span").textContent = langTranslations.example_helper_files;
+        document.querySelector("#testfile1").textContent = langTranslations.download_test_tie_1;
+        document.querySelector("#testfile2").textContent = langTranslations.download_test_tie_2;
+        document.querySelector("#testfile3").textContent = langTranslations.download_test_tie_3;
+        document.querySelector("#testfile4").textContent = langTranslations.download_kad_pitshell;
+        document.querySelector("#testfile5").textContent = langTranslations.download_kad_pitshell_ios;
+        document.querySelector("#testfile6").textContent = langTranslations.download_kad_blastmaster;
+        document.querySelector("#testfile7").textContent = langTranslations.download_kad_blastmaster_ios;
+        document.querySelector("#testfile8").textContent = langTranslations.download_conversion_tool;
+        document.querySelector("#aboutAcc").textContent = langTranslations.about_title;
+        document.querySelector("#aboutPanel").textContent = langTranslations.about_content;
+        const connectorsText = document.querySelector("#connectorsAcc span");
+        if (connectorsText) {
+            connectorsText.textContent = langTranslations.connectors;
+        }
+        console.log(document.querySelector("#connectorsAcc span"));
+        document.querySelector("#singleTie").textContent = langTranslations.single_tie_label;
+        document.querySelector("#multiTie").textContent = langTranslations.multi_tie_label;
+        document.querySelector("#delayLabel").textContent = langTranslations.delay_label;
+        document.querySelector("#connectorColour").textContent = langTranslations.colour_label;
+        document.querySelector("#connectLabel").textContent = langTranslations.connect_distance_label;
+        document.querySelector("#animateAcc").textContent = langTranslations.animate_firing;
+        document.querySelector("#play").textContent = langTranslations.play_button;
+        document.querySelector("#stop").textContent = langTranslations.stop_button;
+        document.querySelector("#timeWindowAcc span").textContent = langTranslations.time_window;
+        document.querySelector("#timeRangeLabel").textContent = langTranslations.time_range_label;
+        document.querySelector("#timeOffsetLabel").textContent = langTranslations.time_offset_label;
+        document.querySelector("#holeCountLabel").textContent = langTranslations.hole_count_label;
+        document.querySelector("#measuredMassLabel").textContent = langTranslations.measured_mass_label;
+        document.querySelector("#drawingTools").textContent = langTranslations.drawing_tools;
+        document.querySelector("#elevationName").textContent = langTranslations.elevation_label;
+        document.querySelector("#colourLabel").textContent = langTranslations.drawing_colour_label;
+        document.querySelector("#lineWidthLabel").textContent = langTranslations.line_width_label;
+        document.querySelector("#pointDraw").textContent = langTranslations.point_draw_label;
+        document.querySelector("#lineDraw").textContent = langTranslations.line_draw_label;
+        document.querySelector("#polyDraw").textContent = langTranslations.poly_draw_label;
+        document.querySelector("#circleDraw").textContent = langTranslations.circle_draw_label;
+        document.querySelector("#drawingRadiusLabel").textContent = langTranslations.drawing_radius_label;
+        document.querySelector("#textDraw").textContent = langTranslations.text_draw_label;
+        document.querySelector("#textLabel").textContent = langTranslations.text_label;
+        document.querySelector("#commonMath1").textContent = langTranslations.common_math_label;
+        document.querySelector("#commonMath2").textContent = langTranslations.common_math_examples;
+        document.querySelector("#drawingRemovalAcc span").textContent = langTranslations.drawing_removal;
+        document.querySelector("#pointDeleteLabel").textContent = langTranslations.point_delete_label;
+        document.querySelector("#lineDeleteLabel").textContent = langTranslations.line_delete_label;
+        document.querySelector("#polyDeleteLabel").textContent = langTranslations.poly_delete_label;
+        document.querySelector("#circleDeleteLabel").textContent = langTranslations.circle_delete_label;
+        document.querySelector("#textDeleteLabel").textContent = langTranslations.text_delete_label;
+        document.querySelector("#deletePointButton").textContent = langTranslations.delete_point_button;
+        document.querySelector("#deleteObjectButton").textContent = langTranslations.delete_object_button;
+        document.querySelector("#deleteAllButton").textContent = langTranslations.delete_all_button;
+        document.querySelector("#buymeacoffeelabel").textContent = langTranslations.buy_coffee_alt;
+        document.querySelector("#bugButton").textContent = langTranslations.report_bug_button;
+        document.querySelector("label[for='display1']").title = langTranslations.display_hole_id_title;
+        document.querySelector("label[for='display2']").title = langTranslations.display_hole_length_title;
+        document.querySelector("label[for='display2A']").title = langTranslations.display_hole_diameter_title;
+        document.querySelector("label[for='display3']").title = langTranslations.display_angle_title;
+        document.querySelector("label[for='display4']").title = langTranslations.display_dip_title;
+        document.querySelector("label[for='display5']").title = langTranslations.display_bearing_title;
+        document.querySelector("label[for='display5A']").title = langTranslations.display_ties_title;
+        document.querySelector("label[for='display6']").title = langTranslations.display_connectors_title;
+        document.querySelector("label[for='display6A']").title = langTranslations.display_times_only_title;
+        document.querySelector("label[for='display8']").title = langTranslations.display_contours_title;
+        document.querySelector("label[for='display8A']").title = langTranslations.display_slope_title;
+        document.querySelector("label[for='display8B']").title = langTranslations.display_relief_title;
+        document.querySelector("label[for='display8C']").title = langTranslations.display_direction_title;
+        document.querySelector("label[for='display9']").title = langTranslations.display_xlocation_title;
+        document.querySelector("label[for='display10']").title = langTranslations.display_ylocation_title;
+        document.querySelector("label[for='display11']").title = langTranslations.display_zlocation_title;
+        document.querySelector("label[for='display12']").title = langTranslations.display_hole_type_title;
+        document.querySelector("label[for='display13']").title = langTranslations.display_measure_title;
+        document.querySelector("label[for='display14']").title = langTranslations.display_mass_title;
+        document.querySelector("label[for='display15']").title = langTranslations.display_comment_title;
+        // Add more elements to update as needed
+    } else {
+        console.error("Translations for language ", language, " not found.");
+    }
 }
 
 //drawing elevation value
@@ -478,1538 +478,1538 @@ const drawingElevation = document.getElementById("drawingElevation");
 
 //Selection Mode
 selectionModeButton.addEventListener("change", function () {
-	if (this.checked) {
-		//set all the other switches to false
-		switches.forEach((switchElement) => {
-			if (switchElement) {
-				switchElement.checked = false;
-				console.log("switchElements set to false when turning on: " + switchElement.id);
-			}
-		});
-		selectionModeButton.checked = true;
-		selectionMode = true;
-		console.log("selectionModeButton.addEventListener checked");
-	} else {
-		console.log("selectionModeButton.addEventListener unchecked");
-		selectionMode = false;
-		switches.forEach((switchElement) => {
-			if (switchElement) {
-				switchElement.checked = false;
-				console.log("switchElements set to false when turning off: " + switchElement.id);
-			}
-		});
-		selectionModeButton.checked = false;
-		selectedMultipleHoles = [];
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        //set all the other switches to false
+        switches.forEach((switchElement) => {
+            if (switchElement) {
+                switchElement.checked = false;
+                console.log("switchElements set to false when turning on: " + switchElement.id);
+            }
+        });
+        selectionModeButton.checked = true;
+        selectionMode = true;
+        console.log("selectionModeButton.addEventListener checked");
+    } else {
+        console.log("selectionModeButton.addEventListener unchecked");
+        selectionMode = false;
+        switches.forEach((switchElement) => {
+            if (switchElement) {
+                switchElement.checked = false;
+                console.log("switchElements set to false when turning off: " + switchElement.id);
+            }
+        });
+        selectionModeButton.checked = false;
+        selectedMultipleHoles = [];
+        drawData(points, selectedHole);
+    }
 });
 function setSelectionModeToFalse() {
-	selectionMode = false;
-	selectionModeButton.checked = false;
-	selectedMultipleHoles = [];
-	timingWindowHolesSelected = [];
-	console.log("selectionModeSettings set to false");
+    selectionMode = false;
+    selectionModeButton.checked = false;
+    selectedMultipleHoles = [];
+    timingWindowHolesSelected = [];
+    console.log("selectionModeSettings set to false");
 }
 
 //Resizing the Navbar on the right
 resizeRight.addEventListener("mousedown", function () {
-	isResizingRight = true;
+    isResizingRight = true;
 
-	document.addEventListener("mousemove", handleMouseMove);
-	document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 });
 //Resizing the Navbar on the left
 resizeLeft.addEventListener("mousedown", function () {
-	isResizingLeft = true;
+    isResizingLeft = true;
 
-	document.addEventListener("mousemove", handleMouseMove);
-	document.addEventListener("mouseup", handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
 });
 renumberHoles.addEventListener("click", function () {
-	isRenumberingHoles = this.checked;
+    isRenumberingHoles = this.checked;
 });
 renumberStartListener.addEventListener("change", function () {
-	deleteRenumberStart = parseInt(this.value);
+    deleteRenumberStart = parseInt(this.value);
 });
 
 measuredLengthSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isMeasureRecording = true;
-		measuredLengthSwitch.checked = true;
-		document.getElementById("display13").checked = true; // Set display mode to hole Length
-		canvas.addEventListener("click", handleMeasuredLengthClick);
-		canvas.addEventListener("touchstart", handleMeasuredLengthClick);
-		drawData(points, selectedHole);
-	} else {
-		isMeasureRecording = false;
-		canvas.removeEventListener("click", handleMeasuredLengthClick);
-		canvas.removeEventListener("touchstart", handleMeasuredLengthClick);
-		measuredMassSwitch.checked = false;
-		measuredCommentSwitch.checked = false;
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isMeasureRecording = true;
+        measuredLengthSwitch.checked = true;
+        document.getElementById("display13").checked = true; // Set display mode to hole Length
+        canvas.addEventListener("click", handleMeasuredLengthClick);
+        canvas.addEventListener("touchstart", handleMeasuredLengthClick);
+        drawData(points, selectedHole);
+    } else {
+        isMeasureRecording = false;
+        canvas.removeEventListener("click", handleMeasuredLengthClick);
+        canvas.removeEventListener("touchstart", handleMeasuredLengthClick);
+        measuredMassSwitch.checked = false;
+        measuredCommentSwitch.checked = false;
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 measuredMassSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isMeasureRecording = true;
-		measuredMassSwitch.checked = true;
-		document.getElementById("display14").checked = true; // Set display mode to hole Length
-		canvas.addEventListener("click", handleMeasuredMassClick);
-		canvas.addEventListener("touchstart", handleMeasuredMassClick);
-		drawData(points, selectedHole);
-	} else {
-		isMeasureRecording = false;
-		canvas.removeEventListener("click", handleMeasuredMassClick);
-		canvas.removeEventListener("touchstart", handleMeasuredMassClick);
-		measuredLengthSwitch.checked = false;
-		measuredCommentSwitch.checked = false;
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isMeasureRecording = true;
+        measuredMassSwitch.checked = true;
+        document.getElementById("display14").checked = true; // Set display mode to hole Length
+        canvas.addEventListener("click", handleMeasuredMassClick);
+        canvas.addEventListener("touchstart", handleMeasuredMassClick);
+        drawData(points, selectedHole);
+    } else {
+        isMeasureRecording = false;
+        canvas.removeEventListener("click", handleMeasuredMassClick);
+        canvas.removeEventListener("touchstart", handleMeasuredMassClick);
+        measuredLengthSwitch.checked = false;
+        measuredCommentSwitch.checked = false;
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 measuredCommentSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isMeasureRecording = true;
-		measuredCommentSwitch.checked = true;
-		document.getElementById("display15").checked = true; // Set display mode to hole Length
-		canvas.addEventListener("click", handleMeasuredCommentClick);
-		canvas.addEventListener("touchstart", handleMeasuredCommentClick);
-		drawData(points, selectedHole);
-	} else {
-		isMeasureRecording = false;
-		canvas.removeEventListener("click", handleMeasuredCommentClick);
-		canvas.removeEventListener("touchstart", handleMeasuredCommentClick);
-		measuredMassSwitch.checked = false;
-		measuredLengthSwitch.checked = false;
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isMeasureRecording = true;
+        measuredCommentSwitch.checked = true;
+        document.getElementById("display15").checked = true; // Set display mode to hole Length
+        canvas.addEventListener("click", handleMeasuredCommentClick);
+        canvas.addEventListener("touchstart", handleMeasuredCommentClick);
+        drawData(points, selectedHole);
+    } else {
+        isMeasureRecording = false;
+        canvas.removeEventListener("click", handleMeasuredCommentClick);
+        canvas.removeEventListener("touchstart", handleMeasuredCommentClick);
+        measuredMassSwitch.checked = false;
+        measuredLengthSwitch.checked = false;
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 
 addPointDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setSelectionModeToFalse();
-		setAllBoolsToFalse();
-		isDrawingPoint = true;
-		addPointDraw.checked = true;
-		//Add event listeners
-		canvas.addEventListener("click", handleKADPointClick);
-		canvas.addEventListener("touchstart", handleKADPointClick);
-	} else {
-		isDrawingPoint = false;
-		canvas.removeEventListener("click", handleKADPointClick);
-		canvas.removeEventListener("touchstart", handleKADPointClick);
-		createNewEntity = true;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setSelectionModeToFalse();
+        setAllBoolsToFalse();
+        isDrawingPoint = true;
+        addPointDraw.checked = true;
+        //Add event listeners
+        canvas.addEventListener("click", handleKADPointClick);
+        canvas.addEventListener("touchstart", handleKADPointClick);
+    } else {
+        isDrawingPoint = false;
+        canvas.removeEventListener("click", handleKADPointClick);
+        canvas.removeEventListener("touchstart", handleKADPointClick);
+        createNewEntity = true;
+        drawData(points, selectedHole);
+    }
 });
 addLineDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setSelectionModeToFalse();
-		setAllBoolsToFalse();
-		isDrawingLine = true;
-		addLineDraw.checked = true;
-		canvas.addEventListener("click", handleKADLineClick);
-		canvas.addEventListener("touchstart", handleKADLineClick);
-	} else {
-		isDrawingLine = false;
-		canvas.removeEventListener("click", handleKADLineClick);
-		canvas.removeEventListener("touchstart", handleKADLineClick);
-		createNewEntity = true;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setSelectionModeToFalse();
+        setAllBoolsToFalse();
+        isDrawingLine = true;
+        addLineDraw.checked = true;
+        canvas.addEventListener("click", handleKADLineClick);
+        canvas.addEventListener("touchstart", handleKADLineClick);
+    } else {
+        isDrawingLine = false;
+        canvas.removeEventListener("click", handleKADLineClick);
+        canvas.removeEventListener("touchstart", handleKADLineClick);
+        createNewEntity = true;
+        drawData(points, selectedHole);
+    }
 });
 addPolyDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDrawingPoly = true;
-		addPolyDraw.checked = true;
-		canvas.addEventListener("click", handleKADPolyClick);
-		canvas.addEventListener("touchstart", handleKADPolyClick);
-	} else {
-		isDrawingPoly = false;
-		canvas.removeEventListener("click", handleKADPolyClick);
-		canvas.removeEventListener("touchstart", handleKADPolyClick);
-		createNewEntity = true;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDrawingPoly = true;
+        addPolyDraw.checked = true;
+        canvas.addEventListener("click", handleKADPolyClick);
+        canvas.addEventListener("touchstart", handleKADPolyClick);
+    } else {
+        isDrawingPoly = false;
+        canvas.removeEventListener("click", handleKADPolyClick);
+        canvas.removeEventListener("touchstart", handleKADPolyClick);
+        createNewEntity = true;
+        drawData(points, selectedHole);
+    }
 });
 addCircleDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDrawingCircle = true;
-		addCircleDraw.checked = true;
-		canvas.addEventListener("click", handleKADCircleClick);
-		canvas.addEventListener("touchstart", handleKADCircleClick);
-	} else {
-		isDrawingCircle = false;
-		canvas.removeEventListener("click", handleKADCircleClick);
-		canvas.removeEventListener("touchstart", handleKADCircleClick);
-		createNewEntity = true;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDrawingCircle = true;
+        addCircleDraw.checked = true;
+        canvas.addEventListener("click", handleKADCircleClick);
+        canvas.addEventListener("touchstart", handleKADCircleClick);
+    } else {
+        isDrawingCircle = false;
+        canvas.removeEventListener("click", handleKADCircleClick);
+        canvas.removeEventListener("touchstart", handleKADCircleClick);
+        createNewEntity = true;
+        drawData(points, selectedHole);
+    }
 });
 addTextDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDrawingText = true;
-		addTextDraw.checked = true;
-		canvas.addEventListener("click", handleKADTextClick);
-		canvas.addEventListener("touchstart", handleKADTextClick);
-	} else {
-		isDrawingText = false;
-		canvas.removeEventListener("click", handleKADTextClick);
-		canvas.removeEventListener("touchstart", handleKADTextClick);
-		createNewEntity = true;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDrawingText = true;
+        addTextDraw.checked = true;
+        canvas.addEventListener("click", handleKADTextClick);
+        canvas.addEventListener("touchstart", handleKADTextClick);
+    } else {
+        isDrawingText = false;
+        canvas.removeEventListener("click", handleKADTextClick);
+        canvas.removeEventListener("touchstart", handleKADTextClick);
+        createNewEntity = true;
+        drawData(points, selectedHole);
+    }
 });
 
 deletePointDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDeletingPoint = true;
-		deletePointDraw.checked = true;
-		canvas.addEventListener("click", getClickedPoint);
-		canvas.addEventListener("touchstart", getClickedPoint);
-	} else {
-		isDeletingPoint = false;
-		canvas.removeEventListener("click", getClickedPoint);
-		canvas.removeEventListener("touchstart", getClickedPoint);
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDeletingPoint = true;
+        deletePointDraw.checked = true;
+        canvas.addEventListener("click", getClickedPoint);
+        canvas.addEventListener("touchstart", getClickedPoint);
+    } else {
+        isDeletingPoint = false;
+        canvas.removeEventListener("click", getClickedPoint);
+        canvas.removeEventListener("touchstart", getClickedPoint);
+        drawData(points, selectedHole);
+    }
 });
 deleteLineDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDeletingLine = true;
-		deleteLineDraw.checked = true;
-		canvas.addEventListener("click", getClickedPoint);
-		canvas.addEventListener("touchstart", getClickedPoint);
-	} else {
-		isDeletingLine = false;
-		canvas.removeEventListener("click", getClickedPoint);
-		canvas.removeEventListener("touchstart", getClickedPoint);
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDeletingLine = true;
+        deleteLineDraw.checked = true;
+        canvas.addEventListener("click", getClickedPoint);
+        canvas.addEventListener("touchstart", getClickedPoint);
+    } else {
+        isDeletingLine = false;
+        canvas.removeEventListener("click", getClickedPoint);
+        canvas.removeEventListener("touchstart", getClickedPoint);
+        drawData(points, selectedHole);
+    }
 });
 deletePolyDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDeletingPoly = true;
-		deletePolyDraw.checked = true;
-		canvas.addEventListener("click", getClickedPoint);
-		canvas.addEventListener("touchstart", getClickedPoint);
-	} else {
-		isDeletingPoly = false;
-		canvas.removeEventListener("click", getClickedPoint);
-		canvas.removeEventListener("touchstart", getClickedPoint);
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDeletingPoly = true;
+        deletePolyDraw.checked = true;
+        canvas.addEventListener("click", getClickedPoint);
+        canvas.addEventListener("touchstart", getClickedPoint);
+    } else {
+        isDeletingPoly = false;
+        canvas.removeEventListener("click", getClickedPoint);
+        canvas.removeEventListener("touchstart", getClickedPoint);
+        drawData(points, selectedHole);
+    }
 });
 deleteCircleDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDeletingCircle = true;
-		deleteCircleDraw.checked = true;
-		canvas.addEventListener("click", getClickedPoint);
-		canvas.addEventListener("touchstart", getClickedPoint);
-	} else {
-		isDeletingCircle = false;
-		canvas.removeEventListener("click", getClickedPoint);
-		canvas.removeEventListener("touchstart", getClickedPoint);
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDeletingCircle = true;
+        deleteCircleDraw.checked = true;
+        canvas.addEventListener("click", getClickedPoint);
+        canvas.addEventListener("touchstart", getClickedPoint);
+    } else {
+        isDeletingCircle = false;
+        canvas.removeEventListener("click", getClickedPoint);
+        canvas.removeEventListener("touchstart", getClickedPoint);
+        drawData(points, selectedHole);
+    }
 });
 deleteTextDraw.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isDeletingText = true;
-		deleteTextDraw.checked = true;
-		canvas.addEventListener("click", getClickedPoint);
-		canvas.addEventListener("touchstart", getClickedPoint);
-	} else {
-		isDeletingText = false;
-		canvas.removeEventListener("click", getClickedPoint);
-		canvas.removeEventListener("touchstart", getClickedPoint);
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isDeletingText = true;
+        deleteTextDraw.checked = true;
+        canvas.addEventListener("click", getClickedPoint);
+        canvas.addEventListener("touchstart", getClickedPoint);
+    } else {
+        isDeletingText = false;
+        canvas.removeEventListener("click", getClickedPoint);
+        canvas.removeEventListener("touchstart", getClickedPoint);
+        drawData(points, selectedHole);
+    }
 });
 
 addConnectorButton.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		isAddingConnector = true;
-		addConnectorButton.checked = true;
-		setSelectionModeToFalse();
-		document.getElementById("display5A").checked = true;
-		canvas.addEventListener("click", handleConnectorClick);
-		canvas.addEventListener("touchstart", handleConnectorClick);
-		drawData(points, selectedHole);
-	} else {
-		isAddingConnector = false;
-		canvas.removeEventListener("click", handleConnectorClick);
-		canvas.removeEventListener("touchstart", handleConnectorClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        isAddingConnector = true;
+        addConnectorButton.checked = true;
+        setSelectionModeToFalse();
+        document.getElementById("display5A").checked = true;
+        canvas.addEventListener("click", handleConnectorClick);
+        canvas.addEventListener("touchstart", handleConnectorClick);
+        drawData(points, selectedHole);
+    } else {
+        isAddingConnector = false;
+        canvas.removeEventListener("click", handleConnectorClick);
+        canvas.removeEventListener("touchstart", handleConnectorClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 addMultiConnectorButton.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		addMultiConnectorButton.checked = true;
-		isAddingMultiConnector = true;
-		setSelectionModeToFalse();
-		document.getElementById("display5A").checked = true;
-		canvas.addEventListener("click", handleConnectorClick);
-		canvas.addEventListener("touchstart", handleConnectorClick);
-		drawData(points, selectedHole);
-	} else {
-		isAddingMultiConnector = false;
-		canvas.removeEventListener("click", handleConnectorClick);
-		canvas.removeEventListener("touchstart", handleConnectorClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        addMultiConnectorButton.checked = true;
+        isAddingMultiConnector = true;
+        setSelectionModeToFalse();
+        document.getElementById("display5A").checked = true;
+        canvas.addEventListener("click", handleConnectorClick);
+        canvas.addEventListener("touchstart", handleConnectorClick);
+        drawData(points, selectedHole);
+    } else {
+        isAddingMultiConnector = false;
+        canvas.removeEventListener("click", handleConnectorClick);
+        canvas.removeEventListener("touchstart", handleConnectorClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 
 deleteHoleSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		deleteHoleSwitch.checked = true;
-		isDeletingHole = true;
-		isAddingPattern = false;
-		isAddingHole = false;
-		document.getElementById("display1").checked = true;
-		canvas.addEventListener("click", handleHoleDeletingClick);
-		canvas.addEventListener("touchstart", handleHoleDeletingClick);
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		}
-		drawData(points, selectedHole);
-	} else {
-		isDeletingHole = false;
-		canvas.removeEventListener("click", handleHoleDeletingClick);
-		canvas.removeEventListener("touchstart", handleHoleDeletingClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		}
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        deleteHoleSwitch.checked = true;
+        isDeletingHole = true;
+        isAddingPattern = false;
+        isAddingHole = false;
+        document.getElementById("display1").checked = true;
+        canvas.addEventListener("click", handleHoleDeletingClick);
+        canvas.addEventListener("touchstart", handleHoleDeletingClick);
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        }
+        drawData(points, selectedHole);
+    } else {
+        isDeletingHole = false;
+        canvas.removeEventListener("click", handleHoleDeletingClick);
+        canvas.removeEventListener("touchstart", handleHoleDeletingClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        }
+        drawData(points, selectedHole);
+    }
 });
 addHoleSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		addHoleSwitch.checked = true;
-		isAddingHole = true;
-		isAddingPattern = false;
-		document.getElementById("display1").checked = true;
-		canvas.addEventListener("click", handleHoleAddingClick);
-		canvas.addEventListener("touchstart", handleHoleAddingClick);
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		drawData(points, selectedHole);
-	} else {
-		isAddingHole = false;
-		canvas.removeEventListener("click", handleHoleAddingClick);
-		canvas.removeEventListener("touchstart", handleHoleAddingClick);
-		deleteHoleSwitch.disabled = false;
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		}
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        addHoleSwitch.checked = true;
+        isAddingHole = true;
+        isAddingPattern = false;
+        document.getElementById("display1").checked = true;
+        canvas.addEventListener("click", handleHoleAddingClick);
+        canvas.addEventListener("touchstart", handleHoleAddingClick);
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        drawData(points, selectedHole);
+    } else {
+        isAddingHole = false;
+        canvas.removeEventListener("click", handleHoleAddingClick);
+        canvas.removeEventListener("touchstart", handleHoleAddingClick);
+        deleteHoleSwitch.disabled = false;
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        }
+        drawData(points, selectedHole);
+    }
 });
 addPatternSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		addPatternSwitch.checked = true;
-		isAddingPattern = true;
-		isAddingHole = false;
-		document.getElementById("display1").checked = true;
-		canvas.addEventListener("click", handlePatternAddingClick);
-		canvas.addEventListener("touchstart", handlePatternAddingClick);
-		if (points === null) {
-			points = [];
-		}
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		}
-		drawData(points, selectedHole);
-	} else {
-		isAddingPattern = false;
-		canvas.removeEventListener("click", handlePatternAddingClick);
-		canvas.removeEventListener("touchstart", handlePatternAddingClick);
-		deleteHoleSwitch.disabled = false;
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points === null) {
-			points = [];
-		}
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-		}
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        addPatternSwitch.checked = true;
+        isAddingPattern = true;
+        isAddingHole = false;
+        document.getElementById("display1").checked = true;
+        canvas.addEventListener("click", handlePatternAddingClick);
+        canvas.addEventListener("touchstart", handlePatternAddingClick);
+        if (points === null) {
+            points = [];
+        }
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        }
+        drawData(points, selectedHole);
+    } else {
+        isAddingPattern = false;
+        canvas.removeEventListener("click", handlePatternAddingClick);
+        canvas.removeEventListener("touchstart", handlePatternAddingClick);
+        deleteHoleSwitch.disabled = false;
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points === null) {
+            points = [];
+        }
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        }
+        drawData(points, selectedHole);
+    }
 });
 
 editHoleTypePopupSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		isTypeEditing = true;
-		editHoleTypePopupSwitch.checked = true;
-		document.getElementById("display12").checked = true;
-		canvas.addEventListener("click", handleHoleTypeEditClick);
-		canvas.addEventListener("touchstart", handleHoleTypeEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isTypeEditing = false;
-		canvas.removeEventListener("click", handleHoleTypeEditClick);
-		canvas.removeEventListener("touchstart", handleHoleTypeEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        isTypeEditing = true;
+        editHoleTypePopupSwitch.checked = true;
+        document.getElementById("display12").checked = true;
+        canvas.addEventListener("click", handleHoleTypeEditClick);
+        canvas.addEventListener("touchstart", handleHoleTypeEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isTypeEditing = false;
+        canvas.removeEventListener("click", handleHoleTypeEditClick);
+        canvas.removeEventListener("touchstart", handleHoleTypeEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 
 editBlastNameSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		editBlastNameSwitch.checked = true;
-		isBlastNameEditing = true;
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        editBlastNameSwitch.checked = true;
+        isBlastNameEditing = true;
 
-		canvas.addEventListener("click", handleBlastNameClick);
-		canvas.addEventListener("touchstart", handleBlastNameClick);
-		drawData(points, selectedHole);
-	} else {
-		isBlastNameEditing = false;
-		canvas.removeEventListener("click", handleBlastNameClick);
-		canvas.removeEventListener("touchstart", handleBlastNameClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+        canvas.addEventListener("click", handleBlastNameClick);
+        canvas.addEventListener("touchstart", handleBlastNameClick);
+        drawData(points, selectedHole);
+    } else {
+        isBlastNameEditing = false;
+        canvas.removeEventListener("click", handleBlastNameClick);
+        canvas.removeEventListener("touchstart", handleBlastNameClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 
 editLengthPopupSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		switches.forEach((switchElement) => {
-			if (switchElement) switchElement.checked = false;
-		});
-		setAllBoolsToFalse();
-		setSelectionModeToFalse();
-		editLengthPopupSwitch.checked = true;
-		isLengthEditing = true;
-		document.getElementById("display2").checked = true;
-		canvas.addEventListener("click", handleHoleLengthEditClick);
-		canvas.addEventListener("touchstart", handleHoleLengthEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isLengthEditing = false;
-		canvas.removeEventListener("click", handleHoleLengthEditClick);
-		canvas.removeEventListener("touchstart", handleHoleLengthEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
+    if (this.checked) {
+        switches.forEach((switchElement) => {
+            if (switchElement) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        setSelectionModeToFalse();
+        editLengthPopupSwitch.checked = true;
+        isLengthEditing = true;
+        document.getElementById("display2").checked = true;
+        canvas.addEventListener("click", handleHoleLengthEditClick);
+        canvas.addEventListener("touchstart", handleHoleLengthEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isLengthEditing = false;
+        canvas.removeEventListener("click", handleHoleLengthEditClick);
+        canvas.removeEventListener("touchstart", handleHoleLengthEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
 });
 
 editDiameterSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		isDiameterEditing = true;
-		addConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		isTypeEditing = false;
-		document.getElementById("display2A").checked = true;
-		canvas.addEventListener("click", handleHoleDiameterEditClick);
-		canvas.addEventListener("touchstart", handleHoleDiameterEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isDiameterEditing = false;
-		canvas.removeEventListener("click", handleHoleDiameterEditClick);
-		canvas.removeEventListener("touchstart", handleHoleDiameterEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
-	const holeDiameterSlider = document.getElementById("holeDiameterSlider");
-	holeDiameterSlider.addEventListener("input", function () {
-		if (isDiameterEditing) {
-			let newHoleDiameter = parseFloat(holeDiameterSlider.value);
-			if (selectedHole) {
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
-					calculateEndXYZ(clickedHole, newHoleDiameter, 7);
-					drawData(points, selectedHole);
-				}
-			}
-			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach((hole) => {
-					holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
-					calculateEndXYZ(hole, newHoleDiameter, 7);
-					drawData(points, selectedHole);
-				});
-			}
-		}
-	});
+    if (this.checked) {
+        isDiameterEditing = true;
+        addConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        isTypeEditing = false;
+        document.getElementById("display2A").checked = true;
+        canvas.addEventListener("click", handleHoleDiameterEditClick);
+        canvas.addEventListener("touchstart", handleHoleDiameterEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isDiameterEditing = false;
+        canvas.removeEventListener("click", handleHoleDiameterEditClick);
+        canvas.removeEventListener("touchstart", handleHoleDiameterEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
+    const holeDiameterSlider = document.getElementById("holeDiameterSlider");
+    holeDiameterSlider.addEventListener("input", function () {
+        if (isDiameterEditing) {
+            let newHoleDiameter = parseFloat(holeDiameterSlider.value);
+            if (selectedHole) {
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
+                    calculateEndXYZ(clickedHole, newHoleDiameter, 7);
+                    drawData(points, selectedHole);
+                }
+            }
+            if (selectedMultipleHoles != null) {
+                selectedMultipleHoles.forEach((hole) => {
+                    holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
+                    calculateEndXYZ(hole, newHoleDiameter, 7);
+                    drawData(points, selectedHole);
+                });
+            }
+        }
+    });
 });
 
 editLengthSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		isLengthEditing = true;
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		document.getElementById("display2").checked = true;
-		canvas.addEventListener("click", handleHoleLengthEditClick);
-		canvas.addEventListener("touchstart", handleHoleLengthEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isLengthEditing = false;
-		canvas.removeEventListener("click", handleHoleLengthEditClick);
-		canvas.removeEventListener("touchstart", handleHoleLengthEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
-	const holeLengthSlider = document.getElementById("holeLengthSlider");
-	holeLengthSlider.addEventListener("input", function () {
-		if (isLengthEditing) {
-			let newHoleLength = parseFloat(holeLengthSlider.value);
-			if (selectedHole) {
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
-					calculateEndXYZ(clickedHole, newHoleLength, 1);
-					drawData(points, selectedHole);
-				}
-			}
-			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach((hole) => {
-					holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
-					calculateEndXYZ(hole, newHoleLength, 1);
-					drawData(points, selectedHole);
-				});
-			}
-		}
-	});
+    if (this.checked) {
+        isLengthEditing = true;
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        document.getElementById("display2").checked = true;
+        canvas.addEventListener("click", handleHoleLengthEditClick);
+        canvas.addEventListener("touchstart", handleHoleLengthEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isLengthEditing = false;
+        canvas.removeEventListener("click", handleHoleLengthEditClick);
+        canvas.removeEventListener("touchstart", handleHoleLengthEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
+    const holeLengthSlider = document.getElementById("holeLengthSlider");
+    holeLengthSlider.addEventListener("input", function () {
+        if (isLengthEditing) {
+            let newHoleLength = parseFloat(holeLengthSlider.value);
+            if (selectedHole) {
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
+                    calculateEndXYZ(clickedHole, newHoleLength, 1);
+                    drawData(points, selectedHole);
+                }
+            }
+            if (selectedMultipleHoles != null) {
+                selectedMultipleHoles.forEach((hole) => {
+                    holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
+                    calculateEndXYZ(hole, newHoleLength, 1);
+                    drawData(points, selectedHole);
+                });
+            }
+        }
+    });
 });
 
 editAngleSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		isAngleEditing = true;
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		document.getElementById("display3").checked = true;
-		canvas.addEventListener("click", handleAngleEditClick);
-		canvas.addEventListener("touchstart", handleAngleEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isAngleEditing = false;
-		canvas.removeEventListener("click", handleAngleEditClick);
-		canvas.removeEventListener("touchstart", handleAngleEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
-	const holeAngleSlider = document.getElementById("holeAngleSlider");
-	holeAngleSlider.addEventListener("input", function () {
-		if (isAngleEditing) {
-			let newHoleAngle = parseFloat(holeAngleSlider.value);
-			if (selectedHole) {
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
-					calculateEndXYZ(clickedHole, newHoleAngle, 2);
-					drawData(points, selectedHole);
-				}
-			}
-			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach((hole) => {
-					holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
-					calculateEndXYZ(hole, newHoleAngle, 2);
-					drawData(points, selectedHole);
-				});
-			}
-		}
-	});
+    if (this.checked) {
+        isAngleEditing = true;
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        document.getElementById("display3").checked = true;
+        canvas.addEventListener("click", handleAngleEditClick);
+        canvas.addEventListener("touchstart", handleAngleEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isAngleEditing = false;
+        canvas.removeEventListener("click", handleAngleEditClick);
+        canvas.removeEventListener("touchstart", handleAngleEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
+    const holeAngleSlider = document.getElementById("holeAngleSlider");
+    holeAngleSlider.addEventListener("input", function () {
+        if (isAngleEditing) {
+            let newHoleAngle = parseFloat(holeAngleSlider.value);
+            if (selectedHole) {
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
+                    calculateEndXYZ(clickedHole, newHoleAngle, 2);
+                    drawData(points, selectedHole);
+                }
+            }
+            if (selectedMultipleHoles != null) {
+                selectedMultipleHoles.forEach((hole) => {
+                    holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
+                    calculateEndXYZ(hole, newHoleAngle, 2);
+                    drawData(points, selectedHole);
+                });
+            }
+        }
+    });
 });
 // Event listener for the edit hole Bearing switch
 editBearingSwitch.addEventListener("change", function () {
-	//console.log("editBearingSwitch");
-	if (this.checked) {
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		isBearingEditing = true;
-		editHoleTypePopupSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		document.getElementById("display5").checked = true; // Set display mode to hole Bearing
-		canvas.addEventListener("click", handleBearingEditClick);
-		canvas.addEventListener("touchstart", handleBearingEditClick);
-		drawData(points, selectedHole);
-	} else {
-		//console.log("editBearingSwitch unchecked");
-		isBearingEditing = false;
-		canvas.removeEventListener("click", handleBearingEditClick);
-		canvas.removeEventListener("touchstart", handleBearingEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		drawData(points, selectedHole);
-	}
-	// Access the slider element and add an event listener to track changes
-	const holeBearingSlider = document.getElementById("holeBearingSlider");
-	holeBearingSlider.addEventListener("input", function () {
-		if (isBearingEditing) {
-			let newHoleBearing = parseFloat(holeBearingSlider.value);
-			if (selectedHole) {
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
-					holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
+    //console.log("editBearingSwitch");
+    if (this.checked) {
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        isBearingEditing = true;
+        editHoleTypePopupSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        document.getElementById("display5").checked = true; // Set display mode to hole Bearing
+        canvas.addEventListener("click", handleBearingEditClick);
+        canvas.addEventListener("touchstart", handleBearingEditClick);
+        drawData(points, selectedHole);
+    } else {
+        //console.log("editBearingSwitch unchecked");
+        isBearingEditing = false;
+        canvas.removeEventListener("click", handleBearingEditClick);
+        canvas.removeEventListener("touchstart", handleBearingEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        drawData(points, selectedHole);
+    }
+    // Access the slider element and add an event listener to track changes
+    const holeBearingSlider = document.getElementById("holeBearingSlider");
+    holeBearingSlider.addEventListener("input", function () {
+        if (isBearingEditing) {
+            let newHoleBearing = parseFloat(holeBearingSlider.value);
+            if (selectedHole) {
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
+                    holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
 
-					// Calculate endXYZ and draw points
-					calculateEndXYZ(clickedHole, newHoleBearing, 3);
-					drawData(points, selectedHole);
-				}
-			}
-			if (selectedMultipleHoles != null) {
-				selectedMultipleHoles.forEach((hole) => {
-					//console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
-					holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
+                    // Calculate endXYZ and draw points
+                    calculateEndXYZ(clickedHole, newHoleBearing, 3);
+                    drawData(points, selectedHole);
+                }
+            }
+            if (selectedMultipleHoles != null) {
+                selectedMultipleHoles.forEach((hole) => {
+                    //console.log("clickedHole - " + "Hole Bearing : " + newHoleBearing + "\u00B0");
+                    holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
 
-					// Calculate endXYZ and draw points
-					calculateEndXYZ(hole, newHoleBearing, 3);
-					drawData(points, selectedHole);
-				});
-			}
-		}
-	});
+                    // Calculate endXYZ and draw points
+                    calculateEndXYZ(hole, newHoleBearing, 3);
+                    drawData(points, selectedHole);
+                });
+            }
+        }
+    });
 });
 /// Event listener for the edit hole Easting switch
 editEastingSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		console.log("editEastingSwitch checked");
-		isEastingEditing = true;
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		document.getElementById("display9").checked = true; // Set display mode to hole Easting
-		canvas.addEventListener("click", handleEastingEditClick);
-		canvas.addEventListener("touchstart", handleEastingEditClick);
-		drawData(points, selectedHole);
-	} else {
-		console.log("editEastingSwitch unchecked");
-		isEastingEditing = false;
-		canvas.removeEventListener("click", handleEastingEditClick);
-		canvas.removeEventListener("touchstart", handleEastingEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    if (this.checked) {
+        console.log("editEastingSwitch checked");
+        isEastingEditing = true;
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        document.getElementById("display9").checked = true; // Set display mode to hole Easting
+        canvas.addEventListener("click", handleEastingEditClick);
+        canvas.addEventListener("touchstart", handleEastingEditClick);
+        drawData(points, selectedHole);
+    } else {
+        console.log("editEastingSwitch unchecked");
+        isEastingEditing = false;
+        canvas.removeEventListener("click", handleEastingEditClick);
+        canvas.removeEventListener("touchstart", handleEastingEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-			// directionArrows now contains the arrow data for later drawing
-		}
-		drawData(points, selectedHole);
-	}
+            // directionArrows now contains the arrow data for later drawing
+        }
+        drawData(points, selectedHole);
+    }
 });
 // Access the slider element and add an event listener to track changes
 const holeEastingSlider = document.getElementById("holeEastingSlider");
 holeEastingSlider.addEventListener("input", function () {
-	let newHoleEasting = parseFloat(holeEastingSlider.value);
-	holeEastingLabel.textContent = "Hole Easting (X): " + newHoleEasting.toFixed(2) + "mE";
+    let newHoleEasting = parseFloat(holeEastingSlider.value);
+    holeEastingLabel.textContent = "Hole Easting (X): " + newHoleEasting.toFixed(2) + "mE";
 
-	if (selectedHole) {
-		// Update the easting of the individual selected hole
-		const index = points.findIndex((point) => point === selectedHole);
-		if (fixToeLocation == true) {
-			if (index !== -1) {
-				points[index].startXLocation = newHoleEasting;
-				// Assuming endXLocation should also be updated based on the new easting
-				points[index].endXLocation += newHoleEasting - points[index].startXLocation;
-				calculateEndXYZ(points[index], points[index].length, 1);
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		} else {
-			if (index !== -1) {
-				// Calculate the original delta between startXLocation and endXLocation
-				let originalDeltaX = points[index].endXLocation - points[index].startXLocation;
+    if (selectedHole) {
+        // Update the easting of the individual selected hole
+        const index = points.findIndex((point) => point === selectedHole);
+        if (fixToeLocation == true) {
+            if (index !== -1) {
+                points[index].startXLocation = newHoleEasting;
+                // Assuming endXLocation should also be updated based on the new easting
+                points[index].endXLocation += newHoleEasting - points[index].startXLocation;
+                calculateEndXYZ(points[index], points[index].length, 1);
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        } else {
+            if (index !== -1) {
+                // Calculate the original delta between startXLocation and endXLocation
+                let originalDeltaX = points[index].endXLocation - points[index].startXLocation;
 
-				// Update startXLocation
-				points[index].startXLocation = newHoleEasting;
+                // Update startXLocation
+                points[index].startXLocation = newHoleEasting;
 
-				// Update endXLocation based on the new startXLocation and original delta
-				points[index].endXLocation = newHoleEasting + originalDeltaX;
+                // Update endXLocation based on the new startXLocation and original delta
+                points[index].endXLocation = newHoleEasting + originalDeltaX;
 
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		}
-	} else if (selectedMultipleHoles) {
-		// Update the easting of multiple selected holes
-		let sumEasting = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startXLocation, 0);
-		let averageEasting = sumEasting / selectedMultipleHoles.length;
-		let eastingDelta = newHoleEasting - averageEasting;
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        }
+    } else if (selectedMultipleHoles) {
+        // Update the easting of multiple selected holes
+        let sumEasting = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startXLocation, 0);
+        let averageEasting = sumEasting / selectedMultipleHoles.length;
+        let eastingDelta = newHoleEasting - averageEasting;
 
-		selectedMultipleHoles.forEach((hole) => {
-			hole.startXLocation += eastingDelta;
-			// Assuming endXLocation should also be updated based on the new easting
-			hole.endXLocation += eastingDelta;
-		});
+        selectedMultipleHoles.forEach((hole) => {
+            hole.startXLocation += eastingDelta;
+            // Assuming endXLocation should also be updated based on the new easting
+            hole.endXLocation += eastingDelta;
+        });
 
-		// Redraw the updated data for multiple holes
-		drawData(points, null); // Pass null as the selected hole might not be relevant
-	}
+        // Redraw the updated data for multiple holes
+        drawData(points, null); // Pass null as the selected hole might not be relevant
+    }
 
-	// Recalculate dependent data structures if necessary
-	if (points.length > 0) {
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    // Recalculate dependent data structures if necessary
+    if (points.length > 0) {
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
-	}
+        // directionArrows now contains the arrow data for later drawing
+    }
 });
 
 /// Event listener for the edit hole Northing switch
 editNorthingSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		console.log("editNorthingSwitch checked");
-		isNorthingEditing = true;
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		document.getElementById("display10").checked = true; // Set display mode to hole Northing
-		canvas.addEventListener("click", handleNorthingEditClick);
-		canvas.addEventListener("touchstart", handleNorthingEditClick);
-		drawData(points, selectedHole);
-	} else {
-		console.log("editNorthingSwitch unchecked");
-		isNorthingEditing = false;
-		canvas.removeEventListener("click", handleNorthingEditClick);
-		canvas.removeEventListener("touchstart", handleNorthingEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    if (this.checked) {
+        console.log("editNorthingSwitch checked");
+        isNorthingEditing = true;
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        document.getElementById("display10").checked = true; // Set display mode to hole Northing
+        canvas.addEventListener("click", handleNorthingEditClick);
+        canvas.addEventListener("touchstart", handleNorthingEditClick);
+        drawData(points, selectedHole);
+    } else {
+        console.log("editNorthingSwitch unchecked");
+        isNorthingEditing = false;
+        canvas.removeEventListener("click", handleNorthingEditClick);
+        canvas.removeEventListener("touchstart", handleNorthingEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-			// directionArrows now contains the arrow data for later drawing
-		}
-		drawData(points, selectedHole);
-	}
+            // directionArrows now contains the arrow data for later drawing
+        }
+        drawData(points, selectedHole);
+    }
 });
 
 // Access the slider element and add an event listener to track changes
 const holeNorthingSlider = document.getElementById("holeNorthingSlider");
 holeNorthingSlider.addEventListener("input", function () {
-	let newHoleNorthing = parseFloat(holeNorthingSlider.value);
-	holeNorthingLabel.textContent = "Hole Northing (Y): " + newHoleNorthing.toFixed(2) + "mN";
+    let newHoleNorthing = parseFloat(holeNorthingSlider.value);
+    holeNorthingLabel.textContent = "Hole Northing (Y): " + newHoleNorthing.toFixed(2) + "mN";
 
-	if (selectedHole) {
-		// Update the easting of the individual selected hole
-		const index = points.findIndex((point) => point === selectedHole);
-		if (fixToeLocation == true) {
-			if (index !== -1) {
-				points[index].startYLocation = newHoleNorthing;
-				// Assuming endYLocation should also be updated based on the new easting
-				points[index].endYLocation += newHoleNorthing - points[index].startYLocation;
-				calculateEndXYZ(points[index], points[index].length, 1);
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		} else {
-			if (index !== -1) {
-				// Calculate the original delta between startYLocation and endYLocation
-				let originalDeltaY = points[index].endYLocation - points[index].startYLocation;
+    if (selectedHole) {
+        // Update the easting of the individual selected hole
+        const index = points.findIndex((point) => point === selectedHole);
+        if (fixToeLocation == true) {
+            if (index !== -1) {
+                points[index].startYLocation = newHoleNorthing;
+                // Assuming endYLocation should also be updated based on the new easting
+                points[index].endYLocation += newHoleNorthing - points[index].startYLocation;
+                calculateEndXYZ(points[index], points[index].length, 1);
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        } else {
+            if (index !== -1) {
+                // Calculate the original delta between startYLocation and endYLocation
+                let originalDeltaY = points[index].endYLocation - points[index].startYLocation;
 
-				// Update startYLocation
-				points[index].startYLocation = newHoleNorthing;
+                // Update startYLocation
+                points[index].startYLocation = newHoleNorthing;
 
-				// Update endYLocation based on the new startYLocation and original delta
-				points[index].endYLocation = newHoleNorthing + originalDeltaY;
+                // Update endYLocation based on the new startYLocation and original delta
+                points[index].endYLocation = newHoleNorthing + originalDeltaY;
 
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		}
-	} else if (selectedMultipleHoles) {
-		// Update the northing of multiple selected holes
-		let sumNorthing = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startYLocation, 0);
-		let averageNorthing = sumNorthing / selectedMultipleHoles.length;
-		let northingDelta = newHoleNorthing - averageNorthing;
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        }
+    } else if (selectedMultipleHoles) {
+        // Update the northing of multiple selected holes
+        let sumNorthing = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startYLocation, 0);
+        let averageNorthing = sumNorthing / selectedMultipleHoles.length;
+        let northingDelta = newHoleNorthing - averageNorthing;
 
-		selectedMultipleHoles.forEach((hole) => {
-			hole.startYLocation += northingDelta;
-			// Assuming endYLocation should also be updated based on the new northing
-			hole.endYLocation += northingDelta;
-		});
+        selectedMultipleHoles.forEach((hole) => {
+            hole.startYLocation += northingDelta;
+            // Assuming endYLocation should also be updated based on the new northing
+            hole.endYLocation += northingDelta;
+        });
 
-		// Redraw the updated data for multiple holes
-		drawData(points, null); // Pass null as the selected hole might not be relevant
-	}
+        // Redraw the updated data for multiple holes
+        drawData(points, null); // Pass null as the selected hole might not be relevant
+    }
 
-	// Recalculate dependent data structures if necessary
-	if (points.length > 0) {
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    // Recalculate dependent data structures if necessary
+    if (points.length > 0) {
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
-	}
+        // directionArrows now contains the arrow data for later drawing
+    }
 });
 
 /// Event listener for the edit hole Elevation switch
 editElevationSwitch.addEventListener("change", function () {
-	if (this.checked) {
-		isElevationEditing = true;
-		addConnectorButton.checked = false;
-		addMultiConnectorButton.checked = false;
-		addHoleSwitch.checked = false;
-		deleteHoleSwitch.checked = false;
-		editHoleTypePopupSwitch.checked = false;
-		editLengthPopupSwitch.checked = false;
-		document.getElementById("display11").checked = true; // Set display mode to hole Elevation
-		canvas.addEventListener("click", handleElevationEditClick);
-		canvas.addEventListener("touchstart", handleElevationEditClick);
-		drawData(points, selectedHole);
-	} else {
-		isElevationEditing = false;
-		canvas.removeEventListener("click", handleElevationEditClick);
-		canvas.removeEventListener("touchstart", handleElevationEditClick);
-		selectedHole = null;
-		firstSelectedHole = null;
-		secondSelectedHole = null;
-		fromHoleStore = null;
-		clickedHole = null;
-		if (points.length > 0) {
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    if (this.checked) {
+        isElevationEditing = true;
+        addConnectorButton.checked = false;
+        addMultiConnectorButton.checked = false;
+        addHoleSwitch.checked = false;
+        deleteHoleSwitch.checked = false;
+        editHoleTypePopupSwitch.checked = false;
+        editLengthPopupSwitch.checked = false;
+        document.getElementById("display11").checked = true; // Set display mode to hole Elevation
+        canvas.addEventListener("click", handleElevationEditClick);
+        canvas.addEventListener("touchstart", handleElevationEditClick);
+        drawData(points, selectedHole);
+    } else {
+        isElevationEditing = false;
+        canvas.removeEventListener("click", handleElevationEditClick);
+        canvas.removeEventListener("touchstart", handleElevationEditClick);
+        selectedHole = null;
+        firstSelectedHole = null;
+        secondSelectedHole = null;
+        fromHoleStore = null;
+        clickedHole = null;
+        if (points.length > 0) {
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-			// directionArrows now contains the arrow data for later drawing
-		}
-		drawData(points, selectedHole);
-	}
+            // directionArrows now contains the arrow data for later drawing
+        }
+        drawData(points, selectedHole);
+    }
 });
 // Access the slider element and add an event listener to track changes
 const holeElevationSlider = document.getElementById("holeElevationSlider");
 holeElevationSlider.addEventListener("input", function () {
-	let newHoleElevation = parseFloat(holeElevationSlider.value);
-	holeElevationLabel.textContent = "Hole Elevation (Z): " + newHoleElevation.toFixed(2) + "m";
+    let newHoleElevation = parseFloat(holeElevationSlider.value);
+    holeElevationLabel.textContent = "Hole Elevation (Z): " + newHoleElevation.toFixed(2) + "m";
 
-	if (selectedHole) {
-		// Update the easting of the individual selected hole
-		const index = points.findIndex((point) => point === selectedHole);
-		if (fixToeLocation == true) {
-			if (index !== -1) {
-				points[index].startZLocation = newHoleElevation;
-				// Assuming endZLocation should also be updated based on the new easting
-				points[index].endZLocation += newHoleElevation - points[index].startZLocation;
-				calculateEndXYZ(points[index], points[index].length, 1);
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		} else {
-			if (index !== -1) {
-				// Calculate the original delta between startZLocation and endZLocation
-				let originalDeltaZ = points[index].endZLocation - points[index].startZLocation;
+    if (selectedHole) {
+        // Update the easting of the individual selected hole
+        const index = points.findIndex((point) => point === selectedHole);
+        if (fixToeLocation == true) {
+            if (index !== -1) {
+                points[index].startZLocation = newHoleElevation;
+                // Assuming endZLocation should also be updated based on the new easting
+                points[index].endZLocation += newHoleElevation - points[index].startZLocation;
+                calculateEndXYZ(points[index], points[index].length, 1);
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        } else {
+            if (index !== -1) {
+                // Calculate the original delta between startZLocation and endZLocation
+                let originalDeltaZ = points[index].endZLocation - points[index].startZLocation;
 
-				// Update startZLocation
-				points[index].startZLocation = newHoleElevation;
+                // Update startZLocation
+                points[index].startZLocation = newHoleElevation;
 
-				// Update endZLocation based on the new startZLocation and original delta
-				points[index].endZLocation = newHoleElevation + originalDeltaZ;
+                // Update endZLocation based on the new startZLocation and original delta
+                points[index].endZLocation = newHoleElevation + originalDeltaZ;
 
-				// Redraw the updated data
-				drawData(points, selectedHole);
-			}
-		}
-	} else if (selectedMultipleHoles) {
-		// Update the elevation of multiple selected holes
-		let sumElevation = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startZLocation, 0);
-		let averageElevation = sumElevation / selectedMultipleHoles.length;
-		let elevationDelta = newHoleElevation - averageElevation;
+                // Redraw the updated data
+                drawData(points, selectedHole);
+            }
+        }
+    } else if (selectedMultipleHoles) {
+        // Update the elevation of multiple selected holes
+        let sumElevation = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startZLocation, 0);
+        let averageElevation = sumElevation / selectedMultipleHoles.length;
+        let elevationDelta = newHoleElevation - averageElevation;
 
-		selectedMultipleHoles.forEach((hole) => {
-			hole.startZLocation += elevationDelta;
-			// Assuming endZLocation should also be updated based on the new elevation
-			hole.endZLocation += elevationDelta;
-		});
+        selectedMultipleHoles.forEach((hole) => {
+            hole.startZLocation += elevationDelta;
+            // Assuming endZLocation should also be updated based on the new elevation
+            hole.endZLocation += elevationDelta;
+        });
 
-		// Redraw the updated data for multiple holes
-		drawData(points, null); // Pass null as the selected hole might not be relevant
-	}
+        // Redraw the updated data for multiple holes
+        drawData(points, null); // Pass null as the selected hole might not be relevant
+    }
 
-	// Recalculate dependent data structures if necessary
-	if (points.length > 0) {
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    // Recalculate dependent data structures if necessary
+    if (points.length > 0) {
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
-	}
+        // directionArrows now contains the arrow data for later drawing
+    }
 });
 
 function resizeChart() {
-	if (Array.isArray(holeTimes)) {
-		const newWidth = document.documentElement.clientWidth;
-		Plotly.relayout(timeChartObject, {
-			width: newWidth
-		});
-	}
+    if (Array.isArray(holeTimes)) {
+        const newWidth = document.documentElement.clientWidth;
+        Plotly.relayout(timeChartObject, {
+            width: newWidth
+        });
+    }
 }
 // Add event listener for window resize
 window.addEventListener("resize", resizeChart);
 var acc = document.getElementsByClassName("accordion");
 var i;
 for (i = 0; i < acc.length; i++) {
-	acc[i].addEventListener("click", function () {
-		/* Toggle between adding and removing the "active" class,
+    acc[i].addEventListener("click", function () {
+        /* Toggle between adding and removing the "active" class,
     to highlight the button that controls the panel */
-		this.classList.toggle("active");
-		/* Toggle between hiding and showing the active panel */
-		var panel = this.nextElementSibling;
-		if (panel.style.display === "block") {
-			panel.style.display = "none";
-		} else {
-			panel.style.display = "block";
-			resizeChart(); // Call the resizeChart function to adjust the chart layout
-			timeChart();
-			//Plotly.relayout("timeChart", {
-			//	width: newWidthRight - 50
-			//});
-		}
-	});
+        this.classList.toggle("active");
+        /* Toggle between hiding and showing the active panel */
+        var panel = this.nextElementSibling;
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+        } else {
+            panel.style.display = "block";
+            resizeChart(); // Call the resizeChart function to adjust the chart layout
+            timeChart();
+            //Plotly.relayout("timeChart", {
+            //	width: newWidthRight - 50
+            //});
+        }
+    });
 }
 let selectedVoronoiMetric = "powderFactor"; // default
 
 const voronoiMetricDropdown = document.getElementById("voronoiSelect");
 if (voronoiMetricDropdown) {
-	voronoiMetricDropdown.addEventListener("change", function (e) {
-		selectedVoronoiMetric = e.target.value;
-		drawData(points, selectedHole); // Redraw with the new metric
-	});
+    voronoiMetricDropdown.addEventListener("change", function (e) {
+        selectedVoronoiMetric = e.target.value;
+        drawData(points, selectedHole); // Redraw with the new metric
+    });
 }
 
 function isIOS() {
-	const userAgent = navigator.userAgent.toLowerCase();
-	return /iphone|ipad|ipod/.test(userAgent);
+    const userAgent = navigator.userAgent.toLowerCase();
+    return /iphone|ipad|ipod/.test(userAgent);
 }
 document.getElementById("saveKAD").addEventListener("click", function () {
-	//mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap];//including holes
-	//mapData = [kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //excluding holes
-	exportKADFile(mapData);
+    //mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap];//including holes
+    //mapData = [kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //excluding holes
+    exportKADFile(mapData);
 });
 document.getElementById("saveHoles").addEventListener("click", function () {
-	if (isIOS()) {
-		const csv = convertPointsTo14ColumnCSV();
+    if (isIOS()) {
+        const csv = convertPointsTo14ColumnCSV();
 
-		// Create a Blob with the CSV data
-		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
-		});
+        // Create a Blob with the CSV data
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8"
+        });
 
-		// Create a URL for the Blob
-		const url = URL.createObjectURL(blob);
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
 
-		// Create an anchor element with the download link
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = "KIRRA14_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
-		link.textContent = "Click here to download";
+        // Create an anchor element with the download link
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "KIRRA14_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        link.textContent = "Click here to download";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	} else {
-		const csv = convertPointsTo14ColumnCSV();
+        // Remove the link from the document
+        document.body.removeChild(link);
+    } else {
+        const csv = convertPointsTo14ColumnCSV();
 
-		// Create an invisible anchor element
-		const link = document.createElement("a");
-		link.style.display = "none";
+        // Create an invisible anchor element
+        const link = document.createElement("a");
+        link.style.display = "none";
 
-		// Set the CSV data as the "href" attribute
-		link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        // Set the CSV data as the "href" attribute
+        link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
 
-		// Prompt the user to save the file
-		// Name the file "blastingapps_output" with today's date and time
-		link.download = "KIRRA14_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        // Prompt the user to save the file
+        // Name the file "blastingapps_output" with today's date and time
+        link.download = "KIRRA14_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	}
+        // Remove the link from the document
+        document.body.removeChild(link);
+    }
 });
 
 document.getElementById("saveAll").addEventListener("click", function () {
-	if (isIOS()) {
-		const csv = convertPointsToAllDataCSV();
+    if (isIOS()) {
+        const csv = convertPointsToAllDataCSV();
 
-		// Create a Blob with the CSV data
-		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
-		});
+        // Create a Blob with the CSV data
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8"
+        });
 
-		// Create a URL for the Blob
-		const url = URL.createObjectURL(blob);
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
 
-		// Create an anchor element with the download link
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = "KIRRA_ALL_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
-		link.textContent = "Click here to download";
+        // Create an anchor element with the download link
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "KIRRA_ALL_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        link.textContent = "Click here to download";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	} else {
-		const csv = convertPointsToAllDataCSV();
+        // Remove the link from the document
+        document.body.removeChild(link);
+    } else {
+        const csv = convertPointsToAllDataCSV();
 
-		// Create an invisible anchor element
-		const link = document.createElement("a");
-		link.style.display = "none";
+        // Create an invisible anchor element
+        const link = document.createElement("a");
+        link.style.display = "none";
 
-		// Set the CSV data as the "href" attribute
-		link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        // Set the CSV data as the "href" attribute
+        link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
 
-		// Prompt the user to save the file
-		// Name the file "blastingapps_output" with today's date and time
-		link.download = "KIRRA_ALL_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        // Prompt the user to save the file
+        // Name the file "blastingapps_output" with today's date and time
+        link.download = "KIRRA_ALL_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	}
+        // Remove the link from the document
+        document.body.removeChild(link);
+    }
 });
 document.getElementById("saveIREDES").addEventListener("click", function () {
-	saveIREDESPopup();
+    saveIREDESPopup();
 });
 document.getElementById("saveAQM").addEventListener("click", function () {
-	saveAQMPopup();
+    saveAQMPopup();
 });
 document.getElementById("saveMeasures").addEventListener("click", function () {
-	if (isIOS()) {
-		const csv = convertPointsToActualDataCSV();
+    if (isIOS()) {
+        const csv = convertPointsToActualDataCSV();
 
-		// Create a Blob with the CSV data
-		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8"
-		});
+        // Create a Blob with the CSV data
+        const blob = new Blob([csv], {
+            type: "text/csv;charset=utf-8"
+        });
 
-		// Create a URL for the Blob
-		const url = URL.createObjectURL(blob);
+        // Create a URL for the Blob
+        const url = URL.createObjectURL(blob);
 
-		// Create an anchor element with the download link
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = "KIRRA_MEASURED_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
-		link.textContent = "Click here to download";
+        // Create an anchor element with the download link
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "KIRRA_MEASURED_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        link.textContent = "Click here to download";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	} else {
-		const csv = convertPointsToActualDataCSV();
+        // Remove the link from the document
+        document.body.removeChild(link);
+    } else {
+        const csv = convertPointsToActualDataCSV();
 
-		// Create an invisible anchor element
-		const link = document.createElement("a");
-		link.style.display = "none";
+        // Create an invisible anchor element
+        const link = document.createElement("a");
+        link.style.display = "none";
 
-		// Set the CSV data as the "href" attribute
-		link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
+        // Set the CSV data as the "href" attribute
+        link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
 
-		// Prompt the user to save the file
-		// Name the file "blastingapps_output" with today's date and time
-		link.download = "KIRRA_MEASURED_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
+        // Prompt the user to save the file
+        // Name the file "blastingapps_output" with today's date and time
+        link.download = "KIRRA_MEASURED_output_" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".csv";
 
-		// Append the link to the document
-		document.body.appendChild(link);
+        // Append the link to the document
+        document.body.appendChild(link);
 
-		// Programmatically trigger the click event on the link
-		link.click();
+        // Programmatically trigger the click event on the link
+        link.click();
 
-		// Remove the link from the document
-		document.body.removeChild(link);
-	}
+        // Remove the link from the document
+        document.body.removeChild(link);
+    }
 });
 document.getElementById("exportHolesDXF").addEventListener("click", function () {
-	const dxf = exportHolesDXF(points);
-	const filename = "KIRRA_HOLES_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
-	downloadDXF(dxf, filename);
+    const dxf = exportHolesDXF(points);
+    const filename = "KIRRA_HOLES_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
+    downloadDXF(dxf, filename);
 });
 
 document.getElementById("exportDrawingDXF").addEventListener("click", function () {
-	const dxf = exportKADDXF();
-	const filename = "KIRRA_DRAWING_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
-	downloadDXF(dxf, filename);
+    const dxf = exportKADDXF();
+    const filename = "KIRRA_DRAWING_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
+    downloadDXF(dxf, filename);
 });
 
 function downloadDXF(content, filename) {
-	if (isIOS()) {
-		const blob = new Blob([content], { type: "text/dxf;charset=utf-8" });
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement("a");
-		link.href = url;
-		link.download = filename;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	} else {
-		const link = document.createElement("a");
-		link.style.display = "none";
-		link.href = "data:text/dxf;charset=utf-8," + encodeURIComponent(content);
-		link.download = filename;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-	}
+    if (isIOS()) {
+        const blob = new Blob([content], { type: "text/dxf;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } else {
+        const link = document.createElement("a");
+        link.style.display = "none";
+        link.href = "data:text/dxf;charset=utf-8," + encodeURIComponent(content);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
 }
 
 // Function to check if the mouse is inside the canvas
 function isMouseInside(mouseX, mouseY, canvas) {
-	const rect = canvas.getBoundingClientRect(); // Get the bounding rectangle of the canvas
-	return mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom;
+    const rect = canvas.getBoundingClientRect(); // Get the bounding rectangle of the canvas
+    return mouseX >= rect.left && mouseX <= rect.right && mouseY >= rect.top && mouseY <= rect.bottom;
 }
 const canvasContainer = document.querySelector(".canvas-container");
 
 canvasContainer.addEventListener(
-	"wheel",
-	function (event) {
-		const mouseX = event.clientX;
-		const mouseY = event.clientY;
-		const isMouseInsideCanvas = isMouseInside(mouseX, mouseY, canvas);
+    "wheel",
+    function (event) {
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+        const isMouseInsideCanvas = isMouseInside(mouseX, mouseY, canvas);
 
-		if (isMouseInsideCanvas) {
-			event.preventDefault();
-			const wheelDelta = event.deltaY;
+        if (isMouseInsideCanvas) {
+            event.preventDefault();
+            const wheelDelta = event.deltaY;
 
-			const zoomFactor = wheelDelta > 0 ? 0.95 : 1.05;
+            const zoomFactor = wheelDelta > 0 ? 0.95 : 1.05;
 
-			// Calculate the mouse position in canvas coordinates
-			const canvasRect = canvas.getBoundingClientRect();
-			const canvasX = mouseX - canvasRect.left;
-			const canvasY = mouseY - canvasRect.top;
+            // Calculate the mouse position in canvas coordinates
+            const canvasRect = canvas.getBoundingClientRect();
+            const canvasX = mouseX - canvasRect.left;
+            const canvasY = mouseY - canvasRect.top;
 
-			// Calculate the center of the canvas
-			const centerX = canvasRect.width / 2;
-			const centerY = canvasRect.height / 2;
-			//make the canvas center the value of 0,0
-			//const canvasCenterX = centerX - canvasX;
-			//const canvasCenterY = centerY - canvasY;
+            // Calculate the center of the canvas
+            const centerX = canvasRect.width / 2;
+            const centerY = canvasRect.height / 2;
+            //make the canvas center the value of 0,0
+            //const canvasCenterX = centerX - canvasX;
+            //const canvasCenterY = centerY - canvasY;
 
-			// Calculate the delta between the mouse position and the canvas center
-			const deltaX = canvasX - centerX;
-			const deltaY = canvasY - centerY;
-			// Calculate the delta between the mouse position and the canvas center in negative on the left and positive on the right
-			// and negative on the top and positive on the bottom
-			//const deltaX = canvasCenterX - centerX;
-			//const deltaY = canvasCenterY - centerY;
+            // Calculate the delta between the mouse position and the canvas center
+            const deltaX = canvasX - centerX;
+            const deltaY = canvasY - centerY;
+            // Calculate the delta between the mouse position and the canvas center in negative on the left and positive on the right
+            // and negative on the top and positive on the bottom
+            //const deltaX = canvasCenterX - centerX;
+            //const deltaY = canvasCenterY - centerY;
 
-			// Calculate the position offsets from the center of the canvas
-			const offsetX = canvasX - canvasRect.width / 2;
-			const offsetY = canvasY - canvasRect.height / 2;
+            // Calculate the position offsets from the center of the canvas
+            const offsetX = canvasX - canvasRect.width / 2;
+            const offsetY = canvasY - canvasRect.height / 2;
 
-			// Calculate the new scale
-			currentScale *= zoomFactor;
-			currentFontSize *= zoomFactor;
+            // Calculate the new scale
+            currentScale *= zoomFactor;
+            currentFontSize *= zoomFactor;
 
-			// Adjust the centroid position based on the offsets and zoom direction
-			if (deltaX < 0 && deltaY < 0) {
-				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
-				// console.log("Upper Left Quadrant: Mouse is above and to the left of the canvas center");
-				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
-				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
-			} else if (deltaX < 0 && deltaY > 0) {
-				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
-				// console.log("Lower Left Quadrant: Mouse is below and to the left of the canvas center");
-				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
-				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
-			} else if (deltaX > 0 && deltaY < 0) {
-				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
-				// console.log("Upper Right Quadrant: Mouse is above and to the right of the canvas center");
-				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
-				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
-			} else if (deltaX > 0 && deltaY > 0) {
-				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
-				// console.log("Lower Right Quadrant: Mouse is below and to the right of the canvas center");
-				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
-				centroidY += (offsetY / currentScale) * (1 - zoomFactor);
-			} else {
-				// console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
-				// console.log("Center: Mouse is in the center region of the canvas");
-				centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
-				centroidY -= (offsetY / currentScale) * (1 - zoomFactor);
-			}
+            // Adjust the centroid position based on the offsets and zoom direction
+            if (deltaX < 0 && deltaY < 0) {
+                // console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
+                // console.log("Upper Left Quadrant: Mouse is above and to the left of the canvas center");
+                centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+                centroidY += (offsetY / currentScale) * (1 - zoomFactor);
+            } else if (deltaX < 0 && deltaY > 0) {
+                // console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
+                // console.log("Lower Left Quadrant: Mouse is below and to the left of the canvas center");
+                centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+                centroidY += (offsetY / currentScale) * (1 - zoomFactor);
+            } else if (deltaX > 0 && deltaY < 0) {
+                // console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
+                // console.log("Upper Right Quadrant: Mouse is above and to the right of the canvas center");
+                centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+                centroidY += (offsetY / currentScale) * (1 - zoomFactor);
+            } else if (deltaX > 0 && deltaY > 0) {
+                // console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
+                // console.log("Lower Right Quadrant: Mouse is below and to the right of the canvas center");
+                centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+                centroidY += (offsetY / currentScale) * (1 - zoomFactor);
+            } else {
+                // console.log("Delta X: " + deltaX + " Delta Y: " + deltaY);
+                // console.log("Center: Mouse is in the center region of the canvas");
+                centroidX -= (offsetX / currentScale) * (1 - zoomFactor);
+                centroidY -= (offsetY / currentScale) * (1 - zoomFactor);
+            }
 
-			// Ensure the currentScale does not go below a minimum value
-			currentScale = Math.max(currentScale, 0.000001);
+            // Ensure the currentScale does not go below a minimum value
+            currentScale = Math.max(currentScale, 0.000001);
 
-			drawData(points, selectedHole);
-		}
-	},
-	{
-		passive: false
-	}
+            drawData(points, selectedHole);
+        }
+    },
+    {
+        passive: false
+    }
 );
 
 // Access the slider element and add an event listener to track changes
 const slider = document.getElementById("toeSlider");
 slider.addEventListener("input", function () {
-	// Calculate the toe size in meters by using the slider value directly
-	const toeSizeInMeters = parseFloat(this.value);
+    // Calculate the toe size in meters by using the slider value directly
+    const toeSizeInMeters = parseFloat(this.value);
 
-	// Update the label with the calculated toe size
-	toeLabel.textContent = "Toe Size: " + toeSizeInMeters.toFixed(2) + "m";
+    // Update the label with the calculated toe size
+    toeLabel.textContent = "Toe Size: " + toeSizeInMeters.toFixed(2) + "m";
 
-	// Call the drawData function with the updated toe size in meters
-	drawData(points, selectedHole, toeSizeInMeters);
+    // Call the drawData function with the updated toe size in meters
+    drawData(points, selectedHole, toeSizeInMeters);
 });
 const holeSlider = document.getElementById("holeSlider");
 holeSlider.addEventListener("input", function () {
-	////console.log('Slider value:', this.value);
-	holeScale = document.getElementById("holeSlider").value;
-	holeLabel.textContent = "Hole Adjust : " + parseFloat(holeScale).toFixed(1);
-	drawData(points, selectedHole);
+    ////console.log('Slider value:', this.value);
+    holeScale = document.getElementById("holeSlider").value;
+    holeLabel.textContent = "Hole Adjust : " + parseFloat(holeScale).toFixed(1);
+    drawData(points, selectedHole);
 });
 // Access the slider element and add an event listener to track changes
 const connSlider = document.getElementById("connSlider");
 connSlider.addEventListener("input", function () {
-	////console.log('Connector value:', this.value);
-	connScale = document.getElementById("connSlider").value;
-	connLabel.textContent = "Tie Size : " + parseFloat(connScale).toFixed(1);
-	drawData(points, selectedHole);
+    ////console.log('Connector value:', this.value);
+    connScale = document.getElementById("connSlider").value;
+    connLabel.textContent = "Tie Size : " + parseFloat(connScale).toFixed(1);
+    drawData(points, selectedHole);
 });
 const fontSlider = document.getElementById("fontSlider");
 fontSlider.addEventListener("input", function () {
-	currentFontSize = this.value;
-	currentFontSize = document.getElementById("fontSlider").value;
-	fontLabel.textContent = "Font Size : " + currentFontSize + "px";
-	drawData(points, selectedHole);
+    currentFontSize = this.value;
+    currentFontSize = document.getElementById("fontSlider").value;
+    fontLabel.textContent = "Font Size : " + currentFontSize + "px";
+    drawData(points, selectedHole);
 });
 // Access the slider element and add an event listener to track changes
 const intervalSlider = document.getElementById("intervalSlider");
 intervalSlider.addEventListener("input", function () {
-	intervalAmount = document.getElementById("intervalSlider").value;
-	intervalLabel.textContent = "Interval : " + intervalAmount + "ms";
-	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    intervalAmount = document.getElementById("intervalSlider").value;
+    intervalLabel.textContent = "Interval : " + intervalAmount + "ms";
+    const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-	// directionArrows now contains the arrow data for later drawing
+    // directionArrows now contains the arrow data for later drawing
 
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 // Access the slider element and add an event listener to track changes
 const firstMovementSlider = document.getElementById("firstMovementSlider");
 firstMovementSlider.addEventListener("input", function () {
-	firstMovementSize = document.getElementById("firstMovementSlider").value;
-	firstMovementLabel.textContent = "First Movement Size : " + firstMovementSize;
-	const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    firstMovementSize = document.getElementById("firstMovementSlider").value;
+    firstMovementLabel.textContent = "First Movement Size : " + firstMovementSize;
+    const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-	// directionArrows now contains the arrow data for later drawing
+    // directionArrows now contains the arrow data for later drawing
 
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 // Access the slider element and add an event listener to track changes
 const connectSlider = document.getElementById("connectSlider");
 connectSlider.addEventListener("input", function () {
-	connectAmount = document.getElementById("connectSlider").value;
-	connectLabel.textContent = "Connect Distance : " + connectAmount + "m";
+    connectAmount = document.getElementById("connectSlider").value;
+    connectLabel.textContent = "Connect Distance : " + connectAmount + "m";
 });
 
 const timeSlider = document.getElementById("timeRange");
 timeSlider.addEventListener("input", function () {
-	timeRange = document.getElementById("timeRange").value;
-	timeRangeLabel.textContent = "Time window :" + timeRange + "ms";
-	timeChart();
-	Plotly.relayout("timeChart", {
-		width: newWidthRight - 50,
-		yaxis: {
-			autorange: true // Adjust the y-axis range to fit the data
-		}
-	});
+    timeRange = document.getElementById("timeRange").value;
+    timeRangeLabel.textContent = "Time window :" + timeRange + "ms";
+    timeChart();
+    Plotly.relayout("timeChart", {
+        width: newWidthRight - 50,
+        yaxis: {
+            autorange: true // Adjust the y-axis range to fit the data
+        }
+    });
 });
 
 // Access the slider element and add an event listener to track changes
 const timeOffsetSlider = document.getElementById("timeOffset");
 timeOffsetSlider.addEventListener("input", function () {
-	timeOffset = document.getElementById("timeOffset").value;
-	timeOffsetLabel.textContent = "Time Offset : " + timeOffset + "ms";
-	timeChart();
-	Plotly.relayout("timeChart", {
-		width: newWidthRight - 50,
-		yaxis: {
-			autorange: true // Adjust the y-axis range to fit the data
-		}
-	});
+    timeOffset = document.getElementById("timeOffset").value;
+    timeOffsetLabel.textContent = "Time Offset : " + timeOffset + "ms";
+    timeChart();
+    Plotly.relayout("timeChart", {
+        width: newWidthRight - 50,
+        yaxis: {
+            autorange: true // Adjust the y-axis range to fit the data
+        }
+    });
 });
 
 option1.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option2.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option2A.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option3.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option4.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option5.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option5A.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option6.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option6A.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option8.addEventListener("change", function () {
-	isDisplayingContours = true;
-	drawData(points, selectedHole);
+    isDisplayingContours = true;
+    drawData(points, selectedHole);
 });
 option8A.addEventListener("change", function () {
-	isDisplayingSlopeTriangles = true;
-	drawData(points, selectedHole);
+    isDisplayingSlopeTriangles = true;
+    drawData(points, selectedHole);
 });
 option8B.addEventListener("change", function () {
-	isDisplayingReliefTriangles = true;
-	drawData(points, selectedHole);
+    isDisplayingReliefTriangles = true;
+    drawData(points, selectedHole);
 });
 option8C.addEventListener("change", function () {
-	isDisplayingDirectionArrows = true;
-	drawData(points, selectedHole);
+    isDisplayingDirectionArrows = true;
+    drawData(points, selectedHole);
 });
 option9.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option10.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option11.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option12.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option13.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option14.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option15.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 option16.addEventListener("change", function () {
-	drawData(points, selectedHole);
+    drawData(points, selectedHole);
 });
 
 let touchStartTime;
@@ -2019,1074 +2019,1074 @@ let isTouchDragging = false;
 let longPressTimeout;
 
 function handleMouseDown(event) {
-	touchStartTime = Date.now();
-	touchDuration = 0; // Reset touch duration on touch start
+    touchStartTime = Date.now();
+    touchDuration = 0; // Reset touch duration on touch start
 
-	// Set a timeout to trigger a long press event
-	longPressTimeout = setTimeout(() => {
-		isDragging = true; // Set isDragging to true after 500ms
-	}, longPressDuration);
+    // Set a timeout to trigger a long press event
+    longPressTimeout = setTimeout(() => {
+        isDragging = true; // Set isDragging to true after 500ms
+    }, longPressDuration);
 
-	// Continue handling the mouse down event as before
-	lastMouseX = event.clientX;
-	lastMouseY = event.clientY;
+    // Continue handling the mouse down event as before
+    lastMouseX = event.clientX;
+    lastMouseY = event.clientY;
 }
 let newWidthRight = 350;
 let newWidthLeft = 350;
 
 function handleMouseMove(event) {
-	const rect = canvas.getBoundingClientRect();
-	const mouseX = event.clientX - rect.left;
-	const mouseY = event.clientY - rect.top;
+    const rect = canvas.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
 
-	if (isDragging) {
-		deltaX = mouseX - lastMouseX;
-		deltaY = mouseY - lastMouseY;
-		centroidX -= deltaX / currentScale;
-		centroidY += deltaY / currentScale;
-		// Only update lastMouseX/Y here when dragging
-		lastMouseX = mouseX;
-		lastMouseY = mouseY;
-	} else {
-		// Always update for live display when not dragging
-		lastMouseX = mouseX;
-		lastMouseY = mouseY;
-	}
+    if (isDragging) {
+        deltaX = mouseX - lastMouseX;
+        deltaY = mouseY - lastMouseY;
+        centroidX -= deltaX / currentScale;
+        centroidY += deltaY / currentScale;
+        // Only update lastMouseX/Y here when dragging
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+    } else {
+        // Always update for live display when not dragging
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+    }
 
-	if (isResizingRight) {
-		newWidthRight = window.innerWidth - event.clientX;
-		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50
-		});
-		document.getElementById("sidenavRight").style.width = newWidthRight + "px";
-	}
-	if (isResizingLeft) {
-		newWidthLeft = event.clientX;
-		document.getElementById("sidenavLeft").style.width = newWidthLeft + "px";
-	}
-	drawData(points, selectedHole);
+    if (isResizingRight) {
+        newWidthRight = window.innerWidth - event.clientX;
+        Plotly.relayout("timeChart", {
+            width: newWidthRight - 50
+        });
+        document.getElementById("sidenavRight").style.width = newWidthRight + "px";
+    }
+    if (isResizingLeft) {
+        newWidthLeft = event.clientX;
+        document.getElementById("sidenavLeft").style.width = newWidthLeft + "px";
+    }
+    drawData(points, selectedHole);
 }
 
 function handleMouseUp(event) {
-	isDragging = false;
-	clearTimeout(longPressTimeout); // Clear the long press timeout
+    isDragging = false;
+    clearTimeout(longPressTimeout); // Clear the long press timeout
 
-	//touchDuration = Date.now() - touchStartTime;
+    //touchDuration = Date.now() - touchStartTime;
 
-	if (isAddingHole && touchDuration <= longPressDuration) {
-		// Short click behavior
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		addHolePopup();
-	}
-	if (isAddingPattern && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	if (isDrawingPoint && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	if (isDrawingLine && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	if (isDrawingPoly && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	if (isDrawingCircle && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	if (isDrawingText && touchDuration <= longPressDuration) {
-		touchStartX = event.clientX;
-		touchStartY = event.clientY;
-		// Log the values of worldX and worldY
-	}
-	isResizingRight = false;
-	drawData(points, selectedHole);
-	document.removeEventListener("mousemove", handleMouseMove);
-	document.removeEventListener("mouseup", handleMouseUp);
-	isResizingLeft = false;
-	document.removeEventListener("mousemove", handleMouseMove);
-	document.removeEventListener("mouseup", handleMouseUp);
+    if (isAddingHole && touchDuration <= longPressDuration) {
+        // Short click behavior
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        addHolePopup();
+    }
+    if (isAddingPattern && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    if (isDrawingPoint && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    if (isDrawingLine && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    if (isDrawingPoly && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    if (isDrawingCircle && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    if (isDrawingText && touchDuration <= longPressDuration) {
+        touchStartX = event.clientX;
+        touchStartY = event.clientY;
+        // Log the values of worldX and worldY
+    }
+    isResizingRight = false;
+    drawData(points, selectedHole);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
+    isResizingLeft = false;
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", handleMouseUp);
 }
 
 // Rest of the code for touch events is unchanged
 
 function handleTouchStart(event) {
-	touchStartTime = Date.now();
-	touchDuration = 0; // Reset touch duration on touch start
+    touchStartTime = Date.now();
+    touchDuration = 0; // Reset touch duration on touch start
 
-	// Set a timeout to trigger a long press event
-	longPressTimeout = setTimeout(() => {
-		isTouchDragging = true; // Set isTouchDragging to true after 500ms
-	}, longPressDuration);
+    // Set a timeout to trigger a long press event
+    longPressTimeout = setTimeout(() => {
+        isTouchDragging = true; // Set isTouchDragging to true after 500ms
+    }, longPressDuration);
 
-	// Continue handling the touch start event as before
-	if (event.touches.length === 1) {
-		isTouchDragging = true;
-		touchStartX = event.touches[0].clientX;
-		touchStartY = event.touches[0].clientY;
-	} else if (event.touches.length === 2) {
-		// Pinch
-		initialPinchDistance = null;
-		initialScale = currentScale;
-		initialFontSize = currentFontSize;
-	}
+    // Continue handling the touch start event as before
+    if (event.touches.length === 1) {
+        isTouchDragging = true;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+    } else if (event.touches.length === 2) {
+        // Pinch
+        initialPinchDistance = null;
+        initialScale = currentScale;
+        initialFontSize = currentFontSize;
+    }
 }
 
 function handleTouchEnd(event) {
-	// Clear the long press timeout
-	clearTimeout(longPressTimeout);
+    // Clear the long press timeout
+    clearTimeout(longPressTimeout);
 
-	// Only set isTouchDragging to false on touch end
-	isTouchDragging = false;
+    // Only set isTouchDragging to false on touch end
+    isTouchDragging = false;
 
-	touchDuration = Date.now() - touchStartTime;
-	if (isAddingHole && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-		addHolePopup();
-	}
-	if (event.touches.length === 1) {
-		initialPinchDistance = null;
-		initialScale = currentScale;
-		initialFontSize = currentFontSize;
-	}
-	if (isAddingPattern && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
-	if (isDrawingPoint && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
-	if (isDrawingLine && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
-	if (isDrawingPoly && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
-	if (isDrawingCircle && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
-	if (isDrawingText && touchDuration <= longPressDuration) {
-		touchStartX = event.changedTouches[0].clientX;
-		touchStartY = event.changedTouches[0].clientY;
-	}
+    touchDuration = Date.now() - touchStartTime;
+    if (isAddingHole && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+        addHolePopup();
+    }
+    if (event.touches.length === 1) {
+        initialPinchDistance = null;
+        initialScale = currentScale;
+        initialFontSize = currentFontSize;
+    }
+    if (isAddingPattern && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
+    if (isDrawingPoint && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
+    if (isDrawingLine && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
+    if (isDrawingPoly && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
+    if (isDrawingCircle && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
+    if (isDrawingText && touchDuration <= longPressDuration) {
+        touchStartX = event.changedTouches[0].clientX;
+        touchStartY = event.changedTouches[0].clientY;
+    }
 }
 
 function handleTouchMove(event) {
-	if (event.touches.length === 1 && isTouchDragging) {
-		event.preventDefault();
-		let touchX = event.touches[0].clientX;
-		let touchY = event.touches[0].clientY;
-		deltaX = touchX - touchStartX;
-		deltaY = touchY - touchStartY;
-		touchStartX = touchX;
-		touchStartY = touchY;
-		centroidX -= deltaX / currentScale;
-		centroidY += deltaY / currentScale;
-		drawData(points, selectedHole);
-	} else if (event.touches.length === 2) {
-		event.preventDefault();
+    if (event.touches.length === 1 && isTouchDragging) {
+        event.preventDefault();
+        let touchX = event.touches[0].clientX;
+        let touchY = event.touches[0].clientY;
+        deltaX = touchX - touchStartX;
+        deltaY = touchY - touchStartY;
+        touchStartX = touchX;
+        touchStartY = touchY;
+        centroidX -= deltaX / currentScale;
+        centroidY += deltaY / currentScale;
+        drawData(points, selectedHole);
+    } else if (event.touches.length === 2) {
+        event.preventDefault();
 
-		deltaX = event.touches[0].clientX - event.touches[1].clientX;
-		deltaY = event.touches[0].clientY - event.touches[1].clientY;
-		const currentPinchDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        deltaX = event.touches[0].clientX - event.touches[1].clientX;
+        deltaY = event.touches[0].clientY - event.touches[1].clientY;
+        const currentPinchDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-		if (initialPinchDistance === null) {
-			initialPinchDistance = currentPinchDistance;
-		} else {
-			const pinchDelta = currentPinchDistance - initialPinchDistance;
-			currentScale = initialScale + pinchDelta * 0.05;
-			currentScale = Math.max(currentScale, 0.000001);
-			currentFontSize = initialFontSize * (currentScale / initialScale);
+        if (initialPinchDistance === null) {
+            initialPinchDistance = currentPinchDistance;
+        } else {
+            const pinchDelta = currentPinchDistance - initialPinchDistance;
+            currentScale = initialScale + pinchDelta * 0.05;
+            currentScale = Math.max(currentScale, 0.000001);
+            currentFontSize = initialFontSize * (currentScale / initialScale);
 
-			drawData(points, selectedHole);
-		}
-	}
+            drawData(points, selectedHole);
+        }
+    }
 }
 
 let sessionLoadCount = 0;
 let blastNameValue = "BlastName" + sessionLoadCount;
 
 async function handleFileUpload(event) {
-	const file = event.target.files[0];
-	if (!file) {
-		return; // Exit the function if file selection is canceled
-	}
+    const file = event.target.files[0];
+    if (!file) {
+        return; // Exit the function if file selection is canceled
+    }
 
-	const reader = new FileReader();
+    const reader = new FileReader();
 
-	reader.onload = async function (event) {
-		const data = event.target.result;
-		// Check if the file is a KAD file
-		if (file.name.endsWith(".kad") || file.name.endsWith(".KAD") || file.name.endsWith(".txt") || file.name.endsWith(".TXT")) {
-			//try {
-			parseKADFile(data);
-			drawData(points, selectedHole);
-		} else if (file.name.endsWith(".csv") || file.name.endsWith(".CSV")) {
-			// Handle CSV file parsing
-			let correctColumnNumbers = false;
-			const lines = data.split("\n");
-			for (let i = 0; i < lines.length; i++) {
-				const values = lines[i].split(",");
-				if (values.length === 14) {
-					correctColumnNumbers = true; // CSV has 14 values, no need to ask for blast name
-				}
-			}
-			if (correctColumnNumbers) {
-				// If the CSV file has 14 values per row, no need to ask for a blast name
-				blastNameValue = "";
-			} else {
-				// If not, ask the user for a blast name
-				result = await editBlastNamePopupAsync();
-				blastNameValue = result;
-				console.log("Async handle - blastNameValue: ", blastNameValue);
-			}
-			try {
-				// Ensure blastNameValue is set before calling parseCSV
-				points = parseCSV(data, blastNameValue);
-			} catch (error) {
-				console.log("Error: ", error);
-				throw error;
-			}
+    reader.onload = async function (event) {
+        const data = event.target.result;
+        // Check if the file is a KAD file
+        if (file.name.endsWith(".kad") || file.name.endsWith(".KAD") || file.name.endsWith(".txt") || file.name.endsWith(".TXT")) {
+            //try {
+            parseKADFile(data);
+            drawData(points, selectedHole);
+        } else if (file.name.endsWith(".csv") || file.name.endsWith(".CSV")) {
+            // Handle CSV file parsing
+            let correctColumnNumbers = false;
+            const lines = data.split("\n");
+            for (let i = 0; i < lines.length; i++) {
+                const values = lines[i].split(",");
+                if (values.length === 14) {
+                    correctColumnNumbers = true; // CSV has 14 values, no need to ask for blast name
+                }
+            }
+            if (correctColumnNumbers) {
+                // If the CSV file has 14 values per row, no need to ask for a blast name
+                blastNameValue = "";
+            } else {
+                // If not, ask the user for a blast name
+                result = await editBlastNamePopupAsync();
+                blastNameValue = result;
+                console.log("Async handle - blastNameValue: ", blastNameValue);
+            }
+            try {
+                // Ensure blastNameValue is set before calling parseCSV
+                points = parseCSV(data, blastNameValue);
+            } catch (error) {
+                console.log("Error: ", error);
+                throw error;
+            }
 
-			let sumX = 0;
-			let sumY = 0;
-			for (let i = 0; i < points.length; i++) {
-				sumX += points[i].startXLocation;
-				sumY += points[i].startYLocation;
-			}
+            let sumX = 0;
+            let sumY = 0;
+            for (let i = 0; i < points.length; i++) {
+                sumX += points[i].startXLocation;
+                sumY += points[i].startYLocation;
+            }
 
-			centroidX = sumX / points.length;
-			centroidY = sumY / points.length;
-			try {
-				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            centroidX = sumX / points.length;
+            centroidY = sumY / points.length;
+            try {
+                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-				// directionArrows now contains the arrow data for later drawing
+                // directionArrows now contains the arrow data for later drawing
 
-				const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-				drawData(points, selectedHole);
-				countPoints = points.length;
-			} catch (error) {
-				fileFormatPopup(error);
-			}
-		}
-	};
-	reader.readAsText(file);
+                const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+                drawData(points, selectedHole);
+                countPoints = points.length;
+            } catch (error) {
+                fileFormatPopup(error);
+            }
+        }
+    };
+    reader.readAsText(file);
 }
 
 function parseCSV(data, blastNameValue) {
-	if (!points || !Array.isArray(points)) points = [];
-	sessionLoadCount += 1;
-	const lines = data.split("\n");
-	let minX = Infinity;
-	let minY = Infinity;
-	const entityName = blastNameValue;
-	const entityType = "hole";
+    if (!points || !Array.isArray(points)) points = [];
+    sessionLoadCount += 1;
+    const lines = data.split("\n");
+    let minX = Infinity;
+    let minY = Infinity;
+    const entityName = blastNameValue;
+    const entityType = "hole";
 
-	for (let i = 0; i < lines.length; i++) {
-		const values = lines[i].split(",");
+    for (let i = 0; i < lines.length; i++) {
+        const values = lines[i].split(",");
 
-		if (values.length > 20) {
-			continue;
-		}
+        if (values.length > 20) {
+            continue;
+        }
 
-		if (values.length === 20) {
-			// check if it has the correct number of values
-			const entityName = values[0];
-			const entityType = "hole";
-			const holeID = values[2]; //Id of the blast hole
-			const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-			const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-			const holeType = values[10]; //type of the blast hole
-			const fromHoleID = values[11]; //from hole where the connector tail will be
-			const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-			const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-			// Parse optional fields
-			const measuredLength = values.length > 14 ? parseFloat(values[14]) : 0;
-			const measuredLengthTimeStamp = values.length > 15 ? values[15] : "09/05/1975 00:00:00";
-			const measuredMass = values.length > 16 ? parseFloat(values[16]) : 0;
-			const measuredMassTimeStamp = values.length > 17 ? values[17] : "09/05/1975 00:00:00";
-			const measuredComment = values.length > 18 ? values[18] : "None";
-			const measuredCommentTimeStamp = values.length > 19 ? values[19] : "09/05/1975 00:00:00";
+        if (values.length === 20) {
+            // check if it has the correct number of values
+            const entityName = values[0];
+            const entityType = "hole";
+            const holeID = values[2]; //Id of the blast hole
+            const startXLocation = parseFloat(values[3]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[6]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
+            const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
+            const holeType = values[10]; //type of the blast hole
+            const fromHoleID = values[11]; //from hole where the connector tail will be
+            const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
+            const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+            // Parse optional fields
+            const measuredLength = values.length > 14 ? parseFloat(values[14]) : 0;
+            const measuredLengthTimeStamp = values.length > 15 ? values[15] : "09/05/1975 00:00:00";
+            const measuredMass = values.length > 16 ? parseFloat(values[16]) : 0;
+            const measuredMassTimeStamp = values.length > 17 ? values[17] : "09/05/1975 00:00:00";
+            const measuredComment = values.length > 18 ? values[18] : "None";
+            const measuredCommentTimeStamp = values.length > 19 ? values[19] : "09/05/1975 00:00:00";
 
-			const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-			const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("X",deltaXAmount);
-			const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Y",deltaYAmount);
-			const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Z",deltaZAmount);
-			const verticalObject = {
-				x: 0,
-				y: 0,
-				z: 1
-			};
-			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("X",deltaXAmount);
+            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Y",deltaYAmount);
+            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Z",deltaZAmount);
+            const verticalObject = {
+                x: 0,
+                y: 0,
+                z: 1
+            };
+            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
 
-			const epsilon = 1e-10; // A small value to prevent division by zero
-			const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-			const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+            const epsilon = 1e-10; // A small value to prevent division by zero
+            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
 
-			const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
 
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-		} else if (values.length === 14) {
-			// check if it has the correct number of values
-			const entityName = values[0];
-			const entityType = "hole";
-			const holeID = values[2]; //Id of the blast hole
-			const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-			const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-			const holeType = values[10]; //type of the blast hole
-			const fromHoleID = values[11]; //from hole where the connector tail will be
-			const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-			const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-			const measuredLength = 0;
-			const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-			const measuredMass = 0;
-			const measuredMassTimeStamp = "09/05/1975 00:00:00";
-			const measuredComment = "None";
-			const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-			const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-			const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("X",deltaXAmount);
-			const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Y",deltaYAmount);
-			const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Z",deltaZAmount);
-			const verticalObject = {
-				x: 0,
-				y: 0,
-				z: 1
-			};
-			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+        } else if (values.length === 14) {
+            // check if it has the correct number of values
+            const entityName = values[0];
+            const entityType = "hole";
+            const holeID = values[2]; //Id of the blast hole
+            const startXLocation = parseFloat(values[3]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[6]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
+            const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
+            const holeType = values[10]; //type of the blast hole
+            const fromHoleID = values[11]; //from hole where the connector tail will be
+            const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
+            const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+            const measuredLength = 0;
+            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+            const measuredMass = 0;
+            const measuredMassTimeStamp = "09/05/1975 00:00:00";
+            const measuredComment = "None";
+            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("X",deltaXAmount);
+            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Y",deltaYAmount);
+            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Z",deltaZAmount);
+            const verticalObject = {
+                x: 0,
+                y: 0,
+                z: 1
+            };
+            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
 
-			const epsilon = 1e-10; // A small value to prevent division by zero
-			const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-			const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+            const epsilon = 1e-10; // A small value to prevent division by zero
+            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
 
-			const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
 
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-		} else if (values.length === 12) {
-			// Skip empty lines and lines with fewer than 12 values
-			if (values.length < 12) {
-				continue;
-			}
-			//files with id, x, y, z, x, y, z, diameter, type, fromHoleID, delay, colour
-			// check if it has the correct number of values
-			const entityName = blastNameValue;
-			const holeID = values[0]; //Id of the blast hole
-			const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-			const holeDiameter = parseFloat(values[7]); //diameter of the blast hole
-			const holeType = values[8]; //type of the blast hole
-			const fromHoleID = values[9].includes(":::") ? values[9] : `${blastNameValue}:::${values[9]}`;
-			//from hole where the connector tail will be
-			const timingDelayMilliseconds = parseInt(values[10]); //delay from hole to Id of the blast
-			const colourHexDecimal = values[11].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-			const measuredLength = 0;
-			const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-			const measuredMass = 0;
-			const measuredMassTimeStamp = "09/05/1975 00:00:00";
-			const measuredComment = "None";
-			const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-			const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-			const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("X",deltaXAmount);
-			const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Y",deltaYAmount);
-			const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-			//console.log("Z",deltaZAmount);
-			const verticalObject = {
-				x: 0,
-				y: 0,
-				z: 1
-			};
-			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-			const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+        } else if (values.length === 12) {
+            // Skip empty lines and lines with fewer than 12 values
+            if (values.length < 12) {
+                continue;
+            }
+            //files with id, x, y, z, x, y, z, diameter, type, fromHoleID, delay, colour
+            // check if it has the correct number of values
+            const entityName = blastNameValue;
+            const holeID = values[0]; //Id of the blast hole
+            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+            const holeDiameter = parseFloat(values[7]); //diameter of the blast hole
+            const holeType = values[8]; //type of the blast hole
+            const fromHoleID = values[9].includes(":::") ? values[9] : `${blastNameValue}:::${values[9]}`;
+            //from hole where the connector tail will be
+            const timingDelayMilliseconds = parseInt(values[10]); //delay from hole to Id of the blast
+            const colourHexDecimal = values[11].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+            const measuredLength = 0;
+            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+            const measuredMass = 0;
+            const measuredMassTimeStamp = "09/05/1975 00:00:00";
+            const measuredComment = "None";
+            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("X",deltaXAmount);
+            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Y",deltaYAmount);
+            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+            //console.log("Z",deltaZAmount);
+            const verticalObject = {
+                x: 0,
+                y: 0,
+                z: 1
+            };
+            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
 
-			const epsilon = 1e-10; // A small value to prevent division by zero
-			const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-			const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+            const epsilon = 1e-10; // A small value to prevent division by zero
+            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
 
-			const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
 
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-			////console.log(points);
-		} else if (values.length === 9) {
-			// Skip empty lines and lines with fewer than 9 values
-			if (values.length < 9) {
-				continue;
-			}
-			//files with id, x, y, z, x, y, z, diameter, type
-			// check if it has the correct number of values
-			const entityName = blastNameValue;
-			const holeID = values[0];
-			const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-			const holeDiameter = parseFloat(values[7]);
-			const holeType = values[8];
-			const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-			const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-			const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-			const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-			const verticalObject = {
-				x: 0,
-				y: 0,
-				z: 1
-			};
-			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-			const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-			const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-			const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-			const fromHoleID = `${blastNameValue}:::${values[0]}`;
-			const timingDelayMilliseconds = 0;
-			const colourHexDecimal = "red";
-			const measuredLength = 0;
-			const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-			const measuredMass = 0;
-			const measuredMassTimeStamp = "09/05/1975 00:00:00";
-			const measuredComment = "None";
-			const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-		} else if (values.length === 7) {
-			//files with id, x, y, z, x, y, z
-			// check if it has the correct number of values
-			const entityName = blastNameValue;
-			const holeID = values[0];
-			const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-			const holeDiameter = 0;
-			const holeType = "Undefined";
-			const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-			const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-			const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-			const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-			const verticalObject = {
-				x: 0,
-				y: 0,
-				z: 1
-			};
-			const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-			const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-			const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-			const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-			const fromHoleID = `${blastNameValue}:::${values[0]}`;
-			console.log("blastNameValue:", blastNameValue);
-			console.log("values[0]:", values[0]);
-			console.log("fromHoleID:", fromHoleID);
-			const timingDelayMilliseconds = 0;
-			const colourHexDecimal = "red";
-			const measuredLength = 0;
-			const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-			const measuredMass = 0;
-			const measuredMassTimeStamp = "09/05/1975 00:00:00";
-			const measuredComment = "None";
-			const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-		}
-		if (values.length === 4) {
-			//files with id, x, y, z
-			// check if it has the correct number of values
-			const entityName = blastNameValue;
-			const holeID = values[0];
-			const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-			const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-			const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-			const endXLocation = parseFloat(values[1]); //end of the blast hole X value
-			const endYLocation = parseFloat(values[2]); //end of the blast hole Y value
-			const endZLocation = parseFloat(values[3]); //end of the blast hole Z value
-			const holeDiameter = 0;
-			const holeType = "Undefined";
-			const holeLengthCalculated = 0;
-			const holeAngle = 0;
-			const holeBearing = 0;
-			const fromHoleID = `${blastNameValue}:::${values[0]}`;
-			const timingDelayMilliseconds = 0;
-			const colourHexDecimal = "red";
-			const measuredLength = 0;
-			const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-			const measuredMass = 0;
-			const measuredMassTimeStamp = "09/05/1975 00:00:00";
-			const measuredComment = "None";
-			const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-			if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation)) {
-				// check if they are valid numbers
-				points.push({
-					entityName,
-					entityType,
-					holeID,
-					startXLocation,
-					startYLocation,
-					startZLocation,
-					endXLocation,
-					endYLocation,
-					endZLocation,
-					holeDiameter,
-					holeType,
-					fromHoleID,
-					timingDelayMilliseconds,
-					colourHexDecimal,
-					holeLengthCalculated,
-					holeAngle,
-					holeBearing,
-					measuredLength,
-					measuredLengthTimeStamp,
-					measuredMass,
-					measuredMassTimeStamp,
-					measuredComment,
-					measuredCommentTimeStamp
-				});
-				minX = Math.min(minX, startXLocation);
-				minY = Math.min(minY, startYLocation);
-			}
-			//} else if (localStorage.getItem("kirraDataPoints") !== null) {
-			//return points;
-		}
-	}
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+            ////console.log(points);
+        } else if (values.length === 9) {
+            // Skip empty lines and lines with fewer than 9 values
+            if (values.length < 9) {
+                continue;
+            }
+            //files with id, x, y, z, x, y, z, diameter, type
+            // check if it has the correct number of values
+            const entityName = blastNameValue;
+            const holeID = values[0];
+            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+            const holeDiameter = parseFloat(values[7]);
+            const holeType = values[8];
+            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+            const verticalObject = {
+                x: 0,
+                y: 0,
+                z: 1
+            };
+            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
+            const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
+            const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
+            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+            const fromHoleID = `${blastNameValue}:::${values[0]}`;
+            const timingDelayMilliseconds = 0;
+            const colourHexDecimal = "red";
+            const measuredLength = 0;
+            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+            const measuredMass = 0;
+            const measuredMassTimeStamp = "09/05/1975 00:00:00";
+            const measuredComment = "None";
+            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+        } else if (values.length === 7) {
+            //files with id, x, y, z, x, y, z
+            // check if it has the correct number of values
+            const entityName = blastNameValue;
+            const holeID = values[0];
+            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+            const holeDiameter = 0;
+            const holeType = "Undefined";
+            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+            const verticalObject = {
+                x: 0,
+                y: 0,
+                z: 1
+            };
+            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
+            const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
+            const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
+            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+            const fromHoleID = `${blastNameValue}:::${values[0]}`;
+            console.log("blastNameValue:", blastNameValue);
+            console.log("values[0]:", values[0]);
+            console.log("fromHoleID:", fromHoleID);
+            const timingDelayMilliseconds = 0;
+            const colourHexDecimal = "red";
+            const measuredLength = 0;
+            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+            const measuredMass = 0;
+            const measuredMassTimeStamp = "09/05/1975 00:00:00";
+            const measuredComment = "None";
+            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+        }
+        if (values.length === 4) {
+            //files with id, x, y, z
+            // check if it has the correct number of values
+            const entityName = blastNameValue;
+            const holeID = values[0];
+            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+            const endXLocation = parseFloat(values[1]); //end of the blast hole X value
+            const endYLocation = parseFloat(values[2]); //end of the blast hole Y value
+            const endZLocation = parseFloat(values[3]); //end of the blast hole Z value
+            const holeDiameter = 0;
+            const holeType = "Undefined";
+            const holeLengthCalculated = 0;
+            const holeAngle = 0;
+            const holeBearing = 0;
+            const fromHoleID = `${blastNameValue}:::${values[0]}`;
+            const timingDelayMilliseconds = 0;
+            const colourHexDecimal = "red";
+            const measuredLength = 0;
+            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+            const measuredMass = 0;
+            const measuredMassTimeStamp = "09/05/1975 00:00:00";
+            const measuredComment = "None";
+            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation)) {
+                // check if they are valid numbers
+                points.push({
+                    entityName,
+                    entityType,
+                    holeID,
+                    startXLocation,
+                    startYLocation,
+                    startZLocation,
+                    endXLocation,
+                    endYLocation,
+                    endZLocation,
+                    holeDiameter,
+                    holeType,
+                    fromHoleID,
+                    timingDelayMilliseconds,
+                    colourHexDecimal,
+                    holeLengthCalculated,
+                    holeAngle,
+                    holeBearing,
+                    measuredLength,
+                    measuredLengthTimeStamp,
+                    measuredMass,
+                    measuredMassTimeStamp,
+                    measuredComment,
+                    measuredCommentTimeStamp
+                });
+                minX = Math.min(minX, startXLocation);
+                minY = Math.min(minY, startYLocation);
+            }
+            //} else if (localStorage.getItem("kirraDataPoints") !== null) {
+            //return points;
+        }
+    }
 
-	calculateTimes(points);
-	drawData(points, selectedHole);
-	return points;
+    calculateTimes(points);
+    drawData(points, selectedHole);
+    return points;
 }
 
 async function handleDXFUpload(event) {
-	const file = event.target.files[0];
-	if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-	const reader = new FileReader();
-	reader.onload = function (e) {
-		const dxfContent = e.target.result;
-		try {
-			const parser = new DxfParser();
-			const dxf = parser.parseSync(dxfContent);
-			parseDXFtoKadMaps(dxf);
-		} catch (error) {
-			console.error("DXF parsing failed:", error);
-			alert("Error parsing DXF file.");
-		}
-	};
-	reader.readAsText(file);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const dxfContent = e.target.result;
+        try {
+            const parser = new DxfParser();
+            const dxf = parser.parseSync(dxfContent);
+            parseDXFtoKadMaps(dxf);
+        } catch (error) {
+            console.error("DXF parsing failed:", error);
+            alert("Error parsing DXF file.");
+        }
+    };
+    reader.readAsText(file);
 }
 
 function parseDXFtoKadMaps(dxf) {
-	// 1) seed counters so we never collide with existing entries
-	var counts = {
-		point: kadPointsMap.size,
-		line: kadLinesMap.size,
-		poly: kadPolygonsMap.size,
-		circle: kadCirclesMap.size,
-		text: kadTextsMap.size
-	};
+    // 1) seed counters so we never collide with existing entries
+    var counts = {
+        point: kadPointsMap.size,
+        line: kadLinesMap.size,
+        poly: kadPolygonsMap.size,
+        circle: kadCirclesMap.size,
+        text: kadTextsMap.size
+    };
 
-	// 2) kirra.js centroid offsets
-	var offsetX = 0; //centroidX || 0;
-	var offsetY = 0; //centroidY || 0;
+    // 2) kirra.js centroid offsets
+    var offsetX = 0; //centroidX || 0;
+    var offsetY = 0; //centroidY || 0;
 
-	// 3) raw DXF colour or bright-red fallback, but return as "#RRGGBB"
-	function getColor(idx) {
-		// pick the DXF colour (decimal) or default grey
-		var dec = idx != null && idx >= 0 ? idx : 0x777777;
-		// convert to hex, pad to 6 digits, uppercase if you like
-		var hex = dec.toString(16).padStart(6, "0").toUpperCase();
-		return "#" + hex;
-	}
+    // 3) raw DXF colour or bright-red fallback, but return as "#RRGGBB"
+    function getColor(idx) {
+        // pick the DXF colour (decimal) or default grey
+        var dec = idx != null && idx >= 0 ? idx : 0x777777;
+        // convert to hex, pad to 6 digits, uppercase if you like
+        var hex = dec.toString(16).padStart(6, "0").toUpperCase();
+        return "#" + hex;
+    }
 
-	// 4) iterate over every entity
-	dxf.entities.forEach(function (ent) {
-		var t = ent.type.toUpperCase();
-		var color = getColor(ent.color);
-		// console.log("Entity type:", t, "\nEntity name:", ent.name, "\nColor:", color, "\n\n");
+    // 4) iterate over every entity
+    dxf.entities.forEach(function (ent) {
+        var t = ent.type.toUpperCase();
+        var color = getColor(ent.color);
+        // console.log("Entity type:", t, "\nEntity name:", ent.name, "\nColor:", color, "\n\n");
 
-		// POINT or VERTEX
-		if (t === "POINT" || t === "VERTEX") {
-			var x = (ent.position && ent.position.x != null ? ent.position.x : ent.x) - offsetX;
-			var y = (ent.position && ent.position.y != null ? ent.position.y : ent.y) - offsetY;
-			var z = (ent.position && ent.position.z != null ? ent.position.z : ent.z) || 0;
-			if (x == null || y == null) {
-				console.warn("POINT/VERTEX missing coords:", ent);
-			} else {
-				var name = ent.name || "pointEntity_" + ++counts.point;
-				kadPointsMap.set(name, {
-					name: name,
-					entityType: "point",
-					data: [
-						{
-							entityName: name,
-							entityType: "point",
-							pointID: 1,
-							pointXLocation: x,
-							pointYLocation: y,
-							pointZLocation: z,
-							colour: color
-						}
-					]
-				});
-			}
-		}
-		// INSERT → single point
-		else if (t === "INSERT") {
-			if (!ent.position) {
-				console.warn("INSERT missing position:", ent);
-			} else {
-				var xi = ent.position.x - offsetX;
-				var yi = ent.position.y - offsetY;
-				var zi = ent.position.z || 0;
-				var nameI = ent.name || "pointEntity_" + ++counts.point;
-				kadPointsMap.set(nameI, {
-					name: nameI,
-					entityType: "point",
-					data: [
-						{
-							entityName: nameI,
-							entityType: "point",
-							pointID: 1,
-							pointXLocation: xi,
-							pointYLocation: yi,
-							pointZLocation: zi,
-							colour: color
-						}
-					]
-				});
-			}
-		}
-		// LINE → always first two vertices
-		else if (t === "LINE") {
-			var v = ent.vertices;
-			if (!v || v.length < 2) {
-				console.warn("LINE missing vertices:", ent);
-			} else {
-				var v0 = v[0],
-					v1 = v[1];
-				var nameL = ent.name || "lineEntity_" + ++counts.line;
-				kadLinesMap.set(nameL, {
-					name: nameL,
-					entityType: "line",
-					data: [
-						{
-							entityName: nameL,
-							entityType: "line",
-							pointID: 1,
-							pointXLocation: v0.x - offsetX,
-							pointYLocation: v0.y - offsetY,
-							pointZLocation: v0.z || 0,
-							pointXTarget: v1.x - offsetX,
-							pointYTarget: v1.y - offsetY,
-							pointZTarget: v1.z || 0,
-							lineWidth: 1,
-							colour: color
-						}
-					]
-				});
-			}
-		}
-		// LWPOLYLINE or POLYLINE → always polygon
-		else if (t === "LWPOLYLINE" || t === "POLYLINE") {
-			var verts = ent.vertices || ent.controlPoints || [];
-			if (!verts.length) {
-				console.warn("POLYLINE missing vertices:", ent);
-			} else {
-				var nameP = ent.name || "polyEntity_" + ++counts.poly;
-				kadPolygonsMap.set(nameP, {
-					name: nameP,
-					entityType: "poly",
-					data: []
-				});
-				var dataP = kadPolygonsMap.get(nameP).data;
-				verts.forEach(function (v, i) {
-					dataP.push({
-						entityName: nameP,
-						entityType: "poly",
-						pointID: i + 1,
-						pointXLocation: v.x - offsetX,
-						pointYLocation: v.y - offsetY,
-						pointZLocation: v.z || 0,
-						lineWidth: 1,
-						colour: color,
-						closed: false
-					});
-				});
-				// close if flagged
-				if (ent.closed || ent.shape) {
-					var v0p = verts[0];
-					dataP.push({
-						entityName: nameP,
-						entityType: "poly",
-						pointID: dataP.length + 1,
-						pointXLocation: v0p.x - offsetX,
-						pointYLocation: v0p.y - offsetY,
-						pointZLocation: v0p.z || 0,
-						lineWidth: 1,
-						colour: color,
-						closed: true
-					});
-				}
-			}
-		}
-		// CIRCLE
-		else if (t === "CIRCLE") {
-			if (!ent.center) {
-				console.warn("CIRCLE missing center:", ent);
-			} else {
-				var nameC = ent.name || "circleEntity_" + ++counts.circle;
-				kadCirclesMap.set(nameC, {
-					name: nameC,
-					entityType: "circle",
-					data: [
-						{
-							entityName: nameC,
-							entityType: "circle",
-							pointID: 1,
-							pointXLocation: ent.center.x - offsetX,
-							pointYLocation: ent.center.y - offsetY,
-							pointZLocation: ent.center.z || 0,
-							radius: ent.radius,
-							lineWidth: 1,
-							colour: color
-						}
-					]
-				});
-			}
-		}
-		// ELLIPSE sampled as closed polygon
-		else if (t === "ELLIPSE") {
-			if (!ent.center) {
-				console.warn("ELLIPSE missing center:", ent);
-			} else {
-				var nameE = ent.name || "polyEntity_" + ++counts.poly;
-				kadPolygonsMap.set(nameE, {
-					name: nameE,
-					entityType: "poly",
-					data: []
-				});
-				var dataE = kadPolygonsMap.get(nameE).data;
-				var segs = 64;
-				for (var i = 0; i < segs; i++) {
-					var ang = ent.startAngle + (ent.endAngle - ent.startAngle) * (i / (segs - 1));
-					var px = ent.center.x + ent.xRadius * Math.cos(ang) - offsetX;
-					var py = ent.center.y + ent.yRadius * Math.sin(ang) - offsetY;
-					var closed = true;
-					dataE.push({
-						entityName: nameE,
-						entityType: "poly",
-						pointID: i + 1,
-						pointXLocation: px,
-						pointYLocation: py,
-						pointZLocation: ent.center.z || 0,
-						lineWidth: 1,
-						colour: color,
-						closed: closed
-					});
-				}
-				// close loop
-				dataE.push(Object.assign({}, dataE[0], { pointID: dataE.length + 1 }));
-			}
-		}
-		// TEXT or MTEXT
-		else if (t === "TEXT" || t === "MTEXT") {
-			var pos = ent.startPoint || ent.position;
-			if (!pos) {
-				console.warn("TEXT missing position:", ent);
-			} else {
-				var nameT = ent.name || "textEntity_" + ++counts.text;
-				kadTextsMap.set(nameT, {
-					name: nameT,
-					entityType: "text",
-					data: [
-						{
-							entityName: nameT,
-							entityType: "text",
-							pointID: 1,
-							pointXLocation: pos.x - offsetX,
-							pointYLocation: pos.y - offsetY,
-							pointZLocation: pos.z || 0,
-							text: ent.text,
-							colour: color
-						}
-					]
-				});
-			}
-		}
-		// anything else → skip
-		else {
-			console.warn("Unsupported DXF entity:", ent.type);
-		}
-	});
+        // POINT or VERTEX
+        if (t === "POINT" || t === "VERTEX") {
+            var x = (ent.position && ent.position.x != null ? ent.position.x : ent.x) - offsetX;
+            var y = (ent.position && ent.position.y != null ? ent.position.y : ent.y) - offsetY;
+            var z = (ent.position && ent.position.z != null ? ent.position.z : ent.z) || 0;
+            if (x == null || y == null) {
+                console.warn("POINT/VERTEX missing coords:", ent);
+            } else {
+                var name = ent.name || "pointEntity_" + ++counts.point;
+                kadPointsMap.set(name, {
+                    name: name,
+                    entityType: "point",
+                    data: [
+                        {
+                            entityName: name,
+                            entityType: "point",
+                            pointID: 1,
+                            pointXLocation: x,
+                            pointYLocation: y,
+                            pointZLocation: z,
+                            colour: color
+                        }
+                    ]
+                });
+            }
+        }
+        // INSERT → single point
+        else if (t === "INSERT") {
+            if (!ent.position) {
+                console.warn("INSERT missing position:", ent);
+            } else {
+                var xi = ent.position.x - offsetX;
+                var yi = ent.position.y - offsetY;
+                var zi = ent.position.z || 0;
+                var nameI = ent.name || "pointEntity_" + ++counts.point;
+                kadPointsMap.set(nameI, {
+                    name: nameI,
+                    entityType: "point",
+                    data: [
+                        {
+                            entityName: nameI,
+                            entityType: "point",
+                            pointID: 1,
+                            pointXLocation: xi,
+                            pointYLocation: yi,
+                            pointZLocation: zi,
+                            colour: color
+                        }
+                    ]
+                });
+            }
+        }
+        // LINE → always first two vertices
+        else if (t === "LINE") {
+            var v = ent.vertices;
+            if (!v || v.length < 2) {
+                console.warn("LINE missing vertices:", ent);
+            } else {
+                var v0 = v[0],
+                    v1 = v[1];
+                var nameL = ent.name || "lineEntity_" + ++counts.line;
+                kadLinesMap.set(nameL, {
+                    name: nameL,
+                    entityType: "line",
+                    data: [
+                        {
+                            entityName: nameL,
+                            entityType: "line",
+                            pointID: 1,
+                            pointXLocation: v0.x - offsetX,
+                            pointYLocation: v0.y - offsetY,
+                            pointZLocation: v0.z || 0,
+                            pointXTarget: v1.x - offsetX,
+                            pointYTarget: v1.y - offsetY,
+                            pointZTarget: v1.z || 0,
+                            lineWidth: 1,
+                            colour: color
+                        }
+                    ]
+                });
+            }
+        }
+        // LWPOLYLINE or POLYLINE → always polygon
+        else if (t === "LWPOLYLINE" || t === "POLYLINE") {
+            var verts = ent.vertices || ent.controlPoints || [];
+            if (!verts.length) {
+                console.warn("POLYLINE missing vertices:", ent);
+            } else {
+                var nameP = ent.name || "polyEntity_" + ++counts.poly;
+                kadPolygonsMap.set(nameP, {
+                    name: nameP,
+                    entityType: "poly",
+                    data: []
+                });
+                var dataP = kadPolygonsMap.get(nameP).data;
+                verts.forEach(function (v, i) {
+                    dataP.push({
+                        entityName: nameP,
+                        entityType: "poly",
+                        pointID: i + 1,
+                        pointXLocation: v.x - offsetX,
+                        pointYLocation: v.y - offsetY,
+                        pointZLocation: v.z || 0,
+                        lineWidth: 1,
+                        colour: color,
+                        closed: false
+                    });
+                });
+                // close if flagged
+                if (ent.closed || ent.shape) {
+                    var v0p = verts[0];
+                    dataP.push({
+                        entityName: nameP,
+                        entityType: "poly",
+                        pointID: dataP.length + 1,
+                        pointXLocation: v0p.x - offsetX,
+                        pointYLocation: v0p.y - offsetY,
+                        pointZLocation: v0p.z || 0,
+                        lineWidth: 1,
+                        colour: color,
+                        closed: true
+                    });
+                }
+            }
+        }
+        // CIRCLE
+        else if (t === "CIRCLE") {
+            if (!ent.center) {
+                console.warn("CIRCLE missing center:", ent);
+            } else {
+                var nameC = ent.name || "circleEntity_" + ++counts.circle;
+                kadCirclesMap.set(nameC, {
+                    name: nameC,
+                    entityType: "circle",
+                    data: [
+                        {
+                            entityName: nameC,
+                            entityType: "circle",
+                            pointID: 1,
+                            pointXLocation: ent.center.x - offsetX,
+                            pointYLocation: ent.center.y - offsetY,
+                            pointZLocation: ent.center.z || 0,
+                            radius: ent.radius,
+                            lineWidth: 1,
+                            colour: color
+                        }
+                    ]
+                });
+            }
+        }
+        // ELLIPSE sampled as closed polygon
+        else if (t === "ELLIPSE") {
+            if (!ent.center) {
+                console.warn("ELLIPSE missing center:", ent);
+            } else {
+                var nameE = ent.name || "polyEntity_" + ++counts.poly;
+                kadPolygonsMap.set(nameE, {
+                    name: nameE,
+                    entityType: "poly",
+                    data: []
+                });
+                var dataE = kadPolygonsMap.get(nameE).data;
+                var segs = 64;
+                for (var i = 0; i < segs; i++) {
+                    var ang = ent.startAngle + (ent.endAngle - ent.startAngle) * (i / (segs - 1));
+                    var px = ent.center.x + ent.xRadius * Math.cos(ang) - offsetX;
+                    var py = ent.center.y + ent.yRadius * Math.sin(ang) - offsetY;
+                    var closed = true;
+                    dataE.push({
+                        entityName: nameE,
+                        entityType: "poly",
+                        pointID: i + 1,
+                        pointXLocation: px,
+                        pointYLocation: py,
+                        pointZLocation: ent.center.z || 0,
+                        lineWidth: 1,
+                        colour: color,
+                        closed: closed
+                    });
+                }
+                // close loop
+                dataE.push(Object.assign({}, dataE[0], { pointID: dataE.length + 1 }));
+            }
+        }
+        // TEXT or MTEXT
+        else if (t === "TEXT" || t === "MTEXT") {
+            var pos = ent.startPoint || ent.position;
+            if (!pos) {
+                console.warn("TEXT missing position:", ent);
+            } else {
+                var nameT = ent.name || "textEntity_" + ++counts.text;
+                kadTextsMap.set(nameT, {
+                    name: nameT,
+                    entityType: "text",
+                    data: [
+                        {
+                            entityName: nameT,
+                            entityType: "text",
+                            pointID: 1,
+                            pointXLocation: pos.x - offsetX,
+                            pointYLocation: pos.y - offsetY,
+                            pointZLocation: pos.z || 0,
+                            text: ent.text,
+                            colour: color
+                        }
+                    ]
+                });
+            }
+        }
+        // anything else → skip
+        else {
+            console.warn("Unsupported DXF entity:", ent.type);
+        }
+    });
 
-	console.log("Appended to KAD maps:", {
-		points: kadPointsMap,
-		lines: kadLinesMap,
-		polys: kadPolygonsMap,
-		circles: kadCirclesMap,
-		texts: kadTextsMap
-	});
-	//console.log("DXF parsed successfully");
-	//call drawData and reset the view
-	//drawData();
-	resetZoom();
+    console.log("Appended to KAD maps:", {
+        points: kadPointsMap,
+        lines: kadLinesMap,
+        polys: kadPolygonsMap,
+        circles: kadCirclesMap,
+        texts: kadTextsMap
+    });
+    //console.log("DXF parsed successfully");
+    //call drawData and reset the view
+    //drawData();
+    resetZoom();
 }
 
 async function handleMeasuredUpload(event) {
-	// Measured data format: EntityName,EntityType,PointID,MeasuredLength,MeasuredLengthTimeStamp,MeasuredMass,MeasuredMassTimeStamp,MeasuredComment,MeasuredCommentTimeStamp
+    // Measured data format: EntityName,EntityType,PointID,MeasuredLength,MeasuredLengthTimeStamp,MeasuredMass,MeasuredMassTimeStamp,MeasuredComment,MeasuredCommentTimeStamp
 
-	if (!event.target.files[0].name.endsWith(".csv")) {
-		fileFormatPopup("1");
-		return;
-	}
-	if (points.length === 0) {
-		fileFormatPopup("2");
-		return;
-	}
+    if (!event.target.files[0].name.endsWith(".csv")) {
+        fileFormatPopup("1");
+        return;
+    }
+    if (points.length === 0) {
+        fileFormatPopup("2");
+        return;
+    }
 
-	const file = event.target.files[0];
-	if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
 
-	const reader = new FileReader();
-	reader.onload = function (e) {
-		const fileContent = e.target.result;
-		const lines = fileContent.split("\n").filter((line) => line.trim().length > 0);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const fileContent = e.target.result;
+        const lines = fileContent.split("\n").filter((line) => line.trim().length > 0);
 
-		// Skip header if present
-		const header = lines[0].toLowerCase();
-		const startIndex = header.includes("entityname") ? 1 : 0;
+        // Skip header if present
+        const header = lines[0].toLowerCase();
+        const startIndex = header.includes("entityname") ? 1 : 0;
 
-		for (let i = startIndex; i < lines.length; i++) {
-			const cols = lines[i].split(",");
-			if (cols.length < 9) continue; // Skip malformed lines
+        for (let i = startIndex; i < lines.length; i++) {
+            const cols = lines[i].split(",");
+            if (cols.length < 9) continue; // Skip malformed lines
 
-			const entityName = cols[0].trim();
-			const holeID = cols[2].trim();
+            const entityName = cols[0].trim();
+            const holeID = cols[2].trim();
 
-			// Find matching point
-			const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
-			if (point) {
-				point.measuredLength = parseFloat(cols[3]) || 0;
-				point.measuredLengthTimeStamp = cols[4].trim() || "09/05/1975 00:00:00";
-				point.measuredMass = parseFloat(cols[5]) || 0;
-				point.measuredMassTimeStamp = cols[6].trim() || "09/05/1975 00:00:00";
-				point.measuredComment = cols[7].trim();
-				point.measuredCommentTimeStamp = cols[8].trim() || "09/05/1975 00:00:00";
-			}
-		}
+            // Find matching point
+            const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
+            if (point) {
+                point.measuredLength = parseFloat(cols[3]) || 0;
+                point.measuredLengthTimeStamp = cols[4].trim() || "09/05/1975 00:00:00";
+                point.measuredMass = parseFloat(cols[5]) || 0;
+                point.measuredMassTimeStamp = cols[6].trim() || "09/05/1975 00:00:00";
+                point.measuredComment = cols[7].trim();
+                point.measuredCommentTimeStamp = cols[8].trim() || "09/05/1975 00:00:00";
+            }
+        }
 
-		drawData(points, selectedHole); // Redraw to reflect updated values
-	};
+        drawData(points, selectedHole); // Redraw to reflect updated values
+    };
 
-	reader.readAsText(file);
+    reader.readAsText(file);
 }
 
 function fileFormatPopup(error) {
-	console.log("File format error");
-	Swal.fire({
-		title: `Error ${error}`,
-		showCancelButton: false,
-		confirmButtonText: "Ok",
-		icon: "error",
-		html: `
+    console.log("File format error");
+    Swal.fire({
+        title: `Error ${error}`,
+        showCancelButton: false,
+        confirmButtonText: "Ok",
+        icon: "error",
+        html: `
 		  <label class="labelWhite18">This could be related to the data structure or file.</label><br>
 		  <label class="labelWhite18">Or there are NO blasts or Holes yet, if so ignore.</label><br>
 		  <label class="labelWhite18">Only files with 4, 7, 9, and 14 columns are Accepted</label><br>
 		  <label class="labelWhite12">Column Order and Types are important.</label><br>
 		  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			//console.log("Confirmed");
-			return; // Exit the function
-		}
-	});
-	return; // Exit the function
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            //console.log("Confirmed");
+            return; // Exit the function
+        }
+    });
+    return; // Exit the function
 }
 // Create a Map for each entity type to store entities by name
 const kadHolesMap = new Map();
@@ -3097,297 +3097,341 @@ const kadCirclesMap = new Map();
 const kadTextsMap = new Map();
 
 function parseKADFile(fileData) {
-	const dataLines = fileData.split("\n");
-	let minX = Infinity;
-	let minY = Infinity;
-	let pointID, pointXLocation, pointYLocation, pointZLocation, text, radius, colour, closed;
+    const dataLines = fileData.split("\n");
+    let minX = Infinity;
+    let minY = Infinity;
+    let pointID, pointXLocation, pointYLocation, pointZLocation, text, radius, colour, closed;
 
-	// Parse the kad file data
-	for (let i = 0; i < dataLines.length; i++) {
-		const row = dataLines[i].split(",");
-		const entityName = row[0];
-		const entityType = row[1];
+    // Parse the kad file data
+    for (let i = 0; i < dataLines.length; i++) {
+        const row = dataLines[i].split(",");
+        const entityName = row[0];
+        const entityType = row[1];
 
-		// Parsing logic for different entity types
-		switch (entityType) {
-			case "point":
-				// Create an empty entity object if it doesn't exist
-				if (!kadPointsMap.has(entityName)) {
-					kadPointsMap.set(entityName, {
-						entityName: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				colour = row[6].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
-				kadPointsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					colour: colour
-				});
-				break;
-			case "poly":
-				// Create an empty entity object if it doesn't exist
-				if (!kadPolygonsMap.has(entityName)) {
-					kadPolygonsMap.set(entityName, {
-						entityName: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				lineWidth = parseFloat(row[6]); // Width of the line
-				colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
-				closed = String(row[8]).trim().toLowerCase() === "true";
-				kadPolygonsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					lineWidth: lineWidth,
-					colour: colour,
-					closed: closed
-				});
-				break;
-			case "line":
-				// Create an empty entity object if it doesn't exist
-				if (!kadLinesMap.has(entityName)) {
-					kadLinesMap.set(entityName, {
-						name: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				lineWidth = parseFloat(row[6]); // Width of the line
-				colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
-				kadLinesMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					lineWidth: lineWidth,
-					colour: colour
-				});
-				break;
-			case "circle":
-				// Create an empty entity object if it doesn't exist
-				if (!kadCirclesMap.has(entityName)) {
-					kadCirclesMap.set(entityName, {
-						name: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				radius = parseFloat(row[6]); // Radius of the circle
-				lineWidth = parseFloat(row[7]); // Width of the line
-				colour = row[8].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
-				kadCirclesMap.get(entityName).data.push({
-					name: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					radius: radius,
-					lineWidth: lineWidth,
-					colour: colour
-				});
-				break;
-			case "text":
-				// Create an empty entity object if it doesn't exist
-				if (!kadTextsMap.has(entityName)) {
-					kadTextsMap.set(entityName, {
-						name: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				text = row[6]; // Text Value
-				colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
-				kadTextsMap.get(entityName).data.push({
-					name: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					text: text,
-					colour: colour
-				});
-				break;
-			default:
-				break;
-		}
-	}
-	//Get all the map X and Y coordinates from all the kadPointsMap, kadLineMap, kadPolygonsMap, kadCirclesMap, kadHolesMap and kadTextsMap data and then calculate the centroidX and centroidY
-	let sumX = 0;
-	let sumY = 0;
-	let count = 0;
-	for (let [key, value] of kadPointsMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
-		}
-	}
-	for (let [key, value] of kadLinesMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
-		}
-	}
-	for (let [key, value] of kadPolygonsMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
-		}
-	}
-	for (let [key, value] of kadCirclesMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
-		}
-	}
-	//KAD Holes NOT USED
-	//for (let [key, value] of kadHolesMap) {
-	//	for (let i = 0; i < value.data.length; i++) {
-	//		sumX += value.data[i].startXLocation;
-	//		sumY += value.data[i].startYLocation;
-	//		count++;
-	//	}
-	//}
-	for (let [key, value] of kadTextsMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
-		}
-	}
-	centroidX = sumX / count;
-	centroidY = sumY / count;
+        // Parsing logic for different entity types
+        switch (entityType) {
+            case "point":
+                // Create an empty entity object if it doesn't exist
+                if (!kadPointsMap.has(entityName)) {
+                    kadPointsMap.set(entityName, {
+                        entityName: entityName, // Store the entityName
+                        entityType: entityType,
+                        data: []
+                    });
+                }
+                pointID = row[2]; // Id of the point
+                pointXLocation = parseFloat(row[3]); // X value of the point
+                pointYLocation = parseFloat(row[4]); // Y value of the point
+                pointZLocation = parseFloat(row[5]); // Z value of the point
+                colour = row[6].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+                kadPointsMap.get(entityName).data.push({
+                    entityName: entityName,
+                    entityType: entityType,
+                    pointID: pointID,
+                    pointXLocation: pointXLocation,
+                    pointYLocation: pointYLocation,
+                    pointZLocation: pointZLocation,
+                    colour: colour
+                });
+                break;
+            case "poly":
+                // Create an empty entity object if it doesn't exist
+                if (!kadPolygonsMap.has(entityName)) {
+                    kadPolygonsMap.set(entityName, {
+                        entityName: entityName, // Store the entityName
+                        entityType: entityType,
+                        data: []
+                    });
+                }
+                pointID = row[2]; // Id of the point
+                pointXLocation = parseFloat(row[3]); // X value of the point
+                pointYLocation = parseFloat(row[4]); // Y value of the point
+                pointZLocation = parseFloat(row[5]); // Z value of the point
+                lineWidth = parseFloat(row[6]); // Width of the line
+                colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+                closed = String(row[8]).trim().toLowerCase() === "true";
+                kadPolygonsMap.get(entityName).data.push({
+                    entityName: entityName,
+                    entityType: entityType,
+                    pointID: pointID,
+                    pointXLocation: pointXLocation,
+                    pointYLocation: pointYLocation,
+                    pointZLocation: pointZLocation,
+                    lineWidth: lineWidth,
+                    colour: colour,
+                    closed: closed
+                });
+                break;
+            case "line":
+                // Create an empty entity object if it doesn't exist
+                if (!kadLinesMap.has(entityName)) {
+                    kadLinesMap.set(entityName, {
+                        name: entityName, // Store the entityName
+                        entityType: entityType,
+                        data: []
+                    });
+                }
+                pointID = row[2]; // Id of the point
+                pointXLocation = parseFloat(row[3]); // X value of the point
+                pointYLocation = parseFloat(row[4]); // Y value of the point
+                pointZLocation = parseFloat(row[5]); // Z value of the point
+                lineWidth = parseFloat(row[6]); // Width of the line
+                colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+                kadLinesMap.get(entityName).data.push({
+                    entityName: entityName,
+                    entityType: entityType,
+                    pointID: pointID,
+                    pointXLocation: pointXLocation,
+                    pointYLocation: pointYLocation,
+                    pointZLocation: pointZLocation,
+                    lineWidth: lineWidth,
+                    colour: colour
+                });
+                break;
+            case "circle":
+                // Create an empty entity object if it doesn't exist
+                if (!kadCirclesMap.has(entityName)) {
+                    kadCirclesMap.set(entityName, {
+                        name: entityName, // Store the entityName
+                        entityType: entityType,
+                        data: []
+                    });
+                }
+                pointID = row[2]; // Id of the point
+                pointXLocation = parseFloat(row[3]); // X value of the point
+                pointYLocation = parseFloat(row[4]); // Y value of the point
+                pointZLocation = parseFloat(row[5]); // Z value of the point
+                radius = parseFloat(row[6]); // Radius of the circle
+                lineWidth = parseFloat(row[7]); // Width of the line
+                colour = row[8].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+                kadCirclesMap.get(entityName).data.push({
+                    name: entityName,
+                    entityType: entityType,
+                    pointID: pointID,
+                    pointXLocation: pointXLocation,
+                    pointYLocation: pointYLocation,
+                    pointZLocation: pointZLocation,
+                    radius: radius,
+                    lineWidth: lineWidth,
+                    colour: colour
+                });
+                break;
+            case "text":
+                // Create an empty entity object if it doesn't exist
+                if (!kadTextsMap.has(entityName)) {
+                    kadTextsMap.set(entityName, {
+                        name: entityName, // Store the entityName
+                        entityType: entityType,
+                        data: []
+                    });
+                }
+                pointID = row[2]; // Id of the point
+                pointXLocation = parseFloat(row[3]); // X value of the point
+                pointYLocation = parseFloat(row[4]); // Y value of the point
+                pointZLocation = parseFloat(row[5]); // Z value of the point
+                text = row[6]; // Text Value
+                colour = row[7].replace(/\r$/, ""); // Colour of the point in HEXDECIMALS
+                kadTextsMap.get(entityName).data.push({
+                    name: entityName,
+                    entityType: entityType,
+                    pointID: pointID,
+                    pointXLocation: pointXLocation,
+                    pointYLocation: pointYLocation,
+                    pointZLocation: pointZLocation,
+                    text: text,
+                    colour: colour
+                });
+                break;
+            default:
+                break;
+        }
+    }
+    //Get all the map X and Y coordinates from all the kadPointsMap, kadLineMap, kadPolygonsMap, kadCirclesMap, kadHolesMap and kadTextsMap data and then calculate the centroidX and centroidY
+    let sumX = 0;
+    let sumY = 0;
+    let count = 0;
+    for (let [key, value] of kadPointsMap) {
+        for (let i = 0; i < value.data.length; i++) {
+            sumX += value.data[i].pointXLocation;
+            sumY += value.data[i].pointYLocation;
+            count++;
+        }
+    }
+    for (let [key, value] of kadLinesMap) {
+        for (let i = 0; i < value.data.length; i++) {
+            sumX += value.data[i].pointXLocation;
+            sumY += value.data[i].pointYLocation;
+            count++;
+        }
+    }
+    for (let [key, value] of kadPolygonsMap) {
+        for (let i = 0; i < value.data.length; i++) {
+            sumX += value.data[i].pointXLocation;
+            sumY += value.data[i].pointYLocation;
+            count++;
+        }
+    }
+    for (let [key, value] of kadCirclesMap) {
+        for (let i = 0; i < value.data.length; i++) {
+            sumX += value.data[i].pointXLocation;
+            sumY += value.data[i].pointYLocation;
+            count++;
+        }
+    }
+    //KAD Holes NOT USED
+    //for (let [key, value] of kadHolesMap) {
+    //	for (let i = 0; i < value.data.length; i++) {
+    //		sumX += value.data[i].startXLocation;
+    //		sumY += value.data[i].startYLocation;
+    //		count++;
+    //	}
+    //}
+    for (let [key, value] of kadTextsMap) {
+        for (let i = 0; i < value.data.length; i++) {
+            sumX += value.data[i].pointXLocation;
+            sumY += value.data[i].pointYLocation;
+            count++;
+        }
+    }
+    centroidX = sumX / count;
+    centroidY = sumY / count;
 
-	console.log(kadPointsMap);
-	console.log(kadLinesMap);
-	console.log(kadPolygonsMap);
-	console.log(kadCirclesMap);
-	//console.log(kadHolesMap);
-	console.log(kadTextsMap);
+    console.log(kadPointsMap);
+    console.log(kadLinesMap);
+    console.log(kadPolygonsMap);
+    console.log(kadCirclesMap);
+    //console.log(kadHolesMap);
+    console.log(kadTextsMap);
 }
 let mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap];
 
 function exportKADFile(mapData) {
-	// Prepare the CSV content for .kad file
-	let csvContentKAD = "";
-	let csvContentTXT = "";
+    // Prepare the CSV content for .kad file
+    let csvContentKAD = "";
+    let csvContentTXT = "";
 
-	for (const map of mapData) {
-		for (const entry of map.entries()) {
-			const entityName = entry[0];
-			//console.log(entityName);
-			const entityData = entry[1];
-			//console.log(entityData);
+    for (const map of mapData) {
+        for (const entry of map.entries()) {
+            const entityName = entry[0];
+            //console.log(entityName);
+            const entityData = entry[1];
+            //console.log(entityData);
 
-			if (entityData.entityType.trim() === "hole") {
-				//commented out to avoid exporting holes
-				//console.log(entityData.entityType);
-				//for (const hole of entityData.data) {
-				//	const csvLine = `${entityName},${hole.entityType},${hole.holeID},${hole.startXLocation},${hole.startYLocation},${hole.startZLocation},${hole.endXLocation},${hole.endYLocation},${hole.endZLocation},${hole.holeDiameter},${hole.holeType},${hole.fromHoleID},${hole.timingDelayMilliseconds},${hole.colourHexDecimal},${hole.holeLengthCalculated},${hole.holeAngle},${hole.holeBearing}\n`;
-				//	csvContentKAD += csvLine;
-				//}
-			} else if (entityData.entityType.trim() === "point") {
-				//console.log(entityData.entityType);
-				for (const point of entityData.data) {
-					const csvLine = `${entityName},${point.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.colour}\n`;
-					csvContentKAD += csvLine;
-					csvContentTXT += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "poly") {
-				//console.log(entityData.entityType);
-				for (let i = 0; i < entityData.data.length; i++) {
-					const polygon = entityData.data[i];
-					const isLast = i === entityData.data.length - 1;
-					const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour},${isLast ? "1" : "0"}\n`;
-					csvContentKAD += csvLine;
-					csvContentTXT += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "line") {
-				//console.log(entityData.entityType);
-				for (const entityLine of entityData.data) {
-					const csvLine = `${entityName},${entityLine.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.colour}\n`;
-					csvContentKAD += csvLine;
-					csvContentTXT += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "circle") {
-				//console.log(entityData.entityType);
-				for (const circle of entityData.data) {
-					const csvLine = `${entityName},${circle.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.colour}\n`;
-					csvContentKAD += csvLine;
-					csvContentTXT += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "text") {
-				//console.log(entityData.entityType);
-				for (const text of entityData.data) {
-					const csvLine = `${entityName},${text.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.colour}\n`;
-					csvContentKAD += csvLine;
-					csvContentTXT += csvLine;
-				}
-			}
-		}
-	}
-	// Create a Blob with the CSV content for .kad file
-	const blobKAD = new Blob([csvContentKAD], {
-		type: "text/csv"
-	});
+            if (entityData.entityType.trim() === "hole") {
+                //commented out to avoid exporting holes
+                //console.log(entityData.entityType);
+                //for (const hole of entityData.data) {
+                //	const csvLine = `${entityName},${hole.entityType},${hole.holeID},${hole.startXLocation},${hole.startYLocation},${hole.startZLocation},${hole.endXLocation},${hole.endYLocation},${hole.endZLocation},${hole.holeDiameter},${hole.holeType},${hole.fromHoleID},${hole.timingDelayMilliseconds},${hole.colourHexDecimal},${hole.holeLengthCalculated},${hole.holeAngle},${hole.holeBearing}\n`;
+                //	csvContentKAD += csvLine;
+                //}
+            } else if (entityData.entityType.trim() === "point") {
+                //console.log(entityData.entityType);
+                for (const point of entityData.data) {
+                    const csvLine = `${entityName},${point.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.colour}\n`;
+                    csvContentKAD += csvLine;
+                    csvContentTXT += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "poly") {
+                //console.log(entityData.entityType);
+                for (let i = 0; i < entityData.data.length; i++) {
+                    const polygon = entityData.data[i];
+                    const isLast = i === entityData.data.length - 1;
+                    const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour},${isLast ? "1" : "0"}\n`;
+                    csvContentKAD += csvLine;
+                    csvContentTXT += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "line") {
+                //console.log(entityData.entityType);
+                for (const entityLine of entityData.data) {
+                    const csvLine = `${entityName},${entityLine.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.colour}\n`;
+                    csvContentKAD += csvLine;
+                    csvContentTXT += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "circle") {
+                //console.log(entityData.entityType);
+                for (const circle of entityData.data) {
+                    const csvLine = `${entityName},${circle.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.colour}\n`;
+                    csvContentKAD += csvLine;
+                    csvContentTXT += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "text") {
+                //console.log(entityData.entityType);
+                for (const text of entityData.data) {
+                    const csvLine = `${entityName},${text.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.colour}\n`;
+                    csvContentKAD += csvLine;
+                    csvContentTXT += csvLine;
+                }
+            }
+        }
+    }
+    // Create a Blob with the CSV content for .kad file
+    const blobKAD = new Blob([csvContentKAD], {
+        type: "text/csv"
+    });
 
-	// Create a Blob with the CSV content for .txt file
-	const blobTXT = new Blob([csvContentTXT], {
-		type: "text/plain"
-	});
+    // Create a Blob with the CSV content for .txt file
+    const blobTXT = new Blob([csvContentTXT], {
+        type: "text/plain"
+    });
 
-	// Create temporary anchor elements to trigger the download for both files
-	const aKAD = document.createElement("a");
-	const aTXT = document.createElement("a");
+    // Create temporary anchor elements to trigger the download for both files
+    const aKAD = document.createElement("a");
+    const aTXT = document.createElement("a");
 
-	// Set the content for the anchor elements
-	aKAD.href = URL.createObjectURL(blobKAD);
-	aKAD.download = "KAD_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".kad";
+    // Set the content for the anchor elements
+    aKAD.href = URL.createObjectURL(blobKAD);
+    aKAD.download = "KAD_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".kad";
 
-	aTXT.href = URL.createObjectURL(blobTXT);
-	aTXT.download = "TXT_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".txt";
+    aTXT.href = URL.createObjectURL(blobTXT);
+    aTXT.download = "TXT_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".txt";
 
-	// Simulate clicks on both anchor elements to trigger the downloads
-	aKAD.click();
-	aTXT.click();
+    // Simulate clicks on both anchor elements to trigger the downloads
+    aKAD.click();
+    aTXT.click();
+}
+
+function getNearestNeighborDistancesByAggregation(points, mode) {
+    // Step 1: Compute nearest neighbor distances for each point
+    const nearestDistances = points.map((pt, idx) => {
+        let minDist = Infinity;
+        for (let j = 0; j < points.length; j++) {
+            if (j === idx) continue;
+            const otherPt = points[j];
+            const dx = otherPt.endXLocation - pt.endXLocation;
+            const dy = otherPt.endYLocation - pt.endYLocation;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < minDist) minDist = dist;
+        }
+        return minDist;
+    });
+    // Step 2: Determine the distance to use based on the mode
+    let chosenDistance;
+    if (mode === "min") {
+        chosenDistance = Math.min(...nearestDistances);
+    } else if (mode === "max") {
+        chosenDistance = Math.max(...nearestDistances);
+    } else if (mode === "average" || mode === "mean") {
+        const sum = nearestDistances.reduce((a, b) => a + b, 0);
+        chosenDistance = sum / nearestDistances.length;
+    } else if (mode === "mode") {
+        // Find the most common value (rounded to nearest cm for stability)
+        const freq = {};
+        let maxFreq = 0,
+            modeValue = nearestDistances[0];
+        nearestDistances.forEach((d) => {
+            const rounded = Math.round(d * 100); // round to cm
+            freq[rounded] = (freq[rounded] || 0) + 1;
+            if (freq[rounded] > maxFreq) {
+                maxFreq = freq[rounded];
+                modeValue = rounded / 100;
+            }
+        });
+        chosenDistance = modeValue;
+    } else {
+        console.warn("Unknown mode for getRadiiBlastHolesPolygon:", mode, "Defaulting to  min.");
+        chosenDistance = Math.min(...nearestDistances);
+    }
+    return chosenDistance;
 }
 
 /**
@@ -3399,149 +3443,110 @@ function exportKADFile(mapData) {
  * @returns {Array} Array of {x, y, z} points representing the unioned polygon.
  */
 function getRadiiBlastHolesPolygon(points, percentDistance, steps, mode = "min") {
-	const scale = 100000; // Clipper uses integers; scale meters to avoid precision loss
+    const scale = 100000; // Clipper uses integers; scale meters to avoid precision loss
 
-	// Step 1: Compute nearest neighbor distances for each point
-	const nearestDistances = points.map((pt, idx) => {
-		let minDist = Infinity;
-		for (let j = 0; j < points.length; j++) {
-			if (j === idx) continue;
-			const otherPt = points[j];
-			const dx = otherPt.endXLocation - pt.endXLocation;
-			const dy = otherPt.endYLocation - pt.endYLocation;
-			const dist = Math.sqrt(dx * dx + dy * dy);
-			if (dist < minDist) minDist = dist;
-		}
-		return minDist;
-	});
+    // Step 2: Use the helper function to determine distance
+    const chosenDistance = getNearestNeighborDistancesByAggregation(points, mode);
 
-	// Step 2: Determine the distance to use based on the mode
-	let chosenDistance;
-	if (mode === "min") {
-		chosenDistance = Math.min(...nearestDistances);
-	} else if (mode === "max") {
-		chosenDistance = Math.max(...nearestDistances);
-	} else if (mode === "average" || mode === "mean") {
-		const sum = nearestDistances.reduce((a, b) => a + b, 0);
-		chosenDistance = sum / nearestDistances.length;
-	} else if (mode === "mode") {
-		// Find the most common value (rounded to nearest cm for stability)
-		const freq = {};
-		let maxFreq = 0,
-			modeValue = nearestDistances[0];
-		nearestDistances.forEach((d) => {
-			const rounded = Math.round(d * 100); // round to cm
-			freq[rounded] = (freq[rounded] || 0) + 1;
-			if (freq[rounded] > maxFreq) {
-				maxFreq = freq[rounded];
-				modeValue = rounded / 100;
-			}
-		});
-		chosenDistance = modeValue;
-	} else {
-		console.warn("Unknown mode for getRadiiBlastHolesPolygon:", mode, "Defaulting to min.");
-		chosenDistance = Math.min(...nearestDistances);
-	}
+    // Step 3: Calculate the radius to use
+    const radius = chosenDistance * (percentDistance / 100);
 
-	// Step 3: Calculate the radius to use
-	const radius = chosenDistance * (percentDistance / 100);
+    // Step 4: Build circle polygons for each point
+    const circlePolygons = points.map((pt) => {
+        const centerX = pt.endXLocation;
+        const centerY = pt.endYLocation;
+        const centerZ = pt.endZLocation;
+        const path = [];
+        for (let i = 0; i < steps; i++) {
+            const angle = (i / steps) * Math.PI * 2;
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY + radius * Math.sin(angle);
+            const z = centerZ; // keep flat for now
+            path.push({ X: Math.round(x * scale), Y: Math.round(y * scale), Z: z });
+        }
+        return path;
+    });
 
-	// Step 4: Build circle polygons for each point
-	const circlePolygons = points.map((pt) => {
-		const centerX = pt.endXLocation;
-		const centerY = pt.endYLocation;
-		const centerZ = pt.endZLocation;
-		const path = [];
-		for (let i = 0; i < steps; i++) {
-			const angle = (i / steps) * Math.PI * 2;
-			const x = centerX + radius * Math.cos(angle);
-			const y = centerY + radius * Math.sin(angle);
-			const z = centerZ; // keep flat for now
-			path.push({ X: Math.round(x * scale), Y: Math.round(y * scale), Z: z });
-		}
-		return path;
-	});
+    // Step 5: Perform union using clipper-lib
+    const cpr = new ClipperLib.Clipper();
+    cpr.AddPaths(circlePolygons, ClipperLib.PolyType.ptSubject, true);
 
-	// Step 5: Perform union using clipper-lib
-	const cpr = new ClipperLib.Clipper();
-	cpr.AddPaths(circlePolygons, ClipperLib.PolyType.ptSubject, true);
+    const solution = new ClipperLib.Paths();
+    const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
-	const solution = new ClipperLib.Paths();
-	const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+    if (!succeeded || solution.length === 0) {
+        console.warn("Clipper union failed or returned empty result.");
+        return [];
+    }
 
-	if (!succeeded || solution.length === 0) {
-		console.warn("Clipper union failed or returned empty result.");
-		return [];
-	}
-
-	// Step 6: Return the unioned polygon as an array of {x, y, z}
-	return solution[0].map((pt) => {
-		const realX = pt.X / scale;
-		const realY = pt.Y / scale;
-		// Nearest Z from original centers
-		let nearestZ = 0;
-		let minDist = Infinity;
-		points.forEach((p) => {
-			const dx = p.startXLocation - realX;
-			const dy = p.startYLocation - realY;
-			const dist = dx * dx + dy * dy;
-			if (dist < minDist) {
-				minDist = dist;
-				nearestZ = p.startZLocation;
-			}
-		});
-		return { x: realX, y: realY, z: nearestZ };
-	});
+    // Step 6: Return the unioned polygon as an array of {x, y, z}
+    return solution[0].map((pt) => {
+        const realX = pt.X / scale;
+        const realY = pt.Y / scale;
+        // Nearest Z from original centers
+        let nearestZ = 0;
+        let minDist = Infinity;
+        points.forEach((p) => {
+            const dx = p.startXLocation - realX;
+            const dy = p.startYLocation - realY;
+            const dist = dx * dx + dy * dy;
+            if (dist < minDist) {
+                minDist = dist;
+                nearestZ = p.startZLocation;
+            }
+        });
+        return { x: realX, y: realY, z: nearestZ };
+    });
 }
 
 document.getElementById("createRadiiFromBlastHoles").addEventListener("click", function () {
-	// Get the values from the input fields
-	const radius = parseFloat(document.getElementById("drawingPolygonRadius").value);
-	const lineWidth = parseFloat(document.getElementById("drawingLineWidth").value);
-	const colour = getJSColourHexDrawing();
-	const steps = parseInt(document.getElementById("radiiSteps").value);
-	const union = true;
-	const addToMaps = true;
-	// Check if the radius is a valid number
-	if (isNaN(radius) || radius <= 0) {
-		alert("Please enter a valid radius.");
-		return;
-	}
-	// Check if the line width is a valid number
-	if (isNaN(lineWidth) || lineWidth <= 0) {
-		alert("Please enter a valid line width.");
-		return;
-	}
-	const polygon = getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth);
-	drawData(points, selectedHole); // Redraw to reflect updated values
+    // Get the values from the input fields
+    const radius = parseFloat(document.getElementById("drawingPolygonRadius").value);
+    const lineWidth = parseFloat(document.getElementById("drawingLineWidth").value);
+    const colour = getJSColourHexDrawing();
+    const steps = parseInt(document.getElementById("radiiSteps").value);
+    const union = true;
+    const addToMaps = true;
+    // Check if the radius is a valid number
+    if (isNaN(radius) || radius <= 0) {
+        alert("Please enter a valid radius.");
+        return;
+    }
+    // Check if the line width is a valid number
+    if (isNaN(lineWidth) || lineWidth <= 0) {
+        alert("Please enter a valid line width.");
+        return;
+    }
+    const polygon = getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth);
+    drawData(points, selectedHole); // Redraw to reflect updated values
 });
 
 // Convert hex color (e.g., #FF0000) to a DXF color index (1-255, never 0 or 256)
 function getColorInteger(hex) {
-	// Remove the '#' character if present
-	if (hex.startsWith("#")) {
-		hex = hex.slice(1);
-	}
-	// Parse the hex string as an integer
-	const intValue = parseInt(hex, 16);
-	const r = (intValue >> 16) & 0xff;
-	const g = (intValue >> 8) & 0xff;
-	const b = intValue & 0xff;
+    // Remove the '#' character if present
+    if (hex.startsWith("#")) {
+        hex = hex.slice(1);
+    }
+    // Parse the hex string as an integer
+    const intValue = parseInt(hex, 16);
+    const r = (intValue >> 16) & 0xff;
+    const g = (intValue >> 8) & 0xff;
+    const b = intValue & 0xff;
 
-	// Basic mapping for common colors
-	if (r === 255 && g === 0 && b === 0) return 1; // red
-	if (r === 255 && g === 255 && b === 0) return 2; // yellow
-	if (r === 0 && g === 255 && b === 0) return 3; // green
-	if (r === 0 && g === 255 && g === 255) return 4; // cyan
-	if (r === 0 && g === 0 && b === 255) return 5; // blue
-	if (r === 255 && g === 0 && b === 255) return 6; // magenta
-	if (r === 255 && g === 255 && g === 255) return 7; // white
+    // Basic mapping for common colors
+    if (r === 255 && g === 0 && b === 0) return 1; // red
+    if (r === 255 && g === 255 && b === 0) return 2; // yellow
+    if (r === 0 && g === 255 && b === 0) return 3; // green
+    if (r === 0 && g === 255 && g === 255) return 4; // cyan
+    if (r === 0 && g === 0 && b === 255) return 5; // blue
+    if (r === 255 && g === 0 && b === 255) return 6; // magenta
+    if (r === 255 && g === 255 && g === 255) return 7; // white
 
-	// For other colors, approximate to 8-255 (never 0 or 256)
-	const gray = Math.round((r + g + b) / 3);
-	const index = Math.max(8, Math.min(255, Math.round((gray / 255) * 247) + 8));
-	console.log("Color index:", index);
-	return index;
+    // For other colors, approximate to 8-255 (never 0 or 256)
+    const gray = Math.round((r + g + b) / 3);
+    const index = Math.max(8, Math.min(255, Math.round((gray / 255) * 247) + 8));
+    console.log("Color index:", index);
+    return index;
 }
 
 /**
@@ -3566,63 +3571,63 @@ function getColorInteger(hex) {
  * @returns {void}
  */
 function exportKADDXF() {
-	let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nENTITIES\n";
+    let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nENTITIES\n";
 
-	const allMaps = [kadPointsMap, kadLinesMap, kadPolygonsMap, kadCirclesMap, kadTextsMap];
+    const allMaps = [kadPointsMap, kadLinesMap, kadPolygonsMap, kadCirclesMap, kadTextsMap];
 
-	for (const map of allMaps) {
-		for (const [entityName, entityData] of map.entries()) {
-			const type = entityData.entityType.trim();
-			const data = entityData.data;
+    for (const map of allMaps) {
+        for (const [entityName, entityData] of map.entries()) {
+            const type = entityData.entityType.trim();
+            const data = entityData.data;
 
-			data.forEach((item, index) => {
-				//get the first colour of the first point in the item
-				let colour = 1;
-				colour = typeof item.colour === "string" ? getColorInteger(item.colour) : 1; // default to red if no colour is provided
-				if (type === "point") {
-					dxf += "0\nPOINT\n8\n" + entityName + "\n";
-					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
-					dxf += "62\n" + colour + "\n";
-				} else if (type === "line") {
-					if (index < data.length - 1) {
-						const next = data[index + 1];
-						dxf += "0\nLINE\n8\n" + entityName + "\n";
-						dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
-						dxf += "11\n" + next.pointXLocation + "\n21\n" + next.pointYLocation + "\n31\n" + next.pointZTarget + "\n";
-						dxf += "62\n" + colour + "\n";
-					}
-				} else if (type === "poly") {
-					if (index === 0 && data.length > 1) {
-						dxf += "0\nPOLYLINE\n8\n" + entityName + "\n66\n1\n70\n1\n";
-						dxf += "62\n" + colour + "\n";
-						data.forEach((pt) => {
-							dxf += "0\nVERTEX\n8\n" + entityName + "\n";
-							dxf += "10\n" + pt.pointXLocation + "\n20\n" + pt.pointYLocation + "\n30\n" + pt.pointZLocation + "\n";
-						});
-						dxf += "0\nSEQEND\n8\n" + entityName + "\n";
-					}
-				} else if (type === "circle") {
-					dxf += "0\nCIRCLE\n8\n" + entityName + "\n";
-					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
-					dxf += "40\n" + item.radius + "\n";
-					dxf += "62\n" + colour + "\n";
-				} else if (type === "text") {
-					dxf += "0\nTEXT\n8\n" + entityName + "\n";
-					dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
-					dxf += "40\n0.5\n"; // text height
-					dxf += "50\n0.0\n"; // rotation
-					dxf += "1\n" + item.text + "\n";
-					dxf += "62\n" + colour + "\n";
-				}
-			});
-		}
-	}
+            data.forEach((item, index) => {
+                //get the first colour of the first point in the item
+                let colour = 1;
+                colour = typeof item.colour === "string" ? getColorInteger(item.colour) : 1; // default to red if no colour is provided
+                if (type === "point") {
+                    dxf += "0\nPOINT\n8\n" + entityName + "\n";
+                    dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+                    dxf += "62\n" + colour + "\n";
+                } else if (type === "line") {
+                    if (index < data.length - 1) {
+                        const next = data[index + 1];
+                        dxf += "0\nLINE\n8\n" + entityName + "\n";
+                        dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+                        dxf += "11\n" + next.pointXLocation + "\n21\n" + next.pointYLocation + "\n31\n" + next.pointZTarget + "\n";
+                        dxf += "62\n" + colour + "\n";
+                    }
+                } else if (type === "poly") {
+                    if (index === 0 && data.length > 1) {
+                        dxf += "0\nPOLYLINE\n8\n" + entityName + "\n66\n1\n70\n1\n";
+                        dxf += "62\n" + colour + "\n";
+                        data.forEach((pt) => {
+                            dxf += "0\nVERTEX\n8\n" + entityName + "\n";
+                            dxf += "10\n" + pt.pointXLocation + "\n20\n" + pt.pointYLocation + "\n30\n" + pt.pointZLocation + "\n";
+                        });
+                        dxf += "0\nSEQEND\n8\n" + entityName + "\n";
+                    }
+                } else if (type === "circle") {
+                    dxf += "0\nCIRCLE\n8\n" + entityName + "\n";
+                    dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+                    dxf += "40\n" + item.radius + "\n";
+                    dxf += "62\n" + colour + "\n";
+                } else if (type === "text") {
+                    dxf += "0\nTEXT\n8\n" + entityName + "\n";
+                    dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
+                    dxf += "40\n0.5\n"; // text height
+                    dxf += "50\n0.0\n"; // rotation
+                    dxf += "1\n" + item.text + "\n";
+                    dxf += "62\n" + colour + "\n";
+                }
+            });
+        }
+    }
 
-	dxf += "0\nENDSEC\n0\nEOF\n";
-	return dxf;
+    dxf += "0\nENDSEC\n0\nEOF\n";
+    return dxf;
 }
 
 /**
@@ -3646,34 +3651,34 @@ function exportKADDXF() {
  *   @param {string} points[].holeID - Name of the layer for the point entity.
  */
 function exportHolesDXF(points) {
-	let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
-	dxf += "0\nSECTION\n2\nENTITIES\n";
+    let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
+    dxf += "0\nSECTION\n2\nENTITIES\n";
 
-	points.forEach((point) => {
-		const layerName = point.holeID;
+    points.forEach((point) => {
+        const layerName = point.holeID;
 
-		if (point.holeDiameter && point.holeDiameter > 0) {
-			const radius = point.holeDiameter / 1000 / 2;
-			dxf += "0\nCIRCLE\n8\n" + layerName + "\n";
-			dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
-			dxf += "40\n" + radius + "\n";
-		}
+        if (point.holeDiameter && point.holeDiameter > 0) {
+            const radius = point.holeDiameter / 1000 / 2;
+            dxf += "0\nCIRCLE\n8\n" + layerName + "\n";
+            dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+            dxf += "40\n" + radius + "\n";
+        }
 
-		dxf += "0\nLINE\n8\n" + layerName + "\n";
-		dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
-		dxf += "11\n" + point.endXLocation + "\n21\n" + point.endYLocation + "\n31\n" + point.endZLocation + "\n";
+        dxf += "0\nLINE\n8\n" + layerName + "\n";
+        dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+        dxf += "11\n" + point.endXLocation + "\n21\n" + point.endYLocation + "\n31\n" + point.endZLocation + "\n";
 
-		dxf += "0\nTEXT\n8\n" + layerName + "\n";
-		dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
-		dxf += "40\n0.5\n"; // Text height (0.5m)
-		dxf += "50\n0.0\n"; // Text rotation (0°)
-		dxf += "1\n" + point.holeID + "\n";
-	});
+        dxf += "0\nTEXT\n8\n" + layerName + "\n";
+        dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+        dxf += "40\n0.5\n"; // Text height (0.5m)
+        dxf += "50\n0.0\n"; // Text rotation (0°)
+        dxf += "1\n" + point.holeID + "\n";
+    });
 
-	dxf += "0\nENDSEC\n0\nEOF\n";
-	return dxf;
+    dxf += "0\nENDSEC\n0\nEOF\n";
+    return dxf;
 }
 
 // Example usage
@@ -3681,547 +3686,548 @@ function exportHolesDXF(points) {
 //exportMapDataCSV(mapData);
 
 function convertPointsTo14ColumnCSV() {
-	let csv = "";
+    let csv = "";
 
-	// Add the CSV header if needed
-	//const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
-	//csv += header + "\n";
+    // Add the CSV header if needed
+    //const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
+    //csv += header + "\n";
 
-	// Iterate over the points array and convert each object to a CSV row
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
-		const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
-		csv += row + "\n";
-	}
+    // Iterate over the points array and convert each object to a CSV row
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
+        csv += row + "\n";
+    }
 
-	return csv;
+    return csv;
 }
 
 function convertPointsTo12ColumnCSV() {
-	let csv = "";
+    let csv = "";
 
-	// Add the CSV header if needed
-	//const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
-	//csv += header + "\n";
+    // Add the CSV header if needed
+    //const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
+    //csv += header + "\n";
 
-	// Iterate over the points array and convert each object to a CSV row
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
-		const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
-		csv += row + "\n";
-	}
+    // Iterate over the points array and convert each object to a CSV row
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
+        csv += row + "\n";
+    }
 
-	return csv;
+    return csv;
 }
 
 function convertPointsToAllDataCSV() {
-	let csv = "";
+    let csv = "";
 
-	// Add the CSV header if needed
-	const header = "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
-	csv += header + "\n";
+    // Add the CSV header if needed
+    const header =
+        "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
+    csv += header + "\n";
 
-	// Iterate over the points array and convert each object to a CSV row
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
-		const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.holeTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
-		csv += row + "\n";
-	}
+    // Iterate over the points array and convert each object to a CSV row
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.holeTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
+        csv += row + "\n";
+    }
 
-	return csv;
+    return csv;
 }
 //Exports the measured values to a CSV file
 function convertPointsToActualDataCSV() {
-	if (!points || !Array.isArray(points) || points.length === 0) return;
+    if (!points || !Array.isArray(points) || points.length === 0) return;
 
-	let csv = "";
+    let csv = "";
 
-	// Add the CSV header if needed
-	const header = "entityName,entityType,holeID,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
-	csv += header + "\n";
+    // Add the CSV header if needed
+    const header = "entityName,entityType,holeID,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
+    csv += header + "\n";
 
-	// Iterate over the points array and convert each object to a CSV row
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
-		const row = `${point.entityName},${point.entityType},${point.holeID},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
-		csv += row + "\n";
-	}
+    // Iterate over the points array and convert each object to a CSV row
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
+        csv += row + "\n";
+    }
 
-	return csv;
+    return csv;
 }
 
 function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, materialType, instructionValue, useHoleTypeAsInstruction, writeIngoreColumn, columnOrderArray) {
-	if (!points || !Array.isArray(points) || points.length === 0) return;
+    if (!points || !Array.isArray(points) || points.length === 0) return;
 
-	let aqm = "";
-	let material = materialType;
-	let pattern = patternName;
-	let blast = blastName;
-	let instruction = instructionValue;
-	let fileName = fileNameValue;
-	let columns = columnOrderArray; // 11 possible columns
+    let aqm = "";
+    let material = materialType;
+    let pattern = patternName;
+    let blast = blastName;
+    let instruction = instructionValue;
+    let fileName = fileNameValue;
+    let columns = columnOrderArray; // 11 possible columns
 
-	// Iterate over the points array and convert each object to an AQM row
-	for (let i = 0; i < points.length; i++) {
-		const point = points[i];
+    // Iterate over the points array and convert each object to an AQM row
+    for (let i = 0; i < points.length; i++) {
+        const point = points[i];
 
-		let columnOrder = []; // Initialize the column order for each row
+        let columnOrder = []; // Initialize the column order for each row
 
-		let toeX = parseFloat(point.endXLocation.toFixed(4));
-		let toeY = parseFloat(point.endYLocation.toFixed(4));
-		let toeZ = parseFloat(point.endZLocation.toFixed(4));
-		// Iterate over the columns and map them to their corresponding values
-		for (let j = 0; j < columns.length; j++) {
-			if (columns[j] === "Pattern") {
-				columnOrder.push(pattern);
-			} else if (columns[j] === "Blast") {
-				columnOrder.push(blast);
-			} else if (columns[j] === "Name") {
-				columnOrder.push(point.holeID);
-			} else if (columns[j] === "Easting") {
-				columnOrder.push(toeX); // Assuming 'toeX' holds the Easting value
-			} else if (columns[j] === "Northing") {
-				columnOrder.push(toeY); // Assuming 'toeY' holds the Northing value
-			} else if (columns[j] === "Elevation") {
-				columnOrder.push(toeZ); // Assuming 'toeZ' holds the Elevation value
-			} else if (columns[j] === "Angle") {
-				columnOrder.push(point.holeAngle);
-			} else if (columns[j] === "Azimuth") {
-				let azimuth = parseFloat(((point.holeBearing - 180) % 360).toFixed(1));
-				if (azimuth < 0) {
-					azimuth += 360;
-				}
-				columnOrder.push(azimuth);
-			} else if (columns[j] === "Diameter") {
-				columnOrder.push(point.holeDiameter);
-			} else if (columns[j] === "Material Type") {
-				columnOrder.push(material);
-			} else if (columns[j] === "Instruction") {
-				if (useHoleTypeAsInstruction) {
-					columnOrder.push(point.holeType);
-				} else {
-					columnOrder.push(instruction);
-				}
-			} else if (columns[j] === "Ignore") {
-				if (writeIngoreColumn) {
-					columnOrder.push("ignored");
-				} else {
-					//do nothing
-				}
+        let toeX = parseFloat(point.endXLocation.toFixed(4));
+        let toeY = parseFloat(point.endYLocation.toFixed(4));
+        let toeZ = parseFloat(point.endZLocation.toFixed(4));
+        // Iterate over the columns and map them to their corresponding values
+        for (let j = 0; j < columns.length; j++) {
+            if (columns[j] === "Pattern") {
+                columnOrder.push(pattern);
+            } else if (columns[j] === "Blast") {
+                columnOrder.push(blast);
+            } else if (columns[j] === "Name") {
+                columnOrder.push(point.holeID);
+            } else if (columns[j] === "Easting") {
+                columnOrder.push(toeX); // Assuming 'toeX' holds the Easting value
+            } else if (columns[j] === "Northing") {
+                columnOrder.push(toeY); // Assuming 'toeY' holds the Northing value
+            } else if (columns[j] === "Elevation") {
+                columnOrder.push(toeZ); // Assuming 'toeZ' holds the Elevation value
+            } else if (columns[j] === "Angle") {
+                columnOrder.push(point.holeAngle);
+            } else if (columns[j] === "Azimuth") {
+                let azimuth = parseFloat(((point.holeBearing - 180) % 360).toFixed(1));
+                if (azimuth < 0) {
+                    azimuth += 360;
+                }
+                columnOrder.push(azimuth);
+            } else if (columns[j] === "Diameter") {
+                columnOrder.push(point.holeDiameter);
+            } else if (columns[j] === "Material Type") {
+                columnOrder.push(material);
+            } else if (columns[j] === "Instruction") {
+                if (useHoleTypeAsInstruction) {
+                    columnOrder.push(point.holeType);
+                } else {
+                    columnOrder.push(instruction);
+                }
+            } else if (columns[j] === "Ignore") {
+                if (writeIngoreColumn) {
+                    columnOrder.push("ignored");
+                } else {
+                    //do nothing
+                }
 
-				// Default to an empty string for unknown columns
-			}
-		}
+                // Default to an empty string for unknown columns
+            }
+        }
 
-		// Join the column values to create a row and add it to the AQM string
-		const row = columnOrder.join(",");
-		aqm += row + "\n";
-	}
+        // Join the column values to create a row and add it to the AQM string
+        const row = columnOrder.join(",");
+        aqm += row + "\n";
+    }
 
-	return aqm;
+    return aqm;
 }
 
 function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions, mwd, chksumType) {
-	if (!points || !Array.isArray(points) || points.length === 0) return;
-	const now = new Date();
-	//convert now to the computer time zone
-	now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-	let iredesPoints = [];
-	points.forEach((point) => {
-		iredesPoints.push({
-			holeID: point.holeID,
-			startXLocation: point.startXLocation,
-			startYLocation: point.startYLocation,
-			startZLocation: point.startZLocation,
-			endXLocation: point.endXLocation,
-			endYLocation: point.endYLocation,
-			endZLocation: point.endZLocation,
-			holeDiameter: point.holeDiameter,
-			holeType: point.holeType
-		});
-	});
-	iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
+    if (!points || !Array.isArray(points) || points.length === 0) return;
+    const now = new Date();
+    //convert now to the computer time zone
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    let iredesPoints = [];
+    points.forEach((point) => {
+        iredesPoints.push({
+            holeID: point.holeID,
+            startXLocation: point.startXLocation,
+            startYLocation: point.startYLocation,
+            startZLocation: point.startZLocation,
+            endXLocation: point.endXLocation,
+            endYLocation: point.endYLocation,
+            endZLocation: point.endZLocation,
+            holeDiameter: point.holeDiameter,
+            holeType: point.holeType
+        });
+    });
+    iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
 
-	// Format the date as YYYY-MM-DDTHH:mm:ss
-	const formattedDate = now.toISOString().slice(0, 19);
-	let notes = "Notes";
-	const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generated by Kirra - https://blastingapps.xyz/kirra.html -->\n`;
-	let xml = `${xmlHeader}<DRPPlan xmlns:IR="http://www.iredes.org/xml" IRVersion="V 1.0" IRDownwCompat="V 1.0" DRPPlanDownwCompat="V 1.0" DRPPlanVersion="V 1.0" xmlns="http://www.iredes.org/xml/DrillRig">\n`;
+    // Format the date as YYYY-MM-DDTHH:mm:ss
+    const formattedDate = now.toISOString().slice(0, 19);
+    let notes = "Notes";
+    const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generated by Kirra - https://blastingapps.xyz/kirra.html -->\n`;
+    let xml = `${xmlHeader}<DRPPlan xmlns:IR="http://www.iredes.org/xml" IRVersion="V 1.0" IRDownwCompat="V 1.0" DRPPlanDownwCompat="V 1.0" DRPPlanVersion="V 1.0" xmlns="http://www.iredes.org/xml/DrillRig">\n`;
 
-	// General Header
-	xml += `  <IR:GenHead>\n`;
-	xml += `    <IR:FileCreateDate>${formattedDate}</IR:FileCreateDate>\n`;
-	xml += `    <IR:IRversion DownwCompat="V 1.0">V 1.0</IR:IRversion>\n`;
-	xml += `  </IR:GenHead>\n`;
-	xml += `  <IR:PlanId>${planID}</IR:PlanId>\n`;
-	xml += `  <IR:PlanName>${planID}</IR:PlanName>\n`;
-	xml += `  <IR:Comment>${notes}</IR:Comment>\n`;
-	xml += `  <IR:Project>${siteID}(Site)</IR:Project>\n`;
-	xml += `  <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
+    // General Header
+    xml += `  <IR:GenHead>\n`;
+    xml += `    <IR:FileCreateDate>${formattedDate}</IR:FileCreateDate>\n`;
+    xml += `    <IR:IRversion DownwCompat="V 1.0">V 1.0</IR:IRversion>\n`;
+    xml += `  </IR:GenHead>\n`;
+    xml += `  <IR:PlanId>${planID}</IR:PlanId>\n`;
+    xml += `  <IR:PlanName>${planID}</IR:PlanName>\n`;
+    xml += `  <IR:Comment>${notes}</IR:Comment>\n`;
+    xml += `  <IR:Project>${siteID}(Site)</IR:Project>\n`;
+    xml += `  <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
 
-	// Drill Position Plan
-	xml += `  <DrillPosPlan IRVersion="V 1.0" IRDownwCompat="V 1.0">\n`;
-	xml += `    <IR:GenHead>\n`;
-	xml += `      <IR:FileCreateDate>${formattedDate}</IR:FileCreateDate>\n`;
-	xml += `      <IR:IRversion DownwCompat="V 1.0">V 1.0</IR:IRversion>\n`;
-	xml += `    </IR:GenHead>\n`;
-	xml += `    <IR:PlanId>${planID}</IR:PlanId>\n`;
-	xml += `    <IR:PlanName>${planID}</IR:PlanName>\n`;
-	xml += `    <IR:Comment>${notes}</IR:Comment>\n`;
-	xml += `    <IR:Project>${siteID}(Site)</IR:Project>\n`;
-	xml += `    <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
+    // Drill Position Plan
+    xml += `  <DrillPosPlan IRVersion="V 1.0" IRDownwCompat="V 1.0">\n`;
+    xml += `    <IR:GenHead>\n`;
+    xml += `      <IR:FileCreateDate>${formattedDate}</IR:FileCreateDate>\n`;
+    xml += `      <IR:IRversion DownwCompat="V 1.0">V 1.0</IR:IRversion>\n`;
+    xml += `    </IR:GenHead>\n`;
+    xml += `    <IR:PlanId>${planID}</IR:PlanId>\n`;
+    xml += `    <IR:PlanName>${planID}</IR:PlanName>\n`;
+    xml += `    <IR:Comment>${notes}</IR:Comment>\n`;
+    xml += `    <IR:Project>${siteID}(Site)</IR:Project>\n`;
+    xml += `    <IR:WorkOrder>${siteID}(WorkOrder)</IR:WorkOrder>\n`;
 
-	// Position Data
-	xml += `    <PositionData>\n`;
-	xml += `      <Coordsystem>\n`;
-	xml += `        <IR:CoordSysName>local</IR:CoordSysName>\n`;
-	xml += `        <IR:TMatrix>\n`;
-	xml += `          <IR:Col>\n`;
-	xml += `            <IR:x>1.000</IR:x>\n`;
-	xml += `            <IR:y>0.000</IR:y>\n`;
-	xml += `            <IR:z>0.000</IR:z>\n`;
-	xml += `            <IR:w>0.000</IR:w>\n`;
-	xml += `          </IR:Col>\n`;
-	xml += `          <IR:Col>\n`;
-	xml += `            <IR:x>0.000</IR:x>\n`;
-	xml += `            <IR:y>1.000</IR:y>\n`;
-	xml += `            <IR:z>0.000</IR:z>\n`;
-	xml += `            <IR:w>0.000</IR:w>\n`;
-	xml += `          </IR:Col>\n`;
-	xml += `          <IR:Col>\n`;
-	xml += `            <IR:x>0.000</IR:x>\n`;
-	xml += `            <IR:y>0.000</IR:y>\n`;
-	xml += `            <IR:z>1.000</IR:z>\n`;
-	xml += `            <IR:w>0.000</IR:w>\n`;
-	xml += `          </IR:Col>\n`;
-	xml += `        </IR:TMatrix>\n`;
-	xml += `        <IR:CsysType>L</IR:CsysType>\n`;
-	xml += `      </Coordsystem>\n`;
-	xml += `      <PlanIdRef />\n`;
-	xml += `      <Bearing>0.000</Bearing>\n`;
-	xml += `    </PositionData>\n`;
-	xml += `  </DrillPosPlan>\n`;
+    // Position Data
+    xml += `    <PositionData>\n`;
+    xml += `      <Coordsystem>\n`;
+    xml += `        <IR:CoordSysName>local</IR:CoordSysName>\n`;
+    xml += `        <IR:TMatrix>\n`;
+    xml += `          <IR:Col>\n`;
+    xml += `            <IR:x>1.000</IR:x>\n`;
+    xml += `            <IR:y>0.000</IR:y>\n`;
+    xml += `            <IR:z>0.000</IR:z>\n`;
+    xml += `            <IR:w>0.000</IR:w>\n`;
+    xml += `          </IR:Col>\n`;
+    xml += `          <IR:Col>\n`;
+    xml += `            <IR:x>0.000</IR:x>\n`;
+    xml += `            <IR:y>1.000</IR:y>\n`;
+    xml += `            <IR:z>0.000</IR:z>\n`;
+    xml += `            <IR:w>0.000</IR:w>\n`;
+    xml += `          </IR:Col>\n`;
+    xml += `          <IR:Col>\n`;
+    xml += `            <IR:x>0.000</IR:x>\n`;
+    xml += `            <IR:y>0.000</IR:y>\n`;
+    xml += `            <IR:z>1.000</IR:z>\n`;
+    xml += `            <IR:w>0.000</IR:w>\n`;
+    xml += `          </IR:Col>\n`;
+    xml += `        </IR:TMatrix>\n`;
+    xml += `        <IR:CsysType>L</IR:CsysType>\n`;
+    xml += `      </Coordsystem>\n`;
+    xml += `      <PlanIdRef />\n`;
+    xml += `      <Bearing>0.000</Bearing>\n`;
+    xml += `    </PositionData>\n`;
+    xml += `  </DrillPosPlan>\n`;
 
-	// DrillPlan
-	xml += `  <DrillPlan>\n`;
-	xml += `    <NumberOfHoles>${iredesPoints.length}</NumberOfHoles>\n`;
+    // DrillPlan
+    xml += `  <DrillPlan>\n`;
+    xml += `    <NumberOfHoles>${iredesPoints.length}</NumberOfHoles>\n`;
 
-	// Holes
-	for (let i = 0; i < iredesPoints.length; i++) {
-		const iredesPoint = iredesPoints[i];
-		xml += `    <Hole>\n`;
-		xml += `      <HoleId>${iredesPoint.holeID.trim()}</HoleId>\n`;
-		xml += `      <HoleName>${iredesPoint.holeID.trim()}</HoleName>\n`;
-		xml += `      <StartPoint>\n`;
-		xml += `        <IR:PointX>${iredesPoint.startYLocation}</IR:PointX>\n`;
-		xml += `        <IR:PointY>${iredesPoint.startXLocation}</IR:PointY>\n`;
-		xml += `        <IR:PointZ>${iredesPoint.startZLocation}</IR:PointZ>\n`;
-		xml += `      </StartPoint>\n`;
-		xml += `      <EndPoint>\n`;
-		xml += `        <IR:PointX>${iredesPoint.endYLocation}</IR:PointX>\n`;
-		xml += `        <IR:PointY>${iredesPoint.endXLocation}</IR:PointY>\n`;
-		xml += `        <IR:PointZ>${iredesPoint.endZLocation}</IR:PointZ>\n`;
-		xml += `      </EndPoint>\n`;
-		xml += `      <TypeOfHole>${iredesPoint.holeType.trim()}</TypeOfHole>\n`;
-		xml += `      <DrillBitDia>${iredesPoint.holeDiameter}</DrillBitDia>\n`;
-	}
+    // Holes
+    for (let i = 0; i < iredesPoints.length; i++) {
+        const iredesPoint = iredesPoints[i];
+        xml += `    <Hole>\n`;
+        xml += `      <HoleId>${iredesPoint.holeID.trim()}</HoleId>\n`;
+        xml += `      <HoleName>${iredesPoint.holeID.trim()}</HoleName>\n`;
+        xml += `      <StartPoint>\n`;
+        xml += `        <IR:PointX>${iredesPoint.startYLocation}</IR:PointX>\n`;
+        xml += `        <IR:PointY>${iredesPoint.startXLocation}</IR:PointY>\n`;
+        xml += `        <IR:PointZ>${iredesPoint.startZLocation}</IR:PointZ>\n`;
+        xml += `      </StartPoint>\n`;
+        xml += `      <EndPoint>\n`;
+        xml += `        <IR:PointX>${iredesPoint.endYLocation}</IR:PointX>\n`;
+        xml += `        <IR:PointY>${iredesPoint.endXLocation}</IR:PointY>\n`;
+        xml += `        <IR:PointZ>${iredesPoint.endZLocation}</IR:PointZ>\n`;
+        xml += `      </EndPoint>\n`;
+        xml += `      <TypeOfHole>${iredesPoint.holeType.trim()}</TypeOfHole>\n`;
+        xml += `      <DrillBitDia>${iredesPoint.holeDiameter}</DrillBitDia>\n`;
+    }
 
-	// Placeholder for the checksum with the string "0"
-	const checksumPlaceholder = "0";
+    // Placeholder for the checksum with the string "0"
+    const checksumPlaceholder = "0";
 
-	// Closing the XML
-	xml += `    <EquipmentData xmlns="">\n`;
-	xml += `      <IR:OptionData />\n`;
-	xml += `    </EquipmentData>\n`;
-	xml += `  </DrillPlan>\n`;
-	xml += `  <IR:GenTrailer>\n`;
-	xml += `    <IR:FileCloseDate>${formattedDate}</IR:FileCloseDate>\n`;
-	xml += `    <IR:ChkSum>${checksumPlaceholder}</IR:ChkSum>\n`;
-	xml += `  </IR:GenTrailer>\n`;
-	xml += `</DRPPlan>`;
+    // Closing the XML
+    xml += `    <EquipmentData xmlns="">\n`;
+    xml += `      <IR:OptionData />\n`;
+    xml += `    </EquipmentData>\n`;
+    xml += `  </DrillPlan>\n`;
+    xml += `  <IR:GenTrailer>\n`;
+    xml += `    <IR:FileCloseDate>${formattedDate}</IR:FileCloseDate>\n`;
+    xml += `    <IR:ChkSum>${checksumPlaceholder}</IR:ChkSum>\n`;
+    xml += `  </IR:GenTrailer>\n`;
+    xml += `</DRPPlan>`;
 
-	// Step 1: Calculate CRC32 checksum with the "0" as the initial checksum
-	let checksum = crc32(xml.replace(checksumPlaceholder, "0"));
+    // Step 1: Calculate CRC32 checksum with the "0" as the initial checksum
+    let checksum = crc32(xml.replace(checksumPlaceholder, "0"));
 
-	// Step 2: Replace the "0" with the actual checksum
-	xml = xml.replace(checksumPlaceholder, checksum);
+    // Step 2: Replace the "0" with the actual checksum
+    xml = xml.replace(checksumPlaceholder, checksum);
 
-	return xml;
+    return xml;
 }
 
 function crc32(str) {
-	const table = new Uint32Array(256);
-	for (let i = 256; i--; ) {
-		let tmp = i;
-		for (let k = 8; k--; ) {
-			tmp = tmp & 1 ? 3988292384 ^ (tmp >>> 1) : tmp >>> 1;
-		}
-		table[i] = tmp;
-	}
+    const table = new Uint32Array(256);
+    for (let i = 256; i--; ) {
+        let tmp = i;
+        for (let k = 8; k--; ) {
+            tmp = tmp & 1 ? 3988292384 ^ (tmp >>> 1) : tmp >>> 1;
+        }
+        table[i] = tmp;
+    }
 
-	let crc = 0xffffffff; // Initialize with all bits set to 1 (equivalent to -1)
-	for (let i = 0, l = str.length; i < l; i++) {
-		crc = (crc >>> 8) ^ table[(crc ^ str.charCodeAt(i)) & 255];
-	}
+    let crc = 0xffffffff; // Initialize with all bits set to 1 (equivalent to -1)
+    for (let i = 0, l = str.length; i < l; i++) {
+        crc = (crc >>> 8) ^ table[(crc ^ str.charCodeAt(i)) & 255];
+    }
 
-	// Ensure it's a 32-bit unsigned integer (force it to be positive)
-	crc = crc >>> 0;
+    // Ensure it's a 32-bit unsigned integer (force it to be positive)
+    crc = crc >>> 0;
 
-	// Return the CRC32 as a string
-	return crc.toString(10);
+    // Return the CRC32 as a string
+    return crc.toString(10);
 }
 
 function decimalChecksum(str) {
-	let checksum = 0;
-	for (let i = 0; i < str.length; i++) {
-		checksum += str.charCodeAt(i);
-	}
-	return checksum;
+    let checksum = 0;
+    for (let i = 0; i < str.length; i++) {
+        checksum += str.charCodeAt(i);
+    }
+    return checksum;
 }
 function calculateMD5Checksum(data) {
-	const hash = CryptoJS.MD5(data);
-	return hash.toString();
+    const hash = CryptoJS.MD5(data);
+    return hash.toString();
 }
 
 function calculateSHA1Checksum(data) {
-	const hash = CryptoJS.SHA1(data);
-	return hash.toString();
+    const hash = CryptoJS.SHA1(data);
+    return hash.toString();
 }
 
 function calculateSHA256Checksum(data) {
-	const hash = CryptoJS.SHA256(data);
-	return hash.toString();
+    const hash = CryptoJS.SHA256(data);
+    return hash.toString();
 }
 
 function calculateTimes(points) {
-	if (!points || !Array.isArray(points) || points.length === 0) return;
+    if (!points || !Array.isArray(points) || points.length === 0) return;
 
-	//console.log("Calculating times...");
-	try {
-		const surfaces = {};
-		holeTimes = {};
+    //console.log("Calculating times...");
+    try {
+        const surfaces = {};
+        holeTimes = {};
 
-		// Build initial structures for surfaces and hole times
-		for (let i = 0; i < points.length; i++) {
-			const point = points[i];
-			if (point.entityName && point.holeID && !isNaN(point.timingDelayMilliseconds)) {
-				const combinedHoleID = `${point.entityName}:::${point.holeID}`;
-				const combinedFromHoleID = point.fromHoleID;
-				surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
-					time: 0,
-					delay: point.timingDelayMilliseconds
-				};
+        // Build initial structures for surfaces and hole times
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            if (point.entityName && point.holeID && !isNaN(point.timingDelayMilliseconds)) {
+                const combinedHoleID = `${point.entityName}:::${point.holeID}`;
+                const combinedFromHoleID = point.fromHoleID;
+                surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
+                    time: 0,
+                    delay: point.timingDelayMilliseconds
+                };
 
-				holeTimes[combinedHoleID] = null;
-			} else {
-				console.log("Invalid point data:", point);
-			}
-		}
+                holeTimes[combinedHoleID] = null;
+            } else {
+                console.log("Invalid point data:", point);
+            }
+        }
 
-		// Calculate times for each surface
-		for (let i = 0; i < points.length; i++) {
-			const point = points[i];
-			const combinedHoleID = `${point.entityName}:::${point.holeID}`;
-			const combinedFromHoleID = point.fromHoleID;
-			if (combinedFromHoleID === combinedHoleID) {
-				if (holeTimes[combinedHoleID] === null || point.timingDelayMilliseconds < holeTimes[combinedHoleID]) {
-					holeTimes[combinedHoleID] = point.timingDelayMilliseconds;
-				}
-				updateSurfaceTimes(combinedHoleID, point.timingDelayMilliseconds, surfaces, holeTimes);
-			}
-		}
+        // Calculate times for each surface
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const combinedHoleID = `${point.entityName}:::${point.holeID}`;
+            const combinedFromHoleID = point.fromHoleID;
+            if (combinedFromHoleID === combinedHoleID) {
+                if (holeTimes[combinedHoleID] === null || point.timingDelayMilliseconds < holeTimes[combinedHoleID]) {
+                    holeTimes[combinedHoleID] = point.timingDelayMilliseconds;
+                }
+                updateSurfaceTimes(combinedHoleID, point.timingDelayMilliseconds, surfaces, holeTimes);
+            }
+        }
 
-		// Log the final state of surfaces and holeTimes for debugging
-		//console.log("Final Surfaces:", surfaces);
-		//console.log("Final Hole Times:", holeTimes);
+        // Log the final state of surfaces and holeTimes for debugging
+        //console.log("Final Surfaces:", surfaces);
+        //console.log("Final Hole Times:", holeTimes);
 
-		// Create a result array from the holeTimes object
-		const result = [];
-		for (const combinedHoleID in holeTimes) {
-			result.push([combinedHoleID, holeTimes[combinedHoleID]]);
-		}
+        // Create a result array from the holeTimes object
+        const result = [];
+        for (const combinedHoleID in holeTimes) {
+            result.push([combinedHoleID, holeTimes[combinedHoleID]]);
+        }
 
-		// Update points with hole times
-		for (const [combinedHoleID, time] of result) {
-			const [entityName, holeID] = combinedHoleID.split(":::");
-			const pointIndex = points.findIndex((p) => p.entityName === entityName && p.holeID === holeID);
-			if (pointIndex !== -1) {
-				points[pointIndex].holeTime = time;
-			}
-		}
+        // Update points with hole times
+        for (const [combinedHoleID, time] of result) {
+            const [entityName, holeID] = combinedHoleID.split(":::");
+            const pointIndex = points.findIndex((p) => p.entityName === entityName && p.holeID === holeID);
+            if (pointIndex !== -1) {
+                points[pointIndex].holeTime = time;
+            }
+        }
 
-		return result;
-	} catch (err) {
-		console.log("Error in calculateTimes:", err);
-	}
+        return result;
+    } catch (err) {
+        console.log("Error in calculateTimes:", err);
+    }
 }
 
 function updateSurfaceTimes(combinedHoleID, time, surfaces, holeTimes, visited = new Set()) {
-	visited.add(combinedHoleID);
-	for (const id in surfaces) {
-		const [fromHoleID, toHoleID] = id.split(">=|=<");
-		if (fromHoleID === combinedHoleID) {
-			const surface = surfaces[id];
-			const delay = surface.delay;
-			if (!isNaN(delay)) {
-				const toTime = parseInt(time) + parseInt(delay);
-				if (!visited.has(toHoleID) && (toTime < surface.time || surface.time === 0)) {
-					surface.time = toTime;
-					holeTimes[toHoleID] = toTime;
-					updateSurfaceTimes(toHoleID, toTime, surfaces, holeTimes, visited);
-				}
-			} else {
-				console.log("Invalid delay:", delay, "for surface:", id);
-			}
-		}
-	}
-	visited.delete(combinedHoleID);
+    visited.add(combinedHoleID);
+    for (const id in surfaces) {
+        const [fromHoleID, toHoleID] = id.split(">=|=<");
+        if (fromHoleID === combinedHoleID) {
+            const surface = surfaces[id];
+            const delay = surface.delay;
+            if (!isNaN(delay)) {
+                const toTime = parseInt(time) + parseInt(delay);
+                if (!visited.has(toHoleID) && (toTime < surface.time || surface.time === 0)) {
+                    surface.time = toTime;
+                    holeTimes[toHoleID] = toTime;
+                    updateSurfaceTimes(toHoleID, toTime, surfaces, holeTimes, visited);
+                }
+            } else {
+                console.log("Invalid delay:", delay, "for surface:", id);
+            }
+        }
+    }
+    visited.delete(combinedHoleID);
 }
 
 function delaunayContours(contourData, contourLevel, maxEdgeLength) {
-	if (!points || !Array.isArray(points) || points.length === 0) return;
-	// Filter out points where holeTime is null
-	const filteredContourData = contourData.filter((point) => point.holeTime !== null);
+    if (!points || !Array.isArray(points) || points.length === 0) return;
+    // Filter out points where holeTime is null
+    const filteredContourData = contourData.filter((point) => point.holeTime !== null);
 
-	// Compute Delaunay triangulation
-	const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
-	const triangles = delaunay.triangles; // Access the triangles property directly
+    // Compute Delaunay triangulation
+    const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
+    const triangles = delaunay.triangles; // Access the triangles property directly
 
-	if (!triangles || triangles.length === 0) return;
+    if (!triangles || triangles.length === 0) return;
 
-	const contourLines = [];
-	directionArrows = []; // Initialize an array to store the arrows
+    const contourLines = [];
+    directionArrows = []; // Initialize an array to store the arrows
 
-	for (let i = 0; i < triangles.length; i += 3) {
-		const contourLine = [];
+    for (let i = 0; i < triangles.length; i += 3) {
+        const contourLine = [];
 
-		const p1 = contourData[triangles[i]];
-		const p2 = contourData[triangles[i + 1]];
-		const p3 = contourData[triangles[i + 2]];
+        const p1 = contourData[triangles[i]];
+        const p2 = contourData[triangles[i + 1]];
+        const p3 = contourData[triangles[i + 2]];
 
-		// Calculate the centroid of the triangle (average of x, y coordinates)
-		const centroidX = (p1.x + p2.x + p3.x) / 3;
-		const centroidY = (p1.y + p2.y + p3.y) / 3;
+        // Calculate the centroid of the triangle (average of x, y coordinates)
+        const centroidX = (p1.x + p2.x + p3.x) / 3;
+        const centroidY = (p1.y + p2.y + p3.y) / 3;
 
-		// Calculate the vector representing the slope (using Z differences)
-		// We'll calculate two vectors: p1->p2 and p1->p3 to get a slope direction
-		const v1X = p2.x - p1.x;
-		const v1Y = p2.y - p1.y;
-		const v1Z = p2.z - p1.z; // Time difference between p1 and p2
+        // Calculate the vector representing the slope (using Z differences)
+        // We'll calculate two vectors: p1->p2 and p1->p3 to get a slope direction
+        const v1X = p2.x - p1.x;
+        const v1Y = p2.y - p1.y;
+        const v1Z = p2.z - p1.z; // Time difference between p1 and p2
 
-		const v2X = p3.x - p1.x;
-		const v2Y = p3.y - p1.y;
-		const v2Z = p3.z - p1.z; // Time difference between p1 and p3
+        const v2X = p3.x - p1.x;
+        const v2Y = p3.y - p1.y;
+        const v2Z = p3.z - p1.z; // Time difference between p1 and p3
 
-		// Now we calculate the cross product of these two vectors to get the slope normal
-		const slopeX = v1Y * v2Z - v1Z * v2Y;
-		const slopeY = v1Z * v2X - v1X * v2Z;
-		const slopeZ = v1X * v2Y - v1Y * v2X;
+        // Now we calculate the cross product of these two vectors to get the slope normal
+        const slopeX = v1Y * v2Z - v1Z * v2Y;
+        const slopeY = v1Z * v2X - v1X * v2Z;
+        const slopeZ = v1X * v2Y - v1Y * v2X;
 
-		// Normalize the slope vector (we don't care about the Z component for 2D projection)
-		const slopeLength = Math.sqrt(slopeX * slopeX + slopeY * slopeY);
-		const normSlopeX = slopeX / slopeLength;
-		const normSlopeY = slopeY / slopeLength;
+        // Normalize the slope vector (we don't care about the Z component for 2D projection)
+        const slopeLength = Math.sqrt(slopeX * slopeX + slopeY * slopeY);
+        const normSlopeX = slopeX / slopeLength;
+        const normSlopeY = slopeY / slopeLength;
 
-		// Calculate the end point for the arrow based on the normalized slope
-		const arrowLength = 2; // Arrow length
-		const arrowEndX = centroidX - normSlopeX * firstMovementSize;
-		const arrowEndY = centroidY - normSlopeY * firstMovementSize;
+        // Calculate the end point for the arrow based on the normalized slope
+        const arrowLength = 2; // Arrow length
+        const arrowEndX = centroidX - normSlopeX * firstMovementSize;
+        const arrowEndY = centroidY - normSlopeY * firstMovementSize;
 
-		// Get the triangle's surface area
-		const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
+        // Get the triangle's surface area
+        const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
 
-		if (surfaceArea > 0.2) {
-			// Store the arrow (start at the centroid, end at the calculated slope direction)
-			directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
-		}
-		// Process the contour lines (unchanged logic)
-		for (let j = 0; j < 3; j++) {
-			const p1 = contourData[triangles[i + j]];
-			const p2 = contourData[triangles[i + ((j + 1) % 3)]];
+        if (surfaceArea > 0.2) {
+            // Store the arrow (start at the centroid, end at the calculated slope direction)
+            directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+        }
+        // Process the contour lines (unchanged logic)
+        for (let j = 0; j < 3; j++) {
+            const p1 = contourData[triangles[i + j]];
+            const p2 = contourData[triangles[i + ((j + 1) % 3)]];
 
-			// Calculate distance between p1 and p2
-			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+            // Calculate distance between p1 and p2
+            const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
-			// If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
-			if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
-				const point = interpolate(p1, p2, contourLevel);
-				contourLine.push(point);
-			}
-		}
+            // If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
+            if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
+                const point = interpolate(p1, p2, contourLevel);
+                contourLine.push(point);
+            }
+        }
 
-		if (contourLine.length === 2) {
-			contourLines.push(contourLine);
-		}
-	}
+        if (contourLine.length === 2) {
+            contourLines.push(contourLine);
+        }
+    }
 
-	const interval = 1; // Keep every arrow
-	directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
+    const interval = 1; // Keep every arrow
+    directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
 
-	// Return both contour lines and the newly created arrows
-	return { contourLines, directionArrows };
+    // Return both contour lines and the newly created arrows
+    return { contourLines, directionArrows };
 }
 
 function interpolate(p1, p2, contourLevel) {
-	const t = (contourLevel - p1.z) / (p2.z - p1.z);
-	return {
-		x: p1.x + t * (p2.x - p1.x),
-		y: p1.y + t * (p2.y - p1.y)
-	};
+    const t = (contourLevel - p1.z) / (p2.z - p1.z);
+    return {
+        x: p1.x + t * (p2.x - p1.x),
+        y: p1.y + t * (p2.y - p1.y)
+    };
 }
 
 function simplifyLine(line, epsilon) {
-	if (line.length <= 2) return line;
+    if (line.length <= 2) return line;
 
-	const firstPoint = line[0];
-	const lastPoint = line[line.length - 1];
-	const lineDistSq = (lastPoint.x - firstPoint.x) ** 2 + (lastPoint.y - firstPoint.y) ** 2;
+    const firstPoint = line[0];
+    const lastPoint = line[line.length - 1];
+    const lineDistSq = (lastPoint.x - firstPoint.x) ** 2 + (lastPoint.y - firstPoint.y) ** 2;
 
-	const { maxDist, maxDistPoint } = line.slice(1, -1).reduce(
-		(result, point, i) => {
-			const distSq = pointToLineDistanceSq(point, firstPoint, lastPoint, lineDistSq);
-			if (distSq > result.maxDist) {
-				return {
-					maxDist: distSq,
-					maxDistPoint: {
-						index: i + 1,
-						point
-					}
-				};
-			}
-			return result;
-		},
-		{
-			maxDist: 0,
-			maxDistPoint: {
-				index: 0,
-				point: null
-			}
-		}
-	);
+    const { maxDist, maxDistPoint } = line.slice(1, -1).reduce(
+        (result, point, i) => {
+            const distSq = pointToLineDistanceSq(point, firstPoint, lastPoint, lineDistSq);
+            if (distSq > result.maxDist) {
+                return {
+                    maxDist: distSq,
+                    maxDistPoint: {
+                        index: i + 1,
+                        point
+                    }
+                };
+            }
+            return result;
+        },
+        {
+            maxDist: 0,
+            maxDistPoint: {
+                index: 0,
+                point: null
+            }
+        }
+    );
 
-	if (Math.sqrt(maxDist) > epsilon) {
-		const left = simplifyLine(line.slice(0, maxDistPoint.index + 1), epsilon);
-		const right = simplifyLine(line.slice(maxDistPoint.index), epsilon);
+    if (Math.sqrt(maxDist) > epsilon) {
+        const left = simplifyLine(line.slice(0, maxDistPoint.index + 1), epsilon);
+        const right = simplifyLine(line.slice(maxDistPoint.index), epsilon);
 
-		return left.slice(0, left.length - 1).concat(right);
-	} else {
-		return [firstPoint, lastPoint];
-	}
+        return left.slice(0, left.length - 1).concat(right);
+    } else {
+        return [firstPoint, lastPoint];
+    }
 }
 
 function pointToLineDistanceSq(point, lineStart, lineEnd, lineDistSq) {
-	const t = ((point.x - lineStart.x) * (lineEnd.x - lineStart.x) + (point.y - lineStart.y) * (lineEnd.y - lineStart.y)) / lineDistSq;
+    const t = ((point.x - lineStart.x) * (lineEnd.x - lineStart.x) + (point.y - lineStart.y) * (lineEnd.y - lineStart.y)) / lineDistSq;
 
-	if (t < 0) {
-		return (lineStart.x - point.x) ** 2 + (lineStart.y - point.y) ** 2;
-	} else if (t > 1) {
-		return (lineEnd.x - point.x) ** 2 + (lineEnd.y - point.y) ** 2;
-	} else {
-		const projX = lineStart.x + t * (lineEnd.x - lineStart.x);
-		const projY = lineStart.y + t * (lineEnd.y - lineStart.y);
-		return (point.x - projX) ** 2 + (point.y - projY) ** 2;
-	}
+    if (t < 0) {
+        return (lineStart.x - point.x) ** 2 + (lineStart.y - point.y) ** 2;
+    } else if (t > 1) {
+        return (lineEnd.x - point.x) ** 2 + (lineEnd.y - point.y) ** 2;
+    } else {
+        const projX = lineStart.x + t * (lineEnd.x - lineStart.x);
+        const projY = lineStart.y + t * (lineEnd.y - lineStart.y);
+        return (point.x - projX) ** 2 + (point.y - projY) ** 2;
+    }
 }
 
 /**
@@ -4233,414 +4239,413 @@ function pointToLineDistanceSq(point, lineStart, lineEnd, lineDistSq) {
  * each point being an array of 3 numbers (x, y, z)
  */
 function delaunayTriangles(points, maxEdgeLength) {
-	if (!points || !Array.isArray(points) || points.length < 3) {
-		return { resultTriangles: [], reliefTriangles: [] };
-	}
-	let resultTriangles = [];
-	let reliefTriangles = [];
-	try {
-		const getX = (point) => parseFloat(point.startXLocation);
-		const getY = (point) => parseFloat(point.startYLocation);
+    if (!points || !Array.isArray(points) || points.length < 3) {
+        return { resultTriangles: [], reliefTriangles: [] };
+    }
+    let resultTriangles = [];
+    let reliefTriangles = [];
+    try {
+        const getX = (point) => parseFloat(point.startXLocation);
+        const getY = (point) => parseFloat(point.startYLocation);
 
-		// Construct the Delaunay triangulation object
-		const delaunay = Delaunator.from(points, getX, getY);
+        // Construct the Delaunay triangulation object
+        const delaunay = Delaunator.from(points, getX, getY);
 
-		// Helper function to calculate the squared distance between two points
-		function distanceSquared(p1, p2) {
-			const dx = p1[0] - p2[0];
-			const dy = p1[1] - p2[1];
-			return dx * dx + dy * dy;
-		}
+        // Helper function to calculate the squared distance between two points
+        function distanceSquared(p1, p2) {
+            const dx = p1[0] - p2[0];
+            const dy = p1[1] - p2[1];
+            return dx * dx + dy * dy;
+        }
 
-		for (let i = 0; i < delaunay.triangles.length; i += 3) {
-			const p1Index = delaunay.triangles[i];
-			const p2Index = delaunay.triangles[i + 1];
-			const p3Index = delaunay.triangles[i + 2];
+        for (let i = 0; i < delaunay.triangles.length; i += 3) {
+            const p1Index = delaunay.triangles[i];
+            const p2Index = delaunay.triangles[i + 1];
+            const p3Index = delaunay.triangles[i + 2];
 
-			const p1 = points[p1Index];
-			const p2 = points[p2Index];
-			const p3 = points[p3Index];
+            const p1 = points[p1Index];
+            const p2 = points[p2Index];
+            const p3 = points[p3Index];
 
-			// Calculate squared edge lengths
-			const edge1Squared = distanceSquared([getX(p1), getY(p1)], [getX(p2), getY(p2)]);
-			const edge2Squared = distanceSquared([getX(p2), getY(p2)], [getX(p3), getY(p3)]);
-			const edge3Squared = distanceSquared([getX(p3), getY(p3)], [getX(p1), getY(p1)]);
+            // Calculate squared edge lengths
+            const edge1Squared = distanceSquared([getX(p1), getY(p1)], [getX(p2), getY(p2)]);
+            const edge2Squared = distanceSquared([getX(p2), getY(p2)], [getX(p3), getY(p3)]);
+            const edge3Squared = distanceSquared([getX(p3), getY(p3)], [getX(p1), getY(p1)]);
 
-			// Check if all edge lengths are less than or equal to the maxEdgeLength squared
-			if (edge1Squared <= maxEdgeLength ** 2 && edge2Squared <= maxEdgeLength ** 2 && edge3Squared <= maxEdgeLength ** 2) {
-				// Add the triangle to the result if the condition is met
+            // Check if all edge lengths are less than or equal to the maxEdgeLength squared
+            if (edge1Squared <= maxEdgeLength ** 2 && edge2Squared <= maxEdgeLength ** 2 && edge3Squared <= maxEdgeLength ** 2) {
+                // Add the triangle to the result if the condition is met
 
-				resultTriangles.push([
-					[getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
-					[getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-					[getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
-				]);
+                resultTriangles.push([
+                    [getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
+                    [getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
+                    [getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
+                ]);
 
-				reliefTriangles.push([
-					[getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
-					[getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-					[getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
-				]);
-			}
-		}
-		//console.log("Triangles", resultTriangles);
-		//console.log("Relief Triangles", reliefTriangles);
-		return { resultTriangles, reliefTriangles };
-	} catch (err) {
-		console.log(err);
-		return { resultTriangles: [], reliefTriangles: [] };
-	}
+                reliefTriangles.push([
+                    [getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
+                    [getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
+                    [getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
+                ]);
+            }
+        }
+        //console.log("Triangles", resultTriangles);
+        //console.log("Relief Triangles", reliefTriangles);
+        return { resultTriangles, reliefTriangles };
+    } catch (err) {
+        console.log(err);
+        return { resultTriangles: [], reliefTriangles: [] };
+    }
 }
 //Delaunay triangulation helper function
 function getDelaunayFromPoints(points) {
-	try {
-		return d3.Delaunay.from(
-			points,
-			function (p) {
-				return parseFloat(p.startXLocation);
-			},
-			function (p) {
-				return parseFloat(p.startYLocation);
-			}
-		);
-	} catch (err) {
-		console.log("Error in getDelaunayFromPoints:", err);
-	}
+    try {
+        return d3.Delaunay.from(
+            points,
+            function (p) {
+                return parseFloat(p.startXLocation);
+            },
+            function (p) {
+                return parseFloat(p.startYLocation);
+            }
+        );
+    } catch (err) {
+        console.log("Error in getDelaunayFromPoints:", err);
+    }
 }
 
 //Voronoi Diagram
 function getVoronoiMetrics(points) {
-	const delaunay = getDelaunayFromPoints(points);
+    const delaunay = getDelaunayFromPoints(points);
 
-	const margin = 10; // optional
-	const xExtent = [Math.min(...points.map((p) => parseFloat(p.startXLocation))), Math.max(...points.map((p) => parseFloat(p.startXLocation)))];
-	const yExtent = [Math.min(...points.map((p) => parseFloat(p.startYLocation))), Math.max(...points.map((p) => parseFloat(p.startYLocation)))];
+    const margin = 10; // optional
+    const xExtent = [Math.min(...points.map((p) => parseFloat(p.startXLocation))), Math.max(...points.map((p) => parseFloat(p.startXLocation)))];
+    const yExtent = [Math.min(...points.map((p) => parseFloat(p.startYLocation))), Math.max(...points.map((p) => parseFloat(p.startYLocation)))];
 
-	const voronoi = delaunay.voronoi([xExtent[0] - margin, yExtent[0] - margin, xExtent[1] + margin, yExtent[1] + margin]);
+    const voronoi = delaunay.voronoi([xExtent[0] - margin, yExtent[0] - margin, xExtent[1] + margin, yExtent[1] + margin]);
 
-	const voronoiResults = [];
+    const voronoiResults = [];
 
-	for (let i = 0; i < points.length; i++) {
-		const polygon = voronoi.cellPolygon(i);
-		if (!polygon) continue;
+    for (let i = 0; i < points.length; i++) {
+        const polygon = voronoi.cellPolygon(i);
+        if (!polygon) continue;
 
-		// Area using shoelace formula
-		let area = 0;
-		for (let j = 0; j < polygon.length; j++) {
-			const [x1, y1] = polygon[j];
-			const [x2, y2] = polygon[(j + 1) % polygon.length];
-			area += x1 * y2 - x2 * y1;
-		}
-		area = Math.abs(area / 2); // in m² if coords are meters
+        // Area using shoelace formula
+        let area = 0;
+        for (let j = 0; j < polygon.length; j++) {
+            const [x1, y1] = polygon[j];
+            const [x2, y2] = polygon[(j + 1) % polygon.length];
+            area += x1 * y2 - x2 * y1;
+        }
+        area = Math.abs(area / 2); // in m² if coords are meters
 
-		const p = points[i];
-		const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
-		const measuredLength = parseFloat(p.measuredLength || 0);
-		const designedLength = parseFloat(p.holeLengthCalculated || 0);
-		const holeFiringTime = parseFloat(p.holeTime || 0);
-		const mass = parseFloat(p.measuredMass || 0);
-		const volume = area * length;
-		const powderFactor = volume > 0 ? mass / volume : null;
-		//Add more metrics here
+        const p = points[i];
+        const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
+        const measuredLength = parseFloat(p.measuredLength || 0);
+        const designedLength = parseFloat(p.holeLengthCalculated || 0);
+        const holeFiringTime = parseFloat(p.holeTime || 0);
+        const mass = parseFloat(p.measuredMass || 0);
+        const volume = area * length;
+        const powderFactor = volume > 0 ? mass / volume : null;
+        //Add more metrics here
 
-		voronoiResults.push({
-			index: i,
-			point: p,
-			polygon: polygon,
-			area: area,
-			length: length,
-			measuredLength: measuredLength,
-			designedLength: designedLength,
-			holeFiringTime: holeFiringTime,
-			volume: volume,
-			mass: mass,
-			powderFactor: powderFactor
-			//add a scaled heelan vibration calculation here
-		});
-	}
+        voronoiResults.push({
+            index: i,
+            point: p,
+            polygon: polygon,
+            area: area,
+            length: length,
+            measuredLength: measuredLength,
+            designedLength: designedLength,
+            holeFiringTime: holeFiringTime,
+            volume: volume,
+            mass: mass,
+            powderFactor: powderFactor
+            //add a scaled heelan vibration calculation here
+        });
+    }
 
-	//console.log("Returning Voronoi Metrics", voronoiResults);
-	return voronoiResults;
+    //console.log("Returning Voronoi Metrics", voronoiResults);
+    return voronoiResults;
 }
 
 // All legends now use a cool-to-hot gradient: blue (cool, small) -> cyan -> green -> yellow -> red (hot, large)
 
 function getPFColor(pf, min, max) {
-	// Map PF to a visible spectrum (violet -> blue -> green -> yellow -> orange -> red)
-	//console.log("Getting PF Color", pf, min, max);
-	let ratio;
-	let r, g, b;
-	if (!isVoronoiLegendFixed) {
-		const minPF = min;
-		const maxPF = max;
-		ratio = Math.min(Math.max((pf - minPF) / (maxPF - minPF), 0), 1);
-		// Interpolate from violet (148,0,211) -> blue (0,0,255) -> cyan (0,255,255) -> green (0,255,0) -> yellow (255,255,0) -> red (255,0,0)
-		if (ratio < 0.2) {
-			// Violet (148,0,211) to Blue (0,0,255)
-			const t = ratio / 0.2;
-			r = Math.round(148 * (1 - t));
-			g = 0;
-			b = Math.round(211 * (1 - t) + 255 * t);
-		} else if (ratio < 0.4) {
-			// Blue (0,0,255) to Cyan (0,255,255)
-			const t = (ratio - 0.2) / 0.2;
-			r = 0;
-			g = Math.round(255 * t);
-			b = 255;
-		} else if (ratio < 0.6) {
-			// Cyan (0,255,255) to Green (0,255,0)
-			const t = (ratio - 0.4) / 0.2;
-			r = 0;
-			g = 255;
-			b = Math.round(255 * (1 - t));
-		} else if (ratio < 0.8) {
-			// Green (0,255,0) to Yellow (255,255,0)
-			const t = (ratio - 0.6) / 0.2;
-			r = Math.round(255 * t);
-			g = 255;
-			b = 0;
-		} else {
-			// Yellow (255,255,0) to Red (255,0,0)
-			const t = (ratio - 0.8) / 0.2;
-			r = 255;
-			g = Math.round(255 * (1 - t));
-			b = 0;
-		}
-	} else {
-		// Fixed spectrum: min=0, max=3, 0=violet, 0.2=blue, 0.4=cyan, 0.6=green, 0.8=yellow, 1=red
-		const minPF = 0.0;
-		const maxPF = 3.0;
-		ratio = Math.min(Math.max((pf - minPF) / (maxPF - minPF), 0), 1);
-		if (ratio < 0.2) {
-			// Violet (148,0,211) to Blue (0,0,255)
-			const t = ratio / 0.2;
-			r = Math.round(148 * (1 - t));
-			g = 0;
-			b = Math.round(211 * (1 - t) + 255 * t);
-		} else if (ratio < 0.4) {
-			// Blue (0,0,255) to Cyan (0,255,255)
-			const t = (ratio - 0.2) / 0.2;
-			r = 0;
-			g = Math.round(255 * t);
-			b = 255;
-		} else if (ratio < 0.6) {
-			// Cyan (0,255,255) to Green (0,255,0)
-			const t = (ratio - 0.4) / 0.2;
-			r = 0;
-			g = 255;
-			b = Math.round(255 * (1 - t));
-		} else if (ratio < 0.8) {
-			// Green (0,255,0) to Yellow (255,255,0)
-			const t = (ratio - 0.6) / 0.2;
-			r = Math.round(255 * t);
-			g = 255;
-			b = 0;
-		} else {
-			// Yellow (255,255,0) to Red (255,0,0)
-			const t = (ratio - 0.8) / 0.2;
-			r = 255;
-			g = Math.round(255 * (1 - t));
-			b = 0;
-		}
-	}
+    // Map PF to a visible spectrum (violet -> blue -> green -> yellow -> orange -> red)
+    //console.log("Getting PF Color", pf, min, max);
+    let ratio;
+    let r, g, b;
+    if (!isVoronoiLegendFixed) {
+        const minPF = min;
+        const maxPF = max;
+        ratio = Math.min(Math.max((pf - minPF) / (maxPF - minPF), 0), 1);
+        // Interpolate from violet (148,0,211) -> blue (0,0,255) -> cyan (0,255,255) -> green (0,255,0) -> yellow (255,255,0) -> red (255,0,0)
+        if (ratio < 0.2) {
+            // Violet (148,0,211) to Blue (0,0,255)
+            const t = ratio / 0.2;
+            r = Math.round(148 * (1 - t));
+            g = 0;
+            b = Math.round(211 * (1 - t) + 255 * t);
+        } else if (ratio < 0.4) {
+            // Blue (0,0,255) to Cyan (0,255,255)
+            const t = (ratio - 0.2) / 0.2;
+            r = 0;
+            g = Math.round(255 * t);
+            b = 255;
+        } else if (ratio < 0.6) {
+            // Cyan (0,255,255) to Green (0,255,0)
+            const t = (ratio - 0.4) / 0.2;
+            r = 0;
+            g = 255;
+            b = Math.round(255 * (1 - t));
+        } else if (ratio < 0.8) {
+            // Green (0,255,0) to Yellow (255,255,0)
+            const t = (ratio - 0.6) / 0.2;
+            r = Math.round(255 * t);
+            g = 255;
+            b = 0;
+        } else {
+            // Yellow (255,255,0) to Red (255,0,0)
+            const t = (ratio - 0.8) / 0.2;
+            r = 255;
+            g = Math.round(255 * (1 - t));
+            b = 0;
+        }
+    } else {
+        // Fixed spectrum: min=0, max=3, 0=violet, 0.2=blue, 0.4=cyan, 0.6=green, 0.8=yellow, 1=red
+        const minPF = 0.0;
+        const maxPF = 3.0;
+        ratio = Math.min(Math.max((pf - minPF) / (maxPF - minPF), 0), 1);
+        if (ratio < 0.2) {
+            // Violet (148,0,211) to Blue (0,0,255)
+            const t = ratio / 0.2;
+            r = Math.round(148 * (1 - t));
+            g = 0;
+            b = Math.round(211 * (1 - t) + 255 * t);
+        } else if (ratio < 0.4) {
+            // Blue (0,0,255) to Cyan (0,255,255)
+            const t = (ratio - 0.2) / 0.2;
+            r = 0;
+            g = Math.round(255 * t);
+            b = 255;
+        } else if (ratio < 0.6) {
+            // Cyan (0,255,255) to Green (0,255,0)
+            const t = (ratio - 0.4) / 0.2;
+            r = 0;
+            g = 255;
+            b = Math.round(255 * (1 - t));
+        } else if (ratio < 0.8) {
+            // Green (0,255,0) to Yellow (255,255,0)
+            const t = (ratio - 0.6) / 0.2;
+            r = Math.round(255 * t);
+            g = 255;
+            b = 0;
+        } else {
+            // Yellow (255,255,0) to Red (255,0,0)
+            const t = (ratio - 0.8) / 0.2;
+            r = 255;
+            g = Math.round(255 * (1 - t));
+            b = 0;
+        }
+    }
 
-	return `rgb(${r},${g},${b})`;
+    return `rgb(${r},${g},${b})`;
 }
 
 function getAreaColor(area, min, max) {
-	// Map area to a cool-to-hot gradient (blue-cyan-green-yellow-red)
+    // Map area to a cool-to-hot gradient (blue-cyan-green-yellow-red)
 
-	const minColour = min;
-	const maxColour = max;
-	const ratio = Math.min(Math.max((area - minColour) / (maxColour - minColour), 0), 1);
+    const minColour = min;
+    const maxColour = max;
+    const ratio = Math.min(Math.max((area - minColour) / (maxColour - minColour), 0), 1);
 
-	let r, g, b;
-	if (ratio < 0.25) {
-		const t = ratio / 0.25;
-		r = 0;
-		g = Math.round(255 * t);
-		b = 255;
-	} else if (ratio < 0.5) {
-		const t = (ratio - 0.25) / 0.25;
-		r = 0;
-		g = 255;
-		b = Math.round(255 * (1 - t));
-	} else if (ratio < 0.75) {
-		const t = (ratio - 0.5) / 0.25;
-		r = Math.round(255 * t);
-		g = 255;
-		b = 0;
-	} else {
-		const t = (ratio - 0.75) / 0.25;
-		r = 255;
-		g = Math.round(255 * (1 - t));
-		b = 0;
-	}
-	return `rgb(${r},${g},${b})`;
+    let r, g, b;
+    if (ratio < 0.25) {
+        const t = ratio / 0.25;
+        r = 0;
+        g = Math.round(255 * t);
+        b = 255;
+    } else if (ratio < 0.5) {
+        const t = (ratio - 0.25) / 0.25;
+        r = 0;
+        g = 255;
+        b = Math.round(255 * (1 - t));
+    } else if (ratio < 0.75) {
+        const t = (ratio - 0.5) / 0.25;
+        r = Math.round(255 * t);
+        g = 255;
+        b = 0;
+    } else {
+        const t = (ratio - 0.75) / 0.25;
+        r = 255;
+        g = Math.round(255 * (1 - t));
+        b = 0;
+    }
+    return `rgb(${r},${g},${b})`;
 }
 
-function getLengthColor(length) {
-	// Map length to a cool-to-hot gradient (blue-cyan-green-yellow-red)
-	const metrics = getVoronoiMetrics(points);
-	const minColour = metrics.reduce((min, point) => Math.min(min, point.measuredLength), Infinity);
-	const maxColour = metrics.reduce((max, point) => Math.max(max, point.measuredLength), -Infinity);
-	const ratio = Math.min(Math.max((length - minColour) / (maxColour - minColour), 0), 1);
+function getLengthColor(length, min, max) {
+    // Map length to a cool-to-hot gradient (blue-cyan-green-yellow-red)
+    const minColour = min;
+    const maxColour = max;
+    const ratio = Math.min(Math.max((length - minColour) / (maxColour - minColour), 0), 1);
 
-	let r, g, b;
-	if (ratio < 0.25) {
-		const t = ratio / 0.25;
-		r = 0;
-		g = Math.round(255 * t);
-		b = 255;
-	} else if (ratio < 0.5) {
-		const t = (ratio - 0.25) / 0.25;
-		r = 0;
-		g = 255;
-		b = Math.round(255 * (1 - t));
-	} else if (ratio < 0.75) {
-		const t = (ratio - 0.5) / 0.25;
-		r = Math.round(255 * t);
-		g = 255;
-		b = 0;
-	} else {
-		const t = (ratio - 0.75) / 0.25;
-		r = 255;
-		g = Math.round(255 * (1 - t));
-		b = 0;
-	}
-	return `rgb(${r},${g},${b})`;
+    let r, g, b;
+    if (ratio < 0.25) {
+        const t = ratio / 0.25;
+        r = 0;
+        g = Math.round(255 * t);
+        b = 255;
+    } else if (ratio < 0.5) {
+        const t = (ratio - 0.25) / 0.25;
+        r = 0;
+        g = 255;
+        b = Math.round(255 * (1 - t));
+    } else if (ratio < 0.75) {
+        const t = (ratio - 0.5) / 0.25;
+        r = Math.round(255 * t);
+        g = 255;
+        b = 0;
+    } else {
+        const t = (ratio - 0.75) / 0.25;
+        r = 255;
+        g = Math.round(255 * (1 - t));
+        b = 0;
+    }
+    return `rgb(${r},${g},${b})`;
 }
-function getHoleFiringTimeColor(holeFiringTime) {
-	// Color scale: lime green (min) to red (max)
-	const minColour = getVoronoiMetrics(points).reduce((min, point) => Math.min(min, point.holeFiringTime), Infinity);
-	const maxColour = getVoronoiMetrics(points).reduce((max, point) => Math.max(max, point.holeFiringTime), -Infinity);
-	const ratio = Math.min(Math.max((holeFiringTime - minColour) / (maxColour - minColour), 0), 1);
+function getHoleFiringTimeColor(holeFiringTime, min, max) {
+    // Color scale: lime green (min) to red (max)
+    const minColour = min;
+    const maxColour = max;
+    const ratio = Math.min(Math.max((holeFiringTime - minColour) / (maxColour - minColour), 0), 1);
 
-	// Lime green: rgb(0, 150, 0), Red: rgb(200, 0, 0)
-	const r = Math.round(50 + (255 - 50) * ratio);
-	const g = Math.round(255 - 255 * ratio);
-	const b = Math.round(50 - 50 * ratio);
+    // Lime green: rgb(0, 150, 0), Red: rgb(200, 0, 0)
+    const r = Math.round(50 + (255 - 50) * ratio);
+    const g = Math.round(255 - 255 * ratio);
+    const b = Math.round(50 - 50 * ratio);
 
-	return `rgb(${r},${g},${b})`;
+    return `rgb(${r},${g},${b})`;
 }
 
-function getMassColor(mass) {
-	// Cool to hot: blue (min) -> cyan -> green -> yellow -> red (max)
-	const minColour = getVoronoiMetrics(points).reduce((min, point) => Math.min(min, point.mass), Infinity);
-	const maxColour = getVoronoiMetrics(points).reduce((max, point) => Math.max(max, point.mass), -Infinity);
-	const ratio = Math.min(Math.max((mass - minColour) / (maxColour - minColour), 0), 1);
+function getMassColor(mass, min, max) {
+    // Cool to hot: blue (min) -> cyan -> green -> yellow -> red (max)
+    const minColour = min;
+    const maxColour = max;
+    const ratio = Math.min(Math.max((mass - minColour) / (maxColour - minColour), 0), 1);
 
-	// Interpolate through blue -> cyan -> green -> yellow -> red
-	let r, g, b;
-	if (ratio < 0.25) {
-		// Blue (0,0,255) to Cyan (0,255,255)
-		const t = ratio / 0.25;
-		r = 0;
-		g = Math.round(255 * t);
-		b = 255;
-	} else if (ratio < 0.5) {
-		// Cyan (0,255,255) to Green (0,255,0)
-		const t = (ratio - 0.25) / 0.25;
-		r = 0;
-		g = 255;
-		b = Math.round(255 * (1 - t));
-	} else if (ratio < 0.75) {
-		// Green (0,255,0) to Yellow (255,255,0)
-		const t = (ratio - 0.5) / 0.25;
-		r = Math.round(255 * t);
-		g = 255;
-		b = 0;
-	} else {
-		// Yellow (255,255,0) to Red (255,0,0)
-		const t = (ratio - 0.75) / 0.25;
-		r = 255;
-		g = Math.round(255 * (1 - t));
-		b = 0;
-	}
-	return `rgb(${r},${g},${b})`;
+    // Interpolate through blue -> cyan -> green -> yellow -> red
+    let r, g, b;
+    if (ratio < 0.25) {
+        // Blue (0,0,255) to Cyan (0,255,255)
+        const t = ratio / 0.25;
+        r = 0;
+        g = Math.round(255 * t);
+        b = 255;
+    } else if (ratio < 0.5) {
+        // Cyan (0,255,255) to Green (0,255,0)
+        const t = (ratio - 0.25) / 0.25;
+        r = 0;
+        g = 255;
+        b = Math.round(255 * (1 - t));
+    } else if (ratio < 0.75) {
+        // Green (0,255,0) to Yellow (255,255,0)
+        const t = (ratio - 0.5) / 0.25;
+        r = Math.round(255 * t);
+        g = 255;
+        b = 0;
+    } else {
+        // Yellow (255,255,0) to Red (255,0,0)
+        const t = (ratio - 0.75) / 0.25;
+        r = 255;
+        g = Math.round(255 * (1 - t));
+        b = 0;
+    }
+    return `rgb(${r},${g},${b})`;
 }
 
 function getVolumeColor(volume, min, max) {
-	const minColour = min;
-	const maxColour = max;
-	const ratio = Math.min(Math.max((volume - minColour) / (maxColour - minColour), 0), 1);
+    const minColour = min;
+    const maxColour = max;
+    const ratio = Math.min(Math.max((volume - minColour) / (maxColour - minColour), 0), 1);
 
-	// Cool to hot: blue (min) -> cyan -> green -> yellow -> red (max)
-	let r, g, b;
-	if (ratio < 0.25) {
-		// Blue (0,0,255) to Cyan (0,255,255)
-		const t = ratio / 0.25;
-		r = 0;
-		g = Math.round(255 * t);
-		b = 255;
-	} else if (ratio < 0.5) {
-		// Cyan (0,255,255) to Green (0,255,0)
-		const t = (ratio - 0.25) / 0.25;
-		r = 0;
-		g = 255;
-		b = Math.round(255 * (1 - t));
-	} else if (ratio < 0.75) {
-		// Green (0,255,0) to Yellow (255,255,0)
-		const t = (ratio - 0.5) / 0.25;
-		r = Math.round(255 * t);
-		g = 255;
-		b = 0;
-	} else {
-		// Yellow (255,255,0) to Red (255,0,0)
-		const t = (ratio - 0.75) / 0.25;
-		r = 255;
-		g = Math.round(255 * (1 - t));
-		b = 0;
-	}
-	return `rgb(${r},${g},${b})`;
+    // Cool to hot: blue (min) -> cyan -> green -> yellow -> red (max)
+    let r, g, b;
+    if (ratio < 0.25) {
+        // Blue (0,0,255) to Cyan (0,255,255)
+        const t = ratio / 0.25;
+        r = 0;
+        g = Math.round(255 * t);
+        b = 255;
+    } else if (ratio < 0.5) {
+        // Cyan (0,255,255) to Green (0,255,0)
+        const t = (ratio - 0.25) / 0.25;
+        r = 0;
+        g = 255;
+        b = Math.round(255 * (1 - t));
+    } else if (ratio < 0.75) {
+        // Green (0,255,0) to Yellow (255,255,0)
+        const t = (ratio - 0.5) / 0.25;
+        r = Math.round(255 * t);
+        g = 255;
+        b = 0;
+    } else {
+        // Yellow (255,255,0) to Red (255,0,0)
+        const t = (ratio - 0.75) / 0.25;
+        r = 255;
+        g = Math.round(255 * (1 - t));
+        b = 0;
+    }
+    return `rgb(${r},${g},${b})`;
 }
 
 //Draw function for Powderfactor
 function drawVoronoiMetric(metrics, metricName, getColorForMetric) {
-	const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d");
 
-	for (let cell of metrics) {
-		// Skip if the cell doesn't have a polygon or the metric is null/undefined
-		if (!cell.polygon || cell[metricName] == null) continue;
+    for (let cell of metrics) {
+        // Skip if the cell doesn't have a polygon or the metric is null/undefined
+        if (!cell.polygon || cell[metricName] == null) continue;
 
-		const color = getColorForMetric(cell[metricName]);
+        const color = getColorForMetric(cell[metricName]);
 
-		ctx.beginPath();
-		ctx.moveTo(cell.polygon[0][0], cell.polygon[0][1]);
-		for (let j = 1; j < cell.polygon.length; j++) {
-			ctx.lineTo(cell.polygon[j][0], cell.polygon[j][1]);
-		}
-		ctx.closePath();
-		ctx.fillStyle = color;
-		ctx.fill();
-	}
+        ctx.beginPath();
+        ctx.moveTo(cell.polygon[0][0], cell.polygon[0][1]);
+        for (let j = 1; j < cell.polygon.length; j++) {
+            ctx.lineTo(cell.polygon[j][0], cell.polygon[j][1]);
+        }
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+    }
 }
 
 //using resultTriangles from delaunayTriangles function create a boundingpolygon
 function createBlastBoundaryPolygon(triangles) {
-	let blastBoundaryPolygon = [];
+    let blastBoundaryPolygon = [];
 
-	if (triangles && triangles.length > 0) {
-		// Extract all vertices from triangles
-		let vertices = triangles.flat().map((point) => ({ x: point[0], y: point[1] }));
+    if (triangles && triangles.length > 0) {
+        // Extract all vertices from triangles
+        let vertices = triangles.flat().map((point) => ({ x: point[0], y: point[1] }));
 
-		// Compute convex hull
-		if (vertices.length > 0) {
-			try {
-				const hull = d3.polygonHull(vertices.map((v) => [v.x, v.y]));
+        // Compute convex hull
+        if (vertices.length > 0) {
+            try {
+                const hull = d3.polygonHull(vertices.map((v) => [v.x, v.y]));
 
-				if (hull && hull.length > 0) {
-					blastBoundaryPolygon = hull.map((point) => ({ x: point[0], y: point[1] }));
-				}
-			} catch (error) {
-				console.error("Error computing convex hull:", error);
-				// Optionally, fall back to a simpler method or return an empty polygon
-				blastBoundaryPolygon = [];
-			}
-		}
-	}
+                if (hull && hull.length > 0) {
+                    blastBoundaryPolygon = hull.map((point) => ({ x: point[0], y: point[1] }));
+                }
+            } catch (error) {
+                console.error("Error computing convex hull:", error);
+                // Optionally, fall back to a simpler method or return an empty polygon
+                blastBoundaryPolygon = [];
+            }
+        }
+    }
 
-	return blastBoundaryPolygon;
+    return blastBoundaryPolygon;
 }
 
 /**
@@ -4654,2200 +4659,2232 @@ function createBlastBoundaryPolygon(triangles) {
  * @returns {Array<Array<Object>>} An array of polygons. Each polygon is an array of points, where each point is an object with `x`, `y`, and `z` properties.  Returns an empty array if the Clipper union fails.
  */
 function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth) {
-	const scale = 100000;
-	const rawPolygons = [];
+    const scale = 100000;
+    const rawPolygons = [];
 
-	// Generate circle polygons
-	points.forEach((pt) => {
-		const cx = pt.startXLocation;
-		const cy = pt.startYLocation;
-		const z = pt.startZLocation;
+    // Generate circle polygons
+    points.forEach((pt) => {
+        const cx = pt.startXLocation;
+        const cy = pt.startYLocation;
+        const z = pt.startZLocation;
 
-		const poly = [];
-		for (let i = 0; i < steps; i++) {
-			const angle = (i / steps) * Math.PI * 2;
-			const x = cx + radius * Math.cos(angle);
-			const y = cy + radius * Math.sin(angle);
-			poly.push({ x: x, y: y, z: z });
-		}
+        const poly = [];
+        for (let i = 0; i < steps; i++) {
+            const angle = (i / steps) * Math.PI * 2;
+            const x = cx + radius * Math.cos(angle);
+            const y = cy + radius * Math.sin(angle);
+            poly.push({ x: x, y: y, z: z });
+        }
 
-		rawPolygons.push(poly);
-	});
+        rawPolygons.push(poly);
+    });
 
-	if (!union) {
-		if (addToMaps) {
-			rawPolygons.forEach((polygon) => {
-				const polyID = "radii_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
-				kadPolygonsMap.set(polyID, {
-					entityType: "poly",
-					data: polygon.map((pt) => ({
-						pointXLocation: pt.x,
-						pointYLocation: pt.y,
-						pointZLocation: pt.z,
-						pointID: "",
-						lineWidth: 5,
-						colour: 1,
-						closed: true,
-						entityType: "poly"
-					}))
-				});
-			});
-		}
-		return rawPolygons; // each point includes x, y, z
-	}
+    if (!union) {
+        if (addToMaps) {
+            rawPolygons.forEach((polygon) => {
+                const polyID = "radii_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
+                kadPolygonsMap.set(polyID, {
+                    entityType: "poly",
+                    data: polygon.map((pt) => ({
+                        pointXLocation: pt.x,
+                        pointYLocation: pt.y,
+                        pointZLocation: pt.z,
+                        pointID: "",
+                        lineWidth: 5,
+                        colour: 1,
+                        closed: true,
+                        entityType: "poly"
+                    }))
+                });
+            });
+        }
+        return rawPolygons; // each point includes x, y, z
+    }
 
-	// Convert for ClipperLib union
-	const clipperPolys = rawPolygons.map((poly) =>
-		poly.map((pt) => ({
-			X: Math.round(pt.x * scale),
-			Y: Math.round(pt.y * scale)
-		}))
-	);
+    // Convert for ClipperLib union
+    const clipperPolys = rawPolygons.map((poly) =>
+        poly.map((pt) => ({
+            X: Math.round(pt.x * scale),
+            Y: Math.round(pt.y * scale)
+        }))
+    );
 
-	const cpr = new ClipperLib.Clipper();
-	cpr.AddPaths(clipperPolys, ClipperLib.PolyType.ptSubject, true);
+    const cpr = new ClipperLib.Clipper();
+    cpr.AddPaths(clipperPolys, ClipperLib.PolyType.ptSubject, true);
 
-	const solution = new ClipperLib.Paths();
-	const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+    const solution = new ClipperLib.Paths();
+    const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
-	if (!succeeded || solution.length === 0) {
-		console.warn("Clipper union failed.");
-		return [];
-	}
+    if (!succeeded || solution.length === 0) {
+        console.warn("Clipper union failed.");
+        return [];
+    }
 
-	// Interpolate Z using nearest original point
-	const unionedPolygons = solution.map((path) =>
-		path.map((pt) => {
-			const realX = pt.X / scale;
-			const realY = pt.Y / scale;
+    // Interpolate Z using nearest original point
+    const unionedPolygons = solution.map((path) =>
+        path.map((pt) => {
+            const realX = pt.X / scale;
+            const realY = pt.Y / scale;
 
-			let nearestZ = 0;
-			let minDist = Infinity;
-			points.forEach((p) => {
-				const dx = p.startXLocation - realX;
-				const dy = p.startYLocation - realY;
-				const dist = dx * dx + dy * dy;
-				if (dist < minDist) {
-					minDist = dist;
-					nearestZ = p.startZLocation;
-				}
-			});
+            let nearestZ = 0;
+            let minDist = Infinity;
+            points.forEach((p) => {
+                const dx = p.startXLocation - realX;
+                const dy = p.startYLocation - realY;
+                const dist = dx * dx + dy * dy;
+                if (dist < minDist) {
+                    minDist = dist;
+                    nearestZ = p.startZLocation;
+                }
+            });
 
-			return { x: realX, y: realY, z: nearestZ };
-		})
-	);
+            return { x: realX, y: realY, z: nearestZ };
+        })
+    );
 
-	if (addToMaps) {
-		unionedPolygons.forEach((polygon) => {
-			const polyID = "radiiUnion_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
-			kadPolygonsMap.set(polyID, {
-				entityType: "poly",
-				data: polygon.map((pt) => ({
-					pointXLocation: pt.x,
-					pointYLocation: pt.y,
-					pointZLocation: pt.z,
-					pointID: "",
-					lineWidth: lineWidth || 5,
-					colour: colour || 1,
-					closed: true,
-					entityType: "poly"
-				}))
-			});
-		});
-	}
+    if (addToMaps) {
+        unionedPolygons.forEach((polygon) => {
+            const polyID = "radiiPoly" + kadPolygonsMap.size + 1;
+            //add pointID to each point starting from 1 to nth
+            let pointID = 1;
+            polygon.forEach((pt) => {
+                pt.pointID = pointID;
+                pointID++;
+            });
+            kadPolygonsMap.set(polyID, {
+                entityType: "poly",
+                data: polygon.map((pt) => ({
+                    pointXLocation: pt.x,
+                    pointYLocation: pt.y,
+                    pointZLocation: pt.z,
+                    pointID: pt.pointID,
+                    lineWidth: lineWidth || 5,
+                    colour: colour || 1,
+                    closed: true,
+                    entityType: "poly"
+                }))
+            });
+        });
+    }
 
-	return unionedPolygons; // includes x, y, z
+    return unionedPolygons; // includes x, y, z
 }
 
 function clipVoronoiCells(voronoiMetrics, blastBoundaryPolygon) {
-	const scale = 100000;
-	const clippedCells = [];
+    const scale = 100000;
+    const clippedCells = [];
 
-	//use the getRadiiPolygons function to create a polygon
-	//const blastBoundaryPolygon1 = getRadiiPolygons(points, 8, 3, true, false)[0];
-	// Convert blast boundary to scaled path
-	const clipPath = blastBoundaryPolygon.map((p) => ({
-		X: Math.round(p.x * scale),
-		Y: Math.round(p.y * scale)
-	}));
+    //use the getRadiiPolygons function to create a polygon
+    //const blastBoundaryPolygon1 = getRadiiPolygons(points, 8, 3, true, false)[0];
+    // Convert blast boundary to scaled path
+    const clipPath = blastBoundaryPolygon.map((p) => ({
+        X: Math.round(p.x * scale),
+        Y: Math.round(p.y * scale)
+    }));
 
-	for (let cell of voronoiMetrics) {
-		if (!cell.polygon || cell.polygon.length < 3) continue;
+    for (let cell of voronoiMetrics) {
+        if (!cell.polygon || cell.polygon.length < 3) continue;
 
-		const subjPath = cell.polygon.map((p) => ({
-			X: Math.round((p.x || p[0]) * scale),
-			Y: Math.round((p.y || p[1]) * scale)
-		}));
+        const subjPath = cell.polygon.map((p) => ({
+            X: Math.round((p.x || p[0]) * scale),
+            Y: Math.round((p.y || p[1]) * scale)
+        }));
 
-		const clipper = new ClipperLib.Clipper();
-		clipper.AddPath(subjPath, ClipperLib.PolyType.ptSubject, true);
-		clipper.AddPath(clipPath, ClipperLib.PolyType.ptClip, true);
+        const clipper = new ClipperLib.Clipper();
+        clipper.AddPath(subjPath, ClipperLib.PolyType.ptSubject, true);
+        clipper.AddPath(clipPath, ClipperLib.PolyType.ptClip, true);
 
-		const solution = new ClipperLib.Paths();
-		clipper.Execute(ClipperLib.ClipType.ctIntersection, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
+        const solution = new ClipperLib.Paths();
+        clipper.Execute(ClipperLib.ClipType.ctIntersection, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
-		if (solution.length > 0) {
-			const clipped = solution[0].map((pt) => ({
-				x: pt.X / scale,
-				y: pt.Y / scale
-			}));
+        if (solution.length > 0) {
+            const clipped = solution[0].map((pt) => ({
+                x: pt.X / scale,
+                y: pt.Y / scale
+            }));
 
-			// Optional: recompute area, volume, PF
-			const area = Math.abs(
-				clipped.reduce((acc, curr, i, arr) => {
-					const next = arr[(i + 1) % arr.length];
-					return acc + curr.x * next.y - next.x * curr.y;
-				}, 0) / 2
-			);
-			const volume = area * cell.length;
-			const powderFactor = volume > 0 ? cell.mass / volume : null;
+            // Optional: recompute area, volume, PF
+            const area = Math.abs(
+                clipped.reduce((acc, curr, i, arr) => {
+                    const next = arr[(i + 1) % arr.length];
+                    return acc + curr.x * next.y - next.x * curr.y;
+                }, 0) / 2
+            );
+            const volume = area * cell.length;
+            const powderFactor = volume > 0 ? cell.mass / volume : null;
 
-			clippedCells.push({
-				...cell,
-				polygon: clipped,
-				area: area,
-				volume: volume,
-				powderFactor: powderFactor
-			});
-		}
-	}
+            clippedCells.push({
+                ...cell,
+                polygon: clipped,
+                area: area,
+                volume: volume,
+                powderFactor: powderFactor
+            });
+        }
+    }
 
-	return clippedCells;
+    return clippedCells;
 }
 
-function boundaryOffset(polygon, offsetMeters) {
-	if (!polygon || polygon.length < 3) return [];
+function simplifyPolygon(polygon, tolerance, forceClose) {
+    if (!polygon || polygon.length < 3) return polygon;
 
-	const scale = 100000; // ClipperLib works in integers, scale up for precision
+    const scale = 100000;
+    const scaledPath = polygon.map((p) => ({
+        X: Math.round((p.x || p[0]) * scale),
+        Y: Math.round((p.y || p[1]) * scale)
+    }));
 
-	// Convert to Clipper path format
-	const path = polygon.map((p) => ({
-		X: Math.round(p.x * scale),
-		Y: Math.round(p.y * scale)
-	}));
+    const c = new ClipperLib.Clipper();
+    const cleaned = ClipperLib.Clipper.CleanPolygon(scaledPath, tolerance * scale);
 
-	// Initialize and execute offset
-	const co = new ClipperLib.ClipperOffset();
-	co.AddPath(path, ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
+    if (!cleaned || cleaned.length < 3) return polygon;
 
-	const offsetPaths = [];
-	co.Execute(offsetPaths, offsetMeters * scale);
+    const simplified = cleaned.map((p) => ({
+        x: p.X / scale,
+        y: p.Y / scale
+    }));
 
-	// Convert back to float points
-	if (offsetPaths.length === 0) return [];
-	return offsetPaths[0].map((p) => ({
-		x: p.X / scale,
-		y: p.Y / scale
-	}));
+    if (forceClose && simplified.length > 0) {
+        simplified.push({ ...simplified[0] });
+    }
+
+    return simplified;
+}
+
+function offsetPolygonClipper(polygon, offsetMeters) {
+    if (!polygon || polygon.length < 3) return [];
+
+    const scale = 100000; // ClipperLib works in integers, scale up for precision
+
+    // Convert to Clipper path format
+    const path = polygon.map((p) => ({
+        X: Math.round(p.x * scale),
+        Y: Math.round(p.y * scale)
+    }));
+
+    // Initialize and execute offset
+    const co = new ClipperLib.ClipperOffset();
+    co.AddPath(path, ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
+
+    const offsetPaths = [];
+    co.Execute(offsetPaths, offsetMeters * scale);
+
+    // Convert back to float points
+    if (offsetPaths.length === 0) return [];
+    return offsetPaths[0].map((p) => ({
+        x: p.X / scale,
+        y: p.Y / scale
+    }));
 }
 
 function drawBlastBoundary(polygon, strokeColour) {
-	//convert wold coords to screen cords
-	const screenCoords = polygon.map((point) => {
-		const x = (point.x - centroidX) * currentScale + canvas.width / 2;
-		const y = (-point.y + centroidY) * currentScale + canvas.height / 2;
-		return { x, y };
-	});
+    //convert wold coords to screen cords
+    const screenCoords = polygon.map((point) => {
+        const x = (point.x - centroidX) * currentScale + canvas.width / 2;
+        const y = (-point.y + centroidY) * currentScale + canvas.height / 2;
+        return { x, y };
+    });
 
-	ctx.beginPath();
-	ctx.moveTo(screenCoords[0].x, screenCoords[0].y);
-	for (let i = 1; i < screenCoords.length; i++) {
-		ctx.lineTo(screenCoords[i].x, screenCoords[i].y);
-	}
-	ctx.closePath();
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = 2;
-	ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(screenCoords[0].x, screenCoords[0].y);
+    for (let i = 1; i < screenCoords.length; i++) {
+        ctx.lineTo(screenCoords[i].x, screenCoords[i].y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = 2;
+    ctx.stroke();
 }
 
-function offsetPolygon(polygon, offset) {
-	const result = [];
-	const n = polygon.length;
-	const quadrantRads = [];
+function offsetPolygonMathematical(polygon, offset) {
+    const result = [];
+    const n = polygon.length;
+    const quadrantRads = [];
 
-	for (let i = 0; i < n; i++) {
-		const dx = polygon[(i + 1) % n].x - polygon[i].x;
-		const dy = polygon[(i + 1) % n].y - polygon[i].y;
-		const dist = Math.sqrt(dx * dx + dy * dy);
+    for (let i = 0; i < n; i++) {
+        const dx = polygon[(i + 1) % n].x - polygon[i].x;
+        const dy = polygon[(i + 1) % n].y - polygon[i].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-		let angle = 0;
-		if (dist > 0) {
-			if (dy >= 0 && dx >= 0) {
-				angle = Math.PI / 2 - Math.asin(dx / dist);
-			} else if (dy < 0 && dx >= 0) {
-				angle = Math.PI / 2 - Math.acos(dy / dist);
-			} else if (dy < 0 && dx < 0) {
-				angle = (3 * Math.PI) / 2 - Math.asin(-dx / dist);
-			} else {
-				angle = (3 * Math.PI) / 2 - Math.acos(-dy / dist);
-			}
-		}
-		quadrantRads.push(angle);
-	}
+        let angle = 0;
+        if (dist > 0) {
+            if (dy >= 0 && dx >= 0) {
+                angle = Math.PI / 2 - Math.asin(dx / dist);
+            } else if (dy < 0 && dx >= 0) {
+                angle = Math.PI / 2 - Math.acos(dy / dist);
+            } else if (dy < 0 && dx < 0) {
+                angle = (3 * Math.PI) / 2 - Math.asin(-dx / dist);
+            } else {
+                angle = (3 * Math.PI) / 2 - Math.acos(-dy / dist);
+            }
+        }
+        quadrantRads.push(angle);
+    }
 
-	const offsetSegments = [];
-	for (let i = 0; i < n; i++) {
-		const theta = quadrantRads[i];
-		const dx = offset * -Math.sin(theta);
-		const dy = offset * Math.cos(theta);
+    const offsetSegments = [];
+    for (let i = 0; i < n; i++) {
+        const theta = quadrantRads[i];
+        const dx = offset * -Math.sin(theta);
+        const dy = offset * Math.cos(theta);
 
-		const p1 = {
-			x: polygon[i].x + dx,
-			y: polygon[i].y + dy
-		};
-		const p2 = {
-			x: polygon[(i + 1) % n].x + dx,
-			y: polygon[(i + 1) % n].y + dy
-		};
-		offsetSegments.push([p1, p2]);
-	}
+        const p1 = {
+            x: polygon[i].x + dx,
+            y: polygon[i].y + dy
+        };
+        const p2 = {
+            x: polygon[(i + 1) % n].x + dx,
+            y: polygon[(i + 1) % n].y + dy
+        };
+        offsetSegments.push([p1, p2]);
+    }
 
-	for (let i = 0; i < n; i++) {
-		const [p1a, p1b] = offsetSegments[i];
-		const [p2a, p2b] = offsetSegments[(i + 1) % n];
+    for (let i = 0; i < n; i++) {
+        const [p1a, p1b] = offsetSegments[i];
+        const [p2a, p2b] = offsetSegments[(i + 1) % n];
 
-		const denom = -(p2b.x - p2a.x) * -Math.sin(quadrantRads[i]) - Math.cos(quadrantRads[i]) * (p2b.y - p2a.y);
+        const denom = -(p2b.x - p2a.x) * -Math.sin(quadrantRads[i]) - Math.cos(quadrantRads[i]) * (p2b.y - p2a.y);
 
-		if (denom === 0) {
-			result.push(p1b); // fallback
-			continue;
-		}
+        if (denom === 0) {
+            result.push(p1b); // fallback
+            continue;
+        }
 
-		const s = Math.cos(quadrantRads[(i + 1) % n]) * (p2b.y - p2a.y) - (p2b.x - p2a.x) * Math.sin(quadrantRads[(i + 1) % n]);
-		const t = s / denom;
+        const s = Math.cos(quadrantRads[(i + 1) % n]) * (p2b.y - p2a.y) - (p2b.x - p2a.x) * Math.sin(quadrantRads[(i + 1) % n]);
+        const t = s / denom;
 
-		const x = p1b.x + Math.cos(quadrantRads[i]) * t;
-		const y = p1b.y + Math.sin(quadrantRads[i]) * t;
-		result.push({ x: x, y: y });
-	}
+        const x = p1b.x + Math.cos(quadrantRads[i]) * t;
+        const y = p1b.y + Math.sin(quadrantRads[i]) * t;
+        result.push({ x: x, y: y });
+    }
 
-	return result;
+    return result;
 }
 
 function getAverageDistance(points) {
-	if (!points || !Array.isArray(points) || points.length < 2) return 1;
-	let total = 0;
-	let count = 0;
+    if (!points || !Array.isArray(points) || points.length < 2) return 1;
+    let total = 0;
+    let count = 0;
 
-	for (let i = 0; i < points.length; i++) {
-		let minDist = Infinity;
+    for (let i = 0; i < points.length; i++) {
+        let minDist = Infinity;
 
-		for (let j = 0; j < points.length; j++) {
-			if (i === j) continue;
+        for (let j = 0; j < points.length; j++) {
+            if (i === j) continue;
 
-			const dx = points[i].startXLocation - points[j].startXLocation;
-			const dy = points[i].startYLocation - points[j].startYLocation;
-			const dist = Math.sqrt(dx * dx + dy * dy);
+            const dx = points[i].startXLocation - points[j].startXLocation;
+            const dy = points[i].startYLocation - points[j].startYLocation;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-			if (dist < minDist) {
-				minDist = dist;
-			}
-		}
+            if (dist < minDist) {
+                minDist = dist;
+            }
+        }
 
-		if (minDist < Infinity) {
-			total += minDist;
-			count++;
-		}
-	}
+        if (minDist < Infinity) {
+            total += minDist;
+            count++;
+        }
+    }
 
-	return count > 0 ? total / count : 1;
+    return count > 0 ? total / count : 1;
 }
 
 function clearCanvas() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 /*** CODE TO DRAW POINTS FROM KAD DATA ***/
 function drawKADPoints(x, y, z, strokeColour) {
-	ctx.beginPath();
-	ctx.arc(x, y, 2, 0, 2 * Math.PI);
-	ctx.strokeStyle = strokeColour;
-	ctx.fillStyle = strokeColour;
-	ctx.stroke();
-	ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 2, 0, 2 * Math.PI);
+    ctx.strokeStyle = strokeColour;
+    ctx.fillStyle = strokeColour;
+    ctx.stroke();
+    ctx.fill();
 }
 //Draws an open polyline from the kadLinesArray
 function drawKADLines(sx, sy, ex, ey, sz, ez, lineWidth, strokeColour) {
-	ctx.beginPath();
-	ctx.moveTo(sx, sy);
-	ctx.lineTo(ex, ey);
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = lineWidth;
-	ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex, ey);
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
 }
 
 function drawKADPolys(sx, sy, ex, ey, sz, ez, lineWidth, strokeColour, isClosed) {
-	ctx.beginPath();
-	ctx.moveTo(sx, sy);
-	ctx.lineTo(ex, ey);
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = lineWidth;
-	ctx.stroke();
-	if (isClosed) {
-		ctx.closePath();
-	}
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(ex, ey);
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+    if (isClosed) {
+        ctx.closePath();
+    }
 }
 
 //Draws a circle from the kadCirclesArray
 function drawKADCircles(x, y, z, radius, lineWidth, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, 2 * Math.PI);
-	//ctx.fillStyle = fillColour;
-	//ctx.fill(); // fill the circle with the fill colour
-	ctx.lineWidth = lineWidth;
-	ctx.stroke(); // draw the circle border with the stroke colour
+    ctx.strokeStyle = strokeColour;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    //ctx.fillStyle = fillColour;
+    //ctx.fill(); // fill the circle with the fill colour
+    ctx.lineWidth = lineWidth;
+    ctx.stroke(); // draw the circle border with the stroke colour
 }
 //Draws text from the kadTextsArray
 function drawKADTexts(x, y, z, text, color) {
-	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
-	ctx.fillStyle = color;
+    ctx.font = parseInt(currentFontSize - 2) + "px Arial";
+    ctx.fillStyle = color;
 
-	// Replace "\n" with line breaks
-	text = text.replace(/\\n/g, "\n");
-	const lines = text.split("\n");
+    // Replace "\n" with line breaks
+    text = text.replace(/\\n/g, "\n");
+    const lines = text.split("\n");
 
-	const lineHeight = parseInt(currentFontSize - 2) + 4;
+    const lineHeight = parseInt(currentFontSize - 2) + 4;
 
-	lines.forEach((line, index) => {
-		if (line.startsWith("=")) {
-			try {
-				const expression = line.substring(1); // Remove '='
-				const calculatedValue = eval(expression);
-				ctx.fillText(calculatedValue.toString(), x, y + index * lineHeight);
-			} catch (e) {
-				ctx.fillText("Error", x, y + index * lineHeight);
-			}
-		} else {
-			ctx.fillText(line, x, y + index * lineHeight);
-		}
-	});
+    lines.forEach((line, index) => {
+        if (line.startsWith("=")) {
+            try {
+                const expression = line.substring(1); // Remove '='
+                const calculatedValue = eval(expression);
+                ctx.fillText(calculatedValue.toString(), x, y + index * lineHeight);
+            } catch (e) {
+                ctx.fillText("Error", x, y + index * lineHeight);
+            }
+        } else {
+            ctx.fillText(line, x, y + index * lineHeight);
+        }
+    });
 }
 
 /*** CODE TO DRAW POINTS FROM CSV DATA ***/
 function drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, strokeColour) {
-	ctx.lineWidth = 1;
-	ctx.beginPath();
-	ctx.moveTo(lineStartX, lineStartY);
-	ctx.lineTo(lineEndX, lineEndY);
-	ctx.strokeStyle = strokeColour;
-	ctx.stroke();
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(lineStartX, lineStartY);
+    ctx.lineTo(lineEndX, lineEndY);
+    ctx.strokeStyle = strokeColour;
+    ctx.stroke();
 }
 
 function drawHoleToe(x, y, fillColour, strokeColour, radius) {
-	ctx.beginPath();
-	// Use the toeSizeInMeters directly to set the radius
-	ctx.lineWidth = 1;
-	ctx.arc(x, y, radius, 0, 2 * Math.PI);
-	ctx.fillStyle = fillColour;
-	ctx.strokeStyle = strokeColour;
-	ctx.stroke();
-	ctx.fill();
+    ctx.beginPath();
+    // Use the toeSizeInMeters directly to set the radius
+    ctx.lineWidth = 1;
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = fillColour;
+    ctx.strokeStyle = strokeColour;
+    ctx.stroke();
+    ctx.fill();
 }
 
 function drawHole(x, y, radius, fillColour, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.fillStyle = fillColour;
-	ctx.lineWidth = 2;
-	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, 2 * Math.PI);
-	ctx.fill(); // fill the circle with the fill colour
-	ctx.stroke(); // draw the circle border with the stroke colour
+    ctx.strokeStyle = strokeColour;
+    ctx.fillStyle = fillColour;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill(); // fill the circle with the fill colour
+    ctx.stroke(); // draw the circle border with the stroke colour
 }
 //draw an X shape with the intersection of the lines at x,y and the length of the lines being the radius of the drawHole function
 function drawDummy(x, y, radius, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = 2; // Adjust the line width as needed
-	ctx.beginPath();
-	ctx.moveTo(x - radius, y - radius);
-	ctx.lineTo(x + radius, y + radius);
-	ctx.moveTo(x - radius, y + radius);
-	ctx.lineTo(x + radius, y - radius);
-	ctx.stroke();
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = 2; // Adjust the line width as needed
+    ctx.beginPath();
+    ctx.moveTo(x - radius, y - radius);
+    ctx.lineTo(x + radius, y + radius);
+    ctx.moveTo(x - radius, y + radius);
+    ctx.lineTo(x + radius, y - radius);
+    ctx.stroke();
 }
 //draw an square shape with the intersection of the lines at x,y and the length of the lines being the radius of the drawHole function
 function drawNoDiameterHole(x, y, sideLength, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = 2; // Adjust the line width as needed
-	const halfSide = sideLength / 2;
-	ctx.beginPath();
-	ctx.moveTo(x - halfSide, y - halfSide);
-	ctx.lineTo(x + halfSide, y - halfSide);
-	ctx.lineTo(x + halfSide, y + halfSide);
-	ctx.lineTo(x - halfSide, y + halfSide);
-	ctx.closePath(); // Close the path to form a square
-	ctx.stroke();
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = 2; // Adjust the line width as needed
+    const halfSide = sideLength / 2;
+    ctx.beginPath();
+    ctx.moveTo(x - halfSide, y - halfSide);
+    ctx.lineTo(x + halfSide, y - halfSide);
+    ctx.lineTo(x + halfSide, y + halfSide);
+    ctx.lineTo(x - halfSide, y + halfSide);
+    ctx.closePath(); // Close the path to form a square
+    ctx.stroke();
 }
 
 function drawHiHole(x, y, radius, fillColour, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, 2 * Math.PI);
-	ctx.fillStyle = fillColour;
-	ctx.fill(); // fill the circle with the fill colour
-	ctx.lineWidth = 5;
-	ctx.stroke(); // draw the circle border with the stroke colour
+    ctx.strokeStyle = strokeColour;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fillStyle = fillColour;
+    ctx.fill(); // fill the circle with the fill colour
+    ctx.lineWidth = 5;
+    ctx.stroke(); // draw the circle border with the stroke colour
 }
 
 function drawExplosion(x, y, spikes, outerRadius, innerRadius, colour1, colour2) {
-	let rotation = (Math.PI / 2) * 3;
-	let step = Math.PI / spikes;
-	let start = rotation;
+    let rotation = (Math.PI / 2) * 3;
+    let step = Math.PI / spikes;
+    let start = rotation;
 
-	// Start the drawing path
-	ctx.beginPath();
-	ctx.moveTo(x, y - outerRadius);
-	for (let i = 0; i < spikes; i++) {
-		ctx.lineTo(x + Math.cos(start) * outerRadius, y - Math.sin(start) * outerRadius);
-		start += step;
+    // Start the drawing path
+    ctx.beginPath();
+    ctx.moveTo(x, y - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+        ctx.lineTo(x + Math.cos(start) * outerRadius, y - Math.sin(start) * outerRadius);
+        start += step;
 
-		ctx.lineTo(x + Math.cos(start) * innerRadius, y - Math.sin(start) * innerRadius);
-		start += step;
-	}
-	ctx.lineTo(x, y - outerRadius);
-	ctx.closePath();
-	ctx.lineWidth = 5;
-	ctx.strokeStyle = colour1;
-	ctx.stroke();
-	ctx.fillStyle = colour2;
-	ctx.fill();
+        ctx.lineTo(x + Math.cos(start) * innerRadius, y - Math.sin(start) * innerRadius);
+        start += step;
+    }
+    ctx.lineTo(x, y - outerRadius);
+    ctx.closePath();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = colour1;
+    ctx.stroke();
+    ctx.fillStyle = colour2;
+    ctx.fill();
 }
 
 function drawHexagon(x, y, sideLength, fillColour, strokeColour) {
-	ctx.strokeStyle = strokeColour;
-	ctx.beginPath();
-	const rotationAngleRadians = (Math.PI / 180) * 30;
-	for (let i = 0; i < 6; i++) {
-		const angle = rotationAngleRadians + (Math.PI / 3) * i;
-		const offsetX = sideLength * Math.cos(angle);
-		const offsetY = sideLength * Math.sin(angle);
+    ctx.strokeStyle = strokeColour;
+    ctx.beginPath();
+    const rotationAngleRadians = (Math.PI / 180) * 30;
+    for (let i = 0; i < 6; i++) {
+        const angle = rotationAngleRadians + (Math.PI / 3) * i;
+        const offsetX = sideLength * Math.cos(angle);
+        const offsetY = sideLength * Math.sin(angle);
 
-		if (i === 0) {
-			ctx.moveTo(x + offsetX, y + offsetY);
-		} else {
-			ctx.lineTo(x + offsetX, y + offsetY);
-		}
-	}
+        if (i === 0) {
+            ctx.moveTo(x + offsetX, y + offsetY);
+        } else {
+            ctx.lineTo(x + offsetX, y + offsetY);
+        }
+    }
 
-	ctx.closePath();
-	ctx.fillStyle = fillColour;
-	ctx.fill(); // fill the hexagon with the fill colour
-	ctx.lineWidth = 5;
-	ctx.stroke(); // draw the hexagon border with the stroke colour
+    ctx.closePath();
+    ctx.fillStyle = fillColour;
+    ctx.fill(); // fill the hexagon with the fill colour
+    ctx.lineWidth = 5;
+    ctx.stroke(); // draw the hexagon border with the stroke colour
 }
 //Left-align the text
 function drawText(x, y, text, color) {
-	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
-	ctx.fillStyle = color;
-	ctx.fillText(text, x, y);
+    ctx.font = parseInt(currentFontSize - 2) + "px Arial";
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
 }
 // Right-align the text by calculating the text width
 function drawRightAlignedText(x, y, text, color) {
-	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
-	const textWidth = ctx.measureText(text).width;
-	ctx.fillStyle = color;
-	// Draw the text at an x position minus the text width for right alignment
-	drawText(x - textWidth, y, text, color);
+    ctx.font = parseInt(currentFontSize - 2) + "px Arial";
+    const textWidth = ctx.measureText(text).width;
+    ctx.fillStyle = color;
+    // Draw the text at an x position minus the text width for right alignment
+    drawText(x - textWidth, y, text, color);
 }
 
 function drawDirectionArrow(startX, startY, endX, endY, fillColour, strokeColour, connScale) {
-	try {
-		// Set up the arrow parameters
-		var arrowWidth = (firstMovementSize / 4) * currentScale; // Width of the arrowhead
-		var arrowLength = 2 * (firstMovementSize / 4) * currentScale; // Length of the arrowhead
-		var tailWidth = arrowWidth * 0.7; // Width of the tail (adjust as needed)
-		const angle = Math.atan2(endY - startY, endX - startX); // Angle of the arrow
+    try {
+        // Set up the arrow parameters
+        var arrowWidth = (firstMovementSize / 4) * currentScale; // Width of the arrowhead
+        var arrowLength = 2 * (firstMovementSize / 4) * currentScale; // Length of the arrowhead
+        var tailWidth = arrowWidth * 0.7; // Width of the tail (adjust as needed)
+        const angle = Math.atan2(endY - startY, endX - startX); // Angle of the arrow
 
-		// Set the stroke and fill colors
-		ctx.strokeStyle = strokeColour; // Stroke color (black outline)
-		ctx.fillStyle = fillColour; // Fill color (goldenrod)
+        // Set the stroke and fill colors
+        ctx.strokeStyle = strokeColour; // Stroke color (black outline)
+        ctx.fillStyle = fillColour; // Fill color (goldenrod)
 
-		// Begin drawing the arrow as a single path
-		ctx.beginPath();
+        // Begin drawing the arrow as a single path
+        ctx.beginPath();
 
-		// Move to the start point of the arrow
-		ctx.moveTo(startX + (tailWidth / 2) * Math.sin(angle), startY - (tailWidth / 2) * Math.cos(angle)); // Top-left corner of the tail
+        // Move to the start point of the arrow
+        ctx.moveTo(startX + (tailWidth / 2) * Math.sin(angle), startY - (tailWidth / 2) * Math.cos(angle)); // Top-left corner of the tail
 
-		// Draw to the end point of the tail (top-right corner)
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) + (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) - (tailWidth / 2) * Math.cos(angle));
+        // Draw to the end point of the tail (top-right corner)
+        ctx.lineTo(endX - arrowLength * Math.cos(angle) + (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) - (tailWidth / 2) * Math.cos(angle));
 
-		// Draw the right base of the arrowhead
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
+        // Draw the right base of the arrowhead
+        ctx.lineTo(endX - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
 
-		// Draw the tip of the arrowhead
-		ctx.lineTo(endX, endY);
+        // Draw the tip of the arrowhead
+        ctx.lineTo(endX, endY);
 
-		// Draw the left base of the arrowhead
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle));
+        // Draw the left base of the arrowhead
+        ctx.lineTo(endX - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle));
 
-		// Draw back to the bottom-right corner of the tail
-		ctx.lineTo(endX - arrowLength * Math.cos(angle) - (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) + (tailWidth / 2) * Math.cos(angle));
+        // Draw back to the bottom-right corner of the tail
+        ctx.lineTo(endX - arrowLength * Math.cos(angle) - (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) + (tailWidth / 2) * Math.cos(angle));
 
-		// Draw to the bottom-left corner of the tail
-		ctx.lineTo(startX - (tailWidth / 2) * Math.sin(angle), startY + (tailWidth / 2) * Math.cos(angle));
+        // Draw to the bottom-left corner of the tail
+        ctx.lineTo(startX - (tailWidth / 2) * Math.sin(angle), startY + (tailWidth / 2) * Math.cos(angle));
 
-		ctx.closePath();
-		ctx.fill(); // Fill the arrow with color
-		ctx.stroke(); // Outline the arrow with a stroke
-	} catch (error) {
-		console.error("Error while drawing arrow:", error);
-	}
+        ctx.closePath();
+        ctx.fill(); // Fill the arrow with color
+        ctx.stroke(); // Outline the arrow with a stroke
+    } catch (error) {
+        console.error("Error while drawing arrow:", error);
+    }
 }
 
 function drawArrow(startX, startY, endX, endY, color, connScale) {
-	//console.log(`Drawing arrow from (${startX}, ${startY}) to (${endX}, ${endY}) with color ${color}`);
-	try {
-		// Set up the arrow parameters
-		var arrowWidth = (connScale / 4) * currentScale;
-		var arrowLength = 2 * (connScale / 4) * currentScale;
+    //console.log(`Drawing arrow from (${startX}, ${startY}) to (${endX}, ${endY}) with color ${color}`);
+    try {
+        // Set up the arrow parameters
+        var arrowWidth = (connScale / 4) * currentScale;
+        var arrowLength = 2 * (connScale / 4) * currentScale;
 
-		// Calculate the angle of the line
-		const angle = Math.atan2(startX - endX, startY - endY); // Calculate the angle of the line (reversed)
+        // Calculate the angle of the line
+        const angle = Math.atan2(startX - endX, startY - endY); // Calculate the angle of the line (reversed)
 
-		ctx.strokeStyle = color;
-		ctx.fillStyle = color;
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
 
-		// Draw the line
-		ctx.beginPath();
-		ctx.moveTo(parseInt(startX), parseInt(startY));
-		ctx.lineTo(parseInt(endX), parseInt(endY));
-		ctx.lineWidth = 2;
-		ctx.stroke();
+        // Draw the line
+        ctx.beginPath();
+        ctx.moveTo(parseInt(startX), parseInt(startY));
+        ctx.lineTo(parseInt(endX), parseInt(endY));
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
-		// Draw the arrowhead
-		if (endX == startX && endY == startY) {
-			var size = (connScale / 4) * currentScale; // Change this value to adjust the size of the house shape
-			ctx.fillStyle = color;
-			ctx.beginPath();
-			ctx.moveTo(endX, endY); // Apex of the house
-			ctx.lineTo(endX - size / 2, endY + size); // Bottom left corner
-			ctx.lineTo(endX - size / 2, endY + 1.5 * size);
-			ctx.lineTo(endX + size / 2, endY + 1.5 * size); // Bottom right corner
-			ctx.lineTo(endX + size / 2, endY + size); // Bottom right corner
-			ctx.closePath(); // Close the shape
-			ctx.stroke(); // Draw the outline
-		} else {
-			ctx.beginPath();
-			ctx.moveTo(parseInt(endX), parseInt(endY));
-			ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) - arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) + arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
-			ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) + arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) - arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
-			ctx.closePath();
-			ctx.fill();
-		}
-	} catch (error) {
-		console.error("Error while drawing arrow:", error);
-	}
+        // Draw the arrowhead
+        if (endX == startX && endY == startY) {
+            var size = (connScale / 4) * currentScale; // Change this value to adjust the size of the house shape
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(endX, endY); // Apex of the house
+            ctx.lineTo(endX - size / 2, endY + size); // Bottom left corner
+            ctx.lineTo(endX - size / 2, endY + 1.5 * size);
+            ctx.lineTo(endX + size / 2, endY + 1.5 * size); // Bottom right corner
+            ctx.lineTo(endX + size / 2, endY + size); // Bottom right corner
+            ctx.closePath(); // Close the shape
+            ctx.stroke(); // Draw the outline
+        } else {
+            ctx.beginPath();
+            ctx.moveTo(parseInt(endX), parseInt(endY));
+            ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) - arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) + arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
+            ctx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) + arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) - arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
+            ctx.closePath();
+            ctx.fill();
+        }
+    } catch (error) {
+        console.error("Error while drawing arrow:", error);
+    }
 }
 
 function drawArrowDelayText(startX, startY, endX, endY, color, text) {
-	// Calculate the angle of the text and the midpoint of the line
-	const angle = Math.atan2(endY - startY, endX - startX);
-	const midX = (startX + endX) / 2;
-	const midY = (startY + endY) / 2;
+    // Calculate the angle of the text and the midpoint of the line
+    const angle = Math.atan2(endY - startY, endX - startX);
+    const midX = (startX + endX) / 2;
+    const midY = (startY + endY) / 2;
 
-	// Save the current canvas state and apply transformations
-	ctx.save();
-	ctx.translate(midX, midY);
-	ctx.rotate(angle);
+    // Save the current canvas state and apply transformations
+    ctx.save();
+    ctx.translate(midX, midY);
+    ctx.rotate(angle);
 
-	// Draw the text along the line
-	ctx.fillStyle = color;
-	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
-	ctx.fillText(text, -currentFontSize, -3);
+    // Draw the text along the line
+    ctx.fillStyle = color;
+    ctx.font = parseInt(currentFontSize - 2) + "px Arial";
+    ctx.fillText(text, -currentFontSize, -3);
 
-	// Restore the canvas state
-	ctx.restore();
+    // Restore the canvas state
+    ctx.restore();
 }
 
 function drawDelauanySlopeMap(triangles, centroid, strokeColour) {
-	if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
-	ctx.strokeStyle = strokeColour;
-	ctx.fillStyle = fillColour;
-	ctx.lineWidth = 1;
-	console.log("drawDelauanySlopeMap: " + triangles.length);
-	for (let i = 0; i < triangles.length; i++) {
-		const triangle = triangles[i];
-		const tAX = triangle[0][0];
-		const tAY = triangle[0][1];
-		const tAZ = triangle[0][2];
-		const tBX = triangle[1][0];
-		const tBY = triangle[1][1];
-		const tBZ = triangle[1][2];
-		const tCX = triangle[2][0];
-		const tCY = triangle[2][1];
-		const tCZ = triangle[2][2];
+    if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
+    ctx.strokeStyle = strokeColour;
+    ctx.fillStyle = fillColour;
+    ctx.lineWidth = 1;
+    console.log("drawDelauanySlopeMap: " + triangles.length);
+    for (let i = 0; i < triangles.length; i++) {
+        const triangle = triangles[i];
+        const tAX = triangle[0][0];
+        const tAY = triangle[0][1];
+        const tAZ = triangle[0][2];
+        const tBX = triangle[1][0];
+        const tBY = triangle[1][1];
+        const tBZ = triangle[1][2];
+        const tCX = triangle[2][0];
+        const tCY = triangle[2][1];
+        const tCZ = triangle[2][2];
 
-		const edge1 = {
-			x: tBX - tAX,
-			y: tBY - tAY,
-			z: tBZ - tAZ
-		};
-		const edge2 = {
-			x: tCX - tAX,
-			y: tCY - tAY,
-			z: tCZ - tAZ
-		};
-		const edge3 = {
-			x: tCX - tBX,
-			y: tCY - tBY,
-			z: tCZ - tBZ
-		};
+        const edge1 = {
+            x: tBX - tAX,
+            y: tBY - tAY,
+            z: tBZ - tAZ
+        };
+        const edge2 = {
+            x: tCX - tAX,
+            y: tCY - tAY,
+            z: tCZ - tAZ
+        };
+        const edge3 = {
+            x: tCX - tBX,
+            y: tCY - tBY,
+            z: tCZ - tBZ
+        };
 
-		// Calculate the maximum absolute slope angle for this triangle
-		//const slopeAngles = [Math.abs(getEdgeSlopeAngle(triangle[0], triangle[1])), Math.abs(getEdgeSlopeAngle(triangle[1], triangle[2])), Math.abs(getEdgeSlopeAngle(triangle[2], triangle[0]))];
-		//let maxSlopeAngle = Math.max(...slopeAngles);
+        // Calculate the maximum absolute slope angle for this triangle
+        //const slopeAngles = [Math.abs(getEdgeSlopeAngle(triangle[0], triangle[1])), Math.abs(getEdgeSlopeAngle(triangle[1], triangle[2])), Math.abs(getEdgeSlopeAngle(triangle[2], triangle[0]))];
+        //let maxSlopeAngle = Math.max(...slopeAngles);
 
-		let maxSlopeAngle = getDipAngle(triangle);
+        let maxSlopeAngle = getDipAngle(triangle);
 
-		// Create a triangle array
-		const aAX = (tAX - centroid.x) * currentScale + canvas.width / 2;
-		const aAY = (-tAY + centroid.y) * currentScale + canvas.height / 2;
-		const aAZ = tAZ;
-		const aBX = (tBX - centroid.x) * currentScale + canvas.width / 2;
-		const aBY = (-tBY + centroid.y) * currentScale + canvas.height / 2;
-		const aBZ = tBZ;
-		const aCX = (tCX - centroid.x) * currentScale + canvas.width / 2;
-		const aCY = (-tCY + centroid.y) * currentScale + canvas.height / 2;
-		const aCZ = tCZ;
+        // Create a triangle array
+        const aAX = (tAX - centroid.x) * currentScale + canvas.width / 2;
+        const aAY = (-tAY + centroid.y) * currentScale + canvas.height / 2;
+        const aAZ = tAZ;
+        const aBX = (tBX - centroid.x) * currentScale + canvas.width / 2;
+        const aBY = (-tBY + centroid.y) * currentScale + canvas.height / 2;
+        const aBZ = tBZ;
+        const aCX = (tCX - centroid.x) * currentScale + canvas.width / 2;
+        const aCY = (-tCY + centroid.y) * currentScale + canvas.height / 2;
+        const aCZ = tCZ;
 
-		// Define the minimum and maximum RGB values (rgb(50, 50, 50) and rgb(200, 200, 200))
-		const minRGB = [225, 225, 225];
-		const maxRGB = [100, 100, 100];
+        // Define the minimum and maximum RGB values (rgb(50, 50, 50) and rgb(200, 200, 200))
+        const minRGB = [225, 225, 225];
+        const maxRGB = [100, 100, 100];
 
-		// Calculate the RGB values based on maxSlopeAngle using linear interpolation
-		const r = Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
-		const g = Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
-		const b = Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
+        // Calculate the RGB values based on maxSlopeAngle using linear interpolation
+        const r = Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
+        const g = Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
+        const b = Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
 
-		const ir = 255 - Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
-		const ig = 255 - Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
-		const ib = 255 - Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
+        const ir = 255 - Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
+        const ig = 255 - Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
+        const ib = 255 - Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
 
-		// Define the color ranges and corresponding RGB values
-		let triangleFillColour;
-		if (maxSlopeAngle >= 0 && maxSlopeAngle < 5) {
-			// Cornflower blue for angles in the range [0, 4)
-			triangleFillColour = "rgb(51, 139, 255)";
-		} else if (maxSlopeAngle >= 5 && maxSlopeAngle < 7) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(0, 102, 204)";
-		} else if (maxSlopeAngle >= 7 && maxSlopeAngle < 9) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(0, 204, 204)";
-		} else if (maxSlopeAngle >= 9 && maxSlopeAngle < 12) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(102, 204, 0)";
-		} else if (maxSlopeAngle >= 12 && maxSlopeAngle < 15) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(204, 204, 0)";
-		} else if (maxSlopeAngle >= 15 && maxSlopeAngle < 17) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(255, 128, 0)";
-		} else if (maxSlopeAngle >= 17 && maxSlopeAngle < 20) {
-			// Green for angles in the range [7, 10]
-			triangleFillColour = "rgb(255, 0, 0)";
-		} else {
-			// Default to grey for all other angles
-			triangleFillColour = "rgb(153, 0, 76)";
-		}
+        // Define the color ranges and corresponding RGB values
+        let triangleFillColour;
+        if (maxSlopeAngle >= 0 && maxSlopeAngle < 5) {
+            // Cornflower blue for angles in the range [0, 4)
+            triangleFillColour = "rgb(51, 139, 255)";
+        } else if (maxSlopeAngle >= 5 && maxSlopeAngle < 7) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(0, 102, 204)";
+        } else if (maxSlopeAngle >= 7 && maxSlopeAngle < 9) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(0, 204, 204)";
+        } else if (maxSlopeAngle >= 9 && maxSlopeAngle < 12) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(102, 204, 0)";
+        } else if (maxSlopeAngle >= 12 && maxSlopeAngle < 15) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(204, 204, 0)";
+        } else if (maxSlopeAngle >= 15 && maxSlopeAngle < 17) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(255, 128, 0)";
+        } else if (maxSlopeAngle >= 17 && maxSlopeAngle < 20) {
+            // Green for angles in the range [7, 10]
+            triangleFillColour = "rgb(255, 0, 0)";
+        } else {
+            // Default to grey for all other angles
+            triangleFillColour = "rgb(153, 0, 76)";
+        }
 
-		// Combine the calculated RGB values into the final fill color
-		// triangleFillColour = `rgb(${r}, ${g}, ${b})`;
-		const triangleStrokeColor = `rgb(${r}, ${g}, ${b})`;
-		// Invert the color by subtracting each channel value from 255
-		const invertedColour = `rgb(${ir}, ${ig}, ${ib})`;
+        // Combine the calculated RGB values into the final fill color
+        // triangleFillColour = `rgb(${r}, ${g}, ${b})`;
+        const triangleStrokeColor = `rgb(${r}, ${g}, ${b})`;
+        // Invert the color by subtracting each channel value from 255
+        const invertedColour = `rgb(${ir}, ${ig}, ${ib})`;
 
-		ctx.strokeStyle = triangleStrokeColor;
-		ctx.fillStyle = triangleFillColour;
-		ctx.lineWidth = 1;
+        ctx.strokeStyle = triangleStrokeColor;
+        ctx.fillStyle = triangleFillColour;
+        ctx.lineWidth = 1;
 
-		ctx.beginPath();
-		ctx.moveTo(aAX, aAY);
-		ctx.lineTo(aBX, aBY);
-		ctx.lineTo(aCX, aCY);
-		ctx.closePath();
-		ctx.stroke();
-		ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(aAX, aAY);
+        ctx.lineTo(aBX, aBY);
+        ctx.lineTo(aCX, aCY);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
 
-		ctx.lineWidth = 1;
-	}
+        ctx.lineWidth = 1;
+    }
 }
 function drawDelauanyBurdenRelief(triangles, centroid, strokeColour) {
-	if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
-	ctx.strokeStyle = strokeColour;
-	ctx.lineWidth = 1;
-	//console.log("drawDelauanyBurdenRelief: " + triangles.length);
-	// const reliefResults = delaunayContourBurdenRelief(triangles, 20, 0);
-	// console.log("Relief Results:", reliefResults);
-	for (let i = 0; i < triangles.length; i++) {
-		const triangle = triangles[i];
-		const tAX = triangle[0][0];
-		const tAY = triangle[0][1];
-		const tAZ = triangle[0][2];
-		const tBX = triangle[1][0];
-		const tBY = triangle[1][1];
-		const tBZ = triangle[1][2];
-		const tCX = triangle[2][0];
-		const tCY = triangle[2][1];
-		const tCZ = triangle[2][2];
+    if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
+    ctx.strokeStyle = strokeColour;
+    ctx.lineWidth = 1;
+    //console.log("drawDelauanyBurdenRelief: " + triangles.length);
+    // const reliefResults = delaunayContourBurdenRelief(triangles, 20, 0);
+    // console.log("Relief Results:", reliefResults);
+    for (let i = 0; i < triangles.length; i++) {
+        const triangle = triangles[i];
+        const tAX = triangle[0][0];
+        const tAY = triangle[0][1];
+        const tAZ = triangle[0][2];
+        const tBX = triangle[1][0];
+        const tBY = triangle[1][1];
+        const tBZ = triangle[1][2];
+        const tCX = triangle[2][0];
+        const tCY = triangle[2][1];
+        const tCZ = triangle[2][2];
 
-		// Find the earliest and latest times
-		const earliestTime = Math.min(tAZ, tBZ, tCZ);
-		const latestTime = Math.max(tAZ, tBZ, tCZ);
+        // Find the earliest and latest times
+        const earliestTime = Math.min(tAZ, tBZ, tCZ);
+        const latestTime = Math.max(tAZ, tBZ, tCZ);
 
-		// Calculate the time difference
-		const timeDifference = latestTime - earliestTime; // ms
+        // Calculate the time difference
+        const timeDifference = latestTime - earliestTime; // ms
 
-		// Determine which points correspond to the earliest and latest times
-		let p1, p2;
-		if (earliestTime === tAZ) {
-			p1 = { x: tAX, y: tAY };
-		} else if (earliestTime === tBZ) {
-			p1 = { x: tBX, y: tBY };
-		} else {
-			p1 = { x: tCX, y: tCY };
-		}
+        // Determine which points correspond to the earliest and latest times
+        let p1, p2;
+        if (earliestTime === tAZ) {
+            p1 = { x: tAX, y: tAY };
+        } else if (earliestTime === tBZ) {
+            p1 = { x: tBX, y: tBY };
+        } else {
+            p1 = { x: tCX, y: tCY };
+        }
 
-		if (latestTime === tAZ) {
-			p2 = { x: tAX, y: tAY };
-		} else if (latestTime === tBZ) {
-			p2 = { x: tBX, y: tBY };
-		} else {
-			p2 = { x: tCX, y: tCY };
-		}
+        if (latestTime === tAZ) {
+            p2 = { x: tAX, y: tAY };
+        } else if (latestTime === tBZ) {
+            p2 = { x: tBX, y: tBY };
+        } else {
+            p2 = { x: tCX, y: tCY };
+        }
 
-		// Calculate the distance between the two points (earliest and latest)
-		const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        // Calculate the distance between the two points (earliest and latest)
+        const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
-		// Calculate burden relief in ms/m
-		const burdenRelief = timeDifference / distance;
+        // Calculate burden relief in ms/m
+        const burdenRelief = timeDifference / distance;
 
-		//console.log("Time Difference (ms):", timeDifference);
-		//console.log("Distance (m):", distance);
-		//console.log("Burden Relief (ms/m):", burdenRelief);
+        //console.log("Time Difference (ms):", timeDifference);
+        //console.log("Distance (m):", distance);
+        //console.log("Burden Relief (ms/m):", burdenRelief);
 
-		// Color mapping based on timing relief (adjust values as needed)
-		let triangleFillColour;
-		if (burdenRelief < 4) {
-			triangleFillColour = "rgb(75, 20, 20)"; // fast
-		} else if (burdenRelief < 7) {
-			triangleFillColour = "rgb(255, 40, 40)";
-		} else if (burdenRelief < 10) {
-			triangleFillColour = "rgb(255, 120, 50)"; //
-		} else if (burdenRelief < 13) {
-			triangleFillColour = "rgb(255, 255, 50)"; //
-		} else if (burdenRelief < 16) {
-			triangleFillColour = "rgb(50, 255, 70)"; //
-		} else if (burdenRelief < 19) {
-			triangleFillColour = "rgb(50, 255, 200)"; //
-		} else if (burdenRelief < 22) {
-			triangleFillColour = "rgb(50, 230, 255)"; //
-		} else if (burdenRelief < 25) {
-			triangleFillColour = "rgb(50, 180, 255)"; //
-		} else if (burdenRelief < 30) {
-			triangleFillColour = "rgb(50, 100, 255)"; //
-		} else if (burdenRelief < 40) {
-			triangleFillColour = "rgb(50, 0, 255)"; //
-		} else {
-			triangleFillColour = "rgb(75, 0, 150)"; // slow
-		}
+        // Color mapping based on timing relief (adjust values as needed)
+        let triangleFillColour;
+        if (burdenRelief < 4) {
+            triangleFillColour = "rgb(75, 20, 20)"; // fast
+        } else if (burdenRelief < 7) {
+            triangleFillColour = "rgb(255, 40, 40)";
+        } else if (burdenRelief < 10) {
+            triangleFillColour = "rgb(255, 120, 50)"; //
+        } else if (burdenRelief < 13) {
+            triangleFillColour = "rgb(255, 255, 50)"; //
+        } else if (burdenRelief < 16) {
+            triangleFillColour = "rgb(50, 255, 70)"; //
+        } else if (burdenRelief < 19) {
+            triangleFillColour = "rgb(50, 255, 200)"; //
+        } else if (burdenRelief < 22) {
+            triangleFillColour = "rgb(50, 230, 255)"; //
+        } else if (burdenRelief < 25) {
+            triangleFillColour = "rgb(50, 180, 255)"; //
+        } else if (burdenRelief < 30) {
+            triangleFillColour = "rgb(50, 100, 255)"; //
+        } else if (burdenRelief < 40) {
+            triangleFillColour = "rgb(50, 0, 255)"; //
+        } else {
+            triangleFillColour = "rgb(75, 0, 150)"; // slow
+        }
 
-		ctx.fillStyle = triangleFillColour;
+        ctx.fillStyle = triangleFillColour;
 
-		// Draw triangle
-		const aAX = (tAX - centroid.x) * currentScale + canvas.width / 2;
-		const aAY = (-tAY + centroid.y) * currentScale + canvas.height / 2;
-		const aBX = (tBX - centroid.x) * currentScale + canvas.width / 2;
-		const aBY = (-tBY + centroid.y) * currentScale + canvas.height / 2;
-		const aCX = (tCX - centroid.x) * currentScale + canvas.width / 2;
-		const aCY = (-tCY + centroid.y) * currentScale + canvas.height / 2;
+        // Draw triangle
+        const aAX = (tAX - centroid.x) * currentScale + canvas.width / 2;
+        const aAY = (-tAY + centroid.y) * currentScale + canvas.height / 2;
+        const aBX = (tBX - centroid.x) * currentScale + canvas.width / 2;
+        const aBY = (-tBY + centroid.y) * currentScale + canvas.height / 2;
+        const aCX = (tCX - centroid.x) * currentScale + canvas.width / 2;
+        const aCY = (-tCY + centroid.y) * currentScale + canvas.height / 2;
 
-		ctx.beginPath();
-		ctx.moveTo(aAX, aAY);
-		ctx.lineTo(aBX, aBY);
-		ctx.lineTo(aCX, aCY);
-		ctx.closePath();
-		ctx.stroke();
-		ctx.fill();
-	}
+        ctx.beginPath();
+        ctx.moveTo(aAX, aAY);
+        ctx.lineTo(aBX, aBY);
+        ctx.lineTo(aCX, aCY);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.fill();
+    }
 }
 
 function calculateTriangleCentroid(triangle) {
-	const tAX = triangle[0][0];
-	const tAY = triangle[0][1];
-	const tAZ = triangle[0][2];
-	const tBX = triangle[1][0];
-	const tBY = triangle[1][1];
-	const tBZ = triangle[1][2];
-	const tCX = triangle[2][0];
-	const tCY = triangle[2][1];
-	const tCZ = triangle[2][2];
+    const tAX = triangle[0][0];
+    const tAY = triangle[0][1];
+    const tAZ = triangle[0][2];
+    const tBX = triangle[1][0];
+    const tBY = triangle[1][1];
+    const tBZ = triangle[1][2];
+    const tCX = triangle[2][0];
+    const tCY = triangle[2][1];
+    const tCZ = triangle[2][2];
 
-	const triangleCentroid = {
-		x: (tAX + tBX + tCX) / 3,
-		y: (tAY + tBY + tCY) / 3,
-		z: (tAZ + tBZ + tCZ) / 3
-	};
-	return triangleCentroid;
+    const triangleCentroid = {
+        x: (tAX + tBX + tCX) / 3,
+        y: (tAY + tBY + tCY) / 3,
+        z: (tAZ + tBZ + tCZ) / 3
+    };
+    return triangleCentroid;
 }
 function drawReliefLegend(strokecolour) {
-	//draw a legend at the bottom of the screen in the center
-	//the legend should be for the drawDelauanyTriangles function
+    //draw a legend at the bottom of the screen in the center
+    //the legend should be for the drawDelauanyTriangles function
 
-	const legend0to4 = "rgb(75, 20, 20)"; // fast
-	const legend4to7 = "rgb(255, 40, 40)";
-	const legend7to10 = "rgb(255, 120, 50)"; //
-	const legend10to13 = "rgb(255, 255, 50)"; //
-	const legend13to16 = "rgb(50, 255, 70)"; //
-	const legend16to19 = "rgb(50, 255, 200)"; //
-	const legend19to22 = "rgb(50, 230, 255)"; //
-	const legend22to25 = "rgb(50, 180, 255)"; //
-	const legend25to30 = "rgb(50, 100, 255)"; //
-	const legend30to40 = "rgb(50, 0, 255)"; //
-	const legend40above = "rgb(75, 0, 150)"; // slow
+    const legend0to4 = "rgb(75, 20, 20)"; // fast
+    const legend4to7 = "rgb(255, 40, 40)";
+    const legend7to10 = "rgb(255, 120, 50)"; //
+    const legend10to13 = "rgb(255, 255, 50)"; //
+    const legend13to16 = "rgb(50, 255, 70)"; //
+    const legend16to19 = "rgb(50, 255, 200)"; //
+    const legend19to22 = "rgb(50, 230, 255)"; //
+    const legend22to25 = "rgb(50, 180, 255)"; //
+    const legend25to30 = "rgb(50, 100, 255)"; //
+    const legend30to40 = "rgb(50, 0, 255)"; //
+    const legend40above = "rgb(75, 0, 150)"; // slow
 
-	//draw the legend
-	ctx.beginPath();
-	ctx.fill();
-	ctx.font = "14px Arial";
-	ctx.fillStyle = strokecolour;
-	ctx.fillText("Legend Relief", 10, canvas.height / 2 - 70);
-	ctx.fillText("0ms/m - 4ms/m", 10, canvas.height / 2 - 40);
-	ctx.fillText("4ms/m - 7ms/m", 10, canvas.height / 2 - 10);
-	ctx.fillText("7ms/m - 10ms/m", 10, canvas.height / 2 + 20);
-	ctx.fillText("10ms/m - 13ms/m", 10, canvas.height / 2 + 50);
-	ctx.fillText("13ms/m - 16ms/m", 10, canvas.height / 2 + 80);
-	ctx.fillText("16ms/m - 19ms/m", 10, canvas.height / 2 + 110);
-	ctx.fillText("19ms/m - 22ms/m", 10, canvas.height / 2 + 140);
-	ctx.fillText("22ms/m - 25ms/m", 10, canvas.height / 2 + 170);
-	ctx.fillText("25ms/m - 30ms/m", 10, canvas.height / 2 + 200);
-	ctx.fillText("30ms/m - 40ms/m", 10, canvas.height / 2 + 230);
-	ctx.fillText("40ms/m above", 10, canvas.height / 2 + 260);
-	ctx.fillStyle = legend0to4;
-	ctx.fillRect(130, canvas.height / 2 - 55, 20, 20);
-	ctx.fillStyle = legend4to7;
-	ctx.fillRect(130, canvas.height / 2 - 25, 20, 20);
-	ctx.fillStyle = legend7to10;
-	ctx.fillRect(130, canvas.height / 2 + 5, 20, 20);
-	ctx.fillStyle = legend10to13;
-	ctx.fillRect(130, canvas.height / 2 + 35, 20, 20);
-	ctx.fillStyle = legend13to16;
-	ctx.fillRect(130, canvas.height / 2 + 65, 20, 20);
-	ctx.fillStyle = legend16to19;
-	ctx.fillRect(130, canvas.height / 2 + 95, 20, 20);
-	ctx.fillStyle = legend19to22;
-	ctx.fillRect(130, canvas.height / 2 + 125, 20, 20);
-	ctx.fillStyle = legend22to25;
-	ctx.fillRect(130, canvas.height / 2 + 155, 20, 20);
-	ctx.fillStyle = legend25to30;
-	ctx.fillRect(130, canvas.height / 2 + 185, 20, 20);
-	ctx.fillStyle = legend30to40;
-	ctx.fillRect(130, canvas.height / 2 + 215, 20, 20);
-	ctx.fillStyle = legend40above;
-	ctx.fillRect(130, canvas.height / 2 + 245, 20, 20);
-	ctx.stroke();
+    //draw the legend
+    ctx.beginPath();
+    ctx.fill();
+    ctx.font = "14px Arial";
+    ctx.fillStyle = strokecolour;
+    ctx.fillText("Legend Relief", 10, canvas.height / 2 - 70);
+    ctx.fillText("0ms/m - 4ms/m", 10, canvas.height / 2 - 40);
+    ctx.fillText("4ms/m - 7ms/m", 10, canvas.height / 2 - 10);
+    ctx.fillText("7ms/m - 10ms/m", 10, canvas.height / 2 + 20);
+    ctx.fillText("10ms/m - 13ms/m", 10, canvas.height / 2 + 50);
+    ctx.fillText("13ms/m - 16ms/m", 10, canvas.height / 2 + 80);
+    ctx.fillText("16ms/m - 19ms/m", 10, canvas.height / 2 + 110);
+    ctx.fillText("19ms/m - 22ms/m", 10, canvas.height / 2 + 140);
+    ctx.fillText("22ms/m - 25ms/m", 10, canvas.height / 2 + 170);
+    ctx.fillText("25ms/m - 30ms/m", 10, canvas.height / 2 + 200);
+    ctx.fillText("30ms/m - 40ms/m", 10, canvas.height / 2 + 230);
+    ctx.fillText("40ms/m above", 10, canvas.height / 2 + 260);
+    ctx.fillStyle = legend0to4;
+    ctx.fillRect(130, canvas.height / 2 - 55, 20, 20);
+    ctx.fillStyle = legend4to7;
+    ctx.fillRect(130, canvas.height / 2 - 25, 20, 20);
+    ctx.fillStyle = legend7to10;
+    ctx.fillRect(130, canvas.height / 2 + 5, 20, 20);
+    ctx.fillStyle = legend10to13;
+    ctx.fillRect(130, canvas.height / 2 + 35, 20, 20);
+    ctx.fillStyle = legend13to16;
+    ctx.fillRect(130, canvas.height / 2 + 65, 20, 20);
+    ctx.fillStyle = legend16to19;
+    ctx.fillRect(130, canvas.height / 2 + 95, 20, 20);
+    ctx.fillStyle = legend19to22;
+    ctx.fillRect(130, canvas.height / 2 + 125, 20, 20);
+    ctx.fillStyle = legend22to25;
+    ctx.fillRect(130, canvas.height / 2 + 155, 20, 20);
+    ctx.fillStyle = legend25to30;
+    ctx.fillRect(130, canvas.height / 2 + 185, 20, 20);
+    ctx.fillStyle = legend30to40;
+    ctx.fillRect(130, canvas.height / 2 + 215, 20, 20);
+    ctx.fillStyle = legend40above;
+    ctx.fillRect(130, canvas.height / 2 + 245, 20, 20);
+    ctx.stroke();
 }
 
 function drawTriangleAngleText(triangle, centroid, strokeColour) {
-	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
-	const triangleCentroid = calculateTriangleCentroid(triangle);
-	let maxSlopeAngle = getDipAngle(triangle);
-	drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(maxSlopeAngle).toFixed(1), strokeColour);
+    if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
+    const triangleCentroid = calculateTriangleCentroid(triangle);
+    let maxSlopeAngle = getDipAngle(triangle);
+    drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(maxSlopeAngle).toFixed(1), strokeColour);
 }
 
 function drawTriangleBurdenReliefText(triangle, centroid, strokeColour) {
-	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
-	const triangleCentroid = calculateTriangleCentroid(triangle);
-	let burdenRelief = getBurdenRelief(triangle);
-	drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(burdenRelief).toFixed(1), strokeColour);
+    if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
+    const triangleCentroid = calculateTriangleCentroid(triangle);
+    let burdenRelief = getBurdenRelief(triangle);
+    drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(burdenRelief).toFixed(1), strokeColour);
 }
 
 function getAngleBetweenEdges(edge1, edge2) {
-	const dotProduct = edge1.x * edge2.x + edge1.y * edge2.y + edge1.z * edge2.z;
-	const magEdge1 = Math.sqrt(edge1.x * edge1.x + edge1.y * edge1.y + edge1.z * edge1.z);
-	const magEdge2 = Math.sqrt(edge2.x * edge2.x + edge2.y * edge2.y + edge2.z * edge2.z);
-	const epsilon = 1e-6; // Tolerance for checking if magnitude is close to zero
+    const dotProduct = edge1.x * edge2.x + edge1.y * edge2.y + edge1.z * edge2.z;
+    const magEdge1 = Math.sqrt(edge1.x * edge1.x + edge1.y * edge1.y + edge1.z * edge1.z);
+    const magEdge2 = Math.sqrt(edge2.x * edge2.x + edge2.y * edge2.y + edge2.z * edge2.z);
+    const epsilon = 1e-6; // Tolerance for checking if magnitude is close to zero
 
-	if (Math.abs(magEdge1) < epsilon || Math.abs(magEdge2) < epsilon) {
-		// Handle the case where either edge is degenerate (magnitude close to zero)
-		return 0;
-	}
+    if (Math.abs(magEdge1) < epsilon || Math.abs(magEdge2) < epsilon) {
+        // Handle the case where either edge is degenerate (magnitude close to zero)
+        return 0;
+    }
 
-	let angle = Math.acos(dotProduct / (magEdge1 * magEdge2));
-	return (angle * 180) / Math.PI;
+    let angle = Math.acos(dotProduct / (magEdge1 * magEdge2));
+    return (angle * 180) / Math.PI;
 }
 
 function getDipAngle(triangle) {
-	const edge1 = [triangle[1][0] - triangle[0][0], triangle[1][1] - triangle[0][1], triangle[1][2] - triangle[0][2]];
-	const edge2 = [triangle[2][0] - triangle[0][0], triangle[2][1] - triangle[0][1], triangle[2][2] - triangle[0][2]];
+    const edge1 = [triangle[1][0] - triangle[0][0], triangle[1][1] - triangle[0][1], triangle[1][2] - triangle[0][2]];
+    const edge2 = [triangle[2][0] - triangle[0][0], triangle[2][1] - triangle[0][1], triangle[2][2] - triangle[0][2]];
 
-	// Calculate the normal vector of the triangle's plane
-	const normalVector = [edge1[1] * edge2[2] - edge1[2] * edge2[1], edge1[2] * edge2[0] - edge1[0] * edge2[2], edge1[0] * edge2[1] - edge1[1] * edge2[0]];
+    // Calculate the normal vector of the triangle's plane
+    const normalVector = [edge1[1] * edge2[2] - edge1[2] * edge2[1], edge1[2] * edge2[0] - edge1[0] * edge2[2], edge1[0] * edge2[1] - edge1[1] * edge2[0]];
 
-	// Calculate the dot product with the vertical direction (0, 0, 1)
-	const dotProduct = normalVector[0] * 0 + normalVector[1] * 0 + normalVector[2] * 1;
-	const magNormal = Math.sqrt(normalVector[0] ** 2 + normalVector[1] ** 2 + normalVector[2] ** 2);
+    // Calculate the dot product with the vertical direction (0, 0, 1)
+    const dotProduct = normalVector[0] * 0 + normalVector[1] * 0 + normalVector[2] * 1;
+    const magNormal = Math.sqrt(normalVector[0] ** 2 + normalVector[1] ** 2 + normalVector[2] ** 2);
 
-	const epsilon = 1e-6; // Tolerance for checking if magnitude is close to zero
-	if (Math.abs(magNormal) < epsilon) {
-		// Handle degenerate case
-		return 0;
-	}
+    const epsilon = 1e-6; // Tolerance for checking if magnitude is close to zero
+    if (Math.abs(magNormal) < epsilon) {
+        // Handle degenerate case
+        return 0;
+    }
 
-	const angleRadians = Math.acos(dotProduct / magNormal);
-	const angleDegrees = (angleRadians * 180) / Math.PI;
+    const angleRadians = Math.acos(dotProduct / magNormal);
+    const angleDegrees = (angleRadians * 180) / Math.PI;
 
-	// Calculate the dip angle between the dot product and the horizontal plane (0 degrees)
-	const dipAngle = 180 - angleDegrees;
+    // Calculate the dip angle between the dot product and the horizontal plane (0 degrees)
+    const dipAngle = 180 - angleDegrees;
 
-	return dipAngle;
+    return dipAngle;
 }
 
 function getEdgeSlopeAngle(p1, p2) {
-	const dx = p2[0] - p1[0];
-	const dy = p2[1] - p1[1];
-	const dz = p2[2] - p1[2]; // Consider the z-axis difference for vertical deviation
-	const slopeAngleRadians = Math.atan2(dz, Math.sqrt(dx * dx + dy * dy));
-	const slopeAngleDegrees = (slopeAngleRadians * 180) / Math.PI;
-	return slopeAngleDegrees;
+    const dx = p2[0] - p1[0];
+    const dy = p2[1] - p1[1];
+    const dz = p2[2] - p1[2]; // Consider the z-axis difference for vertical deviation
+    const slopeAngleRadians = Math.atan2(dz, Math.sqrt(dx * dx + dy * dy));
+    const slopeAngleDegrees = (slopeAngleRadians * 180) / Math.PI;
+    return slopeAngleDegrees;
 }
 
 function getAngleBetweenPoints(p1, p2) {
-	// Calculate the inferred point p3
-	const p3 = [p1[0], p1[1], p2[2]];
+    // Calculate the inferred point p3
+    const p3 = [p1[0], p1[1], p2[2]];
 
-	// Calculate the edges
-	const edge1 = [p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]];
-	const edge2 = [p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]];
+    // Calculate the edges
+    const edge1 = [p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]];
+    const edge2 = [p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]];
 
-	// Calculate the angle between the edges
-	const angleRadians = Math.acos((edge1[0] * edge2[0] + edge1[1] * edge2[1] + edge1[2] * edge2[2]) / (vectorMagnitude(edge1) * vectorMagnitude(edge2)));
+    // Calculate the angle between the edges
+    const angleRadians = Math.acos((edge1[0] * edge2[0] + edge1[1] * edge2[1] + edge1[2] * edge2[2]) / (vectorMagnitude(edge1) * vectorMagnitude(edge2)));
 
-	// Convert the angle to degrees
-	const angleDegrees = (angleRadians * 180) / Math.PI;
+    // Convert the angle to degrees
+    const angleDegrees = (angleRadians * 180) / Math.PI;
 
-	return angleDegrees;
+    return angleDegrees;
 }
 
 function vectorMagnitude(vector) {
-	return Math.sqrt(vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2);
+    return Math.sqrt(vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2);
 }
 
 function getBurdenRelief(triangle) {
-	const tAX = triangle[0][0];
-	const tAY = triangle[0][1];
-	const tAZ = triangle[0][2];
-	const tBX = triangle[1][0];
-	const tBY = triangle[1][1];
-	const tBZ = triangle[1][2];
-	const tCX = triangle[2][0];
-	const tCY = triangle[2][1];
-	const tCZ = triangle[2][2];
-	// Find the earliest and latest times
-	const earliestTime = Math.min(tAZ, tBZ, tCZ);
-	const latestTime = Math.max(tAZ, tBZ, tCZ);
+    const tAX = triangle[0][0];
+    const tAY = triangle[0][1];
+    const tAZ = triangle[0][2];
+    const tBX = triangle[1][0];
+    const tBY = triangle[1][1];
+    const tBZ = triangle[1][2];
+    const tCX = triangle[2][0];
+    const tCY = triangle[2][1];
+    const tCZ = triangle[2][2];
+    // Find the earliest and latest times
+    const earliestTime = Math.min(tAZ, tBZ, tCZ);
+    const latestTime = Math.max(tAZ, tBZ, tCZ);
 
-	// Calculate the time difference
-	const timeDifference = latestTime - earliestTime; // ms
+    // Calculate the time difference
+    const timeDifference = latestTime - earliestTime; // ms
 
-	// Determine which points correspond to the earliest and latest times
-	let p1, p2;
-	if (earliestTime === tAZ) {
-		p1 = { x: tAX, y: tAY };
-	} else if (earliestTime === tBZ) {
-		p1 = { x: tBX, y: tBY };
-	} else {
-		p1 = { x: tCX, y: tCY };
-	}
+    // Determine which points correspond to the earliest and latest times
+    let p1, p2;
+    if (earliestTime === tAZ) {
+        p1 = { x: tAX, y: tAY };
+    } else if (earliestTime === tBZ) {
+        p1 = { x: tBX, y: tBY };
+    } else {
+        p1 = { x: tCX, y: tCY };
+    }
 
-	if (latestTime === tAZ) {
-		p2 = { x: tAX, y: tAY };
-	} else if (latestTime === tBZ) {
-		p2 = { x: tBX, y: tBY };
-	} else {
-		p2 = { x: tCX, y: tCY };
-	}
+    if (latestTime === tAZ) {
+        p2 = { x: tAX, y: tAY };
+    } else if (latestTime === tBZ) {
+        p2 = { x: tBX, y: tBY };
+    } else {
+        p2 = { x: tCX, y: tCY };
+    }
 
-	// Calculate the distance between the two points (earliest and latest)
-	const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+    // Calculate the distance between the two points (earliest and latest)
+    const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 
-	// Calculate burden relief in ms/m
-	const burdenRelief = timeDifference / distance;
+    // Calculate burden relief in ms/m
+    const burdenRelief = timeDifference / distance;
 
-	//console.log("Time Difference (ms):", timeDifference);
-	//console.log("Distance (m):", distance);
-	//console.log("Burden Relief (ms/m):", burdenRelief);
-	return burdenRelief;
+    //console.log("Time Difference (ms):", timeDifference);
+    //console.log("Distance (m):", distance);
+    //console.log("Burden Relief (ms/m):", burdenRelief);
+    return burdenRelief;
 }
 
 function drawMousePosition(x, y) {
-	ctx.strokeStyle = strokeColour;
-	ctx.beginPath();
-	ctx.rect(x - 7, y - 7, 14, 14);
-	ctx.lineWidth = 1;
-	ctx.stroke();
+    ctx.strokeStyle = strokeColour;
+    ctx.beginPath();
+    ctx.rect(x - 7, y - 7, 14, 14);
+    ctx.lineWidth = 1;
+    ctx.stroke();
 }
 
 function getClickedHole(clickX, clickY) {
-	// Adjust the click coordinates based on the current scale and centroid
-	const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
-	const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY; // Invert the Y-coordinate
-	// Calculate the distance threshold based on the scale factor
+    // Adjust the click coordinates based on the current scale and centroid
+    const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY; // Invert the Y-coordinate
+    // Calculate the distance threshold based on the scale factor
 
-	//Create a constant called thresold set it to  (10/(currentScale/2).  If the value of thresold is less than 0.1 then set it to 0.1 else if it is greater than 2 set it to 2 else set it to 10/currentScale/2
-	let threshold = 10 / (currentScale / 2);
-	if (threshold > 0.2 && threshold <= 1.5) {
-		10 / (currentScale / 2);
-	} else if (threshold > 1.5) {
-		threshold = 1.5;
-	} else if (threshold < 0.2) {
-		threshold = 0.2;
-	}
+    //Create a constant called thresold set it to  (10/(currentScale/2).  If the value of thresold is less than 0.1 then set it to 0.1 else if it is greater than 2 set it to 2 else set it to 10/currentScale/2
+    let threshold = 10 / (currentScale / 2);
+    if (threshold > 0.2 && threshold <= 1.5) {
+        10 / (currentScale / 2);
+    } else if (threshold > 1.5) {
+        threshold = 1.5;
+    } else if (threshold < 0.2) {
+        threshold = 0.2;
+    }
 
-	//console.log("Threshold: " + threshold);
-	//console.log("Current Scale: " + currentScale);
+    //console.log("Threshold: " + threshold);
+    //console.log("Current Scale: " + currentScale);
 
-	for (let i = 0; i < points.length; i++) {
-		let point = points[i];
-		let holeX = point.startXLocation;
-		let holeY = point.startYLocation;
-		let currentEntity = point.entity;
+    for (let i = 0; i < points.length; i++) {
+        let point = points[i];
+        let holeX = point.startXLocation;
+        let holeY = point.startYLocation;
+        let currentEntity = point.entity;
 
-		let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
-		if (distance > threshold) {
-			selectedHole = null; // Reset the selected hole ID
-		}
-	}
-	if (isAddingConnector || isAddingMultiConnector) {
-		// Loop through the points array to find the clicked hole
-		for (let i = 0; i < points.length; i++) {
-			let point = points[i];
-			let holeX = point.startXLocation;
-			let holeY = point.startYLocation;
+        let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
+        if (distance > threshold) {
+            selectedHole = null; // Reset the selected hole ID
+        }
+    }
+    if (isAddingConnector || isAddingMultiConnector) {
+        // Loop through the points array to find the clicked hole
+        for (let i = 0; i < points.length; i++) {
+            let point = points[i];
+            let holeX = point.startXLocation;
+            let holeY = point.startYLocation;
 
-			// Calculate the distance between the clicked point and the hole
-			let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
+            // Calculate the distance between the clicked point and the hole
+            let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
 
-			// Check if the distance is within the threshold
-			if (distance <= threshold) {
-				//Remove this if statement if the if & if else doesn't work
-				if (firstSelectedHole == null) {
-					firstSelectedHole = point;
-					secondSelectedHole = null;
-				} else if (secondSelectedHole == null && firstSelectedHole != point && point != null) {
-					secondSelectedHole = point;
-					firstSelectedHole = null;
-				} else {
-					firstSelectedHole = null;
-					secondSelectedHole = point;
-				}
-				return point; // Return the clicked hole
-			}
-		}
-		//calculateTimes(points);
-	} else if (!selectionMode && isMeasureRecording) {
-		for (let i = 0; i < points.length; i++) {
-			let point = points[i];
-			let holeX = point.startXLocation;
-			let holeY = point.startYLocation;
+            // Check if the distance is within the threshold
+            if (distance <= threshold) {
+                //Remove this if statement if the if & if else doesn't work
+                if (firstSelectedHole == null) {
+                    firstSelectedHole = point;
+                    secondSelectedHole = null;
+                } else if (secondSelectedHole == null && firstSelectedHole != point && point != null) {
+                    secondSelectedHole = point;
+                    firstSelectedHole = null;
+                } else {
+                    firstSelectedHole = null;
+                    secondSelectedHole = point;
+                }
+                return point; // Return the clicked hole
+            }
+        }
+        //calculateTimes(points);
+    } else if (!selectionMode && isMeasureRecording) {
+        for (let i = 0; i < points.length; i++) {
+            let point = points[i];
+            let holeX = point.startXLocation;
+            let holeY = point.startYLocation;
 
-			let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
+            let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
 
-			if (distance <= threshold) {
-				selectedHole = point; // Update the selected hole ID
+            if (distance <= threshold) {
+                selectedHole = point; // Update the selected hole ID
 
-				//
+                //
 
-				drawData(points, selectedHole);
-				return point; // Return the clicked hole
-			}
-		}
-	} else if (!selectionMode && (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing)) {
-		for (let i = 0; i < points.length; i++) {
-			let point = points[i];
-			let holeX = point.startXLocation;
-			let holeY = point.startYLocation;
-			let holeXEnd = point.endXLocation;
-			let holeYEnd = point.endYLocation;
+                drawData(points, selectedHole);
+                return point; // Return the clicked hole
+            }
+        }
+    } else if (!selectionMode && (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing)) {
+        for (let i = 0; i < points.length; i++) {
+            let point = points[i];
+            let holeX = point.startXLocation;
+            let holeY = point.startYLocation;
+            let holeXEnd = point.endXLocation;
+            let holeYEnd = point.endYLocation;
 
-			let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
+            let distance = Math.sqrt(Math.pow(holeX - adjustedX, 2) + Math.pow(holeY - adjustedY, 2));
 
-			if (distance <= threshold) {
-				selectedHole = point; // Update the selected hole ID
-				// Update slider attributes here
-				let holeNorthingSlider = document.getElementById("holeNorthingSlider");
-				let holeEastingSlider = document.getElementById("holeEastingSlider");
-				let holeElevationSlider = document.getElementById("holeElevationSlider");
-				let holeLengthSlider = document.getElementById("holeLengthSlider");
-				let holeDiameterSlider = document.getElementById("holeDiameterSlider");
-				let holeAngleSlider = document.getElementById("holeAngleSlider");
-				let holeBearingSlider = document.getElementById("holeBearingSlider");
+            if (distance <= threshold) {
+                selectedHole = point; // Update the selected hole ID
+                // Update slider attributes here
+                let holeNorthingSlider = document.getElementById("holeNorthingSlider");
+                let holeEastingSlider = document.getElementById("holeEastingSlider");
+                let holeElevationSlider = document.getElementById("holeElevationSlider");
+                let holeLengthSlider = document.getElementById("holeLengthSlider");
+                let holeDiameterSlider = document.getElementById("holeDiameterSlider");
+                let holeAngleSlider = document.getElementById("holeAngleSlider");
+                let holeBearingSlider = document.getElementById("holeBearingSlider");
 
-				// Update slider attributes here
+                // Update slider attributes here
 
-				holeEastingSlider.min = point.startXLocation - 20;
-				holeEastingSlider.max = point.startXLocation + 20;
-				holeEastingSlider.step = 0.1;
+                holeEastingSlider.min = point.startXLocation - 20;
+                holeEastingSlider.max = point.startXLocation + 20;
+                holeEastingSlider.step = 0.1;
 
-				holeNorthingSlider.min = point.startYLocation - 20;
-				holeNorthingSlider.max = point.startYLocation + 20;
-				holeNorthingSlider.step = 0.1;
-				// Update slider attributes here
+                holeNorthingSlider.min = point.startYLocation - 20;
+                holeNorthingSlider.max = point.startYLocation + 20;
+                holeNorthingSlider.step = 0.1;
+                // Update slider attributes here
 
-				holeElevationSlider.min = point.startZLocation - 20;
-				holeElevationSlider.max = point.startZLocation + 20;
-				holeElevationSlider.step = 0.1;
+                holeElevationSlider.min = point.startZLocation - 20;
+                holeElevationSlider.max = point.startZLocation + 20;
+                holeElevationSlider.step = 0.1;
 
-				//Length
-				holeLengthSlider.step = 0.1;
+                //Length
+                holeLengthSlider.step = 0.1;
 
-				// Update slider attributes here
-				holeAngleSlider.step = 1;
+                // Update slider attributes here
+                holeAngleSlider.step = 1;
 
-				// Update slider attributes here
-				holeDiameterSlider.step = 1;
+                // Update slider attributes here
+                holeDiameterSlider.step = 1;
 
-				// Update slider attributes here
-				holeBearingSlider.step = 0.5;
+                // Update slider attributes here
+                holeBearingSlider.step = 0.5;
 
-				holeEastingSlider.value = point.startXLocation;
-				holeNorthingSlider.value = point.startYLocation;
-				holeElevationSlider.value = point.startZLocation;
-				holeLengthSlider.value = point.holeLengthCalculated;
-				holeDiameterSlider.value = point.holeDiameter;
-				holeAngleSlider.value = point.holeAngle;
-				holeBearingSlider.value = point.holeBearing;
+                holeEastingSlider.value = point.startXLocation;
+                holeNorthingSlider.value = point.startYLocation;
+                holeElevationSlider.value = point.startZLocation;
+                holeLengthSlider.value = point.holeLengthCalculated;
+                holeDiameterSlider.value = point.holeDiameter;
+                holeAngleSlider.value = point.holeAngle;
+                holeBearingSlider.value = point.holeBearing;
 
-				holeEastingLabel.textContent = "Hole Easting (X) : " + parseFloat(point.startXLocation).toFixed(2) + "mE";
-				holeNorthingLabel.textContent = "Hole Northing (Y): " + parseFloat(point.startYLocation).toFixed(2) + "mN";
-				holeElevationLabel.textContent = "Hole Elevation (Z) : " + parseFloat(point.startZLocation).toFixed(2) + "m";
-				holeDiameterLabel.textContent = "Hole Diameter: " + parseFloat(point.holeDiameter).toFixed(0) + "mm";
-				holeLengthLabel.textContent = "Hole Length: " + parseFloat(point.holeLengthCalculated).toFixed(1) + "m";
-				holeAngleLabel.textContent = "Hole Angle: " + parseFloat(point.holeAngle).toFixed(0) + "\u00B0";
-				holeBearingLabel.textContent = "Hole Bearing: " + parseFloat(point.holeBearing).toFixed(1) + "\u00B0";
-				drawData(points, selectedHole);
-				return point; // Return the clicked hole
-			}
-		}
-		if (isDisplayingContours) {
-			try {
-				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-			} catch (error) {
-				console.warn("Error calculating contour lines:", error);
-			}
+                holeEastingLabel.textContent = "Hole Easting (X) : " + parseFloat(point.startXLocation).toFixed(2) + "mE";
+                holeNorthingLabel.textContent = "Hole Northing (Y): " + parseFloat(point.startYLocation).toFixed(2) + "mN";
+                holeElevationLabel.textContent = "Hole Elevation (Z) : " + parseFloat(point.startZLocation).toFixed(2) + "m";
+                holeDiameterLabel.textContent = "Hole Diameter: " + parseFloat(point.holeDiameter).toFixed(0) + "mm";
+                holeLengthLabel.textContent = "Hole Length: " + parseFloat(point.holeLengthCalculated).toFixed(1) + "m";
+                holeAngleLabel.textContent = "Hole Angle: " + parseFloat(point.holeAngle).toFixed(0) + "\u00B0";
+                holeBearingLabel.textContent = "Hole Bearing: " + parseFloat(point.holeBearing).toFixed(1) + "\u00B0";
+                drawData(points, selectedHole);
+                return point; // Return the clicked hole
+            }
+        }
+        if (isDisplayingContours) {
+            try {
+                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            } catch (error) {
+                console.warn("Error calculating contour lines:", error);
+            }
 
-			// directionArrows now contains the arrow data for later drawing
-		}
-		if (isDisplayingSlopeTriangles) {
-			try {
-				[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
-			} catch (error) {
-				console.warn("Error calculating Delaunay triangles:", error);
-			}
-		}
-		if (isDisplayingReliefTriangles) {
-			try {
-				[resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
-			} catch (error) {
-				console.warn("Error calculating Delaunay triangles:", error);
-			}
-		}
-		if (isDisplayingDirectionArrows) {
-			try {
-				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-			} catch (error) {
-				console.warn("Error calculating contour lines:", error);
-			}
-		}
-		// If no hole is clicked or found within the threshold
-		// Reset only the firstSelectedHole
-		firstSelectedHole = null;
-	}
-	return null; // Return null if no hole is clicked
+            // directionArrows now contains the arrow data for later drawing
+        }
+        if (isDisplayingSlopeTriangles) {
+            try {
+                [resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+            } catch (error) {
+                console.warn("Error calculating Delaunay triangles:", error);
+            }
+        }
+        if (isDisplayingReliefTriangles) {
+            try {
+                [resultTriangles, reliefTriangles] = delaunayTriangles(points, maxEdgeLength);
+            } catch (error) {
+                console.warn("Error calculating Delaunay triangles:", error);
+            }
+        }
+        if (isDisplayingDirectionArrows) {
+            try {
+                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            } catch (error) {
+                console.warn("Error calculating contour lines:", error);
+            }
+        }
+        // If no hole is clicked or found within the threshold
+        // Reset only the firstSelectedHole
+        firstSelectedHole = null;
+    }
+    return null; // Return null if no hole is clicked
 }
 
 function getMultipleClickedHoles(clickX, clickY) {
-	if (!selectionMode) {
-		return selectedMultipleHoles;
-	}
+    if (!selectionMode) {
+        return selectedMultipleHoles;
+    }
 
-	const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
-	const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-	let threshold = Math.max(Math.min(10 / (currentScale / 2), 1.5), 0.2);
+    const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+    let threshold = Math.max(Math.min(10 / (currentScale / 2), 1.5), 0.2);
 
-	let holesWithinThreshold = [];
-	for (let i = 0; i < points.length; i++) {
-		let point = points[i];
-		let distance = Math.sqrt((point.startXLocation - adjustedX) ** 2 + (point.startYLocation - adjustedY) ** 2);
-		if (distance < threshold) {
-			holesWithinThreshold.push(point);
-		}
-	}
+    let holesWithinThreshold = [];
+    for (let i = 0; i < points.length; i++) {
+        let point = points[i];
+        let distance = Math.sqrt((point.startXLocation - adjustedX) ** 2 + (point.startYLocation - adjustedY) ** 2);
+        if (distance < threshold) {
+            holesWithinThreshold.push(point);
+        }
+    }
 
-	holesWithinThreshold.forEach((hole) => {
-		if (!selectedMultipleHoles.includes(hole)) {
-			selectedMultipleHoles.push(hole);
-			drawData(points, selectedHole);
-		} else {
-			selectedMultipleHoles = selectedMultipleHoles.filter((selectedHole) => selectedHole !== hole);
-			// Add UI feedback for deselection here
-		}
-	});
+    holesWithinThreshold.forEach((hole) => {
+        if (!selectedMultipleHoles.includes(hole)) {
+            selectedMultipleHoles.push(hole);
+            drawData(points, selectedHole);
+        } else {
+            selectedMultipleHoles = selectedMultipleHoles.filter((selectedHole) => selectedHole !== hole);
+            // Add UI feedback for deselection here
+        }
+    });
 
-	let eastingSum = 0;
-	let northingSum = 0;
-	let elevationSum = 0;
-	let lengthSum = 0;
-	let diameterSum = 0;
-	let angleSum = 0;
-	let bearingSum = 0;
-	let eastingAverage = 0;
-	let northingAverage = 0;
-	let elevationAverage = 0;
-	let lengthAverage = 0;
-	let diameterAverage = 0;
-	let angleAverage = 0;
-	let bearingAverage = 0;
+    let eastingSum = 0;
+    let northingSum = 0;
+    let elevationSum = 0;
+    let lengthSum = 0;
+    let diameterSum = 0;
+    let angleSum = 0;
+    let bearingSum = 0;
+    let eastingAverage = 0;
+    let northingAverage = 0;
+    let elevationAverage = 0;
+    let lengthAverage = 0;
+    let diameterAverage = 0;
+    let angleAverage = 0;
+    let bearingAverage = 0;
 
-	if (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing) {
-		console.log("Selected Multiple Holes: ", selectedMultipleHoles);
-		selectedMultipleHoles.forEach((hole) => {
-			// Average the values of the selected holes in the selectedMultipleHoles array
-			// Update slider attributes with the averaged values for each attribute
-			// Update the UI labels with the averaged values for each attribute
-			//console.log(selectedMultipleHoles);
-			eastingSum += parseFloat(hole.startXLocation);
-			northingSum += parseFloat(hole.startYLocation);
-			elevationSum += parseFloat(hole.startZLocation);
-			lengthSum += parseFloat(hole.holeLengthCalculated);
-			diameterSum += parseFloat(hole.holeDiameter);
-			angleSum += parseFloat(hole.holeAngle);
-			bearingSum += parseFloat(hole.holeBearing);
+    if (isDiameterEditing || isLengthEditing || isTypeEditing || isAngleEditing || isBearingEditing || isEastingEditing || isNorthingEditing || isElevationEditing || isDeletingHole || isBlastNameEditing) {
+        console.log("Selected Multiple Holes: ", selectedMultipleHoles);
+        selectedMultipleHoles.forEach((hole) => {
+            // Average the values of the selected holes in the selectedMultipleHoles array
+            // Update slider attributes with the averaged values for each attribute
+            // Update the UI labels with the averaged values for each attribute
+            //console.log(selectedMultipleHoles);
+            eastingSum += parseFloat(hole.startXLocation);
+            northingSum += parseFloat(hole.startYLocation);
+            elevationSum += parseFloat(hole.startZLocation);
+            lengthSum += parseFloat(hole.holeLengthCalculated);
+            diameterSum += parseFloat(hole.holeDiameter);
+            angleSum += parseFloat(hole.holeAngle);
+            bearingSum += parseFloat(hole.holeBearing);
 
-			//console.log("Sums: \n   ", eastingSum, "\n   y", northingSum, "\n   z", elevationSum, "\n   l", lengthSum, "\n   d", diameterSum, "\n   a", angleSum, "\n   b", bearingSum);
-			//console.log("Length: " + selectedMultipleHoles.length);
+            //console.log("Sums: \n   ", eastingSum, "\n   y", northingSum, "\n   z", elevationSum, "\n   l", lengthSum, "\n   d", diameterSum, "\n   a", angleSum, "\n   b", bearingSum);
+            //console.log("Length: " + selectedMultipleHoles.length);
 
-			eastingAverage = selectedMultipleHoles.length > 1 ? parseFloat(eastingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(eastingSum);
-			northingAverage = selectedMultipleHoles.length > 1 ? parseFloat(northingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(northingSum);
-			elevationAverage = selectedMultipleHoles.length > 1 ? parseFloat(elevationSum) / parseInt(selectedMultipleHoles.length) : parseFloat(elevationSum);
-			lengthAverage = selectedMultipleHoles.length > 1 ? parseFloat(lengthSum) / parseInt(selectedMultipleHoles.length) : parseFloat(lengthSum);
-			diameterAverage = selectedMultipleHoles.length > 1 ? parseFloat(diameterSum) / parseInt(selectedMultipleHoles.length) : parseFloat(diameterSum);
-			angleAverage = selectedMultipleHoles.length > 1 ? parseFloat(angleSum) / parseInt(selectedMultipleHoles.length) : parseFloat(angleSum);
-			bearingAverage = selectedMultipleHoles.length > 1 ? parseFloat(bearingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(bearingSum);
+            eastingAverage = selectedMultipleHoles.length > 1 ? parseFloat(eastingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(eastingSum);
+            northingAverage = selectedMultipleHoles.length > 1 ? parseFloat(northingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(northingSum);
+            elevationAverage = selectedMultipleHoles.length > 1 ? parseFloat(elevationSum) / parseInt(selectedMultipleHoles.length) : parseFloat(elevationSum);
+            lengthAverage = selectedMultipleHoles.length > 1 ? parseFloat(lengthSum) / parseInt(selectedMultipleHoles.length) : parseFloat(lengthSum);
+            diameterAverage = selectedMultipleHoles.length > 1 ? parseFloat(diameterSum) / parseInt(selectedMultipleHoles.length) : parseFloat(diameterSum);
+            angleAverage = selectedMultipleHoles.length > 1 ? parseFloat(angleSum) / parseInt(selectedMultipleHoles.length) : parseFloat(angleSum);
+            bearingAverage = selectedMultipleHoles.length > 1 ? parseFloat(bearingSum) / parseInt(selectedMultipleHoles.length) : parseFloat(bearingSum);
 
-			//console.log("Averages: \n   x", eastingAverage, "\n   y", northingAverage, "\n   z", elevationAverage, "\n   l", lengthAverage, "\n   d", diameterAverage, "\n   a", angleAverage, "\n   b", bearingAverage);
+            //console.log("Averages: \n   x", eastingAverage, "\n   y", northingAverage, "\n   z", elevationAverage, "\n   l", lengthAverage, "\n   d", diameterAverage, "\n   a", angleAverage, "\n   b", bearingAverage);
 
-			holeEastingLabel.textContent = "Hole Easting av(X) : " + parseFloat(eastingAverage).toFixed(2) + "mE";
-			holeNorthingLabel.textContent = "Hole Northing av(Y): " + parseFloat(northingAverage).toFixed(2) + "mN";
-			holeElevationLabel.textContent = "Hole Elevation av(Z) : " + parseFloat(elevationAverage).toFixed(2) + "m";
-			holeDiameterLabel.textContent = "Hole Diameter: " + parseFloat(diameterAverage).toFixed(0) + "mm";
-			holeLengthLabel.textContent = "Hole Length: " + parseFloat(lengthAverage).toFixed(1) + "m";
-			holeAngleLabel.textContent = "Hole Angle: " + parseFloat(angleAverage).toFixed(0) + "\u00B0";
-			holeBearingLabel.textContent = "Hole Bearing: " + parseFloat(bearingAverage).toFixed(1) + "\u00B0";
-			//set the min max range to a value either side the average value
-			holeEastingSlider.min = eastingAverage - 20;
-			holeEastingSlider.max = eastingAverage + 20;
-			holeNorthingSlider.min = northingAverage - 20;
-			holeNorthingSlider.max = northingAverage + 20;
-			holeElevationSlider.min = elevationAverage - 20;
-			holeElevationSlider.max = elevationAverage + 20;
-			//set the value of the slider
-			holeEastingSlider.value = eastingAverage;
-			holeNorthingSlider.value = northingAverage;
-			holeElevationSlider.value = elevationAverage;
-			holeLengthSlider.value = lengthAverage;
-			holeDiameterSlider.value = diameterAverage;
-			holeAngleSlider.value = angleAverage;
-			holeBearingSlider.value = bearingAverage;
-			//console.log("Averages 2: \n   x", eastingAverage, "\n   y", northingAverage, "\n   z", elevationAverage, "\n   l", lengthAverage, "\n   d", diameterAverage, "\n   a", angleAverage, "\n   b", bearingAverage);
-		});
-	}
+            holeEastingLabel.textContent = "Hole Easting av(X) : " + parseFloat(eastingAverage).toFixed(2) + "mE";
+            holeNorthingLabel.textContent = "Hole Northing av(Y): " + parseFloat(northingAverage).toFixed(2) + "mN";
+            holeElevationLabel.textContent = "Hole Elevation av(Z) : " + parseFloat(elevationAverage).toFixed(2) + "m";
+            holeDiameterLabel.textContent = "Hole Diameter: " + parseFloat(diameterAverage).toFixed(0) + "mm";
+            holeLengthLabel.textContent = "Hole Length: " + parseFloat(lengthAverage).toFixed(1) + "m";
+            holeAngleLabel.textContent = "Hole Angle: " + parseFloat(angleAverage).toFixed(0) + "\u00B0";
+            holeBearingLabel.textContent = "Hole Bearing: " + parseFloat(bearingAverage).toFixed(1) + "\u00B0";
+            //set the min max range to a value either side the average value
+            holeEastingSlider.min = eastingAverage - 20;
+            holeEastingSlider.max = eastingAverage + 20;
+            holeNorthingSlider.min = northingAverage - 20;
+            holeNorthingSlider.max = northingAverage + 20;
+            holeElevationSlider.min = elevationAverage - 20;
+            holeElevationSlider.max = elevationAverage + 20;
+            //set the value of the slider
+            holeEastingSlider.value = eastingAverage;
+            holeNorthingSlider.value = northingAverage;
+            holeElevationSlider.value = elevationAverage;
+            holeLengthSlider.value = lengthAverage;
+            holeDiameterSlider.value = diameterAverage;
+            holeAngleSlider.value = angleAverage;
+            holeBearingSlider.value = bearingAverage;
+            //console.log("Averages 2: \n   x", eastingAverage, "\n   y", northingAverage, "\n   z", elevationAverage, "\n   l", lengthAverage, "\n   d", diameterAverage, "\n   a", angleAverage, "\n   b", bearingAverage);
+        });
+    }
 
-	return selectedMultipleHoles;
+    return selectedMultipleHoles;
 }
 
 function getJSColourHex() {
-	const colourElement = document.getElementById("connectorColour");
-	// Get the JSColor instance from the element
-	const jsColorInstance = colourElement.jscolor;
-	// Get the color value
-	const colourHex = jsColorInstance.toHEXString(); // This will get the color in HEX format, e.g., "#FF0000"
-	return colourHex;
+    const colourElement = document.getElementById("connectorColour");
+    // Get the JSColor instance from the element
+    const jsColorInstance = colourElement.jscolor;
+    // Get the color value
+    const colourHex = jsColorInstance.toHEXString(); // This will get the color in HEX format, e.g., "#FF0000"
+    return colourHex;
 }
 function getJSColourHexDrawing() {
-	const colourElement = document.getElementById("drawingColour");
-	// Get the JSColor instance from the element
-	const jsColorInstance = colourElement.jscolor;
-	// Get the color value
-	const colourHex = jsColorInstance.toHEXString(); // This will get the color in HEX format, e.g., "#FF0000"
-	return colourHex;
+    const colourElement = document.getElementById("drawingColour");
+    // Get the JSColor instance from the element
+    const jsColorInstance = colourElement.jscolor;
+    // Get the color value
+    const colourHex = jsColorInstance.toHEXString(); // This will get the color in HEX format, e.g., "#FF0000"
+    return colourHex;
 }
 
 function handleConnectorClick(event) {
-	// Get the click/touch coordinates relative to the canvas
-	const rect = canvas.getBoundingClientRect();
-	const clickX = event.clientX - rect.left;
-	const clickY = event.clientY - rect.top;
-	const clickedHole = getClickedHole(clickX, clickY);
-	if (isAddingConnector) {
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-				// TODO: Update UI or provide feedback for selecting fromHole
-			} else {
-				selectedHole = clickedHole;
-				const delay = parseInt(document.getElementById("delay").value);
-				const clickedHoleIndex = points.findIndex((point) => point === clickedHole);
+    // Get the click/touch coordinates relative to the canvas
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    const clickedHole = getClickedHole(clickX, clickY);
+    if (isAddingConnector) {
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+                // TODO: Update UI or provide feedback for selecting fromHole
+            } else {
+                selectedHole = clickedHole;
+                const delay = parseInt(document.getElementById("delay").value);
+                const clickedHoleIndex = points.findIndex((point) => point === clickedHole);
 
-				if (clickedHoleIndex !== -1) {
-					// Use the new combined format for fromHoleID
-					points[clickedHoleIndex].fromHoleID = `${fromHoleStore.entityName}:::${fromHoleStore.holeID}`;
-					points[clickedHoleIndex].timingDelayMilliseconds = delay;
-					points[clickedHoleIndex].colourHexDecimal = getJSColourHex();
-				}
-				fromHoleStore = null;
-				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                if (clickedHoleIndex !== -1) {
+                    // Use the new combined format for fromHoleID
+                    points[clickedHoleIndex].fromHoleID = `${fromHoleStore.entityName}:::${fromHoleStore.holeID}`;
+                    points[clickedHoleIndex].timingDelayMilliseconds = delay;
+                    points[clickedHoleIndex].colourHexDecimal = getJSColourHex();
+                }
+                fromHoleStore = null;
+                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-				// directionArrows now contains the arrow data for later drawing
+                // directionArrows now contains the arrow data for later drawing
 
-				drawData(points, selectedHole);
-			}
-		}
-	} else if (isAddingMultiConnector) {
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-				// TODO: Update UI or provide feedback for selecting fromHole
-			} else {
-				const selectedHole = clickedHole;
-				const pointsInLine = getPointsInLine(fromHoleStore, selectedHole);
-				if (pointsInLine.length > 0) {
-					connectPointsInLine(pointsInLine);
-				}
-				// Reset the fromHole and exit add connector mode
-				fromHoleStore = null;
+                drawData(points, selectedHole);
+            }
+        }
+    } else if (isAddingMultiConnector) {
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+                // TODO: Update UI or provide feedback for selecting fromHole
+            } else {
+                const selectedHole = clickedHole;
+                const pointsInLine = getPointsInLine(fromHoleStore, selectedHole);
+                if (pointsInLine.length > 0) {
+                    connectPointsInLine(pointsInLine);
+                }
+                // Reset the fromHole and exit add connector mode
+                fromHoleStore = null;
 
-				const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-				// directionArrows now contains the arrow data for later drawing
+                // directionArrows now contains the arrow data for later drawing
 
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-	}
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+    }
 }
 
 function getPointsInLine(startPoint, endPoint, tolerance) {
-	const pointsInLine = [];
-	tolerance = connectAmount;
-	const dx = endPoint.startXLocation - startPoint.startXLocation;
-	const dy = endPoint.startYLocation - startPoint.startYLocation;
-	const length = Math.sqrt(dx * dx + dy * dy);
-	const dirX = dx / length;
-	const dirY = dy / length;
+    const pointsInLine = [];
+    tolerance = connectAmount;
+    const dx = endPoint.startXLocation - startPoint.startXLocation;
+    const dy = endPoint.startYLocation - startPoint.startYLocation;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const dirX = dx / length;
+    const dirY = dy / length;
 
-	for (const point of points) {
-		if (point !== startPoint && point !== endPoint) {
-			const vecX = point.startXLocation - startPoint.startXLocation;
-			const vecY = point.startYLocation - startPoint.startYLocation;
-			const dotProduct = vecX * dirX + vecY * dirY;
-			if (dotProduct >= 0 && dotProduct <= length) {
-				const distanceToLine = Math.abs(vecX * dirY - vecY * dirX);
-				if (distanceToLine <= tolerance) {
-					pointsInLine.push(point);
-				}
-			}
-		}
-	}
+    for (const point of points) {
+        if (point !== startPoint && point !== endPoint) {
+            const vecX = point.startXLocation - startPoint.startXLocation;
+            const vecY = point.startYLocation - startPoint.startYLocation;
+            const dotProduct = vecX * dirX + vecY * dirY;
+            if (dotProduct >= 0 && dotProduct <= length) {
+                const distanceToLine = Math.abs(vecX * dirY - vecY * dirX);
+                if (distanceToLine <= tolerance) {
+                    pointsInLine.push(point);
+                }
+            }
+        }
+    }
 
-	// Add start and end points to the array
-	pointsInLine.unshift(startPoint);
-	pointsInLine.push(endPoint);
+    // Add start and end points to the array
+    pointsInLine.unshift(startPoint);
+    pointsInLine.push(endPoint);
 
-	return pointsInLine;
+    return pointsInLine;
 }
 
 function connectPointsInLine(pointsInLine) {
-	// Sort points based on distance from the fromHoleStore
-	pointsInLine.sort((a, b) => {
-		const distanceA = calculateDistance(fromHoleStore, a);
-		const distanceB = calculateDistance(fromHoleStore, b);
-		return distanceA - distanceB;
-	});
+    // Sort points based on distance from the fromHoleStore
+    pointsInLine.sort((a, b) => {
+        const distanceA = calculateDistance(fromHoleStore, a);
+        const distanceB = calculateDistance(fromHoleStore, b);
+        return distanceA - distanceB;
+    });
 
-	let previousHoleID = `${fromHoleStore.entityName}:::${fromHoleStore.holeID}`;
+    let previousHoleID = `${fromHoleStore.entityName}:::${fromHoleStore.holeID}`;
 
-	// Connect each point to the previous point
-	for (let i = 1; i < pointsInLine.length; i++) {
-		const point = pointsInLine[i];
-		const pointIndex = points.findIndex((p) => p === point);
+    // Connect each point to the previous point
+    for (let i = 1; i < pointsInLine.length; i++) {
+        const point = pointsInLine[i];
+        const pointIndex = points.findIndex((p) => p === point);
 
-		if (pointIndex !== -1) {
-			points[pointIndex].fromHoleID = previousHoleID;
-			points[pointIndex].timingDelayMilliseconds = parseInt(document.getElementById("delay").value);
-			points[pointIndex].colourHexDecimal = getJSColourHex();
-		}
+        if (pointIndex !== -1) {
+            points[pointIndex].fromHoleID = previousHoleID;
+            points[pointIndex].timingDelayMilliseconds = parseInt(document.getElementById("delay").value);
+            points[pointIndex].colourHexDecimal = getJSColourHex();
+        }
 
-		previousHoleID = `${point.entityName}:::${point.holeID}`;
-	}
+        previousHoleID = `${point.entityName}:::${point.holeID}`;
+    }
 }
 
 // Function to calculate the distance between two points
 function calculateDistance(point1, point2) {
-	const dx = point2.startXLocation - point1.startXLocation;
-	const dy = point2.startYLocation - point1.startYLocation;
-	return Math.sqrt(dx * dx + dy * dy);
+    const dx = point2.startXLocation - point1.startXLocation;
+    const dy = point2.startYLocation - point1.startYLocation;
+    return Math.sqrt(dx * dx + dy * dy);
 }
 
 let selectedPoint = null;
 
 function getClickedPointInMap(map, clickX, clickY) {
-	const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
-	const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-	let threshold = 10 / (currentScale / 2);
-	let closestPoint = null;
-	let minDistance = threshold;
+    const adjustedX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const adjustedY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+    let threshold = 10 / (currentScale / 2);
+    let closestPoint = null;
+    let minDistance = threshold;
 
-	// Iterate over the keys of the map
-	for (const entityName of map.keys()) {
-		const entity = map.get(entityName);
-		for (const point of entity.data) {
-			const distance = Math.sqrt(Math.pow(point.pointXLocation - adjustedX, 2) + Math.pow(point.pointYLocation - adjustedY, 2));
+    // Iterate over the keys of the map
+    for (const entityName of map.keys()) {
+        const entity = map.get(entityName);
+        for (const point of entity.data) {
+            const distance = Math.sqrt(Math.pow(point.pointXLocation - adjustedX, 2) + Math.pow(point.pointYLocation - adjustedY, 2));
 
-			if (distance <= threshold && distance < minDistance) {
-				closestPoint = point;
-				minDistance = distance;
-			}
-		}
-	}
-	drawData(points, selectedHole);
-	return closestPoint;
+            if (distance <= threshold && distance < minDistance) {
+                closestPoint = point;
+                minDistance = distance;
+            }
+        }
+    }
+    drawData(points, selectedHole);
+    return closestPoint;
 }
 
 function getClickedPoint(event) {
-	// get the values from clicking in the canvas
-	const rect = canvas.getBoundingClientRect();
-	let clickX = event.clientX - rect.left;
-	let clickY = event.clientY - rect.top;
-	if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-		// Handle the case when the values are NaN
-		clickX = event.changedTouches[0].clientX - rect.left;
-		clickY = event.changedTouches[0].clientY - rect.top;
-	} else {
-		// Proceed with the calculation using the valid values
-		clickX = event.clientX - rect.left;
-		clickY = event.clientY - rect.top;
-	}
-	worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-	worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+    // get the values from clicking in the canvas
+    const rect = canvas.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+    if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+        // Handle the case when the values are NaN
+        clickX = event.changedTouches[0].clientX - rect.left;
+        clickY = event.changedTouches[0].clientY - rect.top;
+    } else {
+        // Proceed with the calculation using the valid values
+        clickX = event.clientX - rect.left;
+        clickY = event.clientY - rect.top;
+    }
+    worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
 
-	if (isDeletingPoint) {
-		selectedPoint = getClickedPointInMap(kadPointsMap, clickX, clickY);
-		drawData(points, selectedHole);
-		return selectedPoint;
-	}
-	if (isDeletingLine) {
-		selectedPoint = getClickedPointInMap(kadLinesMap, clickX, clickY);
-		drawData(points, selectedHole);
-		return selectedPoint;
-	}
-	if (isDeletingPoly) {
-		selectedPoint = getClickedPointInMap(kadPolygonsMap, clickX, clickY);
-		drawData(points, selectedHole);
-		return selectedPoint;
-	}
-	if (isDeletingText) {
-		selectedPoint = getClickedPointInMap(kadTextsMap, clickX, clickY);
-		drawData(points, selectedHole);
-		return selectedPoint;
-	}
-	if (isDeletingCircle) {
-		selectedPoint = getClickedPointInMap(kadCirclesMap, clickX, clickY);
-		drawData(points, selectedHole);
-		return selectedPoint;
-	}
-	drawData(points, selectedHole);
-	// If none of the flags match, return null
-	return null;
+    if (isDeletingPoint) {
+        selectedPoint = getClickedPointInMap(kadPointsMap, clickX, clickY);
+        drawData(points, selectedHole);
+        return selectedPoint;
+    }
+    if (isDeletingLine) {
+        selectedPoint = getClickedPointInMap(kadLinesMap, clickX, clickY);
+        drawData(points, selectedHole);
+        return selectedPoint;
+    }
+    if (isDeletingPoly) {
+        selectedPoint = getClickedPointInMap(kadPolygonsMap, clickX, clickY);
+        drawData(points, selectedHole);
+        return selectedPoint;
+    }
+    if (isDeletingText) {
+        selectedPoint = getClickedPointInMap(kadTextsMap, clickX, clickY);
+        drawData(points, selectedHole);
+        return selectedPoint;
+    }
+    if (isDeletingCircle) {
+        selectedPoint = getClickedPointInMap(kadCirclesMap, clickX, clickY);
+        drawData(points, selectedHole);
+        return selectedPoint;
+    }
+    drawData(points, selectedHole);
+    // If none of the flags match, return null
+    return null;
 }
 
 function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmount, checkForCrossover = false, extendIfNecessary = false) {
-	if (selectedPoint) {
-		const entityName = selectedPoint.entityName;
-		const entityType = selectedPoint.entityType;
+    if (selectedPoint) {
+        const entityName = selectedPoint.entityName;
+        const entityType = selectedPoint.entityType;
 
-		// Create a new entity for the offset polyline
-		const newEntity = {
-			entityName: `${entityName}_offset`, // Modify this as needed
-			entityType: entityType,
-			data: []
-		};
+        // Create a new entity for the offset polyline
+        const newEntity = {
+            entityName: `${entityName}_offset`, // Modify this as needed
+            entityType: entityType,
+            data: []
+        };
 
-		let prevPoint = null;
+        let prevPoint = null;
 
-		// Offset and check for crossovers if needed
-		for (const point of selectedPoint.data) {
-			let offsetX = point.pointXLocation;
-			let offsetY = point.pointYLocation;
+        // Offset and check for crossovers if needed
+        for (const point of selectedPoint.data) {
+            let offsetX = point.pointXLocation;
+            let offsetY = point.pointYLocation;
 
-			if (direction === "right") {
-				offsetX += offsetAmount;
-			} else if (direction === "left") {
-				offsetX -= offsetAmount;
-			} else if (direction === "up") {
-				offsetY -= offsetAmount;
-			} else if (direction === "down") {
-				offsetY += offsetAmount;
-			}
+            if (direction === "right") {
+                offsetX += offsetAmount;
+            } else if (direction === "left") {
+                offsetX -= offsetAmount;
+            } else if (direction === "up") {
+                offsetY -= offsetAmount;
+            } else if (direction === "down") {
+                offsetY += offsetAmount;
+            }
 
-			if (checkForCrossover && prevPoint) {
-				// Check for crossover and shorten the segment if needed
-				const distance = Math.sqrt(Math.pow(offsetX - prevPoint.pointXLocation, 2) + Math.pow(offsetY - prevPoint.pointYLocation, 2));
+            if (checkForCrossover && prevPoint) {
+                // Check for crossover and shorten the segment if needed
+                const distance = Math.sqrt(Math.pow(offsetX - prevPoint.pointXLocation, 2) + Math.pow(offsetY - prevPoint.pointYLocation, 2));
 
-				if (distance > offsetAmount) {
-					const ratio = offsetAmount / distance;
-					offsetX = prevPoint.pointXLocation + (offsetX - prevPoint.pointXLocation) * ratio;
-					offsetY = prevPoint.pointYLocation + (offsetY - prevPoint.pointYLocation) * ratio;
-				}
-			}
+                if (distance > offsetAmount) {
+                    const ratio = offsetAmount / distance;
+                    offsetX = prevPoint.pointXLocation + (offsetX - prevPoint.pointXLocation) * ratio;
+                    offsetY = prevPoint.pointYLocation + (offsetY - prevPoint.pointYLocation) * ratio;
+                }
+            }
 
-			// Add the offset point to the new entity
-			newEntity.data.push({
-				entityName: newEntity.entityName,
-				entityType: newEntity.entityType,
-				pointID: point.pointID, // Preserve point ID or modify as needed
-				pointXLocation: offsetX,
-				pointYLocation: offsetY,
-				pointZLocation: point.pointZLocation,
-				lineWidth: point.lineWidth,
-				colour: point.colour
-			});
+            // Add the offset point to the new entity
+            newEntity.data.push({
+                entityName: newEntity.entityName,
+                entityType: newEntity.entityType,
+                pointID: point.pointID, // Preserve point ID or modify as needed
+                pointXLocation: offsetX,
+                pointYLocation: offsetY,
+                pointZLocation: point.pointZLocation,
+                lineWidth: point.lineWidth,
+                colour: point.colour
+            });
 
-			if (extendIfNecessary && prevPoint) {
-				const distance = Math.sqrt(Math.pow(offsetX - prevPoint.pointXLocation, 2) + Math.pow(offsetY - prevPoint.pointYLocation, 2));
+            if (extendIfNecessary && prevPoint) {
+                const distance = Math.sqrt(Math.pow(offsetX - prevPoint.pointXLocation, 2) + Math.pow(offsetY - prevPoint.pointYLocation, 2));
 
-				if (distance > offsetAmount) {
-					// Extend the line segment if points get further away after offsetting
-					newEntity.data.push({
-						entityName: newEntity.entityName,
-						entityType: newEntity.entityType,
-						pointID: point.pointID, // Preserve point ID or modify as needed
-						pointXLocation: offsetX,
-						pointYLocation: offsetY,
-						pointZLocation: point.pointZLocation,
-						lineWidth: point.lineWidth,
-						colour: point.colour
-					});
-				}
-			}
+                if (distance > offsetAmount) {
+                    // Extend the line segment if points get further away after offsetting
+                    newEntity.data.push({
+                        entityName: newEntity.entityName,
+                        entityType: newEntity.entityType,
+                        pointID: point.pointID, // Preserve point ID or modify as needed
+                        pointXLocation: offsetX,
+                        pointYLocation: offsetY,
+                        pointZLocation: point.pointZLocation,
+                        lineWidth: point.lineWidth,
+                        colour: point.colour
+                    });
+                }
+            }
 
-			prevPoint = point;
-		}
+            prevPoint = point;
+        }
 
-		// Add the new entity to the appropriate map (line or poly)
-		if (entityType === "poly") {
-			kadPolygonsMap.set(newEntity.entityName, newEntity);
-		} else if (entityType === "line") {
-			kadLinesMap.set(newEntity.entityName, newEntity);
-		}
+        // Add the new entity to the appropriate map (line or poly)
+        if (entityType === "poly") {
+            kadPolygonsMap.set(newEntity.entityName, newEntity);
+        } else if (entityType === "line") {
+            kadLinesMap.set(newEntity.entityName, newEntity);
+        }
 
-		// Redraw the canvas or perform any other necessary updates
-		drawData(points, selectedHole);
+        // Redraw the canvas or perform any other necessary updates
+        drawData(points, selectedHole);
 
-		// Return the newly created entity if needed
-		return newEntity;
-	}
+        // Return the newly created entity if needed
+        return newEntity;
+    }
 }
 
 function deleteSelectedPoint() {
-	if (selectedPoint) {
-		if (isDeletingPoint) {
-			deletePointInMap(kadPointsMap, selectedPoint);
-		} else if (isDeletingLine) {
-			deletePointInMap(kadLinesMap, selectedPoint);
-		} else if (isDeletingPoly) {
-			deletePointInMap(kadPolygonsMap, selectedPoint);
-		} else if (isDeletingText) {
-			deletePointInMap(kadTextsMap, selectedPoint);
-		} else if (isDeletingCircle) {
-			deletePointInMap(kadCirclesMap, selectedPoint);
-		}
-	}
+    if (selectedPoint) {
+        if (isDeletingPoint) {
+            deletePointInMap(kadPointsMap, selectedPoint);
+        } else if (isDeletingLine) {
+            deletePointInMap(kadLinesMap, selectedPoint);
+        } else if (isDeletingPoly) {
+            deletePointInMap(kadPolygonsMap, selectedPoint);
+        } else if (isDeletingText) {
+            deletePointInMap(kadTextsMap, selectedPoint);
+        } else if (isDeletingCircle) {
+            deletePointInMap(kadCirclesMap, selectedPoint);
+        }
+    }
 }
 
 function deleteSelectedObject() {
-	if (selectedPoint) {
-		if (isDeletingPoint) {
-			deleteObjectInMap(kadPointsMap, selectedPoint);
-		} else if (isDeletingLine) {
-			deleteObjectInMap(kadLinesMap, selectedPoint);
-		} else if (isDeletingPoly) {
-			deleteObjectInMap(kadPolygonsMap, selectedPoint);
-		} else if (isDeletingText) {
-			deleteObjectInMap(kadTextsMap, selectedPoint);
-		} else if (isDeletingCircle) {
-			deleteObjectInMap(kadCirclesMap, selectedPoint);
-		}
-	}
+    if (selectedPoint) {
+        if (isDeletingPoint) {
+            deleteObjectInMap(kadPointsMap, selectedPoint);
+        } else if (isDeletingLine) {
+            deleteObjectInMap(kadLinesMap, selectedPoint);
+        } else if (isDeletingPoly) {
+            deleteObjectInMap(kadPolygonsMap, selectedPoint);
+        } else if (isDeletingText) {
+            deleteObjectInMap(kadTextsMap, selectedPoint);
+        } else if (isDeletingCircle) {
+            deleteObjectInMap(kadCirclesMap, selectedPoint);
+        }
+    }
 }
 
 function deleteSelectedAll() {
-	if (selectedPoint) {
-		if (isDeletingPoint) {
-			deleteAllInMap(kadPointsMap);
-		} else if (isDeletingLine) {
-			deleteAllInMap(kadLinesMap);
-		} else if (isDeletingPoly) {
-			deleteAllInMap(kadPolygonsMap);
-		} else if (isDeletingText) {
-			deleteAllInMap(kadTextsMap);
-		} else if (isDeletingCircle) {
-			deleteAllInMap(kadCirclesMap);
-		}
-	}
+    if (selectedPoint) {
+        if (isDeletingPoint) {
+            deleteAllInMap(kadPointsMap);
+        } else if (isDeletingLine) {
+            deleteAllInMap(kadLinesMap);
+        } else if (isDeletingPoly) {
+            deleteAllInMap(kadPolygonsMap);
+        } else if (isDeletingText) {
+            deleteAllInMap(kadTextsMap);
+        } else if (isDeletingCircle) {
+            deleteAllInMap(kadCirclesMap);
+        }
+    }
 }
 
 function deletePointInMap(map, pointToDelete) {
-	for (const [entityName, entity] of map) {
-		const dataIndex = entity.data.findIndex((point) => {
-			return point.pointID === pointToDelete.pointID && point.entityName === entityName && point.pointXLocation === pointToDelete.pointXLocation && point.pointYLocation === pointToDelete.pointYLocation;
-		});
+    for (const [entityName, entity] of map) {
+        const dataIndex = entity.data.findIndex((point) => {
+            return point.pointID === pointToDelete.pointID && point.entityName === entityName && point.pointXLocation === pointToDelete.pointXLocation && point.pointYLocation === pointToDelete.pointYLocation;
+        });
 
-		if (dataIndex !== -1) {
-			entity.data.splice(dataIndex, 1);
-			drawData(points, selectedHole);
-			selectedPoint = null;
-			break;
-		}
-	}
-	drawData(points, selectedHole);
+        if (dataIndex !== -1) {
+            entity.data.splice(dataIndex, 1);
+            drawData(points, selectedHole);
+            selectedPoint = null;
+            break;
+        }
+    }
+    drawData(points, selectedHole);
 }
 
 function deleteObjectInMap(map, pointToDelete) {
-	for (const [entityName, entity] of map) {
-		if (entity.data.includes(pointToDelete)) {
-			// Delete the entire entity
-			map.delete(entityName);
-			drawData(points, selectedHole);
-			selectedPoint = null;
-			break;
-		} else {
-			drawData(points, selectedHole);
-		}
-	}
-	drawData(points, selectedHole);
+    for (const [entityName, entity] of map) {
+        if (entity.data.includes(pointToDelete)) {
+            // Delete the entire entity
+            map.delete(entityName);
+            drawData(points, selectedHole);
+            selectedPoint = null;
+            break;
+        } else {
+            drawData(points, selectedHole);
+        }
+    }
+    drawData(points, selectedHole);
 }
 
 function deleteAllInMap(map) {
-	map.clear();
-	selectedPoint = null;
-	drawData(points, selectedHole);
+    map.clear();
+    selectedPoint = null;
+    drawData(points, selectedHole);
 }
 
 function deleteSelectedHole() {
-	if (isDeletingHole && selectedHole !== null) {
-		console.log("Deleting Hole ID:", selectedHole.holeID, "in:", selectedHole.entityName);
+    if (isDeletingHole && selectedHole !== null) {
+        console.log("Deleting Hole ID:", selectedHole.holeID, "in:", selectedHole.entityName);
 
-		// Filter out the selected hole
-		points = points.filter((point) => point !== selectedHole);
+        // Filter out the selected hole
+        points = points.filter((point) => point !== selectedHole);
 
-		// Renumber holes if necessary
-		if (isRenumberingHoles) {
-			console.log("Renumbering for Entity:", selectedHole.entityName, "starting at:", deleteRenumberStart);
-			renumberHolesFunction(deleteRenumberStart, selectedHole.entityName);
-		}
+        // Renumber holes if necessary
+        if (isRenumberingHoles) {
+            console.log("Renumbering for Entity:", selectedHole.entityName, "starting at:", deleteRenumberStart);
+            renumberHolesFunction(deleteRenumberStart, selectedHole.entityName);
+        }
 
-		// Recalculate dependent data structures
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        // Recalculate dependent data structures
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
+        // directionArrows now contains the arrow data for later drawing
 
-		// Redraw the data
-		drawData(points, null); // Pass null since the selected hole no longer exists
+        // Redraw the data
+        drawData(points, null); // Pass null since the selected hole no longer exists
 
-		// Reset selections
-		selectedHole = null;
-		fromHoleStore = null;
-	}
+        // Reset selections
+        selectedHole = null;
+        fromHoleStore = null;
+    }
 
-	refreshPoints();
+    refreshPoints();
 }
 
 //function to delete holes that have the same entity name in both the points array and the map
 function deleteSelectedPattern() {
-	if (isDeletingHole) {
-		if (selectedHole !== null) {
-			// find the selected holeIDs entityName
-			let entityNameToDelete = points.find((point) => point === selectedHole).entityName;
+    if (isDeletingHole) {
+        if (selectedHole !== null) {
+            // find the selected holeIDs entityName
+            let entityNameToDelete = points.find((point) => point === selectedHole).entityName;
 
-			// Remove holes with the same entityName from kadHolesMap
-			for (const [entityName, entity] of kadHolesMap) {
-				if (entityName === entityNameToDelete) {
-					delete kadHolesMap.delete(entityName);
-				}
-			}
+            // Remove holes with the same entityName from kadHolesMap
+            for (const [entityName, entity] of kadHolesMap) {
+                if (entityName === entityNameToDelete) {
+                    delete kadHolesMap.delete(entityName);
+                }
+            }
 
-			// Remove holes with the same entityName from the points array
-			points = points.filter((point) => point.entityName !== entityNameToDelete);
+            // Remove holes with the same entityName from the points array
+            points = points.filter((point) => point.entityName !== entityNameToDelete);
 
-			// Reset the selected holeID
-			selectedHole = null;
-			// Reset the fromHoleStore
-			fromHoleStore = null;
-			// Recalculate contour lines
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            // Reset the selected holeID
+            selectedHole = null;
+            // Reset the fromHoleStore
+            fromHoleStore = null;
+            // Recalculate contour lines
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-			// directionArrows now contains the arrow data for later drawing
+            // directionArrows now contains the arrow data for later drawing
 
-			drawData(points, selectedHole);
-		} else {
-			drawData(points, selectedHole);
-		}
-	}
-	refreshPoints();
+            drawData(points, selectedHole);
+        } else {
+            drawData(points, selectedHole);
+        }
+    }
+    refreshPoints();
 }
 
 //function to delete All Entities in the kadHolesMap and all the Entityies in the points array
 function deleteSelectedAllPatterns() {
-	if (isDeletingHole) {
-		if (selectedHole !== null) {
-			// Remove all holes from kadHolesMap
-			kadHolesMap.clear();
+    if (isDeletingHole) {
+        if (selectedHole !== null) {
+            // Remove all holes from kadHolesMap
+            kadHolesMap.clear();
 
-			// Remove all holes from the points array
-			points = [];
+            // Remove all holes from the points array
+            points = [];
 
-			// Reset the selected holeID
-			selectedHole = null;
-			// Reset the fromHoleStore
-			fromHoleStore = null;
-			// Recalculate contour lines
-			const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-			calculateTimes(points);
-			const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            // Reset the selected holeID
+            selectedHole = null;
+            // Reset the fromHoleStore
+            fromHoleStore = null;
+            // Recalculate contour lines
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            calculateTimes(points);
+            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-			// directionArrows now contains the arrow data for later drawing
+            // directionArrows now contains the arrow data for later drawing
 
-			drawData(points, selectedHole);
-		} else {
-			drawData(points, selectedHole);
-		}
-	}
+            drawData(points, selectedHole);
+        } else {
+            drawData(points, selectedHole);
+        }
+    }
 }
 
 function handleHoleDeletingClick(event) {
-	if (isDeletingHole) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isDeletingHole) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-			}
-		}
-	}
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+            }
+        }
+    }
 }
 
 function renumberHolesFunction(startNumber, selectedEntityName) {
-	console.log("Renumbering holes for Entity:", selectedEntityName);
+    console.log("Renumbering holes for Entity:", selectedEntityName);
 
-	const oldToNewHoleIDMap = new Map();
+    const oldToNewHoleIDMap = new Map();
 
-	// Renumber holes and keep track of old to new IDs
-	points.forEach((point) => {
-		if (point.entityName === selectedEntityName) {
-			oldToNewHoleIDMap.set(point.holeID, startNumber);
-			point.holeID = startNumber++;
-		}
-	});
+    // Renumber holes and keep track of old to new IDs
+    points.forEach((point) => {
+        if (point.entityName === selectedEntityName) {
+            oldToNewHoleIDMap.set(point.holeID, startNumber);
+            point.holeID = startNumber++;
+        }
+    });
 
-	// Update fromHoleID references
-	points.forEach((point) => {
-		if (point.fromHoleID) {
-			const [entity, oldHoleID] = point.fromHoleID.split(":::");
-			if (entity === selectedEntityName && oldToNewHoleIDMap.has(oldHoleID)) {
-				point.fromHoleID = `${entity}:::${oldToNewHoleIDMap.get(oldHoleID)}`;
-			}
-		}
-	});
-	refreshPoints();
-	drawData(points, selectedHole);
+    // Update fromHoleID references
+    points.forEach((point) => {
+        if (point.fromHoleID) {
+            const [entity, oldHoleID] = point.fromHoleID.split(":::");
+            if (entity === selectedEntityName && oldToNewHoleIDMap.has(oldHoleID)) {
+                point.fromHoleID = `${entity}:::${oldToNewHoleIDMap.get(oldHoleID)}`;
+            }
+        }
+    });
+    refreshPoints();
+    drawData(points, selectedHole);
 }
 
 function handleHoleAddingClick(event) {
-	if (isAddingHole) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
+    if (isAddingHole) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
 
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 
 function handleKADPointClick(event) {
-	if (isDrawingPoint) {
-		// get the values from clicking in the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addKADPoint();
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+    if (isDrawingPoint) {
+        // get the values from clicking in the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addKADPoint();
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 
 // Function to add a point to the kadPointsMap
 function addKADPoint() {
-	if (isDrawingPoint) {
-		// Create a new point object or use the existing one
-		const entityType = "point";
-		const pointID = kadPointsMap.has(entityName) ? kadPointsMap.get(entityName).data.length + 1 : 1;
-		const pointXLocation = worldX;
-		const pointYLocation = worldY;
-		const pointZLocation = document.getElementById("drawingElevation").value;
-		const colour = getJSColourHexDrawing();
+    if (isDrawingPoint) {
+        // Create a new point object or use the existing one
+        const entityType = "point";
+        const pointID = kadPointsMap.has(entityName) ? kadPointsMap.get(entityName).data.length + 1 : 1;
+        const pointXLocation = worldX;
+        const pointYLocation = worldY;
+        const pointZLocation = document.getElementById("drawingElevation").value;
+        const colour = getJSColourHexDrawing();
 
-		if (createNewEntity) {
-			entityName = "pointObject" + (kadPointsMap.size + 1);
-			createNewEntity = false; // Set the flag to false after creating a new entity
-		}
+        if (createNewEntity) {
+            entityName = "pointObject" + (kadPointsMap.size + 1);
+            createNewEntity = false; // Set the flag to false after creating a new entity
+        }
 
-		const pointObject = {
-			entityName: entityName, //0
-			entityType: entityType, //1
-			pointID: pointID, //2
-			pointXLocation: pointXLocation, //3
-			pointYLocation: pointYLocation, //4
-			pointZLocation: pointZLocation, //5
-			colour: colour //6
-		};
+        const pointObject = {
+            entityName: entityName, //0
+            entityType: entityType, //1
+            pointID: pointID, //2
+            pointXLocation: pointXLocation, //3
+            pointYLocation: pointYLocation, //4
+            pointZLocation: pointZLocation, //5
+            colour: colour //6
+        };
 
-		// Add the point to kadPointsMap
-		if (!kadPointsMap.has(entityName)) {
-			kadPointsMap.set(entityName, {
-				name: entityName,
-				entityType: entityType,
-				data: []
-			});
-		}
-		kadPointsMap.get(entityName).data.push(pointObject);
-	}
-	drawData(points, selectedHole);
+        // Add the point to kadPointsMap
+        if (!kadPointsMap.has(entityName)) {
+            kadPointsMap.set(entityName, {
+                name: entityName,
+                entityType: entityType,
+                data: []
+            });
+        }
+        kadPointsMap.get(entityName).data.push(pointObject);
+    }
+    drawData(points, selectedHole);
 }
 
 function handleKADLineClick(event) {
-	if (isDrawingLine) {
-		// get the values from clicking in the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addKADLine();
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+    if (isDrawingLine) {
+        // get the values from clicking in the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addKADLine();
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 // Function to add a point to the kadPointsMap
 function addKADLine() {
-	if (isDrawingLine) {
-		// Create a new point object or use the existing one
-		const entityType = "line";
-		const pointID = kadLinesMap.has(entityName) ? kadLinesMap.get(entityName).data.length + 1 : 1;
-		const pointXLocation = worldX;
-		const pointYLocation = worldY;
-		const pointZLocation = document.getElementById("drawingElevation").value;
-		const lineWidth = document.getElementById("drawingLineWidth").value;
-		const colour = getJSColourHexDrawing();
+    if (isDrawingLine) {
+        // Create a new point object or use the existing one
+        const entityType = "line";
+        const pointID = kadLinesMap.has(entityName) ? kadLinesMap.get(entityName).data.length + 1 : 1;
+        const pointXLocation = worldX;
+        const pointYLocation = worldY;
+        const pointZLocation = document.getElementById("drawingElevation").value;
+        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const colour = getJSColourHexDrawing();
 
-		if (createNewEntity) {
-			entityName = "lineObject" + (kadLinesMap.size + 1);
-			createNewEntity = false; // Set the flag to false after creating a new entity
-		}
+        if (createNewEntity) {
+            entityName = "lineObject" + (kadLinesMap.size + 1);
+            createNewEntity = false; // Set the flag to false after creating a new entity
+        }
 
-		const lineObject = {
-			entityName: entityName,
-			entityType: entityType,
-			pointID: pointID,
-			pointXLocation: pointXLocation,
-			pointYLocation: pointYLocation,
-			pointZLocation: pointZLocation,
-			lineWidth: lineWidth,
-			colour: colour
-		};
+        const lineObject = {
+            entityName: entityName,
+            entityType: entityType,
+            pointID: pointID,
+            pointXLocation: pointXLocation,
+            pointYLocation: pointYLocation,
+            pointZLocation: pointZLocation,
+            lineWidth: lineWidth,
+            colour: colour
+        };
 
-		// Add the point to kadPointsMap
-		if (!kadLinesMap.has(entityName)) {
-			kadLinesMap.set(entityName, {
-				name: entityName,
-				entityType: entityType,
-				data: []
-			});
-		}
-		kadLinesMap.get(entityName).data.push(lineObject);
-	}
-	drawData(points, selectedHole);
-	console.log("kadLinesMap: ", kadLinesMap);
+        // Add the point to kadPointsMap
+        if (!kadLinesMap.has(entityName)) {
+            kadLinesMap.set(entityName, {
+                name: entityName,
+                entityType: entityType,
+                data: []
+            });
+        }
+        kadLinesMap.get(entityName).data.push(lineObject);
+    }
+    drawData(points, selectedHole);
+    console.log("kadLinesMap: ", kadLinesMap);
 }
 
 function handleKADPolyClick(event) {
-	if (isDrawingPoly) {
-		// get the values from clicking in the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addKADPoly();
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+    if (isDrawingPoly) {
+        // get the values from clicking in the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addKADPoly();
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 // Function to add a point to the kadPointsMap
 function addKADPoly() {
-	if (isDrawingPoly) {
-		// Create a new point object or use the existing one
-		const entityType = "poly";
-		const pointID = kadPolygonsMap.has(entityName) ? kadPolygonsMap.get(entityName).data.length + 1 : 1;
-		const pointXLocation = worldX;
-		const pointYLocation = worldY;
-		const pointZLocation = document.getElementById("drawingElevation").value;
-		const lineWidth = document.getElementById("drawingLineWidth").value;
-		const colour = getJSColourHexDrawing();
-		const closed = true; // Default to closed polygon
+    if (isDrawingPoly) {
+        // Create a new point object or use the existing one
+        const entityType = "poly";
+        const pointID = kadPolygonsMap.has(entityName) ? kadPolygonsMap.get(entityName).data.length + 1 : 1;
+        const pointXLocation = worldX;
+        const pointYLocation = worldY;
+        const pointZLocation = document.getElementById("drawingElevation").value;
+        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const colour = getJSColourHexDrawing();
+        const closed = true; // Default to closed polygon
 
-		if (createNewEntity) {
-			entityName = "polyObject" + (kadPolygonsMap.size + 1);
-			createNewEntity = false; // Set the flag to false after creating a new entity
-		}
+        if (createNewEntity) {
+            entityName = "polyObject" + (kadPolygonsMap.size + 1);
+            createNewEntity = false; // Set the flag to false after creating a new entity
+        }
 
-		const polyObject = {
-			entityName: entityName,
-			entityType: entityType,
-			pointID: pointID,
-			pointXLocation: pointXLocation,
-			pointYLocation: pointYLocation,
-			pointZLocation: pointZLocation,
-			lineWidth: lineWidth,
-			colour: colour,
-			closed: closed // Set to true if the polygon is closed
-		};
+        const polyObject = {
+            entityName: entityName,
+            entityType: entityType,
+            pointID: pointID,
+            pointXLocation: pointXLocation,
+            pointYLocation: pointYLocation,
+            pointZLocation: pointZLocation,
+            lineWidth: lineWidth,
+            colour: colour,
+            closed: closed // Set to true if the polygon is closed
+        };
 
-		// Add the point to kadPointsMap
-		if (!kadPolygonsMap.has(entityName)) {
-			kadPolygonsMap.set(entityName, {
-				name: entityName,
-				entityType: entityType,
-				data: []
-			});
-		}
-		kadPolygonsMap.get(entityName).data.push(polyObject);
-	}
-	drawData(points, selectedHole);
-	console.log("kadPolygonsMap: ", kadPolygonsMap);
+        // Add the point to kadPointsMap
+        if (!kadPolygonsMap.has(entityName)) {
+            kadPolygonsMap.set(entityName, {
+                name: entityName,
+                entityType: entityType,
+                data: []
+            });
+        }
+        kadPolygonsMap.get(entityName).data.push(polyObject);
+    }
+    drawData(points, selectedHole);
+    console.log("kadPolygonsMap: ", kadPolygonsMap);
 }
 
 function handleKADCircleClick(event) {
-	if (isDrawingCircle) {
-		// get the values from clicking in the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addKADCircle();
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+    if (isDrawingCircle) {
+        // get the values from clicking in the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addKADCircle();
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 // Function to add a point to the kadPointsMap
 function addKADCircle() {
-	if (isDrawingCircle) {
-		// Create a new point object or use the existing one
-		const entityType = "circle";
-		const pointID = kadCirclesMap.has(entityName) ? kadCirclesMap.get(entityName).data.length + 1 : 1;
-		const pointXLocation = worldX;
-		const pointYLocation = worldY;
-		const pointZLocation = document.getElementById("drawingElevation").value;
-		const radius = document.getElementById("drawingRadius").value;
-		const lineWidth = document.getElementById("drawingLineWidth").value;
-		const colour = getJSColourHexDrawing();
-		//console.log("pointColour: " + colour);
+    if (isDrawingCircle) {
+        // Create a new point object or use the existing one
+        const entityType = "circle";
+        const pointID = kadCirclesMap.has(entityName) ? kadCirclesMap.get(entityName).data.length + 1 : 1;
+        const pointXLocation = worldX;
+        const pointYLocation = worldY;
+        const pointZLocation = document.getElementById("drawingElevation").value;
+        const radius = document.getElementById("drawingRadius").value;
+        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const colour = getJSColourHexDrawing();
+        //console.log("pointColour: " + colour);
 
-		if (createNewEntity) {
-			entityName = "circleObject" + (kadCirclesMap.size + 1);
-			createNewEntity = false; // Set the flag to false after creating a new entity
-		}
+        if (createNewEntity) {
+            entityName = "circleObject" + (kadCirclesMap.size + 1);
+            createNewEntity = false; // Set the flag to false after creating a new entity
+        }
 
-		const circleObject = {
-			entityName: entityName,
-			entityType: entityType,
-			pointID: pointID,
-			pointXLocation: pointXLocation,
-			pointYLocation: pointYLocation,
-			pointZLocation: pointZLocation,
-			radius: radius,
-			lineWidth: lineWidth,
-			colour: colour
-		};
+        const circleObject = {
+            entityName: entityName,
+            entityType: entityType,
+            pointID: pointID,
+            pointXLocation: pointXLocation,
+            pointYLocation: pointYLocation,
+            pointZLocation: pointZLocation,
+            radius: radius,
+            lineWidth: lineWidth,
+            colour: colour
+        };
 
-		// Add the point to kadPointsMap
-		if (!kadCirclesMap.has(entityName)) {
-			kadCirclesMap.set(entityName, {
-				name: entityName,
-				entityType: entityType,
-				data: []
-			});
-		}
-		kadCirclesMap.get(entityName).data.push(circleObject);
-	}
-	drawData(points, selectedHole);
-	console.log("kadCirclesMap: ", kadCirclesMap);
+        // Add the point to kadPointsMap
+        if (!kadCirclesMap.has(entityName)) {
+            kadCirclesMap.set(entityName, {
+                name: entityName,
+                entityType: entityType,
+                data: []
+            });
+        }
+        kadCirclesMap.get(entityName).data.push(circleObject);
+    }
+    drawData(points, selectedHole);
+    console.log("kadCirclesMap: ", kadCirclesMap);
 }
 
 function handleKADTextClick(event) {
-	if (isDrawingText) {
-		// get the values from clicking in the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addKADText();
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+    if (isDrawingText) {
+        // get the values from clicking in the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addKADText();
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 
 // Function to add a point to the kadPointsMap
 function addKADText() {
-	if (isDrawingText) {
-		// Create a new point object or use the existing one
-		const entityType = "text";
-		const pointID = kadTextsMap.has(entityName) ? kadTextsMap.get(entityName).data.length + 1 : 1;
-		const pointXLocation = worldX;
-		const pointYLocation = worldY;
-		const pointZLocation = document.getElementById("drawingElevation").value;
-		let text = document.getElementById("drawingText").value;
-		const colour = getJSColourHexDrawing();
-		//console.log("pointColour: " + colour);
+    if (isDrawingText) {
+        // Create a new point object or use the existing one
+        const entityType = "text";
+        const pointID = kadTextsMap.has(entityName) ? kadTextsMap.get(entityName).data.length + 1 : 1;
+        const pointXLocation = worldX;
+        const pointYLocation = worldY;
+        const pointZLocation = document.getElementById("drawingElevation").value;
+        let text = document.getElementById("drawingText").value;
+        const colour = getJSColourHexDrawing();
+        //console.log("pointColour: " + colour);
 
-		// Escape double quotes in string literals
-		text = text.replace(/"/g, '"');
+        // Escape double quotes in string literals
+        text = text.replace(/"/g, '"');
 
-		if (createNewEntity) {
-			entityName = "textObject" + (kadTextsMap.size + 1);
-			createNewEntity = false; // Set the flag to false after creating a new entity
-		}
+        if (createNewEntity) {
+            entityName = "textObject" + (kadTextsMap.size + 1);
+            createNewEntity = false; // Set the flag to false after creating a new entity
+        }
 
-		const textObject = {
-			entityName: entityName,
-			entityType: entityType,
-			pointID: pointID,
-			pointXLocation: pointXLocation,
-			pointYLocation: pointYLocation,
-			pointZLocation: pointZLocation,
-			text: text,
-			colour: colour
-		};
+        const textObject = {
+            entityName: entityName,
+            entityType: entityType,
+            pointID: pointID,
+            pointXLocation: pointXLocation,
+            pointYLocation: pointYLocation,
+            pointZLocation: pointZLocation,
+            text: text,
+            colour: colour
+        };
 
-		// Add the point to kadPointsMap
-		if (!kadTextsMap.has(entityName)) {
-			kadTextsMap.set(entityName, {
-				name: entityName,
-				entityType: entityType,
-				data: []
-			});
-		}
-		kadTextsMap.get(entityName).data.push(textObject);
-	}
-	drawData(points, selectedHole);
-	console.log("kadTextsMap: ", kadTextsMap);
+        // Add the point to kadPointsMap
+        if (!kadTextsMap.has(entityName)) {
+            kadTextsMap.set(entityName, {
+                name: entityName,
+                entityType: entityType,
+                data: []
+            });
+        }
+        kadTextsMap.get(entityName).data.push(textObject);
+    }
+    drawData(points, selectedHole);
+    console.log("kadTextsMap: ", kadTextsMap);
 }
 
 // Using SweetAlert Library Create a popup that gets input from the user.
@@ -6855,15 +6892,15 @@ function addKADText() {
 //Ignore, Angle, Azimuth, Instruction, Diameter, Material Type, Name, Blast, Pattern, Easting, Northing, Elevation
 //Eleven Possible columns
 function saveAQMPopup() {
-	const savedAQMPopupSettings = JSON.parse(localStorage.getItem("savedAQMPopupSettings")) || {};
-	let blastNameFromPoints = points[0].entityName;
-	console.log("blastName: " + blastNameFromPoints);
-	Swal.fire({
-		title: "Export AQM file?",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    const savedAQMPopupSettings = JSON.parse(localStorage.getItem("savedAQMPopupSettings")) || {};
+    let blastNameFromPoints = points[0].entityName;
+    console.log("blastName: " + blastNameFromPoints);
+    Swal.fire({
+        title: "Export AQM file?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
             <div class="button-container-2col">
                 <label class="labelWhite15" for="fileName">File Name</label>
                 <input type="text" id="fileName" value="${blastNameFromPoints}_AQM" placeholder="File Name"/>
@@ -7049,220 +7086,220 @@ function saveAQMPopup() {
 				</select>
 			</div>
         `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		},
-		preConfirm: () => {
-			// Get user input values
-			const fileNameInput = document.getElementById("fileName");
-			const blastNameInput = document.getElementById("blastName");
-			const patternNameInput = document.getElementById("patternName");
-			const materialTypeInput = document.getElementById("materialType");
-			const instructionInput = document.getElementById("instruction");
-			const useHoleTypeAsInstructionInput = document.getElementById("useHoleTypeAsInstruction");
-			const writeIgnoreColumnInput = document.getElementById("writeIgnoreColumn");
-			const column1Dropdown = document.getElementById("column1Dropdown");
-			const column2Dropdown = document.getElementById("column2Dropdown");
-			const column3Dropdown = document.getElementById("column3Dropdown");
-			const column4Dropdown = document.getElementById("column4Dropdown");
-			const column5Dropdown = document.getElementById("column5Dropdown");
-			const column6Dropdown = document.getElementById("column6Dropdown");
-			const column7Dropdown = document.getElementById("column7Dropdown");
-			const column8Dropdown = document.getElementById("column8Dropdown");
-			const column9Dropdown = document.getElementById("column9Dropdown");
-			const column10Dropdown = document.getElementById("column10Dropdown");
-			const column11Dropdown = document.getElementById("column11Dropdown");
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        },
+        preConfirm: () => {
+            // Get user input values
+            const fileNameInput = document.getElementById("fileName");
+            const blastNameInput = document.getElementById("blastName");
+            const patternNameInput = document.getElementById("patternName");
+            const materialTypeInput = document.getElementById("materialType");
+            const instructionInput = document.getElementById("instruction");
+            const useHoleTypeAsInstructionInput = document.getElementById("useHoleTypeAsInstruction");
+            const writeIgnoreColumnInput = document.getElementById("writeIgnoreColumn");
+            const column1Dropdown = document.getElementById("column1Dropdown");
+            const column2Dropdown = document.getElementById("column2Dropdown");
+            const column3Dropdown = document.getElementById("column3Dropdown");
+            const column4Dropdown = document.getElementById("column4Dropdown");
+            const column5Dropdown = document.getElementById("column5Dropdown");
+            const column6Dropdown = document.getElementById("column6Dropdown");
+            const column7Dropdown = document.getElementById("column7Dropdown");
+            const column8Dropdown = document.getElementById("column8Dropdown");
+            const column9Dropdown = document.getElementById("column9Dropdown");
+            const column10Dropdown = document.getElementById("column10Dropdown");
+            const column11Dropdown = document.getElementById("column11Dropdown");
 
-			const fileNameValue = fileNameInput.value;
-			const blastName = blastNameInput.value;
-			const patternName = patternNameInput.value;
-			const materialType = materialTypeInput.value;
-			const instruction = instructionInput.value;
-			const useHoleTypeAsInstruction = useHoleTypeAsInstructionInput.checked;
-			const writeIgnoreColumn = writeIgnoreColumnInput.checked;
+            const fileNameValue = fileNameInput.value;
+            const blastName = blastNameInput.value;
+            const patternName = patternNameInput.value;
+            const materialType = materialTypeInput.value;
+            const instruction = instructionInput.value;
+            const useHoleTypeAsInstruction = useHoleTypeAsInstructionInput.checked;
+            const writeIgnoreColumn = writeIgnoreColumnInput.checked;
 
-			const column1Value = column1Dropdown.value;
-			const column2Value = column2Dropdown.value;
-			const column3Value = column3Dropdown.value;
-			const column4Value = column4Dropdown.value;
-			const column5Value = column5Dropdown.value;
-			const column6Value = column6Dropdown.value;
-			const column7Value = column7Dropdown.value;
-			const column8Value = column8Dropdown.value;
-			const column9Value = column9Dropdown.value;
-			const column10Value = column10Dropdown.value;
-			const column11Value = column11Dropdown.value;
+            const column1Value = column1Dropdown.value;
+            const column2Value = column2Dropdown.value;
+            const column3Value = column3Dropdown.value;
+            const column4Value = column4Dropdown.value;
+            const column5Value = column5Dropdown.value;
+            const column6Value = column6Dropdown.value;
+            const column7Value = column7Dropdown.value;
+            const column8Value = column8Dropdown.value;
+            const column9Value = column9Dropdown.value;
+            const column10Value = column10Dropdown.value;
+            const column11Value = column11Dropdown.value;
 
-			// Create the column order array
-			let columnOrderArray = [column1Value, column2Value, column3Value, column4Value, column5Value, column6Value, column7Value, column8Value, column9Value, column10Value, column11Value];
-			// Save the selected settings to localStorage
-			savedAQMPopupSettings.fileNameValue = fileNameValue;
-			savedAQMPopupSettings.blastName = blastName;
-			savedAQMPopupSettings.patternName = patternName;
-			savedAQMPopupSettings.materialType = materialType;
-			savedAQMPopupSettings.instruction = instruction;
-			savedAQMPopupSettings.useHoleTypeAsInstruction = useHoleTypeAsInstruction;
-			savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
-			savedAQMPopupSettings.columnOrderArray = columnOrderArray;
-			localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			// Get user input values
-			const fileNameInput = document.getElementById("fileName");
-			const fileNameValue = fileNameInput.value;
-			const blastNameInput = document.getElementById("blastName");
-			const blastName = blastNameInput.value;
-			const patternNameInput = document.getElementById("patternName");
-			const patternName = patternNameInput.value;
-			const materialTypeInput = document.getElementById("materialType");
-			const materialType = materialTypeInput.value;
-			const instructionInput = document.getElementById("instruction");
-			const instruction = instructionInput.value;
-			if (fileNameValue === "") {
-				// Show an alert to the user with a customized error button
-				Swal.fire({
-					title: "File Name is Null or Invalid",
-					icon: "error",
-					showCancelButton: false,
-					confirmButtonText: "Error",
-					customClass: {
-						container: "custom-popup-container",
-						title: "swal2-title",
-						confirmButton: "cancel",
-						content: "swal2-content",
-						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon"
-					}
-				});
-				return; // Exit the function
-			}
-			let useHoleTypeAsInstruction = document.getElementById("useHoleTypeAsInstruction").checked;
-			let writeIgnoreColumn = document.getElementById("writeIgnoreColumn").checked;
-			// Get selected values from the dropdowns
-			const column1Dropdown = document.getElementById("column1Dropdown");
-			const column2Dropdown = document.getElementById("column2Dropdown");
-			const column3Dropdown = document.getElementById("column3Dropdown");
-			const column4Dropdown = document.getElementById("column4Dropdown");
-			const column5Dropdown = document.getElementById("column5Dropdown");
-			const column6Dropdown = document.getElementById("column6Dropdown");
-			const column7Dropdown = document.getElementById("column7Dropdown");
-			const column8Dropdown = document.getElementById("column8Dropdown");
-			const column9Dropdown = document.getElementById("column9Dropdown");
-			const column10Dropdown = document.getElementById("column10Dropdown");
-			const column11Dropdown = document.getElementById("column11Dropdown");
-			const column1Value = column1Dropdown.value;
-			const column2Value = column2Dropdown.value;
-			const column3Value = column3Dropdown.value;
-			const column4Value = column4Dropdown.value;
-			const column5Value = column5Dropdown.value;
-			const column6Value = column6Dropdown.value;
-			const column7Value = column7Dropdown.value;
-			const column8Value = column8Dropdown.value;
-			const column9Value = column9Dropdown.value;
-			const column10Value = column10Dropdown.value;
-			const column11Value = column11Dropdown.value;
-			// Create the column order array
-			let columnOrderArray = [column1Value, column2Value, column3Value, column4Value, column5Value, column6Value, column7Value, column8Value, column9Value, column10Value, column11Value];
-			// Convert the points to a CSV string using the selected column orders
-			let aqm = convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, materialType, instruction, useHoleTypeAsInstruction, writeIgnoreColumn, columnOrderArray);
-			if (isIOS()) {
-				// Create a Blob with the XML data
-				const blob = new Blob([aqm], {
-					type: "text/csv;charset=utf-8"
-				});
-				// Create a URL for the Blob
-				const url = URL.createObjectURL(blob);
-				// Create an anchor element with the download link
-				const link = document.createElement("a");
-				link.href = url;
-				link.download = fileNameValue + ".aqm";
-				link.textContent = "Click here to download";
-				// Append the link to the document
-				document.body.appendChild(link);
-				// Programmatically trigger the click event on the link
-				link.click();
-				// Remove the link from the document
-				document.body.removeChild(link);
-			} else {
-				// Create an invisible anchor element
-				const link = document.createElement("a");
-				link.style.display = "none";
+            // Create the column order array
+            let columnOrderArray = [column1Value, column2Value, column3Value, column4Value, column5Value, column6Value, column7Value, column8Value, column9Value, column10Value, column11Value];
+            // Save the selected settings to localStorage
+            savedAQMPopupSettings.fileNameValue = fileNameValue;
+            savedAQMPopupSettings.blastName = blastName;
+            savedAQMPopupSettings.patternName = patternName;
+            savedAQMPopupSettings.materialType = materialType;
+            savedAQMPopupSettings.instruction = instruction;
+            savedAQMPopupSettings.useHoleTypeAsInstruction = useHoleTypeAsInstruction;
+            savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
+            savedAQMPopupSettings.columnOrderArray = columnOrderArray;
+            localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Get user input values
+            const fileNameInput = document.getElementById("fileName");
+            const fileNameValue = fileNameInput.value;
+            const blastNameInput = document.getElementById("blastName");
+            const blastName = blastNameInput.value;
+            const patternNameInput = document.getElementById("patternName");
+            const patternName = patternNameInput.value;
+            const materialTypeInput = document.getElementById("materialType");
+            const materialType = materialTypeInput.value;
+            const instructionInput = document.getElementById("instruction");
+            const instruction = instructionInput.value;
+            if (fileNameValue === "") {
+                // Show an alert to the user with a customized error button
+                Swal.fire({
+                    title: "File Name is Null or Invalid",
+                    icon: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "Error",
+                    customClass: {
+                        container: "custom-popup-container",
+                        title: "swal2-title",
+                        confirmButton: "cancel",
+                        content: "swal2-content",
+                        htmlContainer: "swal2-html-container",
+                        icon: "swal2-icon"
+                    }
+                });
+                return; // Exit the function
+            }
+            let useHoleTypeAsInstruction = document.getElementById("useHoleTypeAsInstruction").checked;
+            let writeIgnoreColumn = document.getElementById("writeIgnoreColumn").checked;
+            // Get selected values from the dropdowns
+            const column1Dropdown = document.getElementById("column1Dropdown");
+            const column2Dropdown = document.getElementById("column2Dropdown");
+            const column3Dropdown = document.getElementById("column3Dropdown");
+            const column4Dropdown = document.getElementById("column4Dropdown");
+            const column5Dropdown = document.getElementById("column5Dropdown");
+            const column6Dropdown = document.getElementById("column6Dropdown");
+            const column7Dropdown = document.getElementById("column7Dropdown");
+            const column8Dropdown = document.getElementById("column8Dropdown");
+            const column9Dropdown = document.getElementById("column9Dropdown");
+            const column10Dropdown = document.getElementById("column10Dropdown");
+            const column11Dropdown = document.getElementById("column11Dropdown");
+            const column1Value = column1Dropdown.value;
+            const column2Value = column2Dropdown.value;
+            const column3Value = column3Dropdown.value;
+            const column4Value = column4Dropdown.value;
+            const column5Value = column5Dropdown.value;
+            const column6Value = column6Dropdown.value;
+            const column7Value = column7Dropdown.value;
+            const column8Value = column8Dropdown.value;
+            const column9Value = column9Dropdown.value;
+            const column10Value = column10Dropdown.value;
+            const column11Value = column11Dropdown.value;
+            // Create the column order array
+            let columnOrderArray = [column1Value, column2Value, column3Value, column4Value, column5Value, column6Value, column7Value, column8Value, column9Value, column10Value, column11Value];
+            // Convert the points to a CSV string using the selected column orders
+            let aqm = convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, materialType, instruction, useHoleTypeAsInstruction, writeIgnoreColumn, columnOrderArray);
+            if (isIOS()) {
+                // Create a Blob with the XML data
+                const blob = new Blob([aqm], {
+                    type: "text/csv;charset=utf-8"
+                });
+                // Create a URL for the Blob
+                const url = URL.createObjectURL(blob);
+                // Create an anchor element with the download link
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = fileNameValue + ".aqm";
+                link.textContent = "Click here to download";
+                // Append the link to the document
+                document.body.appendChild(link);
+                // Programmatically trigger the click event on the link
+                link.click();
+                // Remove the link from the document
+                document.body.removeChild(link);
+            } else {
+                // Create an invisible anchor element
+                const link = document.createElement("a");
+                link.style.display = "none";
 
-				// Set the XML content as the "href" attribute
-				link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(aqm);
-				link.download = fileNameValue + ".aqm";
+                // Set the XML content as the "href" attribute
+                link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(aqm);
+                link.download = fileNameValue + ".aqm";
 
-				// Append the link to the document
-				document.body.appendChild(link);
+                // Append the link to the document
+                document.body.appendChild(link);
 
-				// Programmatically trigger the click event on the link
-				link.click();
+                // Programmatically trigger the click event on the link
+                link.click();
 
-				// Remove the link from the document
-				document.body.removeChild(link);
-			}
-		}
-	});
-	// Populate form fields with saved settings
-	const fileNameInput = document.getElementById("fileName");
-	const blastNameInput = document.getElementById("blastName");
-	const patternNameInput = document.getElementById("patternName");
-	const materialTypeInput = document.getElementById("materialType");
-	const instructionInput = document.getElementById("instruction");
-	const useHoleTypeAsInstructionInput = document.getElementById("useHoleTypeAsInstruction");
-	const writeIgnoreColumnInput = document.getElementById("writeIgnoreColumn");
-	const column1Dropdown = document.getElementById("column1Dropdown");
-	const column2Dropdown = document.getElementById("column2Dropdown");
-	const column3Dropdown = document.getElementById("column3Dropdown");
-	const column4Dropdown = document.getElementById("column4Dropdown");
-	const column5Dropdown = document.getElementById("column5Dropdown");
-	const column6Dropdown = document.getElementById("column6Dropdown");
-	const column7Dropdown = document.getElementById("column7Dropdown");
-	const column8Dropdown = document.getElementById("column8Dropdown");
-	const column9Dropdown = document.getElementById("column9Dropdown");
-	const column10Dropdown = document.getElementById("column10Dropdown");
-	const column11Dropdown = document.getElementById("column11Dropdown");
-	// Add more dropdown elements as needed
+                // Remove the link from the document
+                document.body.removeChild(link);
+            }
+        }
+    });
+    // Populate form fields with saved settings
+    const fileNameInput = document.getElementById("fileName");
+    const blastNameInput = document.getElementById("blastName");
+    const patternNameInput = document.getElementById("patternName");
+    const materialTypeInput = document.getElementById("materialType");
+    const instructionInput = document.getElementById("instruction");
+    const useHoleTypeAsInstructionInput = document.getElementById("useHoleTypeAsInstruction");
+    const writeIgnoreColumnInput = document.getElementById("writeIgnoreColumn");
+    const column1Dropdown = document.getElementById("column1Dropdown");
+    const column2Dropdown = document.getElementById("column2Dropdown");
+    const column3Dropdown = document.getElementById("column3Dropdown");
+    const column4Dropdown = document.getElementById("column4Dropdown");
+    const column5Dropdown = document.getElementById("column5Dropdown");
+    const column6Dropdown = document.getElementById("column6Dropdown");
+    const column7Dropdown = document.getElementById("column7Dropdown");
+    const column8Dropdown = document.getElementById("column8Dropdown");
+    const column9Dropdown = document.getElementById("column9Dropdown");
+    const column10Dropdown = document.getElementById("column10Dropdown");
+    const column11Dropdown = document.getElementById("column11Dropdown");
+    // Add more dropdown elements as needed
 
-	fileNameInput.value = savedAQMPopupSettings.fileNameValue || "";
-	blastNameInput.value = savedAQMPopupSettings.blastName || "";
-	patternNameInput.value = savedAQMPopupSettings.patternName || "";
-	materialTypeInput.value = savedAQMPopupSettings.materialType || "";
-	instructionInput.value = savedAQMPopupSettings.instruction || "";
-	useHoleTypeAsInstructionInput.checked = savedAQMPopupSettings.useHoleTypeAsInstruction || false;
-	writeIgnoreColumnInput.checked = savedAQMPopupSettings.writeIgnoreColumn || true;
-	column1Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[0] : "Pattern";
-	column2Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[1] : "Blast";
-	column3Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[2] : "Name";
-	column4Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[3] : "Easting";
-	column5Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[4] : "Northing";
-	column6Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[5] : "Elevation";
-	column7Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[6] : "Angle";
-	column8Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[7] : "Azimuth";
-	column9Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[8] : "Diameter";
-	column10Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[9] : "Instruction";
-	column11Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[10] : "Material Type";
-	// Set values for more dropdowns as needed
+    fileNameInput.value = savedAQMPopupSettings.fileNameValue || "";
+    blastNameInput.value = savedAQMPopupSettings.blastName || "";
+    patternNameInput.value = savedAQMPopupSettings.patternName || "";
+    materialTypeInput.value = savedAQMPopupSettings.materialType || "";
+    instructionInput.value = savedAQMPopupSettings.instruction || "";
+    useHoleTypeAsInstructionInput.checked = savedAQMPopupSettings.useHoleTypeAsInstruction || false;
+    writeIgnoreColumnInput.checked = savedAQMPopupSettings.writeIgnoreColumn || true;
+    column1Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[0] : "Pattern";
+    column2Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[1] : "Blast";
+    column3Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[2] : "Name";
+    column4Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[3] : "Easting";
+    column5Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[4] : "Northing";
+    column6Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[5] : "Elevation";
+    column7Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[6] : "Angle";
+    column8Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[7] : "Azimuth";
+    column9Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[8] : "Diameter";
+    column10Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[9] : "Instruction";
+    column11Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[10] : "Material Type";
+    // Set values for more dropdowns as needed
 }
 
 // Using SweetAlert Library Create a popup that gets input from the user.
 function saveIREDESPopup() {
-	let blastName = points[0].entityName;
-	//console.log("Points" + points);
-	console.log("blastName: " + blastName);
-	Swal.fire({
-		title: "Export IREDES file?",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    let blastName = points[0].entityName;
+    //console.log("Points" + points);
+    console.log("blastName: " + blastName);
+    Swal.fire({
+        title: "Export IREDES file?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
       <div class="button-container-2col">
       <label class="labelWhite18" for="fileName">File Name</label>
       <input type="text" id="fileName" placeholder="File Name" value="${blastName}_XML"/>
@@ -7287,147 +7324,147 @@ function saveIREDESPopup() {
       </div>
 			<label class="labelWhite12">This is an XML file in the format of an Epiroc Drill Plan Export</label>
         `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			// Get user input values
-			const fileNameInput = document.getElementById("fileName");
-			const fileNameValue = fileNameInput.value;
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Get user input values
+            const fileNameInput = document.getElementById("fileName");
+            const fileNameValue = fileNameInput.value;
 
-			const planIDInput = document.getElementById("planID");
-			const planIDValue = planIDInput.value;
+            const planIDInput = document.getElementById("planID");
+            const planIDValue = planIDInput.value;
 
-			const siteIDInput = document.getElementById("siteID");
-			const siteIDValue = siteIDInput.value;
+            const siteIDInput = document.getElementById("siteID");
+            const siteIDValue = siteIDInput.value;
 
-			const holeOptionsInput = document.getElementById("holeOptions");
-			const holeOptionsValue = holeOptionsInput.checked ? true : false;
+            const holeOptionsInput = document.getElementById("holeOptions");
+            const holeOptionsValue = holeOptionsInput.checked ? true : false;
 
-			const mwdInput = document.getElementById("mwdOn");
-			const mwdValue = mwdInput.checked ? true : false;
+            const mwdInput = document.getElementById("mwdOn");
+            const mwdValue = mwdInput.checked ? true : false;
 
-			const chksumInput = document.getElementById("chksumValue");
-			const chksumValue = chksumInput.value;
+            const chksumInput = document.getElementById("chksumValue");
+            const chksumValue = chksumInput.value;
 
-			if (fileNameValue === "") {
-				// Show an alert to the user with a customized error button
-				Swal.fire({
-					title: "File Name is Null or Invalid",
-					icon: "error",
-					showCancelButton: false,
-					confirmButtonText: "Error",
-					customClass: {
-						container: "custom-popup-container",
-						title: "swal2-title",
-						confirmButton: "cancel",
-						//cancelButton: "cancel",
-						content: "swal2-content",
-						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon"
-					}
-				});
-				return; // Exit the function
-			}
+            if (fileNameValue === "") {
+                // Show an alert to the user with a customized error button
+                Swal.fire({
+                    title: "File Name is Null or Invalid",
+                    icon: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "Error",
+                    customClass: {
+                        container: "custom-popup-container",
+                        title: "swal2-title",
+                        confirmButton: "cancel",
+                        //cancelButton: "cancel",
+                        content: "swal2-content",
+                        htmlContainer: "swal2-html-container",
+                        icon: "swal2-icon"
+                    }
+                });
+                return; // Exit the function
+            }
 
-			if (planIDValue === "") {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Plan ID",
-					text: "Please enter a Drill Plan ID.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			//site Id checks
-			if (siteIDValue === "") {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Site ID",
-					text: "Please enter a Site ID.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
+            if (planIDValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Plan ID",
+                    text: "Please enter a Drill Plan ID.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            //site Id checks
+            if (siteIDValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Site ID",
+                    text: "Please enter a Site ID.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
 
-			// Generate the XML content using the convertPointsToIREDESXML function
-			const xmlContent = convertPointsToIREDESXML(points, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
+            // Generate the XML content using the convertPointsToIREDESXML function
+            const xmlContent = convertPointsToIREDESXML(points, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
 
-			if (isIOS()) {
-				// Create a Blob with the XML data
-				const blob = new Blob([xmlContent], {
-					type: "text/xml;charset=utf-8"
-				});
+            if (isIOS()) {
+                // Create a Blob with the XML data
+                const blob = new Blob([xmlContent], {
+                    type: "text/xml;charset=utf-8"
+                });
 
-				// Create a URL for the Blob
-				const url = URL.createObjectURL(blob);
+                // Create a URL for the Blob
+                const url = URL.createObjectURL(blob);
 
-				// Create an anchor element with the download link
-				const link = document.createElement("a");
-				link.href = url;
+                // Create an anchor element with the download link
+                const link = document.createElement("a");
+                link.href = url;
 
-				link.download = fileNameValue + ".xml";
-				link.textContent = "Click here to download";
+                link.download = fileNameValue + ".xml";
+                link.textContent = "Click here to download";
 
-				// Append the link to the document
-				document.body.appendChild(link);
+                // Append the link to the document
+                document.body.appendChild(link);
 
-				// Programmatically trigger the click event on the link
-				link.click();
+                // Programmatically trigger the click event on the link
+                link.click();
 
-				// Remove the link from the document
-				document.body.removeChild(link);
-			} else {
-				// Create an invisible anchor element
-				const link = document.createElement("a");
-				link.style.display = "none";
+                // Remove the link from the document
+                document.body.removeChild(link);
+            } else {
+                // Create an invisible anchor element
+                const link = document.createElement("a");
+                link.style.display = "none";
 
-				// Set the XML content as the "href" attribute
-				link.href = "data:text/xml;charset=utf-8," + encodeURIComponent(xmlContent);
-				link.download = fileNameValue + ".xml";
+                // Set the XML content as the "href" attribute
+                link.href = "data:text/xml;charset=utf-8," + encodeURIComponent(xmlContent);
+                link.download = fileNameValue + ".xml";
 
-				// Append the link to the document
-				document.body.appendChild(link);
+                // Append the link to the document
+                document.body.appendChild(link);
 
-				// Programmatically trigger the click event on the link
-				link.click();
+                // Programmatically trigger the click event on the link
+                link.click();
 
-				// Remove the link from the document
-				document.body.removeChild(link);
-			}
-		}
-	});
+                // Remove the link from the document
+                document.body.removeChild(link);
+            }
+        }
+    });
 }
 
 // Using SweetAlert Library Create a popup that gets input from the user.
 function addHolePopup() {
-	//Retrieve the last enteredvalues from local storage
-	let savedAddHolePopupSettings = JSON.parse(localStorage.getItem("savedAddHolePopupSettings")) || {};
-	let lastValues = {
-		blastName: savedAddHolePopupSettings.blastName || blastNameValue,
-		useCustomHoleID: savedAddHolePopupSettings.useCustomHoleID || false,
-		customHoleID: savedAddHolePopupSettings.customHoleID || "",
-		elevation: savedAddHolePopupSettings.elevation || 0,
-		diameter: savedAddHolePopupSettings.diameter || 115,
-		type: savedAddHolePopupSettings.type || "Production",
-		length: savedAddHolePopupSettings.length || 0,
-		angle: savedAddHolePopupSettings.angle || 0,
-		bearing: savedAddHolePopupSettings.bearing || 0
-	};
+    //Retrieve the last enteredvalues from local storage
+    let savedAddHolePopupSettings = JSON.parse(localStorage.getItem("savedAddHolePopupSettings")) || {};
+    let lastValues = {
+        blastName: savedAddHolePopupSettings.blastName || blastNameValue,
+        useCustomHoleID: savedAddHolePopupSettings.useCustomHoleID || false,
+        customHoleID: savedAddHolePopupSettings.customHoleID || "",
+        elevation: savedAddHolePopupSettings.elevation || 0,
+        diameter: savedAddHolePopupSettings.diameter || 115,
+        type: savedAddHolePopupSettings.type || "Production",
+        length: savedAddHolePopupSettings.length || 0,
+        angle: savedAddHolePopupSettings.angle || 0,
+        bearing: savedAddHolePopupSettings.bearing || 0
+    };
 
-	Swal.fire({
-		title: "Add a hole to the Pattern?",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: "Add a hole to the Pattern?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
 			<label class="labelWhite18" for="blastName">Blast Name</label>
 			<input type="text3" id="blastName" placeholder="Blast Name" value="${lastValues.blastName}" />
@@ -7449,196 +7486,196 @@ function addHolePopup() {
 		  	<input type="number3" id="bearing" placeholder="Bearing" value="${lastValues.bearing}" inputmode="decimal" pattern="[0-9]*"/>
 		  </div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
-			const customHoleID = document.getElementById("customHoleID").value;
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
+            const customHoleID = document.getElementById("customHoleID").value;
 
-			const blastNameInput = document.getElementById("blastName");
-			const blastNameValue = blastNameInput.value;
-			if (blastNameValue === null || blastNameValue === "") {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Blast Name",
-					showCancelButton: true,
-					showConfirmButton: false,
-					html: `<label class="labelWhite18">Error parsing Blast Name</label>`,
-					customClass: {
-						container: "custom-popup-container",
-						title: "swal2-title",
-						cancelButton: "Try Again",
-						content: "swal2-content",
-						htmlContainer: "swal2-html-container",
-						icon: "error"
-					}
-				});
-				return; // Exit the function
-			}
+            const blastNameInput = document.getElementById("blastName");
+            const blastNameValue = blastNameInput.value;
+            if (blastNameValue === null || blastNameValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Blast Name",
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    html: `<label class="labelWhite18">Error parsing Blast Name</label>`,
+                    customClass: {
+                        container: "custom-popup-container",
+                        title: "swal2-title",
+                        cancelButton: "Try Again",
+                        content: "swal2-content",
+                        htmlContainer: "swal2-html-container",
+                        icon: "error"
+                    }
+                });
+                return; // Exit the function
+            }
 
-			//diameter checks
-			const diameterInput = document.getElementById("diameter");
-			const diameterValue = parseFloat(diameterInput.value);
-			if (isNaN(diameterValue) || diameterValue < 0 || diameterValue > 1000) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Diameter",
-					text: "Please enter an diameter between 0 and 1000 millimeters.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			//type checks which is only text
-			const typeInput = document.getElementById("type");
-			const typeValue = typeInput.value;
-			if (typeValue === null || typeValue === "") {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Type",
-					text: "Please enter a Type.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			const elevationInput = document.getElementById("elevation");
-			const elevationValue = parseFloat(elevationInput.value);
-			if (isNaN(elevationValue) || elevationValue < -2000 || elevationValue > 8000) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Elevation",
-					text: "Please enter an elevation between -2000 and 8000 meters.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			const lengthInput = document.getElementById("length");
-			const lengthValue = parseFloat(lengthInput.value);
-			if (isNaN(lengthValue) || lengthValue < 0 || lengthValue > 100) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid length",
-					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			const angleInput = document.getElementById("angle");
-			const angleValue = parseFloat(angleInput.value);
+            //diameter checks
+            const diameterInput = document.getElementById("diameter");
+            const diameterValue = parseFloat(diameterInput.value);
+            if (isNaN(diameterValue) || diameterValue < 0 || diameterValue > 1000) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Diameter",
+                    text: "Please enter an diameter between 0 and 1000 millimeters.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            //type checks which is only text
+            const typeInput = document.getElementById("type");
+            const typeValue = typeInput.value;
+            if (typeValue === null || typeValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Type",
+                    text: "Please enter a Type.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            const elevationInput = document.getElementById("elevation");
+            const elevationValue = parseFloat(elevationInput.value);
+            if (isNaN(elevationValue) || elevationValue < -2000 || elevationValue > 8000) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Elevation",
+                    text: "Please enter an elevation between -2000 and 8000 meters.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            const lengthInput = document.getElementById("length");
+            const lengthValue = parseFloat(lengthInput.value);
+            if (isNaN(lengthValue) || lengthValue < 0 || lengthValue > 100) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid length",
+                    text: "Please enter an length between 0 and 100 meters.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            const angleInput = document.getElementById("angle");
+            const angleValue = parseFloat(angleInput.value);
 
-			if (isNaN(angleValue) || angleValue < 0 || angleValue > 60) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Angle",
-					text: "Please enter an angle between 0 and 60 degrees.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
-			const bearingInput = document.getElementById("bearing");
-			const bearingValue = parseFloat(bearingInput.value);
+            if (isNaN(angleValue) || angleValue < 0 || angleValue > 60) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Angle",
+                    text: "Please enter an angle between 0 and 60 degrees.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+            const bearingInput = document.getElementById("bearing");
+            const bearingValue = parseFloat(bearingInput.value);
 
-			if (isNaN(bearingValue) || bearingValue < 0 || bearingValue > 360) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid Bearing",
-					text: "Please enter an bearing between 0 and 360 degrees.",
-					icon: "error"
-				});
-				return; // Exit the function
-			}
+            if (isNaN(bearingValue) || bearingValue < 0 || bearingValue > 360) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Bearing",
+                    text: "Please enter an bearing between 0 and 360 degrees.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
 
-			lastValues = {
-				blastName: blastNameValue,
-				useCustomHoleID: useCustomHoleID,
-				customHoleID: customHoleID,
-				elevation: elevationValue,
-				diameter: diameterValue,
-				type: typeValue,
-				length: lengthValue,
-				angle: angleValue,
-				bearing: bearingValue
-			};
-			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
+            lastValues = {
+                blastName: blastNameValue,
+                useCustomHoleID: useCustomHoleID,
+                customHoleID: customHoleID,
+                elevation: elevationValue,
+                diameter: diameterValue,
+                type: typeValue,
+                length: lengthValue,
+                angle: angleValue,
+                bearing: bearingValue
+            };
+            localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
-			//create a new hole
-			addHole(useCustomHoleID, blastNameValue, customHoleID, worldX, worldY, elevationValue, diameterValue, typeValue, lengthValue, angleValue, bearingValue);
-		} else {
-			worldX = null;
-			worldY = null;
-		}
-	});
+            //create a new hole
+            addHole(useCustomHoleID, blastNameValue, customHoleID, worldX, worldY, elevationValue, diameterValue, typeValue, lengthValue, angleValue, bearingValue);
+        } else {
+            worldX = null;
+            worldY = null;
+        }
+    });
 }
 
 function handlePatternAddingClick(event) {
-	if (isAddingPattern) {
-		// Get the click/touch coordinates relative to the canvas
-		//const rect = canvas.getBoundingClientRect();
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		let clickX = event.clientX - rect.left;
-		let clickY = event.clientY - rect.top;
+    if (isAddingPattern) {
+        // Get the click/touch coordinates relative to the canvas
+        //const rect = canvas.getBoundingClientRect();
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        let clickX = event.clientX - rect.left;
+        let clickY = event.clientY - rect.top;
 
-		if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
-			// Handle the case when the values are NaN
-			clickX = event.changedTouches[0].clientX - rect.left;
-			clickY = event.changedTouches[0].clientY - rect.top;
-		} else {
-			// Proceed with the calculation using the valid values
-			clickX = event.clientX - rect.left;
-			clickY = event.clientY - rect.top;
-		}
-		worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-		worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
-		addPatternPopup(parseFloat(worldX.toFixed(3)), parseFloat(worldY.toFixed(3)));
-		//console.log("worldX: " + worldX + " worldY: " + worldY);
-	} else {
-		worldX = null;
-		worldY = null;
-	}
+        if (isNaN(event.clientX - rect.left) || isNaN(event.clientY - rect.top)) {
+            // Handle the case when the values are NaN
+            clickX = event.changedTouches[0].clientX - rect.left;
+            clickY = event.changedTouches[0].clientY - rect.top;
+        } else {
+            // Proceed with the calculation using the valid values
+            clickX = event.clientX - rect.left;
+            clickY = event.clientY - rect.top;
+        }
+        worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+        worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+        addPatternPopup(parseFloat(worldX.toFixed(3)), parseFloat(worldY.toFixed(3)));
+        //console.log("worldX: " + worldX + " worldY: " + worldY);
+    } else {
+        worldX = null;
+        worldY = null;
+    }
 }
 
 // Using SweetAlert Library Create a popup that gets input from the user.
 function addPatternPopup(worldX, worldY) {
-	//Retrieve the last enteredvalues from local storage
-	let savedAddPatternPopupSettings = JSON.parse(localStorage.getItem("savedAddPatternPopupSettings")) || {};
-	let lastValues = {
-		blastName: savedAddPatternPopupSettings.blastName || blastNameValue,
-		nameTypeIsNumerical: savedAddPatternPopupSettings.nameTypeIsNumerical || true,
-		rowOrientation: savedAddPatternPopupSettings.rowOrientation || 90.0,
-		x: savedAddPatternPopupSettings.x || worldX,
-		y: savedAddPatternPopupSettings.y || worldY,
-		z: savedAddPatternPopupSettings.z || 100,
-		diameter: savedAddPatternPopupSettings.diameter || 115,
-		type: savedAddPatternPopupSettings.type || "Production",
-		angle: savedAddPatternPopupSettings.angle || 0,
-		bearing: savedAddPatternPopupSettings.bearing || 180,
-		length: savedAddPatternPopupSettings.length || 6.2,
-		spacingOffset: savedAddPatternPopupSettings.spacingOffset || 0.5,
-		burden: savedAddPatternPopupSettings.burden || 3.0,
-		spacing: savedAddPatternPopupSettings.spacing || 3.3,
-		rows: savedAddPatternPopupSettings.rows || 6,
-		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
-	};
+    //Retrieve the last enteredvalues from local storage
+    let savedAddPatternPopupSettings = JSON.parse(localStorage.getItem("savedAddPatternPopupSettings")) || {};
+    let lastValues = {
+        blastName: savedAddPatternPopupSettings.blastName || blastNameValue,
+        nameTypeIsNumerical: savedAddPatternPopupSettings.nameTypeIsNumerical || true,
+        rowOrientation: savedAddPatternPopupSettings.rowOrientation || 90.0,
+        x: savedAddPatternPopupSettings.x || worldX,
+        y: savedAddPatternPopupSettings.y || worldY,
+        z: savedAddPatternPopupSettings.z || 100,
+        diameter: savedAddPatternPopupSettings.diameter || 115,
+        type: savedAddPatternPopupSettings.type || "Production",
+        angle: savedAddPatternPopupSettings.angle || 0,
+        bearing: savedAddPatternPopupSettings.bearing || 180,
+        length: savedAddPatternPopupSettings.length || 6.2,
+        spacingOffset: savedAddPatternPopupSettings.spacingOffset || 0.5,
+        burden: savedAddPatternPopupSettings.burden || 3.0,
+        spacing: savedAddPatternPopupSettings.spacing || 3.3,
+        rows: savedAddPatternPopupSettings.rows || 6,
+        holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
+    };
 
-	//${lastValues.}
-	// Show loading spinner while the popup is created
-	Swal.showLoading();
+    //${lastValues.}
+    // Show loading spinner while the popup is created
+    Swal.showLoading();
 
-	// Create the SweetAlert popup
-	Swal.fire({
-		title: "Add a Pattern?",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    // Create the SweetAlert popup
+    Swal.fire({
+        title: "Add a Pattern?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
 		  <label class="labelWhite18" for="blastName">Blast Name</label>
 		  <input type="text3" id="blastName" name="blastName" placeholder="Blast Name" value="${lastValues.blastName}"/>
@@ -7676,639 +7713,639 @@ function addPatternPopup(worldX, worldY) {
 		  <input type="number3" id="holesPerRow" name="holesPerRow" placeholder="Per Row" value="${lastValues.holesPerRow}" step="1" min="1" max="500" inputmode="decimal" pattern="[0-9]*"/>
 		</div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	})
-		.then((result) => {
-			if (result.isConfirmed) {
-				// Retrieve values from the input fields
-				const entityName = document.getElementById("blastName").value;
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    })
+        .then((result) => {
+            if (result.isConfirmed) {
+                // Retrieve values from the input fields
+                const entityName = document.getElementById("blastName").value;
 
-				const offset = document.getElementById("spacingOffset").value;
-				const nameTypeIsNumerical = document.getElementById("nameTypeIsNumerical").checked;
-				const rowOrientation = parseFloat(document.getElementById("rowOrientation").value);
-				const x = parseFloat(document.getElementById("x").value);
-				const y = parseFloat(document.getElementById("y").value);
-				const z = parseFloat(document.getElementById("z").value);
-				const diameter = parseFloat(document.getElementById("diameter").value);
-				const type = document.getElementById("type").value;
-				const angle = parseFloat(document.getElementById("angle").value);
-				const bearing = parseFloat(document.getElementById("bearing").value);
-				const length = parseFloat(document.getElementById("length").value);
-				const burden = parseFloat(document.getElementById("burden").value);
-				const spacing = parseFloat(document.getElementById("spacing").value);
-				const rows = parseInt(document.getElementById("rows").value);
-				const holesPerRow = parseInt(document.getElementById("holesPerRow").value);
+                const offset = document.getElementById("spacingOffset").value;
+                const nameTypeIsNumerical = document.getElementById("nameTypeIsNumerical").checked;
+                const rowOrientation = parseFloat(document.getElementById("rowOrientation").value);
+                const x = parseFloat(document.getElementById("x").value);
+                const y = parseFloat(document.getElementById("y").value);
+                const z = parseFloat(document.getElementById("z").value);
+                const diameter = parseFloat(document.getElementById("diameter").value);
+                const type = document.getElementById("type").value;
+                const angle = parseFloat(document.getElementById("angle").value);
+                const bearing = parseFloat(document.getElementById("bearing").value);
+                const length = parseFloat(document.getElementById("length").value);
+                const burden = parseFloat(document.getElementById("burden").value);
+                const spacing = parseFloat(document.getElementById("spacing").value);
+                const rows = parseInt(document.getElementById("rows").value);
+                const holesPerRow = parseInt(document.getElementById("holesPerRow").value);
 
-				//entityName checks
-				if (entityName === null || entityName === "") {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Blast Name",
-						text: "Please enter a Blast Name.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//offset checks
-				if (isNaN(offset) || offset < -1 || offset > 1) {
-					//show alert to user
-					Swal.fire({
-						title: "Invalid Offset",
-						text: "Please enter an offset between -1 and 1.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//nameTypeIsNumerical checks
-				if (nameTypeIsNumerical === null || nameTypeIsNumerical === "") {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Name Type",
-						text: "Please enter a Name Type.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//rowOrientation checks
-				if (isNaN(rowOrientation) || rowOrientation < 0 || rowOrientation > 359.999) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Row Orientation",
-						text: "Please enter a row orientation between 0 and 359.999 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//x checks
-				if (isNaN(x)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid X",
-						text: "Please enter an X value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//y checks
-				if (isNaN(y)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Y",
-						text: "Please enter an Y value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//z checks
-				if (isNaN(z)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Z",
-						text: "Please enter an Z value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//diameter checks
-				if (isNaN(diameter) || diameter < 0 || diameter > 1000) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Diameter",
-						text: "Please enter an diameter between 0 and 1000 millimeters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//type checks which is only text
-				if (type === null || type === "") {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Type",
-						text: "Please enter a Type.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//angle checks
-				if (isNaN(angle) || angle < 0 || angle > 60) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Angle",
-						text: "Please enter an angle between 0 and 60 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//bearing checks
-				if (isNaN(bearing) || bearing < 0 || bearing > 360) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Bearing",
-						text: "Please enter an bearing between 0 and 360 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//length checks
-				if (isNaN(length) || length < 0 || length > 200) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Length",
-						text: "Please enter an length between 0 and 200 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//burden checks
-				if (isNaN(burden) || burden < 0.1 || burden > 50) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Burden",
-						text: "Please enter an burden between 0.1 and 50 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//spacing checks
-				if (isNaN(spacing) || spacing < 0.1 || spacing > 50) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Spacing",
-						text: "Please enter an spacing between 0.1 and 50 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//rows checksq
-				if (isNaN(rows) || rows < 1 || rows > 500) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Rows",
-						text: "Please enter an rows between 1 and 500.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//holesPerRow checks
-				if (isNaN(holesPerRow) || holesPerRow < 1 || holesPerRow > 500) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Holes Per Row",
-						text: "Please enter an holes per row between 1 and 500.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
+                //entityName checks
+                if (entityName === null || entityName === "") {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Blast Name",
+                        text: "Please enter a Blast Name.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //offset checks
+                if (isNaN(offset) || offset < -1 || offset > 1) {
+                    //show alert to user
+                    Swal.fire({
+                        title: "Invalid Offset",
+                        text: "Please enter an offset between -1 and 1.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //nameTypeIsNumerical checks
+                if (nameTypeIsNumerical === null || nameTypeIsNumerical === "") {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Name Type",
+                        text: "Please enter a Name Type.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //rowOrientation checks
+                if (isNaN(rowOrientation) || rowOrientation < 0 || rowOrientation > 359.999) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Row Orientation",
+                        text: "Please enter a row orientation between 0 and 359.999 degrees.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //x checks
+                if (isNaN(x)) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid X",
+                        text: "Please enter an X value in meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //y checks
+                if (isNaN(y)) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Y",
+                        text: "Please enter an Y value in meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //z checks
+                if (isNaN(z)) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Z",
+                        text: "Please enter an Z value in meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //diameter checks
+                if (isNaN(diameter) || diameter < 0 || diameter > 1000) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Diameter",
+                        text: "Please enter an diameter between 0 and 1000 millimeters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //type checks which is only text
+                if (type === null || type === "") {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Type",
+                        text: "Please enter a Type.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //angle checks
+                if (isNaN(angle) || angle < 0 || angle > 60) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Angle",
+                        text: "Please enter an angle between 0 and 60 degrees.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //bearing checks
+                if (isNaN(bearing) || bearing < 0 || bearing > 360) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Bearing",
+                        text: "Please enter an bearing between 0 and 360 degrees.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //length checks
+                if (isNaN(length) || length < 0 || length > 200) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Length",
+                        text: "Please enter an length between 0 and 200 meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //burden checks
+                if (isNaN(burden) || burden < 0.1 || burden > 50) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Burden",
+                        text: "Please enter an burden between 0.1 and 50 meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //spacing checks
+                if (isNaN(spacing) || spacing < 0.1 || spacing > 50) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Spacing",
+                        text: "Please enter an spacing between 0.1 and 50 meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //rows checksq
+                if (isNaN(rows) || rows < 1 || rows > 500) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Rows",
+                        text: "Please enter an rows between 1 and 500.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
+                //holesPerRow checks
+                if (isNaN(holesPerRow) || holesPerRow < 1 || holesPerRow > 500) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Holes Per Row",
+                        text: "Please enter an holes per row between 1 and 500.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
 
-				lastValues = {
-					blastName: entityName,
-					offset: offset,
-					nameTypeIsNumerical: nameTypeIsNumerical,
-					rowOrientation: rowOrientation,
-					x: x,
-					y: y,
-					z: z,
-					diameter: diameter,
-					type: type,
-					angle: angle,
-					bearing: bearing,
-					length: length,
-					burden: burden,
-					spacing: spacing,
-					rows: rows,
-					holesPerRow: holesPerRow
-				};
-				localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
+                lastValues = {
+                    blastName: entityName,
+                    offset: offset,
+                    nameTypeIsNumerical: nameTypeIsNumerical,
+                    rowOrientation: rowOrientation,
+                    x: x,
+                    y: y,
+                    z: z,
+                    diameter: diameter,
+                    type: type,
+                    angle: angle,
+                    bearing: bearing,
+                    length: length,
+                    burden: burden,
+                    spacing: spacing,
+                    rows: rows,
+                    holesPerRow: holesPerRow
+                };
+                localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
-				// Use the obtained values to add the pattern
-				addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, burden, spacing, rows, holesPerRow);
-			} else {
-				// Handle cancel action if needed
-			}
-		})
-		.finally(() => {
-			// Hide the loading spinner when the popup is closed
-			Swal.hideLoading();
-		});
+                // Use the obtained values to add the pattern
+                addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, burden, spacing, rows, holesPerRow);
+            } else {
+                // Handle cancel action if needed
+            }
+        })
+        .finally(() => {
+            // Hide the loading spinner when the popup is closed
+            Swal.hideLoading();
+        });
 }
 
 function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, burden, spacing, rows, holesPerRow) {
-	let entityType = "hole";
-	let startXLocation = parseFloat(x);
-	let startYLocation = parseFloat(y);
-	let startZLocation = parseFloat(z);
-	let holeLength = parseFloat(length);
-	let holeDiameter = parseFloat(diameter);
-	let holeType = type;
-	let holeAngle = parseFloat(angle);
-	let holeBearing = parseFloat(bearing);
-	let patternburden = parseFloat(burden);
-	let patternspacing = parseFloat(spacing);
-	let patternrows = parseInt(rows);
-	let patternholesPerRow = parseInt(holesPerRow);
-	let patternoffset = parseFloat(offset);
-	let patternnameTypeIsNumerical = nameTypeIsNumerical;
-	let patternrowOrientation = parseFloat((90 - rowOrientation) * (Math.PI / 180));
+    let entityType = "hole";
+    let startXLocation = parseFloat(x);
+    let startYLocation = parseFloat(y);
+    let startZLocation = parseFloat(z);
+    let holeLength = parseFloat(length);
+    let holeDiameter = parseFloat(diameter);
+    let holeType = type;
+    let holeAngle = parseFloat(angle);
+    let holeBearing = parseFloat(bearing);
+    let patternburden = parseFloat(burden);
+    let patternspacing = parseFloat(spacing);
+    let patternrows = parseInt(rows);
+    let patternholesPerRow = parseInt(holesPerRow);
+    let patternoffset = parseFloat(offset);
+    let patternnameTypeIsNumerical = nameTypeIsNumerical;
+    let patternrowOrientation = parseFloat((90 - rowOrientation) * (Math.PI / 180));
 
-	let currentLetter = "A"; // Initialize the current letter
-	let currentRow = 1; // Initialize the current row number
+    let currentLetter = "A"; // Initialize the current letter
+    let currentRow = 1; // Initialize the current row number
 
-	for (let i = 0; i < patternrows; i++) {
-		for (let j = 0; j < patternholesPerRow; j++) {
-			// Translate to the origin
-			const translatedX = startXLocation - x;
-			const translatedY = startYLocation - y;
+    for (let i = 0; i < patternrows; i++) {
+        for (let j = 0; j < patternholesPerRow; j++) {
+            // Translate to the origin
+            const translatedX = startXLocation - x;
+            const translatedY = startYLocation - y;
 
-			// Calculate the rotated position based on rowOrientation
-			const rotatedX = translatedX * Math.cos(patternrowOrientation) - translatedY * Math.sin(patternrowOrientation);
-			const rotatedY = translatedX * Math.sin(patternrowOrientation) + translatedY * Math.cos(patternrowOrientation);
+            // Calculate the rotated position based on rowOrientation
+            const rotatedX = translatedX * Math.cos(patternrowOrientation) - translatedY * Math.sin(patternrowOrientation);
+            const rotatedY = translatedX * Math.sin(patternrowOrientation) + translatedY * Math.cos(patternrowOrientation);
 
-			// Translate back to the original position
-			const finalX = rotatedX + x;
-			const finalY = rotatedY + y;
+            // Translate back to the original position
+            const finalX = rotatedX + x;
+            const finalY = rotatedY + y;
 
-			let holeID;
-			// Initialize points as an empty array if it's null
-			if (points === null) {
-				points = [];
-			}
+            let holeID;
+            // Initialize points as an empty array if it's null
+            if (points === null) {
+                points = [];
+            }
 
-			if (patternnameTypeIsNumerical) {
-				holeID = currentLetter + currentRow; // Generate the hole ID
-				addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing), holeID);
-			} else {
-				holeID = currentLetter + (j + 1); // Generate the hole ID
-				addHole(true, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing));
-			}
-			startXLocation = startXLocation + patternspacing;
-		}
+            if (patternnameTypeIsNumerical) {
+                holeID = currentLetter + currentRow; // Generate the hole ID
+                addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing), holeID);
+            } else {
+                holeID = currentLetter + (j + 1); // Generate the hole ID
+                addHole(true, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing));
+            }
+            startXLocation = startXLocation + patternspacing;
+        }
 
-		// Apply the offset conditionally for every second row
-		if (i % 2 === 0) {
-			startXLocation = x + patternoffset * patternspacing;
-		} else {
-			startXLocation = x;
-		}
+        // Apply the offset conditionally for every second row
+        if (i % 2 === 0) {
+            startXLocation = x + patternoffset * patternspacing;
+        } else {
+            startXLocation = x;
+        }
 
-		startYLocation = startYLocation + patternburden;
+        startYLocation = startYLocation + patternburden;
 
-		// Increment the current letter and row number
-		if (currentLetter === "Z") {
-			currentLetter = "AA"; // Move to double letters
-		} else if (currentLetter === "ZZ") {
-			currentLetter = "AAA"; // Move to triple letters if needed
-		} else {
-			currentLetter = incrementLetter(currentLetter); // Increment the current letter
-		}
+        // Increment the current letter and row number
+        if (currentLetter === "Z") {
+            currentLetter = "AA"; // Move to double letters
+        } else if (currentLetter === "ZZ") {
+            currentLetter = "AAA"; // Move to triple letters if needed
+        } else {
+            currentLetter = incrementLetter(currentLetter); // Increment the current letter
+        }
 
-		currentRow++;
-	}
-	// Reset the pattern adding state
-	isAddingPattern = false;
-	//make the switch off
-	addPatternSwitch.checked = false;
-	//updateCentroids();
-	resetZoom();
-	drawData(points, selectedHole);
+        currentRow++;
+    }
+    // Reset the pattern adding state
+    isAddingPattern = false;
+    //make the switch off
+    addPatternSwitch.checked = false;
+    //updateCentroids();
+    resetZoom();
+    drawData(points, selectedHole);
 }
 
 function incrementLetter(str) {
-	// Helper function to increment letters
-	const lastIndex = str.length - 1;
-	let carry = false;
-	const newStr = str
-		.split("")
-		.reverse()
-		.map((char, index) => {
-			if (index === 0 || carry) {
-				if (char === "Z") {
-					carry = true;
-					return "A";
-				} else {
-					carry = false;
-					return String.fromCharCode(char.charCodeAt(0) + 1);
-				}
-			} else {
-				return char;
-			}
-		})
-		.reverse()
-		.join("");
-	if (carry) {
-		return "A" + newStr;
-	}
-	return newStr;
+    // Helper function to increment letters
+    const lastIndex = str.length - 1;
+    let carry = false;
+    const newStr = str
+        .split("")
+        .reverse()
+        .map((char, index) => {
+            if (index === 0 || carry) {
+                if (char === "Z") {
+                    carry = true;
+                    return "A";
+                } else {
+                    carry = false;
+                    return String.fromCharCode(char.charCodeAt(0) + 1);
+                }
+            } else {
+                return char;
+            }
+        })
+        .reverse()
+        .join("");
+    if (carry) {
+        return "A" + newStr;
+    }
+    return newStr;
 }
 
 async function editBlastNamePopupAsync() {
-	if (selectedHole) {
-		const index = points.findIndex((point) => point === selectedHole);
-		if (index !== -1) {
-			clickedHole = points[index];
-			blastNameValue = clickedHole.entityName;
-			console.log("Async - clickedHole - " + "Blast Name : " + blastNameValue);
-		}
-	}
-	const result = await Swal.fire({
-		title: "Edit Blast Name",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    if (selectedHole) {
+        const index = points.findIndex((point) => point === selectedHole);
+        if (index !== -1) {
+            clickedHole = points[index];
+            blastNameValue = clickedHole.entityName;
+            console.log("Async - clickedHole - " + "Blast Name : " + blastNameValue);
+        }
+    }
+    const result = await Swal.fire({
+        title: "Edit Blast Name",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
         <div class="button-container-2col">
             <label class="labelWhite18" for="blastName">Blast Name</label>
             <input type="text" id="blastName" value="${blastNameValue}" placeholder="Blast Name" inputmode="text" autofocus />
         </div>
         `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	});
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    });
 
-	if (result.isConfirmed) {
-		const blastNameInput = document.getElementById("blastName");
-		blastNameValue = blastNameInput.value.trim(); // Trim to remove leading/trailing spaces
-		if (!blastNameValue) {
-			Swal.fire({
-				title: "Invalid Blast Name",
-				text: "Blast Name is required and cannot be empty or contain only spaces.",
-				icon: "error",
-				confirmButtonText: "Error",
-				customClass: {
-					container: "custom-popup-container",
-					title: "swal2-title",
-					confirmButton: "confirm",
-					content: "swal2-content",
-					htmlContainer: "swal2-html-container",
-					icon: "swal2-icon"
-				}
-			});
-			return editBlastNamePopupAsync(); // Open the popup again
-		}
-	} else if (result.isDismissed) {
-		return null;
-	}
-	console.log("Async popup - Blast Name : " + blastNameValue);
-	return blastNameValue;
+    if (result.isConfirmed) {
+        const blastNameInput = document.getElementById("blastName");
+        blastNameValue = blastNameInput.value.trim(); // Trim to remove leading/trailing spaces
+        if (!blastNameValue) {
+            Swal.fire({
+                title: "Invalid Blast Name",
+                text: "Blast Name is required and cannot be empty or contain only spaces.",
+                icon: "error",
+                confirmButtonText: "Error",
+                customClass: {
+                    container: "custom-popup-container",
+                    title: "swal2-title",
+                    confirmButton: "confirm",
+                    content: "swal2-content",
+                    htmlContainer: "swal2-html-container",
+                    icon: "swal2-icon"
+                }
+            });
+            return editBlastNamePopupAsync(); // Open the popup again
+        }
+    } else if (result.isDismissed) {
+        return null;
+    }
+    console.log("Async popup - Blast Name : " + blastNameValue);
+    return blastNameValue;
 }
 
 function editHoleLengthPopup() {
-	Swal.fire({
-		title: `Edit the length of hole. Hole: ${selectedHole.holeID} ?`,
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: `Edit the length of hole. Hole: ${selectedHole.holeID} ?`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
             <label class="labelWhite18" for="length">Length</label>
             <input type="number" id="length" placeholder="Length" value="0" inputmode="decimal" pattern="[0-9]*"/>
         </div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const lengthInput = document.getElementById("length");
-			const lengthValue = parseFloat(lengthInput.value);
-			if (isNaN(lengthValue) || lengthValue < 0 || lengthValue > 100) {
-				// Show an alert to the user
-				Swal.fire({
-					title: "Invalid length",
-					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error"
-				});
-				return; // Exit the function
-			} else if (selectedHole) {
-				// Use the obtained values to add the hole
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
-					holeLengthLabel.textContent = "Hole Length : " + parseFloat(lengthValue).toFixed(1) + "m";
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const lengthInput = document.getElementById("length");
+            const lengthValue = parseFloat(lengthInput.value);
+            if (isNaN(lengthValue) || lengthValue < 0 || lengthValue > 100) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid length",
+                    text: "Please enter an length between 0 and 100 meters.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            } else if (selectedHole) {
+                // Use the obtained values to add the hole
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //console.log("clickedHole - " + "Hole Length : " + newHoleLength + "m");
+                    holeLengthLabel.textContent = "Hole Length : " + parseFloat(lengthValue).toFixed(1) + "m";
 
-					// Calculate endXYZ and draw points
-					calculateEndXYZ(clickedHole, lengthValue, 1);
-					drawData(points, selectedHole);
-				}
-			}
-		}
-	});
+                    // Calculate endXYZ and draw points
+                    calculateEndXYZ(clickedHole, lengthValue, 1);
+                    drawData(points, selectedHole);
+                }
+            }
+        }
+    });
 }
 
 function setMeasuredDate() {
-	const date = new Date();
-	const day = date.getDate();
-	const month = date.getMonth() + 1;
-	const year = date.getFullYear();
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
-	const seconds = date.getSeconds();
-	return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+    const date = new Date();
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 }
 
 // measure tool for Length
 function measuredLengthPopup() {
-	Swal.fire({
-		title: `Record the measured length of hole. Hole: ${selectedHole.holeID} ?`,
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: `Record the measured length of hole. Hole: ${selectedHole.holeID} ?`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
             <label class="labelWhite18" for="length">Length</label>
             <input type="number" id="length" placeholder="Length" value="0" inputmode="decimal" pattern="[0-9]*"/>
         </div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const lengthInput = document.getElementById("length");
-			const lengthValue = parseFloat(lengthInput.value);
-			if (selectedHole) {
-				console.log("selectedHole: " + selectedHole.holeID + " | Hole Length : " + lengthValue + "m");
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//set the pointstype to the new value
-					clickedHole.measuredLength = parseFloat(lengthValue);
-					clickedHole.measuredLengthTimeStamp = setMeasuredDate();
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const lengthInput = document.getElementById("length");
+            const lengthValue = parseFloat(lengthInput.value);
+            if (selectedHole) {
+                console.log("selectedHole: " + selectedHole.holeID + " | Hole Length : " + lengthValue + "m");
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //set the pointstype to the new value
+                    clickedHole.measuredLength = parseFloat(lengthValue);
+                    clickedHole.measuredLengthTimeStamp = setMeasuredDate();
 
-					console.log("The Hole " + clickedHole.holeID + " Length is : " + clickedHole.measuredLength + " @ " + clickedHole.measuredLengthTimeStamp);
+                    console.log("The Hole " + clickedHole.holeID + " Length is : " + clickedHole.measuredLength + " @ " + clickedHole.measuredLengthTimeStamp);
 
-					drawData(points, selectedHole);
-				}
-			}
-		}
-	});
+                    drawData(points, selectedHole);
+                }
+            }
+        }
+    });
 }
 // measure tool for Mass
 function measuredMassPopup() {
-	Swal.fire({
-		title: `Record the measured mass of hole (kg/lb) Hole: ${selectedHole.holeID} ?`,
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: `Record the measured mass of hole (kg/lb) Hole: ${selectedHole.holeID} ?`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
             <label class="labelWhite18" for="mass">Mass</label>
             <input type="number" id="mass" placeholder="Mass" value="0" inputmode="decimal" pattern="[0-9]*"/>
         </div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const massInput = document.getElementById("mass");
-			const massValue = massInput.value;
-			if (selectedHole) {
-				// Use the obtained values to add the hole
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//set the pointstype to the new value
-					clickedHole.measuredMass = massValue;
-					clickedHole.measuredMassTimeStamp = setMeasuredDate();
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const massInput = document.getElementById("mass");
+            const massValue = massInput.value;
+            if (selectedHole) {
+                // Use the obtained values to add the hole
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //set the pointstype to the new value
+                    clickedHole.measuredMass = massValue;
+                    clickedHole.measuredMassTimeStamp = setMeasuredDate();
 
-					console.log("The Hole " + clickedHole.holeID + " Mass is : " + clickedHole.measuredMass + " @ " + clickedHole.measuredMassTimeStamp);
+                    console.log("The Hole " + clickedHole.holeID + " Mass is : " + clickedHole.measuredMass + " @ " + clickedHole.measuredMassTimeStamp);
 
-					drawData(points, selectedHole);
-				}
-			}
-		}
-	});
+                    drawData(points, selectedHole);
+                }
+            }
+        }
+    });
 }
 // measure tool for Mass
 function measuredCommentPopup() {
-	if (selectedHole) {
-		// Use the obtained values to add the hole
-		const index = points.findIndex((point) => point === selectedHole);
-		if (index !== -1) {
-			clickedHole = points[index];
-		}
-	}
+    if (selectedHole) {
+        // Use the obtained values to add the hole
+        const index = points.findIndex((point) => point === selectedHole);
+        if (index !== -1) {
+            clickedHole = points[index];
+        }
+    }
 
-	let lastValue = clickedHole.measuredComment;
+    let lastValue = clickedHole.measuredComment;
 
-	Swal.fire({
-		title: `Record a comment on the hole "${selectedHole.holeID}" ?`,
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: `Record a comment on the hole "${selectedHole.holeID}" ?`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 			<div class="button-container-2col">
 				<label class="labelWhite18" for="type">Record Comment</label>
 				<input type="text3" id="comment" placeholder="Comment" value="${lastValue}" inputmode="text" autofocus/>
 			</div>
 		  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const commentInput = document.getElementById("comment");
-			const commentValue = commentInput.value;
-			if (selectedHole) {
-				// Use the obtained values to add the hole
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//set the pointstype to the new value
-					clickedHole.measuredComment = commentValue;
-					clickedHole.measuredCommentTimeStamp = setMeasuredDate();
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const commentInput = document.getElementById("comment");
+            const commentValue = commentInput.value;
+            if (selectedHole) {
+                // Use the obtained values to add the hole
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //set the pointstype to the new value
+                    clickedHole.measuredComment = commentValue;
+                    clickedHole.measuredCommentTimeStamp = setMeasuredDate();
 
-					console.log("The Hole " + clickedHole.holeID + " Comment is : " + clickedHole.measuredComment + " @ " + clickedHole.measuredCommentTimeStamp);
+                    console.log("The Hole " + clickedHole.holeID + " Comment is : " + clickedHole.measuredComment + " @ " + clickedHole.measuredCommentTimeStamp);
 
-					drawData(points, selectedHole);
-				}
-			}
-		}
-	});
+                    drawData(points, selectedHole);
+                }
+            }
+        }
+    });
 }
 function handleBlastNameClick(event) {
-	if (isBlastNameEditing) {
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
-		const clickedHole = getClickedHole(clickX, clickY);
+    if (isBlastNameEditing) {
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole && editBlastNameSwitch.checked == false) {
-			if (!fromHoleStore) {
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-			}
-		}
-		if (clickedHole && editBlastNameSwitch.checked == true) {
-			editBlastNamePopup(selectedHole);
-		}
-	}
+        if (clickedHole && editBlastNameSwitch.checked == false) {
+            if (!fromHoleStore) {
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+            }
+        }
+        if (clickedHole && editBlastNameSwitch.checked == true) {
+            editBlastNamePopup(selectedHole);
+        }
+    }
 
-	clickedHole = null;
-	fromHoleStore = null;
-	selectedHole = null;
-	isBlastNameEditing = false;
-	editBlastNameSwitch.checked = false;
-	drawData(points, selectedHole);
+    clickedHole = null;
+    fromHoleStore = null;
+    selectedHole = null;
+    isBlastNameEditing = false;
+    editBlastNameSwitch.checked = false;
+    drawData(points, selectedHole);
 }
 function editBlastNamePopup(selectedHole) {
-	if (selectedHole) {
-		const index = points.findIndex((point) => point === selectedHole);
-		if (index !== -1) {
-			clickedHole = points[index];
-			blastNameValue = clickedHole.entityName;
-		}
-	}
-	let allHoleBlastNamesValue = true;
-	Swal.fire({
-		title: "Edit Blast Name",
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    if (selectedHole) {
+        const index = points.findIndex((point) => point === selectedHole);
+        if (index !== -1) {
+            clickedHole = points[index];
+            blastNameValue = clickedHole.entityName;
+        }
+    }
+    let allHoleBlastNamesValue = true;
+    Swal.fire({
+        title: "Edit Blast Name",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
         <div class="button-container-2col">
             <label class="labelWhite18" for="blastName">Blast Name</label>
             <input type="text" id="blastName" placeholder="Blast Name" value="${blastNameValue}" inputmode="text" autofocus />
@@ -8316,961 +8353,961 @@ function editBlastNamePopup(selectedHole) {
 			<input type="checkbox" id="allHoleBlastNames" name="allHoleBlastNames" checked>
         </div>
         `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const blastNameInput = document.getElementById("blastName");
-			blastNameValue = blastNameInput.value.trim();
-			const allHoleBlastNames = document.getElementById("allHoleBlastNames").checked;
-			allHoleBlastNamesValue = allHoleBlastNames;
-			const index = points.findIndex((point) => point === selectedHole);
-			if (index !== -1) {
-				drawData(points, selectedHole);
-				// Get the current entity name before any changes
-				let currentEntityName = points[index].entityName;
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const blastNameInput = document.getElementById("blastName");
+            blastNameValue = blastNameInput.value.trim();
+            const allHoleBlastNames = document.getElementById("allHoleBlastNames").checked;
+            allHoleBlastNamesValue = allHoleBlastNames;
+            const index = points.findIndex((point) => point === selectedHole);
+            if (index !== -1) {
+                drawData(points, selectedHole);
+                // Get the current entity name before any changes
+                let currentEntityName = points[index].entityName;
 
-				if (allHoleBlastNamesValue === false) {
-					// Update only the selected hole
-					console.log("Before:point.fromHoleID : " + points[index].fromHoleID);
-					points[index].entityName = blastNameValue;
-					points[index].fromHoleID = blastNameValue + ":::" + points[index].holeID; //connects to its self for now but will need to recornnect existing connections in future
-					console.log("After:point.fromHoleID : " + points[index].fromHoleID);
-				}
-				if (allHoleBlastNamesValue === true) {
-					// Update all holes with the same current entity name
-					points.forEach((point) => {
-						if (point.entityName === currentEntityName) {
-							console.log("Before:point.fromHoleID : " + point.fromHoleID);
-							point.entityName = blastNameValue;
-							const [entity, id] = point.fromHoleID.split(":::");
-							point.fromHoleID = entity + ":::" + id;
-							console.log("After:point.fromHoleID : " + point.fromHoleID);
-						}
-					});
-				}
-			}
-			drawData(points, selectedHole);
-		}
-	});
+                if (allHoleBlastNamesValue === false) {
+                    // Update only the selected hole
+                    console.log("Before:point.fromHoleID : " + points[index].fromHoleID);
+                    points[index].entityName = blastNameValue;
+                    points[index].fromHoleID = blastNameValue + ":::" + points[index].holeID; //connects to its self for now but will need to recornnect existing connections in future
+                    console.log("After:point.fromHoleID : " + points[index].fromHoleID);
+                }
+                if (allHoleBlastNamesValue === true) {
+                    // Update all holes with the same current entity name
+                    points.forEach((point) => {
+                        if (point.entityName === currentEntityName) {
+                            console.log("Before:point.fromHoleID : " + point.fromHoleID);
+                            point.entityName = blastNameValue;
+                            const [entity, id] = point.fromHoleID.split(":::");
+                            point.fromHoleID = entity + ":::" + id;
+                            console.log("After:point.fromHoleID : " + point.fromHoleID);
+                        }
+                    });
+                }
+            }
+            drawData(points, selectedHole);
+        }
+    });
 }
 // Using SweetAlert Library Create a popup that gets input from the user.
 function editHoleTypePopup() {
-	if (selectedHole) {
-		// Use the obtained values to add the hole
-		const index = points.findIndex((point) => point === selectedHole);
-		if (index !== -1) {
-			clickedHole = points[index];
-		}
-	}
+    if (selectedHole) {
+        // Use the obtained values to add the hole
+        const index = points.findIndex((point) => point === selectedHole);
+        if (index !== -1) {
+            clickedHole = points[index];
+        }
+    }
 
-	let lastValue = clickedHole.holeType;
+    let lastValue = clickedHole.holeType;
 
-	Swal.fire({
-		title: `Edit the Type of hole "${selectedHole.holeID}" ?`,
-		showCancelButton: true,
-		confirmButtonText: "Confirm",
-		cancelButtonText: "Cancel",
-		html: `
+    Swal.fire({
+        title: `Edit the Type of hole "${selectedHole.holeID}" ?`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
 		<div class="button-container-2col">
             <label class="labelWhite18" for="type">Type of Hole</label>
             <input type="text3" id="type" placeholder="Type" value="${lastValue}" inputmode="text" autofocus/>
         </div>
 	  `,
-		customClass: {
-			container: "custom-popup-container",
-			title: "swal2-title",
-			confirmButton: "confirm",
-			cancelButton: "cancel",
-			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon"
-		}
-	}).then((result) => {
-		if (result.isConfirmed) {
-			const typeInput = document.getElementById("type");
-			const typeValue = typeInput.value;
-			if (selectedHole) {
-				// Use the obtained values to add the hole
-				const index = points.findIndex((point) => point === selectedHole);
-				if (index !== -1) {
-					clickedHole = points[index];
-					//set the pointstype to the new value
-					clickedHole.holeType = typeValue;
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon"
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const typeInput = document.getElementById("type");
+            const typeValue = typeInput.value;
+            if (selectedHole) {
+                // Use the obtained values to add the hole
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    clickedHole = points[index];
+                    //set the pointstype to the new value
+                    clickedHole.holeType = typeValue;
 
-					drawData(points, selectedHole);
-				}
-			}
-		}
-	});
+                    drawData(points, selectedHole);
+                }
+            }
+        }
+    });
 }
 
 //Add hole to the points array popup using sweetalert and then draw the points
 //Add hole to the points array popup using sweetalert and then draw the points
 function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLocation, startZLocation, diameter, type, length, angle, bearing) {
-	if (typeof entityName === "string" && entityName.trim() !== "") {
-		entityName = entityName.trim();
-	} else {
-		entityName = "undefined";
-	}
-	const entityType = "hole";
+    if (typeof entityName === "string" && entityName.trim() !== "") {
+        entityName = entityName.trim();
+    } else {
+        entityName = "undefined";
+    }
+    const entityType = "hole";
 
-	// Initialize points as an empty array if it's null
-	if (points === null) {
-		points = [];
-	}
+    // Initialize points as an empty array if it's null
+    if (points === null) {
+        points = [];
+    }
 
-	let newHoleID = null;
-	if (useCustomHoleID === true) {
-		newHoleID = holeID;
-	} else if (useCustomHoleID === false) {
-		if (points !== null) {
-			newHoleID = points.length + 1;
-		} else {
-			newHoleID = 1;
-		}
-	} else {
-		newHoleID = 9999;
-	}
-	startXLocation = parseFloat(startXLocation);
-	startYLocation = parseFloat(startYLocation);
-	startZLocation = parseFloat(startZLocation);
-	let endXLocation = parseFloat(startXLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
-	let endYLocation = parseFloat(startYLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
-	let endZLocation = parseFloat(startZLocation - length * Math.cos(angle * (Math.PI / 180)));
-	// Check if endXLocation, endYLocation, or endZLocation is NaN
-	if (isNaN(endXLocation)) {
-		endXLocation = startXLocation;
-	}
+    let newHoleID = null;
+    if (useCustomHoleID === true) {
+        newHoleID = holeID;
+    } else if (useCustomHoleID === false) {
+        if (points !== null) {
+            newHoleID = points.length + 1;
+        } else {
+            newHoleID = 1;
+        }
+    } else {
+        newHoleID = 9999;
+    }
+    startXLocation = parseFloat(startXLocation);
+    startYLocation = parseFloat(startYLocation);
+    startZLocation = parseFloat(startZLocation);
+    let endXLocation = parseFloat(startXLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
+    let endYLocation = parseFloat(startYLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
+    let endZLocation = parseFloat(startZLocation - length * Math.cos(angle * (Math.PI / 180)));
+    // Check if endXLocation, endYLocation, or endZLocation is NaN
+    if (isNaN(endXLocation)) {
+        endXLocation = startXLocation;
+    }
 
-	if (isNaN(endYLocation)) {
-		endYLocation = startYLocation;
-	}
+    if (isNaN(endYLocation)) {
+        endYLocation = startYLocation;
+    }
 
-	if (isNaN(endZLocation)) {
-		endZLocation = startZLocation;
-	}
-	let holeDiameter = parseFloat(diameter);
-	let holeType = type;
-	let holeLengthCalculated = parseFloat(length);
-	let holeAngle = parseFloat(angle);
-	let holeBearing = parseFloat(bearing);
-	if (isNaN(holeLengthCalculated)) {
-		holeLengthCalculated = 0;
-	}
-	if (isNaN(holeAngle)) {
-		holeAngle = 0;
-	}
-	if (isNaN(holeBearing)) {
-		holeBearing = 0;
-	}
-	let toHoleCombinedID = entityName.toString() + ":::" + newHoleID.toString();
-	let timingDelayMilliseconds = 0;
-	let colourHexDecimal = "red";
-	let measuredLength = 0;
-	let measuredLengthTimeStamp = "09/05/1975 00:00:00";
-	let measuredMass = 0;
-	let measuredMassTimeStamp = "09/05/1975 00:00:00";
-	let measuredComment = "None";
-	let measuredCommentTimeStamp = "09/05/1975 00:00:00";
+    if (isNaN(endZLocation)) {
+        endZLocation = startZLocation;
+    }
+    let holeDiameter = parseFloat(diameter);
+    let holeType = type;
+    let holeLengthCalculated = parseFloat(length);
+    let holeAngle = parseFloat(angle);
+    let holeBearing = parseFloat(bearing);
+    if (isNaN(holeLengthCalculated)) {
+        holeLengthCalculated = 0;
+    }
+    if (isNaN(holeAngle)) {
+        holeAngle = 0;
+    }
+    if (isNaN(holeBearing)) {
+        holeBearing = 0;
+    }
+    let toHoleCombinedID = entityName.toString() + ":::" + newHoleID.toString();
+    let timingDelayMilliseconds = 0;
+    let colourHexDecimal = "red";
+    let measuredLength = 0;
+    let measuredLengthTimeStamp = "09/05/1975 00:00:00";
+    let measuredMass = 0;
+    let measuredMassTimeStamp = "09/05/1975 00:00:00";
+    let measuredComment = "None";
+    let measuredCommentTimeStamp = "09/05/1975 00:00:00";
 
-	points.push({
-		entityName: entityName,
-		entityType: entityType,
-		holeID: newHoleID.toString(),
-		startXLocation: startXLocation,
-		startYLocation: startYLocation,
-		startZLocation: startZLocation,
-		endXLocation: endXLocation,
-		endYLocation: endYLocation,
-		endZLocation: endZLocation,
-		holeDiameter: holeDiameter,
-		holeType: holeType,
-		holeLengthCalculated: holeLengthCalculated,
-		holeAngle: holeAngle,
-		holeBearing: holeBearing,
-		fromHoleID: toHoleCombinedID.toString(),
-		timingDelayMilliseconds: timingDelayMilliseconds,
-		colourHexDecimal: colourHexDecimal.toString(),
-		measuredLength: measuredLength,
-		measuredLengthTimeStamp: measuredLengthTimeStamp,
-		measuredMass: measuredMass,
-		measuredMassTimeStamp: measuredMassTimeStamp,
-		measuredComment: measuredComment,
-		measuredCommentTimeStamp: measuredCommentTimeStamp
-	});
-	console.log("Added Hole: " + newHoleID);
-	console.log(
-		"Added Hole attributes: \nentiyName: " +
-			entityName +
-			"\nHoleID: " +
-			newHoleID +
-			"\nStartX: " +
-			startXLocation +
-			" StartY: " +
-			startYLocation +
-			" StartZ: " +
-			startZLocation +
-			"\nEndX: " +
-			endXLocation +
-			" EndY: " +
-			endYLocation +
-			" EndZ: " +
-			endZLocation +
-			"\nDiameter: " +
-			holeDiameter +
-			" Type: " +
-			holeType +
-			"\nLength: " +
-			holeLengthCalculated +
-			" Angle: " +
-			holeAngle +
-			" Bearing: " +
-			holeBearing +
-			"\nFromHoleID: " +
-			toHoleCombinedID +
-			" TimingDelay: " +
-			timingDelayMilliseconds +
-			" Colour: " +
-			colourHexDecimal +
-			"\nMeasuredLength: " +
-			measuredLength +
-			" MeasuredLengthTimeStamp: " +
-			measuredLengthTimeStamp +
-			"\nMeasuredMass: " +
-			measuredMass +
-			" MeasuredMassTimeStamp: " +
-			measuredMassTimeStamp +
-			"\nMeasuredComment: " +
-			measuredComment +
-			" MeasuredCommentTimeStamp: " +
-			measuredCommentTimeStamp
-	);
-	if (isAddingHole && !isAddingPattern) {
-		drawData(points, selectedHole);
-	}
+    points.push({
+        entityName: entityName,
+        entityType: entityType,
+        holeID: newHoleID.toString(),
+        startXLocation: startXLocation,
+        startYLocation: startYLocation,
+        startZLocation: startZLocation,
+        endXLocation: endXLocation,
+        endYLocation: endYLocation,
+        endZLocation: endZLocation,
+        holeDiameter: holeDiameter,
+        holeType: holeType,
+        holeLengthCalculated: holeLengthCalculated,
+        holeAngle: holeAngle,
+        holeBearing: holeBearing,
+        fromHoleID: toHoleCombinedID.toString(),
+        timingDelayMilliseconds: timingDelayMilliseconds,
+        colourHexDecimal: colourHexDecimal.toString(),
+        measuredLength: measuredLength,
+        measuredLengthTimeStamp: measuredLengthTimeStamp,
+        measuredMass: measuredMass,
+        measuredMassTimeStamp: measuredMassTimeStamp,
+        measuredComment: measuredComment,
+        measuredCommentTimeStamp: measuredCommentTimeStamp
+    });
+    console.log("Added Hole: " + newHoleID);
+    console.log(
+        "Added Hole attributes: \nentiyName: " +
+            entityName +
+            "\nHoleID: " +
+            newHoleID +
+            "\nStartX: " +
+            startXLocation +
+            " StartY: " +
+            startYLocation +
+            " StartZ: " +
+            startZLocation +
+            "\nEndX: " +
+            endXLocation +
+            " EndY: " +
+            endYLocation +
+            " EndZ: " +
+            endZLocation +
+            "\nDiameter: " +
+            holeDiameter +
+            " Type: " +
+            holeType +
+            "\nLength: " +
+            holeLengthCalculated +
+            " Angle: " +
+            holeAngle +
+            " Bearing: " +
+            holeBearing +
+            "\nFromHoleID: " +
+            toHoleCombinedID +
+            " TimingDelay: " +
+            timingDelayMilliseconds +
+            " Colour: " +
+            colourHexDecimal +
+            "\nMeasuredLength: " +
+            measuredLength +
+            " MeasuredLengthTimeStamp: " +
+            measuredLengthTimeStamp +
+            "\nMeasuredMass: " +
+            measuredMass +
+            " MeasuredMassTimeStamp: " +
+            measuredMassTimeStamp +
+            "\nMeasuredComment: " +
+            measuredComment +
+            " MeasuredCommentTimeStamp: " +
+            measuredCommentTimeStamp
+    );
+    if (isAddingHole && !isAddingPattern) {
+        drawData(points, selectedHole);
+    }
 }
 
 function handleMeasuredLengthClick(event) {
-	if (isMeasureRecording) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
-		//const measuredLengthTimeStamp = formatDate(new Date().toLocaleString());
+    if (isMeasureRecording) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        //const measuredLengthTimeStamp = formatDate(new Date().toLocaleString());
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
-		console.log("ClickedX = " + clickX);
-		console.log("ClickedY = " + clickY);
-		console.log("ClickedHole = " + clickedHole.holeID);
-		if (clickedHole && measuredLengthSwitch.checked == false) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			}
-		} else if (clickedHole && measuredLengthSwitch.checked == true) {
-			measuredLengthPopup();
-		}
-	}
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
+        console.log("ClickedX = " + clickX);
+        console.log("ClickedY = " + clickY);
+        console.log("ClickedHole = " + clickedHole.holeID);
+        if (clickedHole && measuredLengthSwitch.checked == false) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            }
+        } else if (clickedHole && measuredLengthSwitch.checked == true) {
+            measuredLengthPopup();
+        }
+    }
 }
 function handleMeasuredMassClick(event) {
-	if (isMeasureRecording) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
-		//const measuredMassTimeStamp = formatDate(new Date().toLocaleString());
+    if (isMeasureRecording) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        //const measuredMassTimeStamp = formatDate(new Date().toLocaleString());
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
-		console.log("ClickedX = " + clickX);
-		console.log("ClickedY = " + clickY);
-		console.log("ClickedHole = " + clickedHole);
-		if (clickedHole && measuredMassSwitch.checked == false) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			}
-		} else if (clickedHole && measuredMassSwitch.checked == true) {
-			measuredMassPopup();
-		}
-	}
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
+        console.log("ClickedX = " + clickX);
+        console.log("ClickedY = " + clickY);
+        console.log("ClickedHole = " + clickedHole);
+        if (clickedHole && measuredMassSwitch.checked == false) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            }
+        } else if (clickedHole && measuredMassSwitch.checked == true) {
+            measuredMassPopup();
+        }
+    }
 }
 function handleMeasuredCommentClick(event) {
-	if (isMeasureRecording) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
-		//const measuredCommentTimeStamp = formatDate(new Date().toLocaleString());
+    if (isMeasureRecording) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        //const measuredCommentTimeStamp = formatDate(new Date().toLocaleString());
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
-		console.log("ClickedX = " + clickX);
-		console.log("ClickedY = " + clickY);
-		console.log("ClickedHole = " + clickedHole);
-		if (clickedHole && measuredCommentSwitch.checked == false) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			}
-		} else if (clickedHole && measuredCommentSwitch.checked == true) {
-			measuredCommentPopup();
-		}
-	}
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
+        console.log("ClickedX = " + clickX);
+        console.log("ClickedY = " + clickY);
+        console.log("ClickedHole = " + clickedHole);
+        if (clickedHole && measuredCommentSwitch.checked == false) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            }
+        } else if (clickedHole && measuredCommentSwitch.checked == true) {
+            measuredCommentPopup();
+        }
+    }
 }
 
 function handleHoleTypeEditClick(event) {
-	if (isTypeEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isTypeEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
-		console.log("ClickedX = " + clickX);
-		console.log("ClickedY = " + clickY);
-		console.log("ClickedHole = " + clickedHole);
-		if (clickedHole && editHoleTypePopupSwitch.checked == false) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			}
-		} else if (clickedHole && editHoleTypePopupSwitch.checked == true) {
-			editHoleTypePopup();
-		}
-	}
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
+        console.log("ClickedX = " + clickX);
+        console.log("ClickedY = " + clickY);
+        console.log("ClickedHole = " + clickedHole);
+        if (clickedHole && editHoleTypePopupSwitch.checked == false) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            }
+        } else if (clickedHole && editHoleTypePopupSwitch.checked == true) {
+            editHoleTypePopup();
+        }
+    }
 }
 
 function handleHoleLengthEditClick(event) {
-	if (isLengthEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isLengthEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
-		drawData(points, selectedHole);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
+        drawData(points, selectedHole);
 
-		if (clickedHole && editLengthPopupSwitch.checked == false) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		} else if (clickedHole && editLengthPopupSwitch.checked == true) {
-			editHoleLengthPopup();
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
-		if (multipleClickedHoles.length > 0 && selectionMode && editLengthPopupSwitch.checked == false) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (clickedHole && editLengthPopupSwitch.checked == false) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        } else if (clickedHole && editLengthPopupSwitch.checked == true) {
+            editHoleLengthPopup();
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (multipleClickedHoles.length > 0 && selectionMode && editLengthPopupSwitch.checked == false) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleHoleDiameterEditClick(event) {
-	if (isDiameterEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isDiameterEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleAngleEditClick(event) {
-	if (isAngleEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+    if (isAngleEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole && !selectionMode) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		// Get the clicked hole or holes
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
-		//console.log("Multiple Clicked Holes List: ");
-		//multipleClickedHoles.forEach(hole => console.log("-  Entity: ", hole.entityName, " Hole:", hole.holeID));
+        if (clickedHole && !selectionMode) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        // Get the clicked hole or holes
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        //console.log("Multiple Clicked Holes List: ");
+        //multipleClickedHoles.forEach(hole => console.log("-  Entity: ", hole.entityName, " Hole:", hole.holeID));
 
-		// If holes are selected, add them to the selection and redraw the canvas
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        // If holes are selected, add them to the selection and redraw the canvas
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleBearingEditClick(event) {
-	if (isBearingEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isBearingEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
 
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleEastingEditClick(event) {
-	if (isEastingEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isEastingEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
 
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleNorthingEditClick(event) {
-	if (isNorthingEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isNorthingEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function handleElevationEditClick(event) {
-	if (isElevationEditing) {
-		// Get the click/touch coordinates relative to the canvas
-		const rect = canvas.getBoundingClientRect();
-		const clickX = event.clientX - rect.left;
-		const clickY = event.clientY - rect.top;
+    if (isElevationEditing) {
+        // Get the click/touch coordinates relative to the canvas
+        const rect = canvas.getBoundingClientRect();
+        const clickX = event.clientX - rect.left;
+        const clickY = event.clientY - rect.top;
 
-		// Get the clicked hole
-		const clickedHole = getClickedHole(clickX, clickY);
+        // Get the clicked hole
+        const clickedHole = getClickedHole(clickX, clickY);
 
-		if (clickedHole) {
-			if (!fromHoleStore) {
-				// Set the selected fromHole
-				fromHoleStore = clickedHole;
-				selectedHole = clickedHole;
-				drawData(points, selectedHole);
-			} else {
-				drawData(points, selectedHole);
-				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
-			}
-		}
-		const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
-		if (multipleClickedHoles.length > 0 && selectionMode) {
-			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
-			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
-		}
-	}
+        if (clickedHole) {
+            if (!fromHoleStore) {
+                // Set the selected fromHole
+                fromHoleStore = clickedHole;
+                selectedHole = clickedHole;
+                drawData(points, selectedHole);
+            } else {
+                drawData(points, selectedHole);
+                //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
+            }
+        }
+        const multipleClickedHoles = getMultipleClickedHoles(clickX, clickY);
+        if (multipleClickedHoles.length > 0 && selectionMode) {
+            selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
+            drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+        }
+    }
 }
 
 function recalculateContours(points, deltaX, deltaY) {
-	try {
-		const contourData = [];
-		holeTimes = calculateTimes(points);
-		timeChart();
+    try {
+        const contourData = [];
+        holeTimes = calculateTimes(points);
+        timeChart();
 
-		// Prepare contour data
-		for (let i = 0; i < holeTimes.length; i++) {
-			const [entityName, holeID] = holeTimes[i][0].split(":::");
-			const time = holeTimes[i][1];
+        // Prepare contour data
+        for (let i = 0; i < holeTimes.length; i++) {
+            const [entityName, holeID] = holeTimes[i][0].split(":::");
+            const time = holeTimes[i][1];
 
-			const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
+            const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
 
-			if (point) {
-				contourData.push({
-					x: point.startXLocation,
-					y: point.startYLocation,
-					z: time
-				});
-			}
-		}
+            if (point) {
+                contourData.push({
+                    x: point.startXLocation,
+                    y: point.startYLocation,
+                    z: time
+                });
+            }
+        }
 
-		if (contourData.length === 0) {
-			throw new Error("No valid contour data points found.");
-		}
+        if (contourData.length === 0) {
+            throw new Error("No valid contour data points found.");
+        }
 
-		const maxHoleTime = Math.max(...contourData.map((point) => point.z));
+        const maxHoleTime = Math.max(...contourData.map((point) => point.z));
 
-		// Calculate contour lines and store them in contourLinesArray
-		contourLinesArray = [];
-		directionArrows = [];
-		let interval = maxHoleTime < 350 ? 25 : maxHoleTime < 700 ? 100 : 250;
-		interval = parseInt(intervalAmount);
+        // Calculate contour lines and store them in contourLinesArray
+        contourLinesArray = [];
+        directionArrows = [];
+        let interval = maxHoleTime < 350 ? 25 : maxHoleTime < 700 ? 100 : 250;
+        interval = parseInt(intervalAmount);
 
-		// Iterate over contour levels
-		for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
-			const { contourLines, directionArrows } = delaunayContours(contourData, contourLevel, maxEdgeLength);
-			const epsilon = 1; // Adjust this value to control the level of simplification
-			const simplifiedContourLines = contourLines.map((line) => simplifyLine(line, epsilon));
-			contourLinesArray.push(simplifiedContourLines);
+        // Iterate over contour levels
+        for (let contourLevel = 0; contourLevel <= maxHoleTime; contourLevel += interval) {
+            const { contourLines, directionArrows } = delaunayContours(contourData, contourLevel, maxEdgeLength);
+            const epsilon = 1; // Adjust this value to control the level of simplification
+            const simplifiedContourLines = contourLines.map((line) => simplifyLine(line, epsilon));
+            contourLinesArray.push(simplifiedContourLines);
 
-			//console.log("contourLinesArray: ", contourLinesArray);
-			//console.log("directionArrows: ", directionArrows);
-		}
-		// Return both contour lines
-		return { contourLinesArray, directionArrows };
-	} catch (err) {
-		console.error(err);
-	}
+            //console.log("contourLinesArray: ", contourLinesArray);
+            //console.log("directionArrows: ", directionArrows);
+        }
+        // Return both contour lines
+        return { contourLinesArray, directionArrows };
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 function calculateEndXYZ(clickedHole, newValue, modeLAB) {
-	let startX = clickedHole.startXLocation;
-	let startY = clickedHole.startYLocation;
-	let startZ = clickedHole.startZLocation;
-	let holeLength = clickedHole.holeLengthCalculated;
-	let holeAngle = clickedHole.holeAngle;
-	let holeBearing = clickedHole.holeBearing;
-	let endX, endY, endZ;
-	// Include entityName in the search to get the index of the clicked hole within the points array
-	const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
+    let startX = clickedHole.startXLocation;
+    let startY = clickedHole.startYLocation;
+    let startZ = clickedHole.startZLocation;
+    let holeLength = clickedHole.holeLengthCalculated;
+    let holeAngle = clickedHole.holeAngle;
+    let holeBearing = clickedHole.holeBearing;
+    let endX, endY, endZ;
+    // Include entityName in the search to get the index of the clicked hole within the points array
+    const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
 
-	if (modeLAB === 1) {
-		//Length
-		endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
-		// Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].holeLengthCalculated = parseFloat(newValue);
-			//console.log("points[index].holeLengthCalculated: " + points[index].holeLengthCalculated);
-			//console.log("End X,Y,Z : " + endX + " | " + endY + " | " + endZ);
-		}
-	} else if (modeLAB === 2) {
-		//hole angle
-		//calculate the endXYZ based on the new hole angle
-		endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
-		//Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].holeAngle = parseFloat(newValue);
-		}
-	} else if (modeLAB === 3) {
-		//Calculate the endXYZ based on the new hole bearing
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
-		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-		//Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].holeBearing = parseFloat(newValue);
-		}
-	} else if (modeLAB === 4) {
-		// Easting Adjustment
-		const deltaX = newValue - clickedHole.startXLocation;
-		clickedHole.startXLocation = newValue;
-		clickedHole.endXLocation += deltaX;
-		//calculate the new toe XYZ based on the new startXlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-		// Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].startXLocation = clickedHole.startXLocation;
-		}
-	} else if (modeLAB === 5) {
-		// Northing Adjustment
-		const deltaY = newValue - clickedHole.startYLocation;
-		clickedHole.startYLocation = newValue;
-		clickedHole.endYLocation += deltaY;
-		//calculate the new toe XYZ based on the new startYlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-		// Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].startYLocation = clickedHole.startYLocation;
-		}
-	} else if (modeLAB === 6) {
-		// Elevation Adjustment
-		const deltaZ = newValue - clickedHole.startZLocation;
-		clickedHole.startZLocation = newValue;
-		clickedHole.endZLocation += deltaZ;
-		//calculate the new toe XYZ based on the new startZlocation
-		endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-		endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+    if (modeLAB === 1) {
+        //Length
+        endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
+        // Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].holeLengthCalculated = parseFloat(newValue);
+            //console.log("points[index].holeLengthCalculated: " + points[index].holeLengthCalculated);
+            //console.log("End X,Y,Z : " + endX + " | " + endY + " | " + endZ);
+        }
+    } else if (modeLAB === 2) {
+        //hole angle
+        //calculate the endXYZ based on the new hole angle
+        endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
+        //Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].holeAngle = parseFloat(newValue);
+        }
+    } else if (modeLAB === 3) {
+        //Calculate the endXYZ based on the new hole bearing
+        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
+        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
+        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+        //Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].holeBearing = parseFloat(newValue);
+        }
+    } else if (modeLAB === 4) {
+        // Easting Adjustment
+        const deltaX = newValue - clickedHole.startXLocation;
+        clickedHole.startXLocation = newValue;
+        clickedHole.endXLocation += deltaX;
+        //calculate the new toe XYZ based on the new startXlocation
+        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+        // Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].startXLocation = clickedHole.startXLocation;
+        }
+    } else if (modeLAB === 5) {
+        // Northing Adjustment
+        const deltaY = newValue - clickedHole.startYLocation;
+        clickedHole.startYLocation = newValue;
+        clickedHole.endYLocation += deltaY;
+        //calculate the new toe XYZ based on the new startYlocation
+        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+        // Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].startYLocation = clickedHole.startYLocation;
+        }
+    } else if (modeLAB === 6) {
+        // Elevation Adjustment
+        const deltaZ = newValue - clickedHole.startZLocation;
+        clickedHole.startZLocation = newValue;
+        clickedHole.endZLocation += deltaZ;
+        //calculate the new toe XYZ based on the new startZlocation
+        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
 
-		// Update the points array with the new values
-		if (index !== -1) {
-			points[index].endXLocation = endX;
-			points[index].endYLocation = endY;
-			points[index].endZLocation = endZ;
-			points[index].startZLocation = clickedHole.startZLocation;
-		}
-	} else if (modeLAB === 7) {
-		const diameter = newValue;
-		// Update the points array with the new values
-		if (index !== -1) {
-			points[index].holeDiameter = diameter;
-		}
-	}
+        // Update the points array with the new values
+        if (index !== -1) {
+            points[index].endXLocation = endX;
+            points[index].endYLocation = endY;
+            points[index].endZLocation = endZ;
+            points[index].startZLocation = clickedHole.startZLocation;
+        }
+    } else if (modeLAB === 7) {
+        const diameter = newValue;
+        // Update the points array with the new values
+        if (index !== -1) {
+            points[index].holeDiameter = diameter;
+        }
+    }
 
-	return {
-		endX,
-		endY,
-		endZ
-	};
+    return {
+        endX,
+        endY,
+        endZ
+    };
 }
 
 function timeChart() {
-	if (!Array.isArray(holeTimes)) return;
+    if (!Array.isArray(holeTimes)) return;
 
-	const times = holeTimes.map((time) => time[1]);
-	const maxTime = Math.max(...times);
-	const timeRange = parseInt(document.getElementById("timeRange").value);
-	const timeOffset = parseInt(document.getElementById("timeOffset").value);
-	const numBins = Math.ceil(maxTime / timeRange);
-	const binStart = -timeOffset;
+    const times = holeTimes.map((time) => time[1]);
+    const maxTime = Math.max(...times);
+    const timeRange = parseInt(document.getElementById("timeRange").value);
+    const timeOffset = parseInt(document.getElementById("timeOffset").value);
+    const numBins = Math.ceil(maxTime / timeRange);
+    const binStart = -timeOffset;
 
-	const measuredMassRadio = document.getElementById("measuredMassRadio");
-	const holeCountRadio = document.getElementById("holeCountRadio");
-	const useMass = measuredMassRadio?.checked;
+    const measuredMassRadio = document.getElementById("measuredMassRadio");
+    const holeCountRadio = document.getElementById("holeCountRadio");
+    const useMass = measuredMassRadio?.checked;
 
-	let counts = Array(numBins).fill(0);
-	let massSum = Array(numBins).fill(0);
-	let validMassCount = 0;
+    let counts = Array(numBins).fill(0);
+    let massSum = Array(numBins).fill(0);
+    let validMassCount = 0;
 
-	for (let point of points) {
-		const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
-		if (binIndex >= 0 && binIndex < numBins) {
-			counts[binIndex]++;
-			const mass = Number(point.measuredMass);
-			if (useMass && !isNaN(mass) && isFinite(mass)) {
-				massSum[binIndex] += mass;
-				validMassCount++;
-			}
-		}
-	}
+    for (let point of points) {
+        const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
+        if (binIndex >= 0 && binIndex < numBins) {
+            counts[binIndex]++;
+            const mass = Number(point.measuredMass);
+            if (useMass && !isNaN(mass) && isFinite(mass)) {
+                massSum[binIndex] += mass;
+                validMassCount++;
+            }
+        }
+    }
 
-	const fallbackToCount = useMass && validMassCount < 2;
-	const yValues = useMass && !fallbackToCount ? massSum : counts;
+    const fallbackToCount = useMass && validMassCount < 2;
+    const yValues = useMass && !fallbackToCount ? massSum : counts;
 
-	const binEdges = Array(numBins)
-		.fill(0)
-		.map((_, index) => index * timeRange + binStart);
+    const binEdges = Array(numBins)
+        .fill(0)
+        .map((_, index) => index * timeRange + binStart);
 
-	const binCenters = binEdges.map((edge) => edge + timeRange / 2);
-	const xTickInterval = Math.ceil(numBins / 10); // label ~5 ticks
-	const tickvals = binCenters.filter((_, i) => i % xTickInterval === 0);
-	const ticktext = tickvals.map((center) => center - timeRange / 2 + "–" + (center + timeRange / 2));
+    const binCenters = binEdges.map((edge) => edge + timeRange / 2);
+    const xTickInterval = Math.ceil(numBins / 10); // label ~5 ticks
+    const tickvals = binCenters.filter((_, i) => i % xTickInterval === 0);
+    const ticktext = tickvals.map((center) => center - timeRange / 2 + "–" + (center + timeRange / 2));
 
-	const holeIDs = Array(numBins).fill(null);
+    const holeIDs = Array(numBins).fill(null);
 
-	for (const point of points) {
-		const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
-		if (binIndex >= 0 && binIndex < numBins) {
-			holeIDs[binIndex] = holeIDs[binIndex] || [];
-			holeIDs[binIndex].push(point.entityName + ":" + point.holeID);
-		}
-	}
+    for (const point of points) {
+        const binIndex = Math.floor((point.holeTime - binStart) / timeRange);
+        if (binIndex >= 0 && binIndex < numBins) {
+            holeIDs[binIndex] = holeIDs[binIndex] || [];
+            holeIDs[binIndex].push(point.entityName + ":" + point.holeID);
+        }
+    }
 
-	const entityholeIDTexts = holeIDs.map((bin) => {
-		if (!bin) return "";
-		return bin
-			.map((combinedID) => {
-				const [entityName, holeID] = combinedID.split(":");
-				const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
-				return point ? point.entityName + ":" + point.holeID : "";
-			})
-			.filter(Boolean)
-			.join(", ");
-	});
+    const entityholeIDTexts = holeIDs.map((bin) => {
+        if (!bin) return "";
+        return bin
+            .map((combinedID) => {
+                const [entityName, holeID] = combinedID.split(":");
+                const point = points.find((p) => p.entityName === entityName && p.holeID === holeID);
+                return point ? point.entityName + ":" + point.holeID : "";
+            })
+            .filter(Boolean)
+            .join(", ");
+    });
 
-	const hoverText = entityholeIDTexts.map((text, index) => {
-		const totalMass = useMass && !fallbackToCount && massSum[index] ? massSum[index].toFixed(1) + " kg" : "";
-		return totalMass ? text + "<br>Mass: " + totalMass : text;
-	});
+    const hoverText = entityholeIDTexts.map((text, index) => {
+        const totalMass = useMass && !fallbackToCount && massSum[index] ? massSum[index].toFixed(1) + " kg" : "";
+        return totalMass ? text + "<br>Mass: " + totalMass : text;
+    });
 
-	const defaultColour = Array(numBins).fill("red");
+    const defaultColour = Array(numBins).fill("red");
 
-	const chart = document.getElementById("timeChart");
-	const currentLayout = chart?._fullLayout;
-	const newYLabel = useMass && !fallbackToCount ? "Total Measured Mass (kg)" : "Holes Firing";
-	const currentYLabel = currentLayout?.yaxis?.title?.text;
-	const preserveYRange = currentYLabel === newYLabel;
+    const chart = document.getElementById("timeChart");
+    const currentLayout = chart?._fullLayout;
+    const newYLabel = useMass && !fallbackToCount ? "Total Measured Mass (kg)" : "Holes Firing";
+    const currentYLabel = currentLayout?.yaxis?.title?.text;
+    const preserveYRange = currentYLabel === newYLabel;
 
-	const maxYValue = Math.max(...yValues) + 1;
+    const maxYValue = Math.max(...yValues) + 1;
 
-	const layout = {
-		title: {
-			text: "Time Window Chart",
-			xanchor: "right",
-			font: { size: 10 }
-		},
-		plot_bgcolor: noneColour,
-		paper_bgcolor: noneColour,
-		font: { color: textFillColour },
-		modebar: {
-			orientation: "v",
-			bgcolor: noneColour,
-			color: "rgba(255, 0, 0, 0.4)",
-			activecolor: "red",
-			position: "left"
-		},
-		margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
-		xaxis: {
-			title: { text: "milliseconds (ms)", font: { size: 10 } },
-			showgrid: true,
-			rangeslider: { visible: true, thickness: 0.1 },
-			tickvals: "auto", //tickvals, // if you want bin ranges
-			ticktext: "~s" //ticktext, //if you want bin ranges
-		},
-		yaxis: {
-			title: { text: newYLabel, font: { size: 10 } },
-			showgrid: true,
-			automargin: true,
-			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
-		},
-		height: 380,
-		width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
-	};
+    const layout = {
+        title: {
+            text: "Time Window Chart",
+            xanchor: "right",
+            font: { size: 10 }
+        },
+        plot_bgcolor: noneColour,
+        paper_bgcolor: noneColour,
+        font: { color: textFillColour },
+        modebar: {
+            orientation: "v",
+            bgcolor: noneColour,
+            color: "rgba(255, 0, 0, 0.4)",
+            activecolor: "red",
+            position: "left"
+        },
+        margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
+        xaxis: {
+            title: { text: "milliseconds (ms)", font: { size: 10 } },
+            showgrid: true,
+            rangeslider: { visible: true, thickness: 0.1 },
+            tickvals: "auto", //tickvals, // if you want bin ranges
+            ticktext: "~s" //ticktext, //if you want bin ranges
+        },
+        yaxis: {
+            title: { text: newYLabel, font: { size: 10 } },
+            showgrid: true,
+            automargin: true,
+            range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
+        },
+        height: 380,
+        width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
+    };
 
-	const data = [
-		{
-			x: binCenters,
-			y: yValues,
-			type: "bar",
-			width: timeRange, // 🔧 match bin width
-			marker: { color: defaultColour },
-			text: hoverText,
-			textposition: "none", // ✅ disables labels drawn on bars
-			//hoverinfo: "text+y",
-			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
-		}
-	];
+    const data = [
+        {
+            x: binCenters,
+            y: yValues,
+            type: "bar",
+            width: timeRange, // 🔧 match bin width
+            marker: { color: defaultColour },
+            text: hoverText,
+            textposition: "none", // ✅ disables labels drawn on bars
+            //hoverinfo: "text+y",
+            hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
+        }
+    ];
 
-	Plotly.react("timeChart", data, layout, {
-		responsive: true,
-		displayModeBar: true,
-		modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
-	});
+    Plotly.react("timeChart", data, layout, {
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
+        modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
+    });
 
-	// ✅ Clear previously registered listeners
-	chart.removeAllListeners?.("plotly_selected");
-	chart.removeAllListeners?.("plotly_click");
-	chart.removeAllListeners?.("plotly_deselect");
+    // ✅ Clear previously registered listeners
+    chart.removeAllListeners?.("plotly_selected");
+    chart.removeAllListeners?.("plotly_click");
+    chart.removeAllListeners?.("plotly_deselect");
 
-	let lastClickedIndex = null;
+    let lastClickedIndex = null;
 
-	chart.on("plotly_selected", function (eventData) {
-		const selectedPoints = eventData?.points?.map((p) => p.pointNumber) || [];
-		const newColours = defaultColour.map((color, index) => (selectedPoints.includes(index) ? "lime" : color));
-		Plotly.restyle("timeChart", { "marker.color": [newColours] });
+    chart.on("plotly_selected", function (eventData) {
+        const selectedPoints = eventData?.points?.map((p) => p.pointNumber) || [];
+        const newColours = defaultColour.map((color, index) => (selectedPoints.includes(index) ? "lime" : color));
+        Plotly.restyle("timeChart", { "marker.color": [newColours] });
 
-		timingWindowHolesSelected = selectedPoints
-			.flatMap((index) => {
-				return holeIDs[index]
-					? holeIDs[index].map((combinedID) => {
-							const [entityName, holeID] = combinedID.split(":");
-							return points.find((p) => p.entityName === entityName && p.holeID === holeID);
-					  })
-					: [];
-			})
-			.filter(Boolean);
+        timingWindowHolesSelected = selectedPoints
+            .flatMap((index) => {
+                return holeIDs[index]
+                    ? holeIDs[index].map((combinedID) => {
+                          const [entityName, holeID] = combinedID.split(":");
+                          return points.find((p) => p.entityName === entityName && p.holeID === holeID);
+                      })
+                    : [];
+            })
+            .filter(Boolean);
 
-		drawData(points, selectedHole);
-	});
+        drawData(points, selectedHole);
+    });
 
-	chart.on("plotly_click", function (data) {
-		const clickedIndex = data.points?.[0]?.pointIndex;
-		if (clickedIndex == null) return;
+    chart.on("plotly_click", function (data) {
+        const clickedIndex = data.points?.[0]?.pointIndex;
+        if (clickedIndex == null) return;
 
-		const currentColors = data.points[0].data.marker.color.slice();
-		if (lastClickedIndex !== null) currentColors[lastClickedIndex] = "red";
-		currentColors[clickedIndex] = "lime";
+        const currentColors = data.points[0].data.marker.color.slice();
+        if (lastClickedIndex !== null) currentColors[lastClickedIndex] = "red";
+        currentColors[clickedIndex] = "lime";
 
-		Plotly.restyle("timeChart", { "marker.color": [currentColors] });
-		lastClickedIndex = clickedIndex;
+        Plotly.restyle("timeChart", { "marker.color": [currentColors] });
+        lastClickedIndex = clickedIndex;
 
-		timingWindowHolesSelected = holeIDs[clickedIndex]
-			? holeIDs[clickedIndex]
-					.map((combinedID) => {
-						const [entityName, holeID] = combinedID.split(":");
-						return points.find((p) => p.entityName === entityName && p.holeID === holeID);
-					})
-					.filter(Boolean)
-			: [];
+        timingWindowHolesSelected = holeIDs[clickedIndex]
+            ? holeIDs[clickedIndex]
+                  .map((combinedID) => {
+                      const [entityName, holeID] = combinedID.split(":");
+                      return points.find((p) => p.entityName === entityName && p.holeID === holeID);
+                  })
+                  .filter(Boolean)
+            : [];
 
-		drawData(points, selectedHole);
-	});
+        drawData(points, selectedHole);
+    });
 
-	chart.on("plotly_deselect", function () {
-		Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
-		timingWindowHolesSelected = [];
-		lastClickedIndex = null;
-		drawData(points, selectedHole);
-	});
+    chart.on("plotly_deselect", function () {
+        Plotly.restyle("timeChart", { "marker.color": [defaultColour] });
+        timingWindowHolesSelected = [];
+        lastClickedIndex = null;
+        drawData(points, selectedHole);
+    });
 }
 
 // Function to update the play speed
 function updatePlaySpeed() {
-	const playSpeedInput = document.getElementById("playSpeed");
+    const playSpeedInput = document.getElementById("playSpeed");
 
-	playSpeed = parseFloat(playSpeedInput.value);
+    playSpeed = parseFloat(playSpeedInput.value);
 }
 // Add click event listener to the "Play" button
 const playButton = document.getElementById("play");
 playButton.addEventListener("click", () => {
-	refreshPoints();
-	updatePlaySpeed(); // Update play speed
-	const maxTime = Math.max(...holeTimes.map((time) => time[1])); // Get the max time
-	isPlaying = true;
-	// Clear previous animation interval before starting a new one
-	clearInterval(animationInterval);
+    refreshPoints();
+    updatePlaySpeed(); // Update play speed
+    const maxTime = Math.max(...holeTimes.map((time) => time[1])); // Get the max time
+    isPlaying = true;
+    // Clear previous animation interval before starting a new one
+    clearInterval(animationInterval);
 
-	let currentTime = 0;
-	const animationStep = Math.max(0.1, playSpeed); // Minimum animation step of 1 millisecond
+    let currentTime = 0;
+    const animationStep = Math.max(0.1, playSpeed); // Minimum animation step of 1 millisecond
 
-	play.textContent = "Playing at " + parseFloat(playSpeed).toFixed(3) + "x speed";
-	//Set the display7 as checked
-	//document.getElementById("display7").checked = true;
+    play.textContent = "Playing at " + parseFloat(playSpeed).toFixed(3) + "x speed";
+    //Set the display7 as checked
+    //document.getElementById("display7").checked = true;
 
-	// Start the animation loop
-	animationInterval = setInterval(() => {
-		if (currentTime <= maxTime + (playSpeed + playSpeed * 15)) {
-			timingWindowHolesSelected = points.filter((point) => point.holeTime <= currentTime);
-			drawData(points, timingWindowHolesSelected); // Call drawPoints with the updated selectedHolesArray
-			currentTime += animationStep;
-		} else {
-			//call the stopbutton function
-			stopButton.click();
-			clearInterval(animationInterval); // Stop the animation when maxTime is reached
-		}
-	}, animationStep);
+    // Start the animation loop
+    animationInterval = setInterval(() => {
+        if (currentTime <= maxTime + (playSpeed + playSpeed * 15)) {
+            timingWindowHolesSelected = points.filter((point) => point.holeTime <= currentTime);
+            drawData(points, timingWindowHolesSelected); // Call drawPoints with the updated selectedHolesArray
+            currentTime += animationStep;
+        } else {
+            //call the stopbutton function
+            stopButton.click();
+            clearInterval(animationInterval); // Stop the animation when maxTime is reached
+        }
+    }, animationStep);
 });
 
 // Add click event listener to the "Stop" button
 const stopButton = document.getElementById("stop");
 stopButton.addEventListener("click", () => {
-	clearInterval(animationInterval); // Stop the ongoing animation
-	isPlaying = false;
-	timingWindowHolesSelected = []; // Reset the selected holes array
-	//drawData(points, timingWindowHolesSelected); // Call drawPoints to reset the highlights
+    clearInterval(animationInterval); // Stop the ongoing animation
+    isPlaying = false;
+    timingWindowHolesSelected = []; // Reset the selected holes array
+    //drawData(points, timingWindowHolesSelected); // Call drawPoints to reset the highlights
 });
 
 // Add input event listener to the playSpeed input range
@@ -9278,751 +9315,917 @@ const playSpeedInput = document.getElementById("playSpeed");
 playSpeedInput.addEventListener("input", updatePlaySpeed);
 
 function drawLegend(strokecolour) {
-	//draw a legend at the bottom of the screen in the center
-	//the legend should be for the drawDelauanyTriangles function
-	//the legend should display the roundedAngleDip Ranges and there colours
-	const legend0to5 = "rgb(51, 139, 255)";
-	const legend5to7 = "rgb(0, 102, 204)";
-	const legend7to9 = "rgb(0, 204, 204)";
-	const legend9to12 = "rgb(102, 204, 0)";
-	const legend12to15 = "rgb(204, 204, 0)";
-	const legend15to17 = "rgb(255, 128, 0)";
-	const legend17to20 = "rgb(255, 0, 0)";
-	const legend20above = "rgb(153, 0, 76)";
-	//draw the legend
-	ctx.beginPath();
-	ctx.fill();
-	ctx.font = "14px Arial";
-	ctx.fillStyle = strokecolour;
-	ctx.fillText("Legend Slope", 10, canvas.height / 2 - 70);
-	ctx.fillText("0\u00B0-5\u00B0", 10, canvas.height / 2 - 40);
-	ctx.fillText("5\u00B0-7\u00B0", 10, canvas.height / 2 - 10);
-	ctx.fillText("7\u00B0-9\u00B0", 10, canvas.height / 2 + 20);
-	ctx.fillText("9\u00B0-12\u00B0", 10, canvas.height / 2 + 50);
-	ctx.fillText("12\u00B0-15\u00B0", 10, canvas.height / 2 + 80);
-	ctx.fillText("15\u00B0-17\u00B0", 10, canvas.height / 2 + 110);
-	ctx.fillText("17\u00B0-20\u00B0", 10, canvas.height / 2 + 140);
-	ctx.fillText("20\u00B0+", 10, canvas.height / 2 + 170);
-	ctx.fillStyle = legend0to5;
-	ctx.fillRect(60, canvas.height / 2 - 55, 20, 20);
-	ctx.fillStyle = legend5to7;
-	ctx.fillRect(60, canvas.height / 2 - 25, 20, 20);
-	ctx.fillStyle = legend7to9;
-	ctx.fillRect(60, canvas.height / 2 + 5, 20, 20);
-	ctx.fillStyle = legend9to12;
-	ctx.fillRect(60, canvas.height / 2 + 35, 20, 20);
-	ctx.fillStyle = legend12to15;
-	ctx.fillRect(60, canvas.height / 2 + 65, 20, 20);
-	ctx.fillStyle = legend15to17;
-	ctx.fillRect(60, canvas.height / 2 + 95, 20, 20);
-	ctx.fillStyle = legend17to20;
-	ctx.fillRect(60, canvas.height / 2 + 125, 20, 20);
-	ctx.fillStyle = legend20above;
-	ctx.fillRect(60, canvas.height / 2 + 155, 20, 20);
-	ctx.stroke();
+    //draw a legend at the bottom of the screen in the center
+    //the legend should be for the drawDelauanyTriangles function
+    //the legend should display the roundedAngleDip Ranges and there colours
+    const legend0to5 = "rgb(51, 139, 255)";
+    const legend5to7 = "rgb(0, 102, 204)";
+    const legend7to9 = "rgb(0, 204, 204)";
+    const legend9to12 = "rgb(102, 204, 0)";
+    const legend12to15 = "rgb(204, 204, 0)";
+    const legend15to17 = "rgb(255, 128, 0)";
+    const legend17to20 = "rgb(255, 0, 0)";
+    const legend20above = "rgb(153, 0, 76)";
+    //draw the legend
+    ctx.beginPath();
+    ctx.fill();
+    ctx.font = "14px Arial";
+    ctx.fillStyle = strokecolour;
+    ctx.fillText("Legend Slope", 10, canvas.height / 2 - 70);
+    ctx.fillText("0\u00B0-5\u00B0", 10, canvas.height / 2 - 40);
+    ctx.fillText("5\u00B0-7\u00B0", 10, canvas.height / 2 - 10);
+    ctx.fillText("7\u00B0-9\u00B0", 10, canvas.height / 2 + 20);
+    ctx.fillText("9\u00B0-12\u00B0", 10, canvas.height / 2 + 50);
+    ctx.fillText("12\u00B0-15\u00B0", 10, canvas.height / 2 + 80);
+    ctx.fillText("15\u00B0-17\u00B0", 10, canvas.height / 2 + 110);
+    ctx.fillText("17\u00B0-20\u00B0", 10, canvas.height / 2 + 140);
+    ctx.fillText("20\u00B0+", 10, canvas.height / 2 + 170);
+    ctx.fillStyle = legend0to5;
+    ctx.fillRect(60, canvas.height / 2 - 55, 20, 20);
+    ctx.fillStyle = legend5to7;
+    ctx.fillRect(60, canvas.height / 2 - 25, 20, 20);
+    ctx.fillStyle = legend7to9;
+    ctx.fillRect(60, canvas.height / 2 + 5, 20, 20);
+    ctx.fillStyle = legend9to12;
+    ctx.fillRect(60, canvas.height / 2 + 35, 20, 20);
+    ctx.fillStyle = legend12to15;
+    ctx.fillRect(60, canvas.height / 2 + 65, 20, 20);
+    ctx.fillStyle = legend15to17;
+    ctx.fillRect(60, canvas.height / 2 + 95, 20, 20);
+    ctx.fillStyle = legend17to20;
+    ctx.fillRect(60, canvas.height / 2 + 125, 20, 20);
+    ctx.fillStyle = legend20above;
+    ctx.fillRect(60, canvas.height / 2 + 155, 20, 20);
+    ctx.stroke();
 }
 
 function worldToCanvas(x, y) {
-	return [(x - centroidX) * currentScale + canvas.width / 2, (-y + centroidY) * currentScale + canvas.height / 2];
+    return [(x - centroidX) * currentScale + canvas.width / 2, (-y + centroidY) * currentScale + canvas.height / 2];
 }
 
 // Helper to fetch display options once
 function getDisplayOptions() {
-	return {
-		holeID: document.getElementById("display1").checked,
-		holeLen: document.getElementById("display2").checked,
-		holeDia: document.getElementById("display2A").checked,
-		holeAng: document.getElementById("display3").checked,
-		holeDip: document.getElementById("display4").checked,
-		holeBea: document.getElementById("display5").checked,
-		connector: document.getElementById("display5A").checked,
-		delayValue: document.getElementById("display6").checked,
-		initiationTime: document.getElementById("display6A").checked,
-		contour: document.getElementById("display8").checked,
-		slopeMap: document.getElementById("display8A").checked,
-		burdenRelief: document.getElementById("display8B").checked,
-		firstMovement: document.getElementById("display8C").checked,
-		xValue: document.getElementById("display9").checked,
-		yValue: document.getElementById("display10").checked,
-		zValue: document.getElementById("display11").checked,
-		holeType: document.getElementById("display12").checked,
-		measuredLength: document.getElementById("display13").checked,
-		measuredMass: document.getElementById("display14").checked,
-		measuredComment: document.getElementById("display15").checked,
-		voronoiPF: document.getElementById("display16").checked
-	};
+    return {
+        holeID: document.getElementById("display1").checked,
+        holeLen: document.getElementById("display2").checked,
+        holeDia: document.getElementById("display2A").checked,
+        holeAng: document.getElementById("display3").checked,
+        holeDip: document.getElementById("display4").checked,
+        holeBea: document.getElementById("display5").checked,
+        connector: document.getElementById("display5A").checked,
+        delayValue: document.getElementById("display6").checked,
+        initiationTime: document.getElementById("display6A").checked,
+        contour: document.getElementById("display8").checked,
+        slopeMap: document.getElementById("display8A").checked,
+        burdenRelief: document.getElementById("display8B").checked,
+        firstMovement: document.getElementById("display8C").checked,
+        xValue: document.getElementById("display9").checked,
+        yValue: document.getElementById("display10").checked,
+        zValue: document.getElementById("display11").checked,
+        holeType: document.getElementById("display12").checked,
+        measuredLength: document.getElementById("display13").checked,
+        measuredMass: document.getElementById("display14").checked,
+        measuredComment: document.getElementById("display15").checked,
+        voronoiPF: document.getElementById("display16").checked
+    };
 }
 
 // Build hole map for quick lookup by entityName and holeID
 function buildHoleMap(points) {
-	const map = new Map();
-	if (points && Array.isArray(points) && points.length > 0) {
-		for (const pt of points) {
-			map.set(pt.entityName + ":::" + pt.holeID, pt);
-		}
-	}
-	return map;
+    const map = new Map();
+    if (points && Array.isArray(points) && points.length > 0) {
+        for (const pt of points) {
+            map.set(pt.entityName + ":::" + pt.holeID, pt);
+        }
+    }
+    return map;
 }
 
 // Main draw function
 function drawData(points, selectedHole) {
-	clearCanvas();
-	ctx.imageSmoothingEnabled = false;
+    clearCanvas();
+    ctx.imageSmoothingEnabled = false;
 
-	const displayOptions = getDisplayOptions();
-	let holeMap = new Map();
-	if (points && Array.isArray(points) && points.length > 0) {
-		holeMap = buildHoleMap(points);
-	}
+    const displayOptions = getDisplayOptions();
+    let holeMap = new Map();
+    if (points && Array.isArray(points) && points.length > 0) {
+        holeMap = buildHoleMap(points);
+    }
 
-	// Highlight single selected point if needed
-	if (selectedPoint !== null) {
-		const [x, y] = worldToCanvas(selectedPoint.pointXLocation, selectedPoint.pointYLocation);
-		drawHiHole(x, y, 10, "rgba(255, 102, 255, 0.3)", "rgba(255, 0, 255, 0.6)");
-	}
+    // Highlight single selected point if needed
+    if (selectedPoint !== null) {
+        const [x, y] = worldToCanvas(selectedPoint.pointXLocation, selectedPoint.pointYLocation);
+        drawHiHole(x, y, 10, "rgba(255, 102, 255, 0.3)", "rgba(255, 0, 255, 0.6)");
+    }
 
-	// KAD POINTS
-	if (kadPointsMap.size > 0) {
-		for (const entity of kadPointsMap.values()) {
-			for (const pointData of entity.data) {
-				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-				drawKADPoints(x, y, pointData.pointZLocation, pointData.colour);
-			}
-		}
-	}
-	// KAD LINES
-	if (kadLinesMap.size > 0) {
-		for (const entity of kadLinesMap.values()) {
-			const points = entity.data;
-			if (points.length < 2) continue;
-			let [prevX, prevY] = worldToCanvas(points[0].pointXLocation, points[0].pointYLocation);
-			let prevZ = points[0].pointZLocation;
-			for (let i = 1; i < points.length; i++) {
-				const [x, y] = worldToCanvas(points[i].pointXLocation, points[i].pointYLocation);
-				const z = points[i].pointZLocation;
-				// Only draw if the distance in canvas space is >= 1px
-				const dx = x - prevX;
-				const dy = y - prevY;
-				const pxDist = 5;
-				if (Math.sqrt(dx * dx + dy * dy) >= pxDist || i === points.length - 1) {
-					drawKADLines(prevX, prevY, x, y, prevZ, z, points[i - 1].lineWidth, points[i - 1].colour);
-					prevX = x;
-					prevY = y;
-					prevZ = z;
-				}
-			}
-		}
-	}
+    // KAD POINTS
+    if (kadPointsMap.size > 0) {
+        for (const entity of kadPointsMap.values()) {
+            for (const pointData of entity.data) {
+                const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+                drawKADPoints(x, y, pointData.pointZLocation, pointData.colour);
+            }
+        }
+    }
+    // KAD LINES
+    if (kadLinesMap.size > 0) {
+        for (const entity of kadLinesMap.values()) {
+            const points = entity.data;
+            if (points.length < 2) continue;
+            let [prevX, prevY] = worldToCanvas(points[0].pointXLocation, points[0].pointYLocation);
+            let prevZ = points[0].pointZLocation;
+            for (let i = 1; i < points.length; i++) {
+                const [x, y] = worldToCanvas(points[i].pointXLocation, points[i].pointYLocation);
+                const z = points[i].pointZLocation;
+                // Only draw if the distance in canvas space is >= 1px
+                const dx = x - prevX;
+                const dy = y - prevY;
+                const pxDist = 5;
+                if (Math.sqrt(dx * dx + dy * dy) >= pxDist || i === points.length - 1) {
+                    drawKADLines(prevX, prevY, x, y, prevZ, z, points[i - 1].lineWidth, points[i - 1].colour);
+                    prevX = x;
+                    prevY = y;
+                    prevZ = z;
+                }
+            }
+        }
+    }
 
-	// KAD POLYGONS with pixel-distance simplification
-	if (kadPolygonsMap.size > 0) {
-		let globalTotalPoints = 0;
-		let globalDrawnPoints = 0;
-		for (const entity of kadPolygonsMap.values()) {
-			const points = entity.data;
-			if (points.length < 2) continue;
-			const totalPoints = points.length;
-			let drawnPoints = 0;
-			const firstPoint = points[0];
-			let [firstX, firstY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
-			let prevX = firstX;
-			let prevY = firstY;
-			let prevZ = firstPoint.pointZLocation;
-			for (let i = 1; i < points.length; i++) {
-				const currentPoint = points[i];
-				const [x, y] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
-				const z = currentPoint.pointZLocation;
-				const dx = x - prevX;
-				const dy = y - prevY;
-				const pxDist = 5;
-				if (Math.sqrt(dx * dx + dy * dy) >= pxDist || i === points.length - 1) {
-					drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, currentPoint.closed);
-					prevX = x;
-					prevY = y;
-					prevZ = z;
-					drawnPoints++;
-				}
-			}
-			// Close polygon if needed
-			if (points[points.length - 1].closed === true) {
-				drawKADPolys(prevX, prevY, firstX, firstY, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, points[points.length - 1].closed);
-				drawnPoints++;
-			}
-			globalTotalPoints += totalPoints;
-			globalDrawnPoints += drawnPoints;
-		}
-	}
+    // KAD POLYGONS with pixel-distance simplification
+    if (kadPolygonsMap.size > 0) {
+        let globalTotalPoints = 0;
+        let globalDrawnPoints = 0;
+        for (const entity of kadPolygonsMap.values()) {
+            const points = entity.data;
+            if (points.length < 2) continue;
+            const totalPoints = points.length;
+            let drawnPoints = 0;
+            const firstPoint = points[0];
+            let [firstX, firstY] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+            let prevX = firstX;
+            let prevY = firstY;
+            let prevZ = firstPoint.pointZLocation;
+            for (let i = 1; i < points.length; i++) {
+                const currentPoint = points[i];
+                const [x, y] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+                const z = currentPoint.pointZLocation;
+                const dx = x - prevX;
+                const dy = y - prevY;
+                const pxDist = 5;
+                if (Math.sqrt(dx * dx + dy * dy) >= pxDist || i === points.length - 1) {
+                    drawKADPolys(prevX, prevY, x, y, prevZ, z, currentPoint.lineWidth, currentPoint.colour, currentPoint.closed);
+                    prevX = x;
+                    prevY = y;
+                    prevZ = z;
+                    drawnPoints++;
+                }
+            }
+            // Close polygon if needed
+            if (points[points.length - 1].closed === true) {
+                drawKADPolys(prevX, prevY, firstX, firstY, prevZ, firstPoint.pointZLocation, firstPoint.lineWidth, firstPoint.colour, points[points.length - 1].closed);
+                drawnPoints++;
+            }
+            globalTotalPoints += totalPoints;
+            globalDrawnPoints += drawnPoints;
+        }
+    }
 
-	// KAD TEXT
-	if (kadTextsMap.size > 0) {
-		for (const entity of kadTextsMap.values()) {
-			for (const pointData of entity.data) {
-				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-				drawKADTexts(x, y, pointData.pointZLocation, pointData.text, pointData.colour);
-			}
-		}
-	}
+    // KAD TEXT
+    if (kadTextsMap.size > 0) {
+        for (const entity of kadTextsMap.values()) {
+            for (const pointData of entity.data) {
+                const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+                drawKADTexts(x, y, pointData.pointZLocation, pointData.text, pointData.colour);
+            }
+        }
+    }
 
-	// KAD CIRCLES
-	if (kadCirclesMap.size > 0) {
-		for (const entity of kadCirclesMap.values()) {
-			for (const pointData of entity.data) {
-				const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-				drawKADCircles(x, y, pointData.pointZLocation, pointData.radius * currentScale, pointData.lineWidth, pointData.colour);
-			}
-		}
-	}
+    // KAD CIRCLES
+    if (kadCirclesMap.size > 0) {
+        for (const entity of kadCirclesMap.values()) {
+            for (const pointData of entity.data) {
+                const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+                drawKADCircles(x, y, pointData.pointZLocation, pointData.radius * currentScale, pointData.lineWidth, pointData.colour);
+            }
+        }
+    }
 
-	// VORONOI PF & OVERLAYS
-	const tri = delaunayTriangles(points, maxEdgeLength);
-	const blastBoundaryPolygon = createBlastBoundaryPolygon(tri.resultTriangles);
-	const offsetBoundaryPolygon = boundaryOffset(blastBoundaryPolygon, getAverageDistance(points) / 2);
+    // VORONOI PF & OVERLAYS
+    const tri = delaunayTriangles(points, maxEdgeLength);
+    const blastBoundaryPolygon = createBlastBoundaryPolygon(tri.resultTriangles);
+    const offsetBoundaryPolygon = offsetPolygonClipper(blastBoundaryPolygon, getAverageDistance(points) / 2);
 
-	// Voronoi Powder Factor
-	if (displayOptions.voronoiPF) {
-		switch (selectedVoronoiMetric) {
-			case "powderFactor":
-				//console.log("Drawing Powder Factor");
-				//get the min and max values for the PF if isVoronoiLegendFixed is false
-				let minVal, maxVal, interval, deltaInterval;
+    // Voronoi Powder Factor
+    if (displayOptions.voronoiPF) {
+        // console.log("DEBUG: VORONOI PF");
+        switch (selectedVoronoiMetric) {
+            case "powderFactor":
+                // console.log("Drawing Powder Factor");
+                //get the min and max values for the PF if isVoronoiLegendFixed is false
+                let minPF, maxPF, intervalPF, deltaPF;
 
-				if (!isVoronoiLegendFixed) {
-					const voronoiMetrics = getVoronoiMetrics(points);
-					const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-					const values = clippedCells.map((c) => c.powderFactor).filter((v) => v != null && !isNaN(v));
-					minVal = values.length > 0 ? Math.min(...values) : 0;
-					maxVal = values.length > 0 ? Math.max(...values) : 3;
-					deltaInterval = maxVal - minVal;
-					interval = deltaInterval / 4;
-				} else {
-					minVal = 0;
-					maxVal = 3;
-					deltaInterval = maxVal - minVal;
-					interval = deltaInterval > 0 ? Math.ceil(deltaInterval / 10) : 0.5;
-				}
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getPFColor(value, minVal, maxVal), "Legend Powder Factor", minVal, maxVal, interval);
-				break;
-			case "mass": {
-				// console.log("Drawing Mass");
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const values = clippedCells.map((c) => c.mass).filter((v) => v != null && !isNaN(v));
-				const minVal = values.length > 0 ? Math.min(...values) : 0;
-				const maxVal = values.length > 0 ? Math.max(...values) : 500;
-				const delta = maxVal - minVal;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 100;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, getMassColor, "Legend Mass", minVal, maxVal, stop);
-				break;
-			}
-			case "volume": {
-				// console.log("Drawing Volume");
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const values = clippedCells.map((c) => c.volume).filter((v) => v != null && !isNaN(v));
-				const minVal = values.length > 0 ? Math.min(...values) : 0;
-				const maxVal = values.length > 0 ? Math.max(...values) : 100;
-				const delta = maxVal - minVal;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 10;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getVolumeColor(value, minVal, maxVal), "Legend Volume", minVal, maxVal, stop);
-				//console.log("Drawing Volume " + minVal + " " + maxVal + " " + stop);
-				break;
-			}
-			case "area": {
-				// console.log("Drawing Area");
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const values = clippedCells.map((c) => c.area).filter((v) => v != null && !isNaN(v));
-				const minVal = values.length > 0 ? Math.min(...values) : 0;
-				const maxVal = values.length > 0 ? Math.max(...values) : 100;
-				const delta = maxVal - minVal;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 10;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getAreaColor(value, minVal, maxVal), "Legend Area", minVal, maxVal, stop);
-				//console.log("Drawing Area " + minVal + " " + maxVal + " " + stop);
-				break;
-			}
-			case "measuredLength": {
-				// console.log("Drawing Measured Length");
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const values = clippedCells.map((c) => c.measuredLength).filter((v) => v != null && !isNaN(v));
-				const minVal = values.length > 0 ? Math.min(...values) : 0;
-				const maxVal = values.length > 0 ? Math.max(...values) : 50;
-				const delta = maxVal - minVal;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 5;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, getLengthColor, "Legend Measured Length", minVal, maxVal, stop);
-				break;
-			}
-			case "designedLength": {
-				// console.log("Drawing Designed Length");
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const values = clippedCells.map((c) => c.designedLength).filter((v) => v != null && !isNaN(v));
-				const minVal = values.length > 0 ? Math.min(...values) : 0;
-				const maxVal = values.length > 0 ? Math.max(...values) : 50;
-				const delta = maxVal - minVal;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 5;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, getLengthColor, "Legend Designed Length", minVal, maxVal, stop);
-				break;
-			}
-			case "holeFiringTime":
-				// Calculate min and max hole firing time from points
-				const voronoiMetrics = getVoronoiMetrics(points);
-				const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
-				const holeTimes = clippedCells.map((c) => c.holeFiringTime).filter((t) => t != null && !isNaN(t));
-				const minTime = holeTimes.length > 0 ? Math.min(...holeTimes) : 0;
-				const maxTime = holeTimes.length > 0 ? Math.max(...holeTimes) : 5000;
-				const delta = maxTime - minTime;
-				const stop = delta > 0 ? Math.ceil(delta / 10) : 1000;
-				drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, getHoleFiringTimeColor, "Legend Hole Firing Time", minTime, maxTime, stop);
-				// console.log("Drawing Hole Firing Times " + minTime + " " + maxTime + " " + stop);
-				break;
-		}
-	}
+                if (!isVoronoiLegendFixed) {
+                    // console.log("DEBUG: VORONOI PF NOT FIXED");
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.powderFactor).filter((v) => v != null && !isNaN(v));
+                    minPF = values.length > 0 ? Math.min(...values) : 0;
+                    maxPF = values.length > 0 ? Math.max(...values) : 3;
+                    if (maxPF - minPF > 0) {
+                        deltaPF = maxPF - minPF;
+                        intervalPF = deltaPF / 4;
+                    } else {
+                        minPF = 0;
+                        maxPF = 1;
+                        intervalPF = 0.2;
+                    }
+                } else {
+                    // console.log("DEBUG: VORONOI PF FIXED");
+                    minPF = 0;
+                    maxPF = 3;
+                    if (maxPF - minPF > 0) {
+                        deltaPF = maxPF - minPF;
+                        intervalPF = deltaPF > 0 ? Math.ceil(deltaPF / 10) : 0.5;
+                    } else {
+                        minPF = 0;
+                        maxPF = 1;
+                        intervalPF = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getPFColor(value, minPF, maxPF), "Legend Powder Factor", minPF, maxPF, intervalPF);
+                break;
+            case "mass":
+                // console.log("Drawing Mass");
+                let minMass, maxMass, intervalMass, deltaMass;
 
-	// Slope Map
-	if (displayOptions.slopeMap) {
-		const centroid = { x: centroidX, y: centroidY };
-		const { resultTriangles } = delaunayTriangles(points, maxEdgeLength);
-		drawDelauanySlopeMap(resultTriangles, centroid, strokeColour);
-		for (const triangle of resultTriangles) {
-			drawTriangleAngleText(triangle, centroid, strokeColour);
-		}
-		drawLegend("darkgrey");
-	}
+                if (!isVoronoiLegendFixed) {
+                    // console.log("DEBUG: VORONOI MASS NOT FIXED");
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.mass).filter((v) => v != null && !isNaN(v));
+                    minMass = values.length > 0 ? Math.min(...values) : 0;
+                    maxMass = values.length > 0 ? Math.max(...values) : 500;
+                    if (maxMass - minMass > 0) {
+                        deltaMass = maxMass - minMass;
+                        intervalMass = deltaMass / 4;
+                    } else {
+                        minMass = 0;
+                        maxMass = 1;
+                        intervalMass = 0.2;
+                    }
+                } else {
+                    // console.log("DEBUG: VORONOI MASS FIXED");
+                    minMass = 0;
+                    maxMass = 1000;
+                    if (maxMass - minMass > 0) {
+                        deltaMass = maxMass - minMass;
+                        intervalMass = deltaMass > 0 ? Math.ceil(deltaMass / 10) : 250;
+                    } else {
+                        minMass = 0;
+                        maxMass = 1;
+                        intervalMass = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getMassColor(value, minMass, maxMass), "Legend Mass", minMass, maxMass, intervalMass);
+                break;
+            case "volume": {
+                // console.log("Drawing Volume");
+                let minVol, maxVol, intervalVol, deltaVol;
 
-	// Burden Relief
-	if (displayOptions.burdenRelief) {
-		const centroid = { x: centroidX, y: centroidY };
-		const { reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
-		drawDelauanyBurdenRelief(reliefTriangles, centroid, strokeColour);
-		for (const triangle of reliefTriangles) {
-			drawTriangleBurdenReliefText(triangle, centroid, strokeColour);
-		}
-		drawReliefLegend("darkgrey");
-	}
+                if (!isVoronoiLegendFixed) {
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.volume).filter((v) => v != null && !isNaN(v));
+                    minVol = values.length > 0 ? Math.min(...values) : 0;
+                    maxVol = values.length > 0 ? Math.max(...values) : 100;
+                    if (maxVol - minVol > 0) {
+                        deltaVol = maxVol - minVol;
+                        intervalVol = deltaVol / 10;
+                    } else {
+                        minVol = 0;
+                        maxVol = 1;
+                        intervalVol = 0.2;
+                    }
+                } else {
+                    minVol = 0;
+                    maxVol = 5000;
+                    if (maxVol - minVol > 0) {
+                        deltaVol = maxVol - minVol;
+                        intervalVol = 500;
+                    } else {
+                        minVol = 0;
+                        maxVol = 1;
+                        intervalVol = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getVolumeColor(value, minVol, maxVol), "Legend Volume", minVol, maxVol, intervalVol);
+                break;
+            }
+            case "area": {
+                // console.log("Drawing Area");
+                let minArea, maxArea, intervalArea, deltaArea;
 
-	// First Movement Direction Arrows
-	if (displayOptions.firstMovement) {
-		connScale = document.getElementById("connSlider").value;
-		for (const arrow of directionArrows) {
-			const [startX, startY] = worldToCanvas(arrow[0], arrow[1]);
-			const [endX, endY] = worldToCanvas(arrow[2], arrow[3]);
-			drawDirectionArrow(startX, startY, endX, endY, arrow[4], strokeColour, arrow[5]);
-		}
-	}
+                if (!isVoronoiLegendFixed) {
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.area).filter((v) => v != null && !isNaN(v));
+                    minArea = values.length > 0 ? Math.min(...values) : 0;
+                    maxArea = values.length > 0 ? Math.max(...values) : 100;
+                    if (maxArea - minArea > 0) {
+                        deltaArea = maxArea - minArea;
+                        intervalArea = deltaArea / 10;
+                    } else {
+                        minArea = 0;
+                        maxArea = 1;
+                        intervalArea = 0.2;
+                    }
+                } else {
+                    minArea = 0;
+                    maxArea = 500;
+                    if (maxArea - minArea > 0) {
+                        deltaArea = maxArea - minArea;
+                        intervalArea = 50;
+                    } else {
+                        minArea = 0;
+                        maxArea = 1;
+                        intervalArea = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getAreaColor(value, minArea, maxArea), "Legend Area", minArea, maxArea, intervalArea);
+                break;
+            }
+            case "measuredLength": {
+                // console.log("Drawing Measured Length");
+                let minMLen, maxMLen, intervalMLen, deltaMLen;
 
-	// Contour Lines
-	if (displayOptions.contour) {
-		ctx.lineWidth = 3;
-		ctx.strokeStyle = "magenta";
-		for (const contourLines of contourLinesArray) {
-			for (const line of contourLines) {
-				const [startX, startY] = worldToCanvas(line[0].x, line[0].y);
-				const [endX, endY] = worldToCanvas(line[1].x, line[1].y);
-				ctx.beginPath();
-				ctx.moveTo(startX, startY);
-				ctx.lineTo(endX, endY);
-				ctx.stroke();
-			}
-		}
-	}
+                if (!isVoronoiLegendFixed) {
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.measuredLength).filter((v) => v != null && !isNaN(v));
+                    minMLen = values.length > 0 ? Math.min(...values) : 0;
+                    maxMLen = values.length > 0 ? Math.max(...values) : 50;
+                    if (maxMLen - minMLen > 0) {
+                        deltaMLen = maxMLen - minMLen;
+                        intervalMLen = deltaMLen / 10;
+                    } else if (maxMLen > 0) {
+                        minMLen = 0;
+                        maxMLen = maxMLen;
+                        intervalMLen = (maxMLen - minMLen) / 10;
+                    } else {
+                        minMLen = 0;
+                        maxMLen = 1;
+                        intervalMLen = 0.2;
+                    }
+                } else {
+                    minMLen = 0;
+                    maxMLen = 50;
+                    if (maxMLen - minMLen > 0) {
+                        deltaMLen = maxMLen - minMLen;
+                        intervalMLen = 5;
+                    } else if (maxMLen > 0) {
+                        minMLen = 0;
+                        maxMLen = maxMLen;
+                        intervalMLen = (maxMLen - minMLen) / 10;
+                    } else {
+                        minMLen = 0;
+                        maxMLen = 1;
+                        intervalMLen = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getLengthColor(value, minMLen, maxMLen), "Legend Measured Length", minMLen, maxMLen, intervalMLen);
+                break;
+            }
+            case "designedLength": {
+                // console.log("Drawing Designed Length");
+                let minDLen, maxDLen, intervalDLen, deltaDLen;
 
-	// Holes Displayed Count
-	ctx.fillStyle = "red";
-	ctx.font = "12px Arial";
-	if (!points || !Array.isArray(points) || points.length < 1) {
-		ctx.fillText("Holes Displayed: 0", 10, canvas.height - 25);
-	} else {
-		ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 25);
-	}
-	// Use lastMouseX and lastMouseY if available, otherwise default to 0
-	const mouseX = typeof lastMouseX !== "undefined" ? lastMouseX : 0;
-	const mouseY = typeof lastMouseY !== "undefined" ? lastMouseY : 0;
-	// Convert canvas (mouse) coordinates to world coordinates
-	const worldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
-	const worldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
-	ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY, 10, canvas.height - 15);
-	ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 5);
+                if (!isVoronoiLegendFixed) {
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const values = clippedCells.map((c) => c.designedLength).filter((v) => v != null && !isNaN(v));
+                    minDLen = values.length > 0 ? Math.min(...values) : 0;
+                    maxDLen = values.length > 0 ? Math.max(...values) : 50;
+                    if (maxDLen - minDLen > 0) {
+                        deltaDLen = maxDLen - minDLen;
+                        intervalDLen = deltaDLen / 10;
+                    } else if (maxDLen > 0) {
+                        minDLen = 0;
+                        maxDLen = maxDLen;
+                        intervalDLen = (maxDLen - minDLen) / 10;
+                    } else {
+                        minDLen = 0;
+                        maxDLen = 1;
+                        intervalDLen = 0.2;
+                    }
+                } else {
+                    minDLen = 0;
+                    maxDLen = 50;
+                    if (maxDLen - minDLen > 0) {
+                        deltaDLen = maxDLen - minDLen;
+                        intervalDLen = 5;
+                    } else if (maxDLen > 0) {
+                        minDLen = 0;
+                        maxDLen = maxDLen;
+                        intervalDLen = (maxDLen - minDLen) / 10;
+                    } else {
+                        minDLen = 0;
+                        maxDLen = 1;
+                        intervalDLen = 0.2;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getLengthColor(value, minDLen, maxDLen), "Legend Designed Length", minDLen, maxDLen, intervalDLen);
+                break;
+            }
+            case "holeFiringTime": {
+                // console.log("Drawing Hole Firing Time");
+                let minHTime, maxHTime, intervalHTime, deltaHTime;
 
-	// Main hole loop
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = strokeColour;
-	ctx.font = parseInt(currentFontSize) + "px Arial";
-	if (points && Array.isArray(points) && points.length > 0) {
-		for (const point of points) {
-			const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
-			const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
+                if (!isVoronoiLegendFixed) {
+                    const voronoiMetrics = getVoronoiMetrics(points);
+                    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+                    const holeTimes = clippedCells.map((c) => c.holeFiringTime).filter((t) => t != null && !isNaN(t));
+                    minHTime = holeTimes.length > 0 ? Math.min(...holeTimes) : 0;
+                    maxHTime = holeTimes.length > 0 ? Math.max(...holeTimes) : 5000;
+                    if (maxHTime - minHTime > 0) {
+                        deltaHTime = maxHTime - minHTime;
+                        intervalHTime = deltaHTime / 10;
+                    } else {
+                        minHTime = 0;
+                        maxHTime = 1;
+                        intervalHTime = 0.5;
+                    }
+                } else {
+                    minHTime = 0;
+                    maxHTime = 5000;
+                    if (maxHTime - minHTime > 0) {
+                        deltaHTime = maxHTime - minHTime;
+                        intervalHTime = deltaHTime > 0 ? Math.ceil(deltaHTime / 10) : 1000;
+                    } else {
+                        minHTime = 0;
+                        maxHTime = 1;
+                        intervalHTime = 0.5;
+                    }
+                }
+                drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, (value) => getHoleFiringTimeColor(value, minHTime, maxHTime), "Legend Hole Firing Time", minHTime, maxHTime, intervalHTime);
+                break;
+            }
+        }
+    }
 
-			toeSizeInMeters = document.getElementById("toeSlider").value;
-			connScale = document.getElementById("connSlider").value;
+    // Slope Map
+    if (displayOptions.slopeMap) {
+        const centroid = { x: centroidX, y: centroidY };
+        const { resultTriangles } = delaunayTriangles(points, maxEdgeLength);
+        drawDelauanySlopeMap(resultTriangles, centroid, strokeColour);
+        for (const triangle of resultTriangles) {
+            drawTriangleAngleText(triangle, centroid, strokeColour);
+        }
+        drawLegend("darkgrey");
+    }
 
-			// Draw collar-to-toe track if angled
-			if (point.holeAngle > 0) {
-				drawTrack(x, y, lineEndX, lineEndY, strokeColour);
-			}
+    // Burden Relief
+    if (displayOptions.burdenRelief) {
+        const centroid = { x: centroidX, y: centroidY };
+        const { reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+        drawDelauanyBurdenRelief(reliefTriangles, centroid, strokeColour);
+        for (const triangle of reliefTriangles) {
+            drawTriangleBurdenReliefText(triangle, centroid, strokeColour);
+        }
+        drawReliefLegend("darkgrey");
+    }
 
-			// Highlight selected holes for animation/time window selection
-			handleHoleHighlighting(point, x, y);
+    // First Movement Direction Arrows
+    if (displayOptions.firstMovement) {
+        connScale = document.getElementById("connSlider").value;
+        for (const arrow of directionArrows) {
+            const [startX, startY] = worldToCanvas(arrow[0], arrow[1]);
+            const [endX, endY] = worldToCanvas(arrow[2], arrow[3]);
+            drawDirectionArrow(startX, startY, endX, endY, arrow[4], strokeColour, arrow[5]);
+        }
+    }
 
-			// Draw toe if hole length is not zero
-			if (parseFloat(point.holeLengthCalculated).toFixed(1) != 0.0) {
-				const radiusInPixels = toeSizeInMeters * currentScale;
-				drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
-			}
+    // Contour Lines
+    if (displayOptions.contour) {
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "magenta";
+        for (const contourLines of contourLinesArray) {
+            for (const line of contourLines) {
+                const [startX, startY] = worldToCanvas(line[0].x, line[0].y);
+                const [endX, endY] = worldToCanvas(line[1].x, line[1].y);
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(endX, endY);
+                ctx.stroke();
+            }
+        }
+    }
 
-			// Calculate text offsets
-			const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
-			const leftSideToe = parseInt(lineEndX) - textOffset;
-			const rightSideToe = parseInt(lineEndX) + textOffset;
-			const leftSideCollar = parseInt(x) - textOffset;
-			const rightSideCollar = parseInt(x) + textOffset;
-			const topSideToe = parseInt(lineEndY - textOffset);
-			const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
-			const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
-			const topSideCollar = parseInt(y - textOffset);
-			const middleSideCollar = parseInt(y + parseInt(currentFontSize / 2));
-			const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+    // Holes Displayed Count
+    ctx.fillStyle = "red";
+    ctx.font = "12px Arial";
+    if (!points || !Array.isArray(points) || points.length < 1) {
+        ctx.fillText("Holes Displayed: 0", 10, canvas.height - 25);
+    } else {
+        ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 25);
+    }
+    // Use lastMouseX and lastMouseY if available, otherwise default to 0
+    const mouseX = typeof lastMouseX !== "undefined" ? lastMouseX : 0;
+    const mouseY = typeof lastMouseY !== "undefined" ? lastMouseY : 0;
+    // Convert canvas (mouse) coordinates to world coordinates
+    const worldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
+    const worldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+    ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY, 10, canvas.height - 15);
+    ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 5);
 
-			// Draw text/labels based on displayOptions
-			drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, {
-				leftSideToe,
-				rightSideToe,
-				leftSideCollar,
-				rightSideCollar,
-				topSideToe,
-				middleSideToe,
-				bottomSideToe,
-				topSideCollar,
-				middleSideCollar,
-				bottomSideCollar,
-				holeMap,
-				displayOptions
-			});
+    // Main hole loop
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = strokeColour;
+    ctx.font = parseInt(currentFontSize) + "px Arial";
+    if (points && Array.isArray(points) && points.length > 0) {
+        for (const point of points) {
+            const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
+            const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
 
-			// Draw main hole geometry, with selection highlight logic
-			drawHoleMainShape(point, x, y, selectedHole);
+            toeSizeInMeters = document.getElementById("toeSlider").value;
+            connScale = document.getElementById("connSlider").value;
 
-			// Font slider/label only needs to be updated once, after loop
-		}
-	}
-	// Update font slider and label after loop (once)
-	fontSlider.value = currentFontSize;
-	fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
+            // Draw collar-to-toe track if angled
+            if (point.holeAngle > 0) {
+                drawTrack(x, y, lineEndX, lineEndY, strokeColour);
+            }
+
+            // Highlight selected holes for animation/time window selection
+            handleHoleHighlighting(point, x, y);
+
+            // Draw toe if hole length is not zero
+            if (parseFloat(point.holeLengthCalculated).toFixed(1) != 0.0) {
+                const radiusInPixels = toeSizeInMeters * currentScale;
+                drawHoleToe(lineEndX, lineEndY, transparentFillColour, strokeColour, radiusInPixels);
+            }
+
+            // Calculate text offsets
+            const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
+            const leftSideToe = parseInt(lineEndX) - textOffset;
+            const rightSideToe = parseInt(lineEndX) + textOffset;
+            const leftSideCollar = parseInt(x) - textOffset;
+            const rightSideCollar = parseInt(x) + textOffset;
+            const topSideToe = parseInt(lineEndY - textOffset);
+            const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
+            const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
+            const topSideCollar = parseInt(y - textOffset);
+            const middleSideCollar = parseInt(y + parseInt(currentFontSize / 2));
+            const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+
+            // Draw text/labels based on displayOptions
+            drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, {
+                leftSideToe,
+                rightSideToe,
+                leftSideCollar,
+                rightSideCollar,
+                topSideToe,
+                middleSideToe,
+                bottomSideToe,
+                topSideCollar,
+                middleSideCollar,
+                bottomSideCollar,
+                holeMap,
+                displayOptions
+            });
+
+            // Draw main hole geometry, with selection highlight logic
+            drawHoleMainShape(point, x, y, selectedHole);
+
+            // Font slider/label only needs to be updated once, after loop
+        }
+    }
+    // Update font slider and label after loop (once)
+    fontSlider.value = currentFontSize;
+    fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-	const voronoiBoundarySwitch = document.getElementById("voronoiBoundarySwitch");
-	voronoiBoundarySwitch.addEventListener("change", function () {
-		drawData(points, selectedHole);
-	});
+    const voronoiBoundarySwitch = document.getElementById("voronoiBoundarySwitch");
+    voronoiBoundarySwitch.addEventListener("change", function () {
+        drawData(points, selectedHole);
+    });
 });
 document.addEventListener("DOMContentLoaded", function () {
-	const voronoiMetricDropdown = document.getElementById("voronoiSelect");
-	voronoiMetricDropdown.addEventListener("change", function () {
-		drawData(points, selectedHole);
-	});
+    const voronoiMetricDropdown = document.getElementById("voronoiSelect");
+    voronoiMetricDropdown.addEventListener("change", function () {
+        drawData(points, selectedHole);
+    });
 });
 let isVoronoiLegendFixed = false;
 document.addEventListener("DOMContentLoaded", function () {
-	const voronoiLegendDropdown = document.getElementById("voronoiLegendSelect");
-	voronoiLegendDropdown.addEventListener("change", function () {
-		isVoronoiLegendFixed = voronoiLegendDropdown.value === "fixed";
-		drawData(points, selectedHole);
-	});
+    const voronoiLegendDropdown = document.getElementById("voronoiLegendSelect");
+    voronoiLegendDropdown.addEventListener("change", function () {
+        isVoronoiLegendFixed = voronoiLegendDropdown.value === "fixed";
+        drawData(points, selectedHole);
+    });
 });
 
 function drawVoronoiLegendAndCells(points, offsetBoundaryPolygon, selectedVoronoiMetric, getColorForMetric, legendLabel, minValue, maxValue, step) {
-	const legendX = 10,
-		legendY = canvas.height / 2 - 70,
-		gradientWidth = 20,
-		gradientHeight = 160;
-	ctx.fillStyle = "darkgrey";
-	ctx.font = "14px Arial";
-	ctx.fillText(legendLabel || "Legend " + selectedVoronoiMetric, legendX, legendY - 15);
+    const legendX = 10,
+        legendY = canvas.height / 2 - 70,
+        gradientWidth = 20,
+        gradientHeight = 160;
+    ctx.fillStyle = "darkgrey";
+    ctx.font = "14px Arial";
+    ctx.fillText(legendLabel || "Legend " + selectedVoronoiMetric, legendX, legendY - 15);
 
-	// Create gradient for legend
-	const gradient = ctx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
-	const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
-	stops.forEach(function (stop) {
-		const value = minValue + stop * (maxValue - minValue);
-		const color = getColorForMetric(value);
-		if (typeof color !== "string" || color.includes("NaN")) {
-			// fallback or skip this color stop
-		} else {
-			gradient.addColorStop(stop, color);
-		}
-	});
-	ctx.fillStyle = gradient;
-	ctx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
+    // Create gradient for legend
+    const gradient = ctx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
+    const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+    stops.forEach(function (stop) {
+        const value = minValue + stop * (maxValue - minValue);
+        const color = getColorForMetric(value);
+        if (typeof color !== "string" || color.includes("NaN")) {
+            // fallback or skip this color stop
+        } else {
+            gradient.addColorStop(stop, color);
+        }
+    });
+    ctx.fillStyle = gradient;
+    ctx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
 
-	ctx.fillStyle = "darkgrey";
-	ctx.textAlign = "left";
-	ctx.textBaseline = "middle";
-	// Draw tick marks and labels
-	for (let v = minValue; v <= maxValue; v += step) {
-		const y = legendY + ((v - minValue) / (maxValue - minValue)) * gradientHeight;
-		ctx.strokeStyle = "#aaa";
-		ctx.beginPath();
-		ctx.moveTo(legendX + 50 + gradientWidth, y);
-		ctx.lineTo(legendX + 50 + gradientWidth + 8, y);
-		ctx.stroke();
-		ctx.fillText(v.toFixed(1), legendX, y);
-	}
+    ctx.fillStyle = "darkgrey";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    // Draw tick marks and labels
+    for (let v = minValue; v <= maxValue; v += step) {
+        const y = legendY + ((v - minValue) / (maxValue - minValue)) * gradientHeight;
+        ctx.strokeStyle = "#aaa";
+        ctx.beginPath();
+        ctx.moveTo(legendX + 50 + gradientWidth, y);
+        ctx.lineTo(legendX + 50 + gradientWidth + 8, y);
+        ctx.stroke();
+        ctx.fillText(v.toFixed(1), legendX, y);
+    }
 
-	const voronoiMetrics = getVoronoiMetrics(points);
-	//modes available: min, max, average, mode
-	const useRadiiBoundary = document.getElementById("voronoiBoundarySwitch").checked;
-	if (useRadiiBoundary) {
-		offsetBoundaryPolygon = getRadiiBlastHolesPolygon(points, 70.0, 36, "mode");
-	} else {
-		offsetBoundaryPolygon = offsetBoundaryPolygon;
-	}
-	const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
+    const voronoiMetrics = getVoronoiMetrics(points);
+    //modes available: min, max, average, mode
+    const useRadiiBoundary = document.getElementById("voronoiBoundarySwitch").checked;
+    if (useRadiiBoundary) {
+        offsetBoundaryPolygon = getRadiiBlastHolesPolygon(points, 70.0, 36, "mode");
+    } else {
+        /* TOO SLOW AT THE MOMENT
+		//offset/expand points by 2x
+        offsetBoundaryPolygon = getRadiiBlastHolesPolygon(points, 150, 36, "mode");
+        //get mode nearest
+        let nearest = getNearestNeighborDistancesByAggregation(points, "mode");
+        //offset/contract the points by -1.5x or 75% of the most common distance
+        offsetBoundaryPolygon = offsetPolygonClipper(offsetBoundaryPolygon, -(nearest * 0.9));
+        //simplify the Polygon
+        offsetBoundaryPolygon = simplifyPolygon(offsetBoundaryPolygon, 0.1, true);
+		*/
+        offsetBoundaryPolygon = offsetBoundaryPolygon;
+    }
+    const clippedCells = clipVoronoiCells(voronoiMetrics, offsetBoundaryPolygon);
 
-	for (const cell of clippedCells) {
-		const value = cell[selectedVoronoiMetric];
-		if (!cell.polygon || value == null) continue;
-		ctx.beginPath();
-		for (let j = 0; j < cell.polygon.length; j++) {
-			const pt = cell.polygon[j];
-			const [x, y] = worldToCanvas(pt.x !== undefined ? pt.x : pt[0], pt.y !== undefined ? pt.y : pt[1]);
-			if (j === 0) ctx.moveTo(x, y);
-			else ctx.lineTo(x, y);
-		}
-		ctx.closePath();
-		ctx.fillStyle = getColorForMetric(value);
-		ctx.fill();
-		ctx.strokeStyle = "#222";
-		ctx.lineWidth = 1;
-		ctx.stroke();
-	}
+    for (const cell of clippedCells) {
+        const value = cell[selectedVoronoiMetric];
+        if (!cell.polygon || value == null) continue;
+        ctx.beginPath();
+        for (let j = 0; j < cell.polygon.length; j++) {
+            const pt = cell.polygon[j];
+            const [x, y] = worldToCanvas(pt.x !== undefined ? pt.x : pt[0], pt.y !== undefined ? pt.y : pt[1]);
+            if (j === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = getColorForMetric(value);
+        ctx.fill();
+        ctx.strokeStyle = "#222";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
 }
 
 // === Helper: Draw hole labels, connectors, delay text, etc. ===
 function drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, ctxObj) {
-	const { leftSideToe, rightSideToe, leftSideCollar, rightSideCollar, topSideToe, middleSideToe, bottomSideToe, topSideCollar, middleSideCollar, bottomSideCollar, holeMap, displayOptions } = ctxObj;
+    const { leftSideToe, rightSideToe, leftSideCollar, rightSideCollar, topSideToe, middleSideToe, bottomSideToe, topSideCollar, middleSideCollar, bottomSideCollar, holeMap, displayOptions } = ctxObj;
 
-	if (displayOptions.holeID) {
-		drawText(rightSideCollar, topSideCollar, point.holeID, textFillColour);
-	}
-	if (displayOptions.holeDia) {
-		drawText(rightSideCollar, middleSideCollar, parseFloat(point.holeDiameter).toFixed(0), "green");
-	}
-	if (displayOptions.holeLen) {
-		drawText(rightSideCollar, bottomSideCollar, parseFloat(point.holeLengthCalculated).toFixed(1), depthColour);
-	}
-	if (displayOptions.holeAng) {
-		drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.holeAngle).toFixed(0), angleDipColour);
-	}
-	if (displayOptions.holeDip) {
-		drawRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(point.holeAngle).toFixed(0), angleDipColour);
-	}
-	if (displayOptions.holeBea) {
-		drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.holeBearing).toFixed(1), "red");
-	}
-	if (displayOptions.initiationTime) {
-		drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
-	}
-	if (displayOptions.connector && point.fromHoleID) {
-		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
-		if (fromHole) {
-			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
-			const connColour = point.colourHexDecimal;
-			try {
-				drawArrow(startX, startY, x, y, connColour, connScale);
-			} catch (error) {
-				console.error("Error drawing arrow:", error);
-			}
-		}
-	}
-	if (displayOptions.delayValue && point.fromHoleID) {
-		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
-		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
-		if (fromHole) {
-			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
-			const connColour = point.colourHexDecimal;
-			const pointDelay = point.timingDelayMilliseconds;
-			drawArrowDelayText(startX, startY, x, y, connColour, pointDelay);
-		}
-	}
-	if (displayOptions.xValue) {
-		drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.startXLocation).toFixed(2), textFillColour);
-	}
-	if (displayOptions.yValue) {
-		drawRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(point.startYLocation).toFixed(2), textFillColour);
-	}
-	if (displayOptions.zValue) {
-		drawRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(point.startZLocation).toFixed(2), textFillColour);
-	}
-	if (displayOptions.holeType) {
-		drawText(rightSideCollar, middleSideCollar, point.holeType, "green");
-	}
-	if (displayOptions.measuredLength) {
-		drawRightAlignedText(leftSideCollar, bottomSideToe, point.measuredLength, "#FF4400");
-	}
-	if (displayOptions.measuredMass) {
-		drawRightAlignedText(leftSideCollar, topSideToe, point.measuredMass, "#FF6600");
-	}
-	if (displayOptions.measuredComment) {
-		drawText(rightSideCollar, middleSideCollar, point.measuredComment, "#FF8800");
-	}
+    if (displayOptions.holeID) {
+        drawText(rightSideCollar, topSideCollar, point.holeID, textFillColour);
+    }
+    if (displayOptions.holeDia) {
+        drawText(rightSideCollar, middleSideCollar, parseFloat(point.holeDiameter).toFixed(0), "green");
+    }
+    if (displayOptions.holeLen) {
+        drawText(rightSideCollar, bottomSideCollar, parseFloat(point.holeLengthCalculated).toFixed(1), depthColour);
+    }
+    if (displayOptions.holeAng) {
+        drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.holeAngle).toFixed(0), angleDipColour);
+    }
+    if (displayOptions.holeDip) {
+        drawRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(point.holeAngle).toFixed(0), angleDipColour);
+    }
+    if (displayOptions.holeBea) {
+        drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.holeBearing).toFixed(1), "red");
+    }
+    if (displayOptions.initiationTime) {
+        drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
+    }
+    if (displayOptions.connector && point.fromHoleID) {
+        const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+        const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+        if (fromHole) {
+            const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+            const connColour = point.colourHexDecimal;
+            try {
+                drawArrow(startX, startY, x, y, connColour, connScale);
+            } catch (error) {
+                console.error("Error drawing arrow:", error);
+            }
+        }
+    }
+    if (displayOptions.delayValue && point.fromHoleID) {
+        const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+        const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+        if (fromHole) {
+            const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+            const connColour = point.colourHexDecimal;
+            const pointDelay = point.timingDelayMilliseconds;
+            drawArrowDelayText(startX, startY, x, y, connColour, pointDelay);
+        }
+    }
+    if (displayOptions.xValue) {
+        drawRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.startXLocation).toFixed(2), textFillColour);
+    }
+    if (displayOptions.yValue) {
+        drawRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(point.startYLocation).toFixed(2), textFillColour);
+    }
+    if (displayOptions.zValue) {
+        drawRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(point.startZLocation).toFixed(2), textFillColour);
+    }
+    if (displayOptions.holeType) {
+        drawText(rightSideCollar, middleSideCollar, point.holeType, "green");
+    }
+    if (displayOptions.measuredLength) {
+        drawRightAlignedText(leftSideCollar, bottomSideToe, point.measuredLength, "#FF4400");
+    }
+    if (displayOptions.measuredMass) {
+        drawRightAlignedText(leftSideCollar, topSideToe, point.measuredMass, "#FF6600");
+    }
+    if (displayOptions.measuredComment) {
+        drawText(rightSideCollar, middleSideCollar, point.measuredComment, "#FF8800");
+    }
 }
 
 // === Helper: Draw main hole, highlight if selected ===
 function drawHoleMainShape(point, x, y, selectedHole) {
-	const diameterPx = parseInt((point.holeDiameter / 1000) * currentScale * holeScale);
+    const diameterPx = parseInt((point.holeDiameter / 1000) * currentScale * holeScale);
 
-	let highlightType = null;
-	let highlightColor1 = null,
-		highlightColor2 = null,
-		highlightText = null;
+    let highlightType = null;
+    let highlightColor1 = null,
+        highlightColor2 = null,
+        highlightText = null;
 
-	// Animation and selection highlighting logic
-	if (selectedHole != null && selectedHole === point) {
-		if (firstSelectedHole == null) {
-			highlightType = "selected";
-			highlightColor1 = "rgba(255, 0, 150, 0.2)";
-			highlightColor2 = "rgba(255, 0, 150, .8)";
-			highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
-		} else {
-			highlightType = "first";
-			highlightColor1 = "rgba(0, 255, 0, 0.2)";
-			highlightColor2 = "rgba(0, 190, 0, .8)";
-			highlightText = "1st Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
-		}
-	} else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-		highlightType = "multi";
-		highlightColor1 = "rgba(255, 0, 150, 0.2)";
-		highlightColor2 = "rgba(255, 0, 150, .8)";
-		highlightText = "Editing Selected Holes: " + point.holeID;
-	}
+    // Animation and selection highlighting logic
+    if (selectedHole != null && selectedHole === point) {
+        if (firstSelectedHole == null) {
+            highlightType = "selected";
+            highlightColor1 = "rgba(255, 0, 150, 0.2)";
+            highlightColor2 = "rgba(255, 0, 150, .8)";
+            highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
+        } else {
+            highlightType = "first";
+            highlightColor1 = "rgba(0, 255, 0, 0.2)";
+            highlightColor2 = "rgba(0, 190, 0, .8)";
+            highlightText = "1st Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName;
+        }
+    } else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+        highlightType = "multi";
+        highlightColor1 = "rgba(255, 0, 150, 0.2)";
+        highlightColor2 = "rgba(255, 0, 150, .8)";
+        highlightText = "Editing Selected Holes: " + point.holeID;
+    }
 
-	// Draw highlight, if any
-	if (highlightType) {
-		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 900) * holeScale * currentScale), highlightColor1, highlightColor2);
-		ctx.fillStyle = highlightColor2;
-		ctx.font = "18px Arial";
-		ctx.fillText(highlightText, 2, 20);
-	}
+    // Draw highlight, if any
+    if (highlightType) {
+        drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 900) * holeScale * currentScale), highlightColor1, highlightColor2);
+        ctx.fillStyle = highlightColor2;
+        ctx.font = "18px Arial";
+        ctx.fillText(highlightText, 2, 20);
+    }
 
-	// Draw main hole/track shape (dummy, missing, or real)
-	ctx.lineWidth = 1;
-	ctx.strokeStyle = strokeColour;
-	if (parseFloat(point.holeLengthCalculated).toFixed(1) == 0.0) {
-		drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
-	} else if (point.holeDiameter == 0) {
-		drawNoDiameterHole(x, y, 10, strokeColour);
-	} else {
-		drawHole(x, y, diameterPx, fillColour, strokeColour);
-	}
+    // Draw main hole/track shape (dummy, missing, or real)
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = strokeColour;
+    if (parseFloat(point.holeLengthCalculated).toFixed(1) == 0.0) {
+        drawDummy(x, y, parseInt(0.2 * holeScale * currentScale), strokeColour);
+    } else if (point.holeDiameter == 0) {
+        drawNoDiameterHole(x, y, 10, strokeColour);
+    } else {
+        drawHole(x, y, diameterPx, fillColour, strokeColour);
+    }
 }
 
 // === Helper: Handle Highlighting for Animation/Time Window ===
 function handleHoleHighlighting(point, x, y) {
-	if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 400) * holeScale * currentScale), "rgba(255, 150, 0, 0.7)", "rgba(200, 200, 0, 0.7)");
-	}
-	if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
-		drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "rgba(0, 255, 0, 0.5)", "rgba(0, 255, 0, 0.7)");
-	}
+    if (isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+        drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 400) * holeScale * currentScale), "rgba(255, 150, 0, 0.7)", "rgba(200, 200, 0, 0.7)");
+    }
+    if (!isPlaying && timingWindowHolesSelected != null && timingWindowHolesSelected.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+        drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 500) * holeScale * currentScale), "rgba(0, 255, 0, 0.5)", "rgba(0, 255, 0, 0.7)");
+    }
 }
 
 function getMousePos(canvas, evt) {
-	var rect = canvas.getBoundingClientRect();
-	lastMouseX = evt.clientX;
-	lastMouseY = evt.clientY;
-	return {
-		x: evt.clientX - rect.left,
-		y: evt.clientY - rect.top
-	};
+    var rect = canvas.getBoundingClientRect();
+    lastMouseX = evt.clientX;
+    lastMouseY = evt.clientY;
+    return {
+        x: evt.clientX - rect.left,
+        y: evt.clientY - rect.top
+    };
 }
 
 function openHelp() {
-	window.open("kirrausermanual.html");
+    window.open("kirrausermanual.html");
 }
 
 function zoomIn() {
-	currentScale += 1; // increase the current scale by 1
-	currentFontSize += 1;
-	drawData(points, selectedHole);
+    currentScale += 1; // increase the current scale by 1
+    currentFontSize += 1;
+    drawData(points, selectedHole);
 }
 
 function zoomOut() {
-	currentScale = Math.max(0.25, currentScale - 1); // decrease the current scale by 0.25, but not below 1
-	currentFontSize -= 1;
-	drawData(points, selectedHole);
+    currentScale = Math.max(0.25, currentScale - 1); // decrease the current scale by 0.25, but not below 1
+    currentFontSize -= 1;
+    drawData(points, selectedHole);
 }
 
 function resetZoom() {
-	currentScale = scale; // reset the current scale to the original scale
-	currentFontSize = fontSize;
+    currentScale = scale; // reset the current scale to the original scale
+    currentFontSize = fontSize;
 
-	//calculate the centroids from the data in the maps and points
-	updateCentroids();
-	drawData(points, selectedHole);
+    //calculate the centroids from the data in the maps and points
+    updateCentroids();
+    drawData(points, selectedHole);
 }
 ///SAVE and LOAD POINTS ARRAY TO LOCAL STORAGE /////////////////////////////////
 function saveHolesToLocalStorage(points) {
-	if (points !== null) {
-		const lines = points.map((point) => {
-			return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}\n`;
-		});
+    if (points !== null) {
+        const lines = points.map((point) => {
+            return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}\n`;
+        });
 
-		const csvString = lines.join("\n");
-		const pointsMap = new Map();
+        const csvString = lines.join("\n");
+        const pointsMap = new Map();
 
-		localStorage.setItem("kirraDataPoints", csvString);
+        localStorage.setItem("kirraDataPoints", csvString);
 
-		for (const entity of pointsMap.values()) {
-			console.log(entity);
-		}
-	}
-	console.log("Points saved to local storage");
-	console.log(points);
+        for (const entity of pointsMap.values()) {
+            console.log(entity);
+        }
+    }
+    console.log("Points saved to local storage");
+    console.log(points);
 }
 
 function refreshPoints() {
-	saveHolesToLocalStorage(points);
-	const playSpeedInput = document.getElementById("playSpeed");
-	if (points.length > 1000) {
-		playSpeedInput.max = 50;
-	} else {
-		playSpeedInput.max = 15;
-	}
-	// Clear the current points array
-	points = [];
-	console.log("Points array cleared - RefreshPoints()");
+    saveHolesToLocalStorage(points);
+    const playSpeedInput = document.getElementById("playSpeed");
+    if (points.length > 1000) {
+        playSpeedInput.max = 50;
+    } else {
+        playSpeedInput.max = 15;
+    }
+    // Clear the current points array
+    points = [];
+    console.log("Points array cleared - RefreshPoints()");
 
-	// Load points from local storage
-	const csvString = localStorage.getItem("kirraDataPoints");
-	if (csvString) {
-		points = parseCSV(csvString, null);
-		//updateCentroids();
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    // Load points from local storage
+    const csvString = localStorage.getItem("kirraDataPoints");
+    if (csvString) {
+        points = parseCSV(csvString, null);
+        //updateCentroids();
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
+        // directionArrows now contains the arrow data for later drawing
 
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
 
-		drawData(points, selectedHole);
+        drawData(points, selectedHole);
 
-		// Debugging: Log the points array for each entity
-		const pointsMap = new Map();
-		for (const point of points) {
-			if (!pointsMap.has(point.entityName)) {
-				pointsMap.set(point.entityName, { entityName: point.entityName, data: [] });
-			}
-			pointsMap.get(point.entityName).data.push(point);
-		}
-		for (const entity of pointsMap.values()) {
-			console.log(entity);
-		}
+        // Debugging: Log the points array for each entity
+        const pointsMap = new Map();
+        for (const point of points) {
+            if (!pointsMap.has(point.entityName)) {
+                pointsMap.set(point.entityName, { entityName: point.entityName, data: [] });
+            }
+            pointsMap.get(point.entityName).data.push(point);
+        }
+        for (const entity of pointsMap.values()) {
+            console.log(entity);
+        }
 
-		return points;
-	}
-	return null;
+        return points;
+    }
+    return null;
 }
 
 // Use this function whenever you need to refresh the state and redraw the canvas
@@ -10030,219 +10233,219 @@ function refreshPoints() {
 // refreshPoints();
 
 function loadHolesFromLocalStorage() {
-	// Initialize points as an empty array if it's null
-	if (points === null) {
-		points = [];
-	}
-	const csvString = localStorage.getItem("kirraDataPoints");
-	console.log(csvString);
-	if (csvString) {
-		points = parseCSV(csvString);
-		console.log(points);
-		updateCentroids();
-		calculateTimes(points);
-		const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    // Initialize points as an empty array if it's null
+    if (points === null) {
+        points = [];
+    }
+    const csvString = localStorage.getItem("kirraDataPoints");
+    console.log(csvString);
+    if (csvString) {
+        points = parseCSV(csvString);
+        console.log(points);
+        updateCentroids();
+        calculateTimes(points);
+        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
 
-		// directionArrows now contains the arrow data for later drawing
+        // directionArrows now contains the arrow data for later drawing
 
-		const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
-		drawData(points, selectedHole);
-		//console.log the points array in a blob for each entityname
-		const pointsMap = new Map();
-		for (const point of points) {
-			if (!pointsMap.has(point.entityName)) {
-				pointsMap.set(point.entityName, { entityName: point.entityName, data: [] });
-			}
-			pointsMap.get(point.entityName).data.push(point);
-		}
-		for (const entity of pointsMap.values()) {
-			console.log(entity);
-		}
-		console.log(points);
-		return points;
-	}
-	return null;
+        const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+        drawData(points, selectedHole);
+        //console.log the points array in a blob for each entityname
+        const pointsMap = new Map();
+        for (const point of points) {
+            if (!pointsMap.has(point.entityName)) {
+                pointsMap.set(point.entityName, { entityName: point.entityName, data: [] });
+            }
+            pointsMap.get(point.entityName).data.push(point);
+        }
+        for (const entity of pointsMap.values()) {
+            console.log(entity);
+        }
+        console.log(points);
+        return points;
+    }
+    return null;
 }
 ///SAVE and LOAD KAD MAPS TO LOCAL STORAGE /////////////////////////////////
 function saveKADToLocalStorage(mapData) {
-	//mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //including kadHolesMap
-	mapData = [kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //excluding kadHolesMap
-	//localStorage.removeItem("kadData");
+    //mapData = [kadHolesMap, kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //including kadHolesMap
+    mapData = [kadPointsMap, kadPolygonsMap, kadLinesMap, kadCirclesMap, kadTextsMap]; //excluding kadHolesMap
+    //localStorage.removeItem("kadData");
 
-	let csvContentKAD = "";
+    let csvContentKAD = "";
 
-	for (const map of mapData) {
-		for (const entry of map.entries()) {
-			const entityName = entry[0];
-			//console.log(entityName);
-			const entityData = entry[1];
-			//console.log(entityData);
+    for (const map of mapData) {
+        for (const entry of map.entries()) {
+            const entityName = entry[0];
+            //console.log(entityName);
+            const entityData = entry[1];
+            //console.log(entityData);
 
-			if (entityData.entityType.trim() === "hole") {
-				//commented out holes at this stage as it is duplicating the data
-				//console.log(entityData.entityType);
-				//for (const hole of entityData.data) {
-				//	const csvLine = `${entityName},${hole.entityType},${hole.holeID},${hole.startXLocation},${hole.startYLocation},${hole.startZLocation},${hole.endXLocation},${hole.endYLocation},${hole.endZLocation},${hole.holeDiameter},${hole.holeType},${hole.fromHoleID},${hole.timingDelayMilliseconds},${hole.colourHexDecimal},${hole.holeLengthCalculated},${hole.holeAngle},${hole.holeBearing}\n`;
-				//	csvContentKAD += csvLine;
-				//}
-			} else if (entityData.entityType.trim() === "point") {
-				//console.log(entityData.entityType);
-				for (const point of entityData.data) {
-					const csvLine = `${entityName},${point.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.colour}\n`;
-					csvContentKAD += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "poly") {
-				//console.log(entityData.entityType);
-				for (let i = 0; i < entityData.data.length; i++) {
-					const polygon = entityData.data[i];
-					const isLast = i === entityData.data.length - 1;
-					const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour},${isLast ? "true" : "false"}\n`;
-					csvContentKAD += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "line") {
-				//console.log(entityData.entityType);
-				for (const entityLine of entityData.data) {
-					const csvLine = `${entityName},${entityLine.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.colour}\n`;
-					csvContentKAD += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "circle") {
-				//console.log(entityData.entityType);
-				for (const circle of entityData.data) {
-					const csvLine = `${entityName},${circle.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.colour}\n`;
-					csvContentKAD += csvLine;
-				}
-			} else if (entityData.entityType.trim() === "text") {
-				//console.log(entityData.entityType);
-				for (const text of entityData.data) {
-					const csvLine = `${entityName},${text.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.colour}\n`;
-					csvContentKAD += csvLine;
-				}
-			}
-		}
-	}
-	console.log("///////////////////KAD DATA ON SAVE//////////////");
-	console.log("KAD Points : ", kadPointsMap);
-	console.log("KAD Lines : ", kadLinesMap);
-	console.log("KAD Polygons : ", kadPolygonsMap);
-	console.log("KAD Circles : ", kadCirclesMap);
-	console.log("KAD Texts : ", kadTextsMap);
-	//console.log(kadHolesMap);
-	//console.log("Local Storage kadData: ", csvContentKAD);
-	localStorage.setItem("kadData", csvContentKAD);
+            if (entityData.entityType.trim() === "hole") {
+                //commented out holes at this stage as it is duplicating the data
+                //console.log(entityData.entityType);
+                //for (const hole of entityData.data) {
+                //	const csvLine = `${entityName},${hole.entityType},${hole.holeID},${hole.startXLocation},${hole.startYLocation},${hole.startZLocation},${hole.endXLocation},${hole.endYLocation},${hole.endZLocation},${hole.holeDiameter},${hole.holeType},${hole.fromHoleID},${hole.timingDelayMilliseconds},${hole.colourHexDecimal},${hole.holeLengthCalculated},${hole.holeAngle},${hole.holeBearing}\n`;
+                //	csvContentKAD += csvLine;
+                //}
+            } else if (entityData.entityType.trim() === "point") {
+                //console.log(entityData.entityType);
+                for (const point of entityData.data) {
+                    const csvLine = `${entityName},${point.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.colour}\n`;
+                    csvContentKAD += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "poly") {
+                //console.log(entityData.entityType);
+                for (let i = 0; i < entityData.data.length; i++) {
+                    const polygon = entityData.data[i];
+                    const isLast = i === entityData.data.length - 1;
+                    const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.colour},${isLast ? "true" : "false"}\n`;
+                    csvContentKAD += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "line") {
+                //console.log(entityData.entityType);
+                for (const entityLine of entityData.data) {
+                    const csvLine = `${entityName},${entityLine.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.colour}\n`;
+                    csvContentKAD += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "circle") {
+                //console.log(entityData.entityType);
+                for (const circle of entityData.data) {
+                    const csvLine = `${entityName},${circle.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.colour}\n`;
+                    csvContentKAD += csvLine;
+                }
+            } else if (entityData.entityType.trim() === "text") {
+                //console.log(entityData.entityType);
+                for (const text of entityData.data) {
+                    const csvLine = `${entityName},${text.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.colour}\n`;
+                    csvContentKAD += csvLine;
+                }
+            }
+        }
+    }
+    console.log("///////////////////KAD DATA ON SAVE//////////////");
+    console.log("KAD Points : ", kadPointsMap);
+    console.log("KAD Lines : ", kadLinesMap);
+    console.log("KAD Polygons : ", kadPolygonsMap);
+    console.log("KAD Circles : ", kadCirclesMap);
+    console.log("KAD Texts : ", kadTextsMap);
+    //console.log(kadHolesMap);
+    //console.log("Local Storage kadData: ", csvContentKAD);
+    localStorage.setItem("kadData", csvContentKAD);
 }
 // Load the all Kad maps from Local Storage if they are not null
 function loadKADFromLocalStorage() {
-	const csvStringKAD = localStorage.getItem("kadData");
-	if (csvStringKAD) {
-		parseKADFile(csvStringKAD);
-		drawData(points, selectedHole);
-		//console.log the KAD maps
-		console.log("///////////////////KAD DATA ON LOAD//////////////");
-		console.log("KAD Points : ", kadPointsMap);
-		console.log("KAD Lines : ", kadLinesMap);
-		console.log("KAD Polygons : ", kadPolygonsMap);
-		console.log("KAD Circles : ", kadCirclesMap);
-		console.log("KAD Texts : ", kadTextsMap);
-		//console.log("KAD Holes : ", kadHolesMap);
-	}
+    const csvStringKAD = localStorage.getItem("kadData");
+    if (csvStringKAD) {
+        parseKADFile(csvStringKAD);
+        drawData(points, selectedHole);
+        //console.log the KAD maps
+        console.log("///////////////////KAD DATA ON LOAD//////////////");
+        console.log("KAD Points : ", kadPointsMap);
+        console.log("KAD Lines : ", kadLinesMap);
+        console.log("KAD Polygons : ", kadPolygonsMap);
+        console.log("KAD Circles : ", kadCirclesMap);
+        console.log("KAD Texts : ", kadTextsMap);
+        //console.log("KAD Holes : ", kadHolesMap);
+    }
 }
 
 //CHECK THIS
 function checkLocalStorageData() {
-	const csvString = localStorage.getItem("kirraDataPoints");
-	const csvStringKAD = localStorage.getItem("kadData");
-	if (csvString || csvStringKAD) {
-		// Show the popup asking the user if they want to continue from where they left off
-		showPopup();
-	}
+    const csvString = localStorage.getItem("kirraDataPoints");
+    const csvStringKAD = localStorage.getItem("kadData");
+    if (csvString || csvStringKAD) {
+        // Show the popup asking the user if they want to continue from where they left off
+        showPopup();
+    }
 }
 
 function showPopup() {
-	const userDecision = confirm("Do you want to pick up from where you left off?\n\nPress OK to continue or Cancel to start fresh.");
-	console.log("function showPopup()");
-	if (userDecision === true) {
-		// User chose to continue, load the data from local storage
-		points = loadHolesFromLocalStorage();
-		loadKADFromLocalStorage();
-	} else {
-		// User chose not to continue, do nothing or start fresh
-		clearLoadedData();
-	}
-	//console.log(points);
-	drawData(points, selectedHole);
+    const userDecision = confirm("Do you want to pick up from where you left off?\n\nPress OK to continue or Cancel to start fresh.");
+    console.log("function showPopup()");
+    if (userDecision === true) {
+        // User chose to continue, load the data from local storage
+        points = loadHolesFromLocalStorage();
+        loadKADFromLocalStorage();
+    } else {
+        // User chose not to continue, do nothing or start fresh
+        clearLoadedData();
+    }
+    //console.log(points);
+    drawData(points, selectedHole);
 }
 
 function clearLoadedData() {
-	localStorage.removeItem("kirraDataPoints");
+    localStorage.removeItem("kirraDataPoints");
 }
 // Listen for changes in the kirraDataPoints key
 window.addEventListener("storage", function (event) {
-	if (event.key === "kirraDataPoints") {
-		console.log("kirraDataPoints changed");
-	} else {
-		console.log("kirraDataPoints not changed");
-	}
+    if (event.key === "kirraDataPoints") {
+        console.log("kirraDataPoints changed");
+    } else {
+        console.log("kirraDataPoints not changed");
+    }
 });
 
 function updateCentroids() {
-	// Calculate centroid of points
-	let sumX = 0;
-	let sumY = 0;
-	let records = 0;
-	if (points !== null) {
-		for (let i = 0; i < points.length; i++) {
-			sumX += points[i].startXLocation;
-			sumY += points[i].startYLocation;
-			records++;
-		}
-	}
-	if (kadPointsMap.size > 0) {
-		for (const entity of kadPointsMap.values()) {
-			for (const point of entity.data) {
-				sumX += point.pointXLocation;
-				sumY += point.pointYLocation;
-				records++;
-			}
-		}
-	}
-	if (kadPolygonsMap.size > 0) {
-		for (const entity of kadPolygonsMap.values()) {
-			for (const polygon of entity.data) {
-				sumX += polygon.pointXLocation;
-				sumY += polygon.pointYLocation;
-				records++;
-			}
-		}
-	}
-	if (kadLinesMap.size > 0) {
-		for (const entity of kadLinesMap.values()) {
-			for (const line of entity.data) {
-				sumX += line.pointXLocation;
-				sumY += line.pointYLocation;
-				records++;
-			}
-		}
-	}
-	if (kadCirclesMap.size > 0) {
-		for (const entity of kadCirclesMap.values()) {
-			for (const circle of entity.data) {
-				sumX += circle.pointXLocation;
-				sumY += circle.pointYLocation;
-				records++;
-			}
-		}
-	}
-	if (kadTextsMap.size > 0) {
-		for (const entity of kadTextsMap.values()) {
-			for (const text of entity.data) {
-				sumX += text.pointXLocation;
-				sumY += text.pointYLocation;
-				records++;
-			}
-		}
-	}
-	centroidX = sumX / records;
-	centroidY = sumY / records;
+    // Calculate centroid of points
+    let sumX = 0;
+    let sumY = 0;
+    let records = 0;
+    if (points !== null) {
+        for (let i = 0; i < points.length; i++) {
+            sumX += points[i].startXLocation;
+            sumY += points[i].startYLocation;
+            records++;
+        }
+    }
+    if (kadPointsMap.size > 0) {
+        for (const entity of kadPointsMap.values()) {
+            for (const point of entity.data) {
+                sumX += point.pointXLocation;
+                sumY += point.pointYLocation;
+                records++;
+            }
+        }
+    }
+    if (kadPolygonsMap.size > 0) {
+        for (const entity of kadPolygonsMap.values()) {
+            for (const polygon of entity.data) {
+                sumX += polygon.pointXLocation;
+                sumY += polygon.pointYLocation;
+                records++;
+            }
+        }
+    }
+    if (kadLinesMap.size > 0) {
+        for (const entity of kadLinesMap.values()) {
+            for (const line of entity.data) {
+                sumX += line.pointXLocation;
+                sumY += line.pointYLocation;
+                records++;
+            }
+        }
+    }
+    if (kadCirclesMap.size > 0) {
+        for (const entity of kadCirclesMap.values()) {
+            for (const circle of entity.data) {
+                sumX += circle.pointXLocation;
+                sumY += circle.pointYLocation;
+                records++;
+            }
+        }
+    }
+    if (kadTextsMap.size > 0) {
+        for (const entity of kadTextsMap.values()) {
+            for (const text of entity.data) {
+                sumX += text.pointXLocation;
+                sumY += text.pointYLocation;
+                records++;
+            }
+        }
+    }
+    centroidX = sumX / records;
+    centroidY = sumY / records;
 }
 
 const darkModeToggle = document.getElementById("dark-mode-toggle");
@@ -10252,77 +10455,77 @@ const sidenavRight = document.getElementById("sidenavRight");
 // Check if dark mode preference exists in local storage
 const darkModePref = localStorage.getItem("darkMode");
 if (darkModePref === "true") {
-	body.classList.add("dark-mode");
-	sidenavLeft.classList.add("dark-mode");
-	sidenavRight.classList.add("dark-mode");
-	canvas.classList.add("dark-canvas");
-	darkModeToggle.checked = true;
+    body.classList.add("dark-mode");
+    sidenavLeft.classList.add("dark-mode");
+    sidenavRight.classList.add("dark-mode");
+    canvas.classList.add("dark-canvas");
+    darkModeToggle.checked = true;
 }
 
 darkModeToggle.addEventListener("change", () => {
-	if (darkModeToggle.checked) {
-		body.classList.add("dark-mode");
-		sidenavLeft.classList.add("dark-mode");
-		sidenavRight.classList.add("dark-mode");
-		canvas.classList.add("dark-canvas");
-		localStorage.setItem("darkMode", "true");
-	} else {
-		body.classList.remove("dark-mode");
-		sidenavLeft.classList.remove("dark-mode");
-		sidenavRight.classList.remove("dark-mode");
-		canvas.classList.remove("dark-canvas");
-		localStorage.setItem("darkMode", "false");
-	}
-	darkModeEnabled = document.body.classList.contains("dark-mode");
-	transparentFillColour = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
-	fillColour = darkModeEnabled ? "darkgrey" : "lightgrey";
-	strokeColour = darkModeEnabled ? "white" : "black";
-	textFillColour = darkModeEnabled ? "white" : "black";
-	depthColour = darkModeEnabled ? "cyan" : "blue";
-	angleDipColour = darkModeEnabled ? "orange" : "darkorange";
-	if (Array.isArray(holeTimes)) {
-		timeChart();
-	}
-	drawData(points, selectedHole);
+    if (darkModeToggle.checked) {
+        body.classList.add("dark-mode");
+        sidenavLeft.classList.add("dark-mode");
+        sidenavRight.classList.add("dark-mode");
+        canvas.classList.add("dark-canvas");
+        localStorage.setItem("darkMode", "true");
+    } else {
+        body.classList.remove("dark-mode");
+        sidenavLeft.classList.remove("dark-mode");
+        sidenavRight.classList.remove("dark-mode");
+        canvas.classList.remove("dark-canvas");
+        localStorage.setItem("darkMode", "false");
+    }
+    darkModeEnabled = document.body.classList.contains("dark-mode");
+    transparentFillColour = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
+    fillColour = darkModeEnabled ? "darkgrey" : "lightgrey";
+    strokeColour = darkModeEnabled ? "white" : "black";
+    textFillColour = darkModeEnabled ? "white" : "black";
+    depthColour = darkModeEnabled ? "cyan" : "blue";
+    angleDipColour = darkModeEnabled ? "orange" : "darkorange";
+    if (Array.isArray(holeTimes)) {
+        timeChart();
+    }
+    drawData(points, selectedHole);
 });
 
 window.addEventListener("load", () => {
-	const darkModeEnabled = localStorage.getItem("darkMode") === "true";
-	if (darkModeEnabled) {
-		darkModeToggle.checked = true;
-		body.classList.add("dark-mode");
-		sidenavLeft.classList.add("dark-mode");
-		canvas.classList.add("dark-canvas");
-	} else {
-		darkModeToggle.checked = false;
-		body.classList.remove("dark-mode");
-		sidenavLeft.classList.remove("dark-mode");
-		canvas.classList.remove("dark-canvas");
-	}
-	transparentFillColour = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
-	fillColour = darkModeEnabled ? "darkgrey" : "lightgrey";
-	strokeColour = darkModeEnabled ? "white" : "black";
-	textFillColour = darkModeEnabled ? "white" : "black";
-	depthColour = darkModeEnabled ? "cyan" : "blue";
-	angleDipColour = darkModeEnabled ? "orange" : "darkorange";
-	clearCanvas();
-	checkLocalStorageData();
+    const darkModeEnabled = localStorage.getItem("darkMode") === "true";
+    if (darkModeEnabled) {
+        darkModeToggle.checked = true;
+        body.classList.add("dark-mode");
+        sidenavLeft.classList.add("dark-mode");
+        canvas.classList.add("dark-canvas");
+    } else {
+        darkModeToggle.checked = false;
+        body.classList.remove("dark-mode");
+        sidenavLeft.classList.remove("dark-mode");
+        canvas.classList.remove("dark-canvas");
+    }
+    transparentFillColour = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
+    fillColour = darkModeEnabled ? "darkgrey" : "lightgrey";
+    strokeColour = darkModeEnabled ? "white" : "black";
+    textFillColour = darkModeEnabled ? "white" : "black";
+    depthColour = darkModeEnabled ? "cyan" : "blue";
+    angleDipColour = darkModeEnabled ? "orange" : "darkorange";
+    clearCanvas();
+    checkLocalStorageData();
 });
 // When the page is about to be unloaded or closed, you might want to save the points array to session storage to ensure data is not lost
 window.addEventListener("beforeunload", () => {
-	saveHolesToLocalStorage(points);
-	saveKADToLocalStorage(mapData);
+    saveHolesToLocalStorage(points);
+    saveKADToLocalStorage(mapData);
 });
 
 window.addEventListener("resize", () => {
-	canvas.width = document.documentElement.clientWidth - canvasAdjustWidth;
-	canvas.height = document.documentElement.clientHeight - document.documentElement.clientHeight * canvasAdjustHeight;
-	if (Array.isArray(holeTimes)) {
-		timeChart();
-	}
-	saveHolesToLocalStorage(points);
-	saveKADToLocalStorage(mapData);
-	drawData(points, selectedHole);
+    canvas.width = document.documentElement.clientWidth - canvasAdjustWidth;
+    canvas.height = document.documentElement.clientHeight - document.documentElement.clientHeight * canvasAdjustHeight;
+    if (Array.isArray(holeTimes)) {
+        timeChart();
+    }
+    saveHolesToLocalStorage(points);
+    saveKADToLocalStorage(mapData);
+    drawData(points, selectedHole);
 });
 
 let isMobile = false;
@@ -10330,107 +10533,107 @@ let isMobile = false;
 //const isMobile = /Mobi|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 const isMobileQuery = window.matchMedia("(max-width: 768px)");
 if (isMobileQuery.matches) {
-	isMobile = true;
+    isMobile = true;
 } else {
-	isMobile = false;
+    isMobile = false;
 }
 
 function openNavLeft() {
-	console.log(isMobile);
-	const sidenavHeight = 350; // Change this value to match the actual height of the sidenav
-	const screenHeight = window.innerHeight;
-	const margin = screenHeight - sidenavHeight;
-	//console.log(margin);
-	if (isMobile) {
-		body.style.bottom = `${margin}px`;
-		body.style.transition = "0.5s";
-		sidenavLeft.style.left = "0px";
-		sidenavLeft.style.top = "60%";
-		sidenavLeft.style.width = "100%";
-		sidenavLeft.style.height = "350px";
-	} else {
-		body.style.marginLeft = "315px"; // Push body to the left
-		body.style.transition = "0.5s";
-		sidenavLeft.style.width = "300px";
-		sidenavLeft.style.paddingLeft = "5px";
-		sidenavLeft.style.paddingRight = "0px";
-		sidenavLeft.style.margin = "0px";
-	}
+    console.log(isMobile);
+    const sidenavHeight = 350; // Change this value to match the actual height of the sidenav
+    const screenHeight = window.innerHeight;
+    const margin = screenHeight - sidenavHeight;
+    //console.log(margin);
+    if (isMobile) {
+        body.style.bottom = `${margin}px`;
+        body.style.transition = "0.5s";
+        sidenavLeft.style.left = "0px";
+        sidenavLeft.style.top = "60%";
+        sidenavLeft.style.width = "100%";
+        sidenavLeft.style.height = "350px";
+    } else {
+        body.style.marginLeft = "315px"; // Push body to the left
+        body.style.transition = "0.5s";
+        sidenavLeft.style.width = "300px";
+        sidenavLeft.style.paddingLeft = "5px";
+        sidenavLeft.style.paddingRight = "0px";
+        sidenavLeft.style.margin = "0px";
+    }
 }
 
 function closeNavLeft() {
-	if (isMobile) {
-		body.style.marginBottom = "0px";
-		body.style.transition = "0.5s";
-		sidenavLeft.style.left = "-5px";
-		sidenavLeft.style.top = "-5px";
-		sidenavLeft.style.width = "0px";
-		sidenavLeft.style.height = "0px";
-	} else {
-		body.style.marginLeft = "0px";
-		body.style.transition = "0.5s";
-		sidenavLeft.style.width = "0px";
-		sidenavLeft.style.padding = "0px";
-		sidenavLeft.style.margin = "0px";
-	}
+    if (isMobile) {
+        body.style.marginBottom = "0px";
+        body.style.transition = "0.5s";
+        sidenavLeft.style.left = "-5px";
+        sidenavLeft.style.top = "-5px";
+        sidenavLeft.style.width = "0px";
+        sidenavLeft.style.height = "0px";
+    } else {
+        body.style.marginLeft = "0px";
+        body.style.transition = "0.5s";
+        sidenavLeft.style.width = "0px";
+        sidenavLeft.style.padding = "0px";
+        sidenavLeft.style.margin = "0px";
+    }
 }
 
 function openNavRight() {
-	if (isMobile) {
-		const sidenavHeight = 350; // Change this value to match the actual height of the sidenav
-		const screenHeight = window.innerHeight;
-		const margin = screenHeight - sidenavHeight;
+    if (isMobile) {
+        const sidenavHeight = 350; // Change this value to match the actual height of the sidenav
+        const screenHeight = window.innerHeight;
+        const margin = screenHeight - sidenavHeight;
 
-		body.style.marginBottom = `${margin}px`;
-		body.style.transition = "0.5s";
-		sidenavRight.style.right = "0px";
-		sidenavRight.style.top = "60%";
-		sidenavRight.style.width = "100%";
-		sidenavRight.style.height = "350px";
-		//resize the timechart
-		plotly.relayout("timeChart", {
-			width: 280
-		});
-	} else {
-		body.style.marginRight = "315px"; // Push body to the left
-		body.style.transition = "0.5s";
-		sidenavRight.style.width = "300px";
-		sidenavRight.style.right = "0";
-		sidenavRight.style.paddingLeft = "0px";
-		sidenavRight.style.paddingRight = "5px";
-		sidenavRight.style.margin = "0px";
-		//resize the timechart
-		timeChart();
-		newWidthRight = 315;
-		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50
-		});
-	}
+        body.style.marginBottom = `${margin}px`;
+        body.style.transition = "0.5s";
+        sidenavRight.style.right = "0px";
+        sidenavRight.style.top = "60%";
+        sidenavRight.style.width = "100%";
+        sidenavRight.style.height = "350px";
+        //resize the timechart
+        plotly.relayout("timeChart", {
+            width: 280
+        });
+    } else {
+        body.style.marginRight = "315px"; // Push body to the left
+        body.style.transition = "0.5s";
+        sidenavRight.style.width = "300px";
+        sidenavRight.style.right = "0";
+        sidenavRight.style.paddingLeft = "0px";
+        sidenavRight.style.paddingRight = "5px";
+        sidenavRight.style.margin = "0px";
+        //resize the timechart
+        timeChart();
+        newWidthRight = 315;
+        Plotly.relayout("timeChart", {
+            width: newWidthRight - 50
+        });
+    }
 }
 
 function closeNavRight() {
-	if (isMobile) {
-		body.style.marginBottom = "0%"; // Push body down
-		body.style.transition = "0.5s";
-		sidenavRight.style.right = "-5px";
-		sidenavRight.style.top = "-5px";
-		sidenavRight.style.width = "0px";
-		sidenavRight.style.height = "0px";
-	} else {
-		body.style.marginRight = "0px"; // Reset the margin to default
-		body.style.transition = "0.5s";
-		sidenavRight.style.width = "0px";
-		sidenavRight.style.padding = "0px";
-		sidenavRight.style.margin = "0px";
-	}
+    if (isMobile) {
+        body.style.marginBottom = "0%"; // Push body down
+        body.style.transition = "0.5s";
+        sidenavRight.style.right = "-5px";
+        sidenavRight.style.top = "-5px";
+        sidenavRight.style.width = "0px";
+        sidenavRight.style.height = "0px";
+    } else {
+        body.style.marginRight = "0px"; // Reset the margin to default
+        body.style.transition = "0.5s";
+        sidenavRight.style.width = "0px";
+        sidenavRight.style.padding = "0px";
+        sidenavRight.style.margin = "0px";
+    }
 }
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
-	console.log("function updatePopup()");
-	Swal.fire({
-		showCancelButton: false,
-		confirmButtonText: "Ok",
-		html: `
+    console.log("function updatePopup()");
+    Swal.fire({
+        showCancelButton: false,
+        confirmButtonText: "Ok",
+        html: `
 		<svg version="1.1" baseProfile="basic" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="70" height="70" viewBox="-40 0 200 200" stroke-width="3" stroke="white" fill="none" stroke-linecap="round" stroke-linejoin="round">
 		<path
 			d="M7.53,64.77c-0.36-1.36-0.38-3.99,0.08-5.34c-0.98-2.51-2.88-8.13-2.22-10.9c1.77-5.81-0.07-16.1-0.95-24.92C3.55,18.78,6.31,4.11,7.61,2.26c6.24-5.37,24.76,22.67,29.81,29.81c1.57-0.17,1.91,1.72,1.78,2.93c1.87,2.82,3.54,4.3,7.03,4.17c2.71,0.61,9.25,1.73,11.56,3.31c3.57-1.82,10.55,1.6,12.57-3.03c1.23-0.82,4.4-3.07,3.94-4.96c2.19-1.04,4.21-5.39,5.03-7.5c1.7-4.14,5.96-7.51,8.29-11.14c5.21-6.14,15.78-27.02,20.71-8.09c2.32,9.62,3.98,22.54,1.38,32.15c0.51,1.33,0.58,4.5,0.59,5.92c0.89,1.69,0.82,4.84,0.2,6.61c0.38,2.52-0.66,5.62-2.47,7.4c0.17,1.03,0.2,2.67-0.49,3.55c0,0,3.21,2.42,4.04,4.54c0.84,2.12-0.59,9.51-1.18,12.53c1.32,1.57,2.75,4.67,2.17,6.81c3.3,5.31-0.68,4.27,1.38,8.48c0.69,2.34-0.51,4.65,1.09,6.71c-0.28,1.05-1.39,3.81-1.58,4.93c0.84,2.71-1.41,6.85-2.96,8.97c0,0,0.39,3.85,0.39,3.85c-4.86,1.62-1.02,2.56-4.83,5.13c-3.52,19.49-28.37,34.55-46.94,37.28c-9.52,0.18-23.4-3.44-29-11.64c-3.47-1.2-9.42-2.81-11.05-6.51c-0.68-1.05-4.4-2.51-3.75-4.24c-1.39,0.33-2.04-1.83-2.47-2.76c-3.42,0.24-3.99-8.32-3.55-10.75c0,0-1.68-3.16-1.68-3.16c0.5-1.06,0.12-1.99-0.69-2.66c0.66-1.83,0.58-1.44-1.18-1.87c-0.19-1.23,0.33-2.6-0.69-3.45c0.13-1.01-0.33-2.69-0.8-3.55c-1.65-1.36-1.5-5.44-2.56-7.3c-3.32-1.31-2.49-3.65,0.2-5.23c0.49-1.42-0.47-3.32-1.38-4.34c2.56-1.71-0.74-3.32,1.48-6.41c0.99-2.71,2.11-0.41-0.3-3.85c0.28-2.86,2.84-3.43,3.06-6.9c0.46-1.74-0.61-4.26-1.78-5.52c3.46-0.9,1.88-1.16,1.28-3.65l2.81-3" />
@@ -10497,14 +10700,14 @@ function updatePopup() {
 	          <button class="button-bug">Report Bug / Request Feature</button>
 	        </a>
 		  `,
-		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
-	}).then((result) => {
-		if (result.isConfirmed) {
-		}
-	});
+        customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
+    }).then((result) => {
+        if (result.isConfirmed) {
+        }
+    });
 }
 // Add an event listener for the "DOMContentLoaded" event
 document.addEventListener("DOMContentLoaded", function () {
-	// Call the updatePopup function when the page is fully loaded
-	updatePopup();
+    // Call the updatePopup function when the page is fully loaded
+    updatePopup();
 });
