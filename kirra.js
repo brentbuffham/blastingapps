@@ -1,6 +1,8 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20231128 @ 2117 AWST
+// Last Modified: 20250528 @ 2158 AWST
+const buildVersion = "20250528.2158AWST"; //Backwards Compatible Date Format
+//-----------------------------------------
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -311,9 +313,9 @@ canvas.addEventListener("mousedown", handleMouseDown);
 canvas.addEventListener("mousemove", handleMouseMove);
 canvas.addEventListener("mouseup", handleMouseUp);
 // Add event listeners for touch start, move, and end events
-canvas.addEventListener("touchstart", handleTouchStart);
-canvas.addEventListener("touchmove", handleTouchMove);
-canvas.addEventListener("touchend", handleTouchEnd);
+canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
+canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
+canvas.addEventListener("touchend", handleTouchEnd, { passive: true });
 
 // Event listener for the language dropdown
 document.getElementById("languageSelect").addEventListener("change", function () {
@@ -4343,57 +4345,67 @@ function getDelaunayFromPoints(points, useToeLocation) {
 
 //Voronoi Diagram
 function getVoronoiMetrics(points, useToeLocation) {
-    const delaunay = getDelaunayFromPoints(points, useToeLocation);
-
-    const margin = 10; // optional
-    const xExtent = useToeLocation ? [Math.min(...points.map((p) => parseFloat(p.endXLocation))), Math.max(...points.map((p) => parseFloat(p.endXLocation)))] : [Math.min(...points.map((p) => parseFloat(p.startXLocation))), Math.max(...points.map((p) => parseFloat(p.startXLocation)))];
-    const yExtent = useToeLocation ? [Math.min(...points.map((p) => parseFloat(p.endYLocation))), Math.max(...points.map((p) => parseFloat(p.endYLocation)))] : [Math.min(...points.map((p) => parseFloat(p.startYLocation))), Math.max(...points.map((p) => parseFloat(p.startYLocation)))];
-
-    const voronoi = delaunay.voronoi([xExtent[0] - margin, yExtent[0] - margin, xExtent[1] + margin, yExtent[1] + margin]);
-
-    const voronoiResults = [];
-
-    for (let i = 0; i < points.length; i++) {
-        const polygon = voronoi.cellPolygon(i);
-        if (!polygon) continue;
-
-        // Area using shoelace formula
-        let area = 0;
-        for (let j = 0; j < polygon.length; j++) {
-            const [x1, y1] = polygon[j];
-            const [x2, y2] = polygon[(j + 1) % polygon.length];
-            area += x1 * y2 - x2 * y1;
+    try {
+        if (!points || points.length === 0) {
+            console.warn("No points to calculate Voronoi metrics");
+            return [];
         }
-        area = Math.abs(area / 2); // in m² if coords are meters
 
-        const p = points[i];
-        const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
-        const measuredLength = parseFloat(p.measuredLength || 0);
-        const designedLength = parseFloat(p.holeLengthCalculated || 0);
-        const holeFiringTime = parseFloat(p.holeTime || 0);
-        const mass = parseFloat(p.measuredMass || 0);
-        const volume = area * length;
-        const powderFactor = volume > 0 ? mass / volume : null;
-        //Add more metrics here
+        const delaunay = getDelaunayFromPoints(points, useToeLocation);
 
-        voronoiResults.push({
-            index: i,
-            point: p,
-            polygon: polygon,
-            area: area,
-            length: length,
-            measuredLength: measuredLength,
-            designedLength: designedLength,
-            holeFiringTime: holeFiringTime,
-            volume: volume,
-            mass: mass,
-            powderFactor: powderFactor,
-            //add a scaled heelan vibration calculation here
-        });
+        const margin = 10; // optional
+        const xExtent = useToeLocation ? [Math.min(...points.map((p) => parseFloat(p.endXLocation))), Math.max(...points.map((p) => parseFloat(p.endXLocation)))] : [Math.min(...points.map((p) => parseFloat(p.startXLocation))), Math.max(...points.map((p) => parseFloat(p.startXLocation)))];
+        const yExtent = useToeLocation ? [Math.min(...points.map((p) => parseFloat(p.endYLocation))), Math.max(...points.map((p) => parseFloat(p.endYLocation)))] : [Math.min(...points.map((p) => parseFloat(p.startYLocation))), Math.max(...points.map((p) => parseFloat(p.startYLocation)))];
+
+        const voronoi = delaunay.voronoi([xExtent[0] - margin, yExtent[0] - margin, xExtent[1] + margin, yExtent[1] + margin]);
+
+        const voronoiResults = [];
+
+        for (let i = 0; i < points.length; i++) {
+            const polygon = voronoi.cellPolygon(i);
+            if (!polygon) continue;
+
+            // Area using shoelace formula
+            let area = 0;
+            for (let j = 0; j < polygon.length; j++) {
+                const [x1, y1] = polygon[j];
+                const [x2, y2] = polygon[(j + 1) % polygon.length];
+                area += x1 * y2 - x2 * y1;
+            }
+            area = Math.abs(area / 2); // in m² if coords are meters
+
+            const p = points[i];
+            const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
+            const measuredLength = parseFloat(p.measuredLength || 0);
+            const designedLength = parseFloat(p.holeLengthCalculated || 0);
+            const holeFiringTime = parseFloat(p.holeTime || 0);
+            const mass = parseFloat(p.measuredMass || 0);
+            const volume = area * length;
+            const powderFactor = volume > 0 ? mass / volume : null;
+            //Add more metrics here
+
+            voronoiResults.push({
+                index: i,
+                point: p,
+                polygon: polygon,
+                area: area,
+                length: length,
+                measuredLength: measuredLength,
+                designedLength: designedLength,
+                holeFiringTime: holeFiringTime,
+                volume: volume,
+                mass: mass,
+                powderFactor: powderFactor,
+                //add a scaled heelan vibration calculation here
+            });
+        }
+
+        //console.log("Returning Voronoi Metrics", voronoiResults);
+        return voronoiResults;
+    } catch (err) {
+        console.log("Error in getVoronoiMetrics:", err);
+        return [];
     }
-
-    //console.log("Returning Voronoi Metrics", voronoiResults);
-    return voronoiResults;
 }
 
 // All legends now use a cool-to-hot gradient: blue (cool, small) -> cyan -> green -> yellow -> red (hot, large)
@@ -4744,10 +4756,12 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
     const succeeded = cpr.Execute(ClipperLib.ClipType.ctUnion, solution, ClipperLib.PolyFillType.pftNonZero, ClipperLib.PolyFillType.pftNonZero);
 
     if (!succeeded || solution.length === 0) {
-        console.warn("Clipper union failed.");
+        if (!clipperUnionWarned) {
+            console.warn("Clipper union failed.");
+            clipperUnionWarned = true;
+        }
         return [];
     }
-
     // Interpolate Z using nearest original point
     const unionedPolygons = solution.map((path) =>
         path.map((pt) => {
@@ -9884,7 +9898,7 @@ function drawData(points, selectedHole) {
     if (!points || !Array.isArray(points) || points.length < 1) {
         ctx.fillText("Holes Displayed: 0", 10, canvas.height - 25);
     } else {
-        ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 25);
+        ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 35);
     }
     // Use lastMouseX and lastMouseY if available, otherwise default to 0
     const mouseX = typeof lastMouseX !== "undefined" ? lastMouseX : 0;
@@ -9892,8 +9906,10 @@ function drawData(points, selectedHole) {
     // Convert canvas (mouse) coordinates to world coordinates
     const worldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
     const worldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
-    ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY, 10, canvas.height - 15);
-    ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 5);
+    ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY + " [scale] 1:" + currentScale.toFixed(4), 10, canvas.height - 25);
+    ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 15);
+    ctx.fillStyle = "blue";
+    ctx.fillText("Version: Build: " + buildVersion, 10, canvas.height - 5);
 
     // Main hole loop
     ctx.lineWidth = 1;
