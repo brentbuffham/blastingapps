@@ -9896,7 +9896,7 @@ function drawData(points, selectedHole) {
     ctx.fillStyle = "red";
     ctx.font = "12px Arial";
     if (!points || !Array.isArray(points) || points.length < 1) {
-        ctx.fillText("Holes Displayed: 0", 10, canvas.height - 25);
+        ctx.fillText("Holes Displayed: 0", 10, canvas.height - 35);
     } else {
         ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 35);
     }
