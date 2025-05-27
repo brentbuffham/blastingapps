@@ -1,6 +1,6 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: 20231128 @ 1026 AWST
+// Last Modified: 20231128 @ 2117 AWST
 
 const canvas = document.getElementById("canvas");
 const padding = 10; // add 10 pixels of padding
@@ -4709,10 +4709,11 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
     if (!union) {
         if (addToMaps) {
             rawPolygons.forEach((polygon) => {
-                const polyID = "radii_" + Date.now() + "_" + Math.random().toString(36).substr(2, 5);
-                kadPolygonsMap.set(polyID, {
+                entityName = (useToeLocation ? "RAD-END" : "RAD-SRT") + Math.random().toString(36).substring(2, 6);
+                kadPolygonsMap.set(entityName, {
                     entityType: "poly",
                     data: polygon.map((pt) => ({
+                        entityName: entityName,
                         pointXLocation: pt.x,
                         pointYLocation: pt.y,
                         pointZLocation: pt.z,
@@ -4772,16 +4773,17 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
 
     if (addToMaps) {
         unionedPolygons.forEach((polygon) => {
-            const polyID = (useToeLocation ? "radiiTPoly" : "radiiCPoly") + kadPolygonsMap.size + 1;
+            entityName = (useToeLocation ? "RAD-END" : "RAD-SRT") + Math.random().toString(36).substring(2, 6);
             //add pointID to each point starting from 1 to nth
             let pointID = 1;
             polygon.forEach((pt) => {
                 pt.pointID = pointID;
                 pointID++;
             });
-            kadPolygonsMap.set(polyID, {
+            kadPolygonsMap.set(entityName, {
                 entityType: "poly",
                 data: polygon.map((pt) => ({
+                    entityName: entityName,
                     pointXLocation: pt.x,
                     pointYLocation: pt.y,
                     pointZLocation: pt.z,
