@@ -1,0 +1,1762 @@
+/*
+    Description: This file contains the CSS for the Kirra App
+    Author: Brent Buffham
+    Last Modified: "20250603.2052AWST"
+*/
+
+:root {
+	--default-background-color: #d9d9d9;
+	/* Default Background Color */
+	--primary-color: #828282;
+	/* Default Button Color */
+	--dark-mode-color: #1a1a1a;
+	/* Dark Mode: 10% Grey */
+	--light-mode-canvas: white;
+	/* Light Mode: White */
+	--dark-mode-canvas: black;
+	/* Dark Mode: Black */
+	--light-mode-text: #1a1a1a;
+	/* Light Mode: 10% Grey */
+	--dark-mode-text: #d9d9d9;
+	/* Dark Mode: 75% Grey */
+	--light-mode-border: #9a9a9a;
+	/* Light Mode: 60% Grey */
+	--dark-mode-border: #4d4d4d;
+	/* Dark Mode: 30% Grey */
+	--mouseover-color: #ff0000;
+	/* Mouseover Color */
+	--click-color: #cc0000;
+	/* Click Color */
+	--selected-color: #ff5555;
+	/* Selected Color */
+	--disabled-color: #736363;
+	/* Disabled Color */
+	--default-font: Roboto-Regular, sans-serif;
+	/* Default Font */
+	--default-font-size: 14px;
+	/* Default Font Size */
+	--menubar-size: 50px; /* height of the menubar */
+	--canvas-border: 1px; /* border width of the canvas */
+	--canvas-container-margin: 0px; /* margin of the canvas container */
+}
+
+body {
+	background-color: var(--default-background-color);
+	/* Default Background Color */
+	color: var(--light-mode-text);
+	/* Default Text Color */
+	transition: background-color 2s, color 2s;
+	font-family: var(--default-font);
+	overflow-x: hidden;
+}
+
+body.dark-mode {
+	background-color: var(--dark-mode-color);
+	color: var(--dark-mode-text);
+}
+
+.main-content {
+	position: absolute;
+	top: var(--menubar-size);
+	/* height of menubar */
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: calc(100vh - var(--menubar-size));
+	/* height: 100%; */
+	/* subtract menubar height */
+	overflow: hidden;
+	background: none;
+	z-index: 1;
+	margin: 0;
+	padding: 0;
+}
+
+.canvas-container,
+canvas {
+	pointer-events: auto;
+}
+
+.canvas-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	z-index: 10;
+	margin: 0;
+	padding: 0;
+}
+
+canvas#canvas {
+	position: absolute; /* Changed from 'block' for positioning within .canvas-container */
+	top: 0; /* Position at the top of .canvas-container */
+	left: 0; /* Position at the left of .canvas-container */
+	width: 100%; /* Fill 100% width of .canvas-container */
+	height: 100%; /* Fill 100% height of .canvas-container */
+	display: block;
+	margin: 0;
+	padding: 0;
+	background-color: var(--light-mode-canvas); /* Changed from 'background' shorthand */
+	border: var(--canvas-border) solid var(--light-mode-border); /* Default border for light mode */
+	transition: background-color 2s, border 2s; /* Adjusted transition */
+	z-index: 1; /* z-index relative to .canvas-container */
+	pointer-events: auto;
+	/* Removed properties: top: var(--menubar-size); width: 100vw !important; height: 100% !important; min-height; min-width; max-width; max-height; border: 10px solid red; border: none; */
+}
+
+/* canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 1px solid var(--light-mode-border);
+    background-color: var(--light-mode-canvas);
+    margin-left: auto;
+    margin-right: auto;
+    transition: background-color 2s, color 2s;
+    z-index: 0;
+} */
+
+canvas#canvas.dark-canvas {
+	background-color: var(--dark-mode-canvas);
+	border: var(--canvas-border) solid var(--dark-mode-border);
+}
+
+.dark-mode-toggle-icon {
+	width: 24px;
+	height: 24px;
+	padding: 0px;
+	border-radius: 4px;
+	cursor: pointer;
+	transition: filter 0.3s;
+}
+
+body.dark-mode .dark-mode-toggle-icon {
+	filter: invert(1);
+	opacity: 0.8;
+}
+
+.light-mode-toggle-icon {
+	width: 24px;
+	height: 24px;
+	padding: 0px;
+
+	border-radius: 4px;
+	cursor: pointer;
+	transition: filter 0.3s;
+}
+
+body.dark-mode .light-mode-toggle-icon {
+	filter: invert(1);
+	opacity: 0.8;
+}
+
+#dark-mode-toggle input {
+	display: none;
+	width: 28px;
+	height: 28px;
+	border: none;
+	cursor: pointer;
+	border: 1px solid var(--light-mode-border);
+	border: none;
+	border-radius: 4px;
+	transition: background-color 0.3s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	/* Center the icon */
+	background-color: transparent;
+	color: var(--light-mode-text);
+	padding-top: 10px;
+	/* No padding directly */
+}
+
+#dark-mode-toggle::after {
+	content: "";
+	display: block;
+	width: 16px;
+	/* Adjust icon size */
+	height: 16px;
+	/* Adjust icon size */
+	background: url("assets/icons/sun.png") no-repeat center center;
+	background-size: contain;
+	transition: filter 1s;
+}
+
+body.dark-mode #dark-mode-toggle::after {
+	content: "";
+	color: var(--dark-mode-text);
+	display: block;
+	width: 16px;
+	/* Adjust icon size */
+	height: 16px;
+	/* Adjust icon size */
+	background: url("assets/icons/moon.png") no-repeat center center;
+	filter: invert(1);
+	opacity: 80%;
+	/* Adjust brightness */
+	background-size: contain;
+	transition: filter 1s;
+}
+
+/* TOOLBAR */
+#floating-toolbar input[type="checkbox"] {
+	display: none;
+}
+
+#floating-toolbar {
+	position: absolute;
+	top: 100px;
+	left: 15px;
+	padding: 15px 5px 5px 5px; /* Consider adjusting padding if buttons seem too close to edge */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: var(--default-background-color);
+	border: 1px solid var(--light-mode-border);
+	border-radius: 8px;
+	box-shadow: 0 4px 4px rgba(50, 50, 50, 0.4);
+	z-index: 1000;
+	cursor: move; /* For dragging the toolbar itself, if implemented */
+}
+
+/* Styles for the labels which act as buttons */
+#floating-toolbar label.icon-button {
+	display: inline-flex; /* Or flex if they are stacked and you want to center content */
+	align-items: center;
+	justify-content: center;
+	width: 28px; /* Adjust as needed */
+	height: 28px; /* Adjust as needed */
+	background-color: var(--primary-color); /* Default background */
+	border: 1px solid var(--light-mode-border); /* Default border */
+	border-radius: 4px;
+	margin-top: 5px; /* Spacing between buttons if stacked vertically */
+	margin-bottom: 5px; /* Spacing between buttons if stacked vertically */
+	font-size: 20px;
+	cursor: pointer;
+	transition: background-color 0.2s, border-color 0.2s;
+}
+
+#floating-toolbar label.icon-button img {
+	width: 24px; /* Adjust icon size */
+	height: 24px; /* Adjust icon size */
+}
+
+/* Hover state for the icon buttons within the toolbar */
+#floating-toolbar label.icon-button:hover {
+	background-color: var(--mouseover-color); /* Your desired hover color */
+	border-color: var(--mouseover-color);
+}
+
+/* Checked/Selected state for the icon buttons within the toolbar */
+#floating-toolbar input[type="checkbox"]:checked + label.icon-button {
+	background-color: red; /* Your desired selected color */
+	border-color: darkred; /* Or a darker shade of red */
+}
+
+/* Dark mode adjustments for toolbar buttons */
+body.dark-mode #floating-toolbar {
+	background-color: var(--dark-mode-color);
+	border: 1px solid var(--dark-mode-border);
+}
+
+body.dark-mode #floating-toolbar label.icon-button {
+	background-color: var(--primary-color); /* Default dark mode background */
+	border: 1px solid var(--dark-mode-border);
+	/* If icons need inversion for dark mode, you might need: */
+	/* filter: invert(1) opacity(0.95); */
+}
+
+body.dark-mode #floating-toolbar label.icon-button:hover {
+	background-color: var(--mouseover-color); /* Or a dark mode specific hover */
+	/* Consider if text/icon color needs to change on hover in dark mode */
+}
+
+body.dark-mode #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
+	background-color: red; /* Selected color can be the same */
+	border-color: darkred;
+	/* filter: none; */ /* Reset filter if icons were inverted for default dark mode state */
+}
+
+/* Remove or comment out these as they are not directly used by the current HTML structure for labels */
+/*
+#floating-toolbar .toolbar-btn { ... }
+#floating-toolbar .toolbar-btn:hover { ... }
+...etc. for .toolbar-btn
+*/
+
+/* MODAL */
+.modal-content {
+	background-color: var(--default-background-color);
+	/* Use the default background color */
+	color: var(--light-mode-text);
+	/* Use the default text color */
+	font-family: var(--default-font);
+	font-size: var(--default-font-size);
+	border: 1px solid var(--light-mode-border);
+	/* Border color based on light mode */
+	border-radius: 8px;
+	/* Adjust border radius if needed */
+	transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode .modal-content {
+	background-color: var(--dark-mode-color);
+	color: var(--dark-mode-text);
+	border: 1px solid var(--dark-mode-border);
+}
+
+.modal-header {
+	background-color: var(--primary-color);
+	/* Header background color */
+	color: var(--light-mode-text);
+	/* Header text color */
+	border-bottom: 1px solid var(--light-mode-border);
+	/* Header border */
+}
+
+body.dark-mode .modal-header {
+	background-color: var(--dark-mode-color);
+	color: var(--dark-mode-text);
+	border-bottom: 1px solid var(--dark-mode-border);
+}
+
+.modal-footer {
+	background-color: var(--default-background-color);
+	border-top: 1px solid var(--light-mode-border);
+}
+
+body.dark-mode .modal-footer {
+	background-color: var(--dark-mode-color);
+	border-top: 1px solid var(--dark-mode-border);
+}
+
+.modal-footer .btn {
+	background-color: var(--primary-color);
+	color: var(--light-mode-text);
+	border: none;
+	border-radius: 4px;
+	transition: background-color 0.3s, color 0.3s;
+	padding: 8px 16px;
+	/* Adjust padding for uniform size */
+	font-size: var(--default-font-size);
+	width: auto;
+	/* Allow buttons to adjust width automatically */
+	min-width: 75px;
+	/* Ensure a minimum width for uniformity */
+	height: 28px;
+	/* Set a consistent height */
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	/* Center text within the button */
+}
+
+.modal-footer .btn:hover {
+	background-color: var(--mouseover-color);
+	color: var(--light-mode-text);
+}
+
+body.dark-mode .modal-footer .btn {
+	background-color: var(--dark-mode-border);
+	color: var(--dark-mode-text);
+}
+
+body.dark-mode .modal-footer .btn:hover {
+	background-color: var(--mouseover-color);
+	color: var(--dark-mode-text);
+}
+
+/* MENUBAR */
+
+/* The overall menubar container */
+.menubar {
+	background-color: var(--default-background-color);
+	/* If you have a “top bar” color different from primary, change it here */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 0 8px;
+	/* Some horizontal padding */
+	height: var(--menubar-size);
+	/* Typical menubar height */
+	/* You can tweak the height, or even remove it if you prefer auto-sizing */
+	border-bottom: 1px solid var(--light-mode-border);
+}
+
+body.dark-mode .menubar {
+	background-color: var(--dark-mode-color);
+	border-bottom: 1px solid var(--dark-mode-border);
+	transition: background-color 2s, color 2s;
+}
+
+/* The .menu holds all top-level menu items in one row. */
+.menu {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 2px;
+	/* Space between each top-level menu item */
+	position: relative;
+}
+
+/* Each top-level item, e.g. "File", "Edit", "Help" */
+.menu-item {
+	position: relative;
+	/* So the submenu can be absolutely positioned below */
+	cursor: default;
+	/* Looks like a regular menubar item on desktop */
+}
+
+/* The "title" text of the menu item */
+.menu-title {
+	color: var(--light-mode-text);
+	/* or var(--light-mode-text), depending on your theme usage */
+	font-family: var(--default-font);
+	font-size: 12px;
+	line-height: 28px;
+	/* Vertically center the text */
+	text-align: center;
+	padding: 2px 8px;
+	/* Remove default button styling, if any: */
+	background: none;
+	border-radius: 4px;
+	/* border: 1px solid var(--light-mode-border); */
+	text-decoration: none;
+	cursor: pointer;
+}
+
+body.dark-mode .menu-title {
+	color: var(--dark-mode-text);
+	/* transition: background-color 2s, color 2s; */
+}
+
+/* Hover effect on top-level item */
+.menu-item:hover .menu-title {
+	background-color: var(--mouseover-color);
+	color: var(--light-mode-text);
+	/* or your preferred color */
+}
+
+/* The dropdown that appears on hover */
+.menu-content {
+	display: none;
+	/* Hidden by default */
+	position: absolute;
+	top: 100%;
+	/* Sit just below the menu-title */
+	left: 0;
+	background-color: var(--default-background-color);
+	padding: 2px 0;
+	border: 1px solid var(--light-mode-border);
+	/* If you have a border color variable */
+	border-radius: 4px;
+	min-width: 150px;
+	z-index: 999;
+	/* Keep in front of other elements */
+}
+
+/* Show the submenu on hover */
+.menu-item:hover .menu-content {
+	display: block;
+}
+
+body.dark-mode .menu-content {
+	background-color: var(--dark-mode-color);
+	border: 1px solid var(--dark-mode-border);
+	/* transition: background-color 2s, color 2s; */
+}
+
+/* Submenu links */
+.menu-content a {
+	display: block;
+	font-family: var(--default-font);
+	font-size: 12px;
+	color: var(--light-mode-text);
+	text-decoration: none;
+	padding: 4px 12px;
+}
+
+body.dark-mode .menu-content a {
+	color: var(--dark-mode-text);
+	/* transition: background-color 2s, color 2s; */
+}
+
+/* Hover effect on submenu items */
+.menu-content a:hover {
+	background-color: var(--mouseover-color);
+	color: var(--light-mode-text);
+}
+
+body.dark-mode .menu-content a:hover {
+	color: var(--light-mode-text);
+}
+
+.hidden-file-input {
+	display: none;
+}
+
+/* GENERAL STYLES */
+
+.button-container-2col {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	grid-gap: 5px;
+	text-align: center;
+}
+
+.button-container-2col a {
+	display: block;
+	padding: 5px;
+	background-color: var(--primary-color);
+	color: #000;
+	text-decoration: none;
+	border-radius: 4px;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.button-container-3col {
+	display: grid;
+	grid-template-columns: repeat(3, 32%);
+	grid-gap: 5px;
+	text-align: center;
+	margin-right: 5px;
+}
+
+.button-container-3col a {
+	display: block;
+	padding: 5px;
+	background-color: var(--primary-color);
+	color: #000;
+	text-decoration: none;
+	border-radius: 4px;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.button-container-1col {
+	display: grid;
+	grid-template-columns: repeat(1, 1fr);
+	grid-gap: 5px;
+	text-align: center;
+}
+
+.button-container-1col a {
+	display: block;
+	padding: 5px;
+	background-color: var(--primary-color);
+	color: #000;
+	text-decoration: none;
+	border-radius: 4px;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+}
+
+.button-container a.dark-mode {
+	background-color: var(--dark-mode-color);
+	color: #fff;
+}
+
+.p1 {
+	font-family: Arial, sans-serif;
+}
+
+.dark-mode-toggle {
+	margin-bottom: 10px;
+	display: flex-end;
+	align-items: center;
+}
+
+.dark-mode-toggle input[type="checkbox"] {
+	display: none;
+}
+
+.dark-mode-toggle label {
+	display: flex;
+	align-items: center;
+	width: 48px;
+	height: 22px;
+	background-color: #999;
+	position: relative;
+	border-radius: 34px;
+	cursor: pointer;
+	transition: background-color 2s;
+}
+
+.dark-mode-toggle label:after {
+	content: "";
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	top: 1px;
+	left: 1px;
+	background-color: #fff;
+	transition: transform 2s;
+}
+
+.dark-mode-toggle label .sun-icon {
+	margin-right: 2px;
+}
+
+.dark-mode-toggle label .moon-icon {
+	margin-left: 2px;
+}
+
+.dark-mode-toggle input:checked + label {
+	background-color: #666;
+}
+
+.dark-mode-toggle input:checked + label:after {
+	transform: translateX(24px);
+}
+
+/* Style for the top controls (left and right buttons) */
+.top-controls {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 80px;
+	/* Adjust as needed */
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 0 10px;
+	z-index: 1;
+	background-color: none;
+}
+
+/* Style for the toggle buttons container */
+.toggle-buttons-container {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 40px;
+	/* Adjust as needed */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1;
+	background-color: none;
+}
+
+img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	transform: scale(0.8);
+}
+
+.container {
+	display: flex;
+	align-items: center;
+}
+
+input[type="number"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 18px;
+	text-align: center;
+	position: relative;
+}
+
+input[type="number2"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 15px;
+	width: 5ch;
+	text-align: center;
+	position: relative;
+}
+
+input[type="number3"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 15px;
+	width: 18ch;
+	text-align: center;
+	position: relative;
+}
+
+/*style the color input field in alignment with the number2 input field*/
+input[type="color"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 12px;
+	width: 7ch;
+	max-height: 22px;
+	text-align: center;
+	position: relative;
+}
+
+input[type="text"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 18px;
+	text-align: center;
+	position: relative;
+}
+
+input[type="text2"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 15px;
+	width: 100%;
+	text-align: center;
+	position: relative;
+}
+
+input[type="text3"] {
+	cursor: pointer;
+	color: #333;
+	font-size: 15px;
+	width: 18ch;
+	text-align: center;
+	position: relative;
+}
+
+textarea {
+	cursor: pointer;
+	color: #333;
+	font-size: 15px;
+	width: auto;
+	text-align: center;
+	position: relative;
+	/* Additional properties for textarea */
+	resize: vertical;
+	/* Allows vertical resizing, none to disable */
+}
+
+input[type="radio"] {
+	width: auto;
+	height: 12px;
+	font-size: 12px;
+}
+
+input[type="range"] {
+	padding: 2px;
+	margin-left: 10%;
+	margin-right: 10%;
+	width: 80%;
+	color: #333;
+}
+
+input[type="file"] {
+	padding: 2px;
+	margin-inline: 2px;
+	color: #818181;
+}
+
+.box {
+	cursor: pointer;
+	color: #333;
+	font-size: 18px;
+	border-radius: 4px;
+	text-align: center;
+	position: relative;
+}
+
+.box2 {
+	cursor: pointer;
+	color: #333;
+	font-size: 12px;
+	border-radius: 4px;
+	text-align: center;
+	position: relative;
+}
+
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 48px;
+	height: 22px;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.switch-container {
+	display: flex;
+	align-items: center;
+	font-size: 10px;
+}
+
+.switch-container label {
+	margin-right: 10px;
+	/* Optional: Add some space between label and switch */
+	font-size: 10px;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	width: 80%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: var(--primary-color);
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 20px;
+	width: 20px;
+	left: 1px;
+	bottom: 1px;
+	background-color: white;
+	-webkit-transition: 0.4s;
+	transition: 0.4s;
+}
+
+input:checked + .slider {
+	background-color: #00a91c;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(26px);
+	-ms-transform: translateX(26px);
+	transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+button {
+	padding: 2px;
+	background-color: var(--primary-color);
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: 25px;
+	/* Set the width to desired size */
+	height: 25px;
+	/* Set the height to the same value as the width */
+	margin-inline: 5px;
+	/* Add the desired space below the button */
+	margin: 2px;
+}
+
+.button-1 {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: firebrick;
+	color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: 40px;
+	/* Set the width to desired size */
+	height: 18px;
+	/* Add the desired space below the button */
+	margin-top: 0px;
+	text-align: center;
+	text-decoration: none;
+}
+
+.button-save1 {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: rgb(0, 100, 0);
+	color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	border-radius: 4px;
+	outline: none;
+	width: auto;
+	height: auto;
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+
+	/* Bevel effect inside the button */
+	/* box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.2), */
+	/* Shadow on top right */
+	/* inset -2px -2px 3px rgba(255, 255, 255, 0.6);
+  cursor: pointer; */
+	/* Changes cursor to pointer on hover */
+}
+
+.button-save1:hover {
+	background-color: rgb(0, 150, 0);
+	/* Slightly lighter green on hover */
+}
+
+.button-save2 {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: rgb(213, 216, 0);
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: auto;
+	/* Set the width to desired size */
+	height: auto;
+	/* Add the desired space below the button */
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+	/* Bevel effect inside the button */
+	/* box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.2), */
+	/* Shadow on top right */
+	/* inset -2px -2px 3px rgba(255, 255, 255, 0.6);
+  cursor: pointer; */
+	/* Changes cursor to pointer on hover */
+}
+
+.button-save2:hover {
+	background-color: rgb(255, 255, 0);
+	/* Slightly lighter yellow on hover */
+}
+
+.button-save3 {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: rgb(137, 16, 0);
+	color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: auto;
+	/* Set the width to desired size */
+	height: auto;
+	/* Add the desired space below the button */
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+
+	/* Bevel effect inside the button */
+	/* box-shadow: inset 3px 3px 3px rgba(0, 0, 0, 0.2), */
+	/* Shadow on top right */
+	/* inset -2px -2px 3px rgba(255, 255, 255, 0.6); */
+	/* cursor: pointer; */
+	/* Changes cursor to pointer on hover */
+	cursor: pointer;
+}
+
+.button-save3:hover {
+	background-color: rgb(190, 0, 0);
+	/* Slightly lighter red on hover */
+}
+
+.button-norm {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: var(--primary-color);
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: auto;
+	/* Set the width to desired size */
+	height: auto;
+	/* Add the desired space below the button */
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.button-norm:hover {
+	/* make the --primary-color a darker shade on hover */
+	background-color: #585858;
+	/* Slightly lighter red on hover */
+}
+
+.button-norm-red {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: red;
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: auto;
+	/* Set the width to desired size */
+	height: auto;
+	/* Add the desired space below the button */
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.button-norm-red:hover {
+	/* make the --primary-color a darker shade on hover */
+	background-color: #bb0000;
+	/* Slightly lighter red on hover */
+}
+
+.button-bug {
+	padding-bottom: 10px;
+	padding-top: 8px;
+	padding-inline: 10px;
+	background-color: #ff0000;
+	color: #000;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	transition: background-color 0.3s, color 0.3s;
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+	border: none;
+	border-radius: 8px;
+	outline: none;
+	box-shadow: none;
+	width: auto;
+	height: auto;
+}
+
+/* create a button that is the same as the .button-1 but with a different color and a red diagonal line from top right to bottom left */
+.button-notinuse {
+	background-color: #585858;
+	/* background color of a diagonal gradient from top right to bottom left */
+	background-image: linear-gradient(135deg, #585858 48%, red 48%, red 52%, #585858 52%, #585858 100%);
+	color: red;
+	font-family: Arial, Helvetica, sans-serif;
+	border-radius: 4px;
+	border: none;
+	/* Remove the outline */
+	width: 40px;
+	/* Set the width to desired size */
+	height: 18px;
+	/* Set the height to the same value as the width */
+	margin-inline: 2px;
+	/* Add the desired space below the button */
+	text-decoration: none;
+	padding-left: 2px;
+	padding-right: 2px;
+	display: none;
+	/*Hides the buttons */
+}
+
+input[type="color"] {
+	border: none;
+	border-width: 1px;
+	-webkit-appearance: none;
+	appearance: none;
+	border-radius: 0;
+}
+
+.spacer {
+	flex-grow: 1;
+}
+
+/* Style the buttons that are used to open and close the accordion panel */
+.accordion {
+	background-color: var(--primary-color);
+	color: var(--dark-mode-color);
+	cursor: pointer;
+	padding: 5px;
+	margin-right: 10px;
+	margin-left: 10px;
+	width: 92%;
+	text-align: center;
+	border: none;
+	outline: none;
+	transition: 0.4s;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.active,
+.accordion:hover {
+	background-color: red;
+}
+
+.accordion:after {
+	content: "\02795";
+	/* Unicode character for "plus" sign (+) */
+	font-size: 8px;
+	color: #660000;
+	float: right;
+	margin-left: 5px;
+}
+
+.active:after {
+	content: "\2796";
+	/* Unicode character for "minus" sign (-) */
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel {
+	padding: 5px;
+	background-color: none;
+	color: none;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+	border-radius: 4px;
+	margin-left: 5px;
+	margin-right: 5px;
+	border: none;
+	display: none;
+	overflow: hidden;
+}
+
+/* Style the accordion panel. Note: hidden by default */
+.panel2 {
+	padding: 5px;
+	background-color: none;
+	color: none;
+	font-family: Arial, Helvetica, sans-serif;
+	transition: background-color 0.3s, color 0.3s;
+	border-radius: 4px;
+	margin-left: 5px;
+	margin-right: 5px;
+	border: none;
+	display: none;
+}
+
+.chart-container {
+	height: 400px;
+	/* Set the fixed height you desire */
+	width: 100%;
+	/* Set the initial width to occupy the full width of the parent element */
+	/*height: auto;  Adjust based on your layout */
+	overflow: visible;
+	/* Ensure the mode bar is not cut off */
+}
+
+/* Overriding Plotly's mode bar styles */
+.modebar {
+	display: static !important;
+	overflow-x: visible !important;
+	justify-content: center;
+	/* Center the mode bar items */
+	align-items: center;
+	/* Align items vertically */
+	width: auto !important;
+	/* Auto width based on content */
+	height: auto !important;
+	/* Auto height based on content */
+	background: none !important;
+	/* No background */
+}
+
+.modebar-btn svg {
+	height: 14px !important;
+	/* Adjust to desired size */
+	width: 14px !important;
+	/* Adjust to desired size */
+}
+
+.modebar-btn {
+	height: 16px !important;
+	width: 16px !important;
+	background: none !important;
+	/* round corners */
+	margin: 0 2px;
+	/* space between buttons */
+}
+
+/* Hide default radio button */
+.radio-buttons-custom input[type="radio"] {
+	display: none;
+}
+
+/* Hide default radio button */
+.toggle-buttons-custom input[type="checkbox"] {
+	display: none;
+}
+
+/* Style the icon button */
+.icon-button {
+	display: inline-flex;
+	width: 24px;
+	height: 24px;
+	background-color: var(--primary-color);
+	/* Set the default color */
+	border: none;
+	border-radius: 4px;
+	text-align: center;
+	font-size: 18px;
+	line-height: 22px;
+	cursor: pointer;
+	margin-right: 5px;
+	color: var(--dark-mode-color);
+	margin: 2px;
+}
+
+/* Set the icon style using data attribute */
+.icon-button::before {
+	content: attr(data-content);
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+}
+
+/* Style the selected (checked) button */
+.radio-buttons-custom input[type="radio"]:checked + .icon-button {
+	background-color: red;
+	/* Set the selected color */
+}
+
+/* Style the selected (checked) button */
+.toggle-buttons-custom input[type="checkbox"]:checked + .icon-button {
+	/* display: none; */
+	background-color: red;
+	border-color: red;
+	margin-right: 2px;
+	margin-left: 2px;
+	/* Set the selected color */
+}
+
+.icon {
+	width: 20px;
+	height: 20px;
+	text-align: center;
+	font-size: 22px;
+	cursor: pointer;
+	margin-right: 5px;
+	color: var(--dark-mode-color);
+	margin: 2px;
+}
+
+/* The side navigation menu */
+.sidenav-Right {
+	height: 100%;
+	width: 0;
+	position: fixed;
+	z-index: 20;
+	top: 0;
+	right: 0;
+	background-color: #cecece;
+	overflow-x: hidden;
+	padding-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	transition: 0.5s;
+	border: var(--primary-color);
+	border-style: solid;
+	border-width: 1px;
+}
+
+.sidenav-Right.dark-mode {
+	background-color: var(--dark-mode-color);
+	color: #cecece;
+}
+
+/* The navigation menu links */
+.sidenav-Right a {
+	padding: 0px;
+	text-decoration: none;
+	font-size: 14px;
+	color: var(--primary-color);
+	display: block;
+	transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav-Right a:hover {
+	color: #ff0000;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav-Right .closebtnR {
+	position: absolute;
+	top: 0px;
+	left: 20px;
+	font-size: 36px;
+	margin-right: 0px;
+}
+
+/* The side navigation menu */
+.sidenav-Left {
+	height: 100%;
+	width: 0;
+	position: fixed;
+	z-index: 20;
+	top: 0;
+	left: 0;
+	background-color: #cecece;
+	overflow-x: hidden;
+	padding-top: 0px;
+	margin-right: 0px;
+	margin-left: 0px;
+	transition: 0.5s;
+	border: var(--primary-color);
+	border-style: solid;
+	border-width: 1px;
+}
+
+.sidenav-Left.dark-mode {
+	background-color: var(--dark-mode-color);
+	color: #cecece;
+}
+
+/* The navigation menu links */
+.sidenav-Left a {
+	padding: 0px;
+	text-decoration: none;
+	font-size: 14px;
+	color: var(--primary-color);
+	display: block;
+	transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav-Left a:hover {
+	color: #ff0000;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav-Left .closebtnL {
+	position: absolute;
+	top: 0px;
+	right: 25px;
+	font-size: 36px;
+	margin-left: 50px;
+}
+
+.resize-handle-right {
+	width: 5px;
+	height: 100%;
+	background: #555;
+	/* Or any color of your choice */
+	cursor: ew-resize;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 100 !important;
+}
+
+.resize-handle-left {
+	width: 5px;
+	height: 100%;
+	background: #555;
+	/* Or any color of your choice */
+	cursor: ew-resize;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+
+#main {
+	transition: margin-left 0.5s;
+	padding: 20px;
+}
+
+.containerSideNav {
+	font-size: 22px;
+	cursor: pointer;
+}
+
+/* Dark grey theme for SweetAlert */
+.swal2-popup {
+	background-color: #333;
+	color: #fff;
+}
+
+.swal2-title {
+	color: #fff;
+}
+
+.swal2-icon {
+	color: #fff;
+}
+
+.swal2-content {
+	color: #fff;
+}
+
+.confirm[type="button"] {
+	width: 80px;
+	height: 40px;
+	background-color: #00a91c;
+	color: #fff;
+	text-align: center;
+}
+
+.cancel[type="button"] {
+	width: 80px;
+	height: 40px;
+	color: #fff;
+	background-color: #980000;
+	text-align: center;
+}
+
+.custom-popup-container {
+	background-color: #333;
+	border: 1px solid #555;
+}
+
+.slider-container {
+	position: relative;
+}
+
+.slider-button {
+	position: absolute;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background-color: var(--primary-color);
+	border: none;
+	cursor: pointer;
+}
+
+.slider-button:hover {
+	background-color: #ff0000;
+}
+
+.slider-button:active {
+	background-color: #888;
+}
+
+.slider-button:first-of-type {
+	left: 0;
+}
+
+.slider-button:last-of-type {
+	right: 0;
+}
+
+.button-container-3flexcol {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	/* Three columns with the center one being flexible */
+	gap: 10px;
+	/* Adjust the gap as needed */
+	align-items: center;
+	/* Vertically center items in the container */
+	text-align: center;
+	/* Center text within columns */
+}
+
+.button-container-2coleven {
+	display: grid;
+	grid-template-columns: 50% 50%;
+	gap: 2px;
+	/* Adjust the gap as needed */
+	align-items: center;
+	/* Vertically center items in the container */
+	text-align: center;
+	/* Center text within columns */
+}
+
+.navbar {
+	background-color: var(--primary-color);
+	overflow: hidden;
+}
+
+.navbar a {
+	float: left;
+	display: inline-flex;
+	color: white;
+	text-align: center;
+	padding: 10px 10px;
+	text-decoration: none;
+}
+
+.navbar a:hover {
+	background-color: #ff0000;
+	color: var;
+}
+
+.section {
+	padding: 20px;
+}
+
+.section-heading {
+	color: #c10000;
+}
+
+.image-container1 {
+	width: 100vw;
+	height: 200px;
+	/* Ensures the image doesn't exceed the container */
+}
+
+.image-container1 img {
+	width: 100%;
+	height: 100%;
+	display: block;
+	object-fit: cover;
+	/* or contain */
+}
+
+.image-container2 {
+	width: 90vw;
+	height: auto;
+	display: block;
+}
+
+.image-container2 img {
+	width: 100%;
+	height: auto;
+	display: block;
+	object-fit: cover;
+	border-radius: 10px;
+	max-width: 80%;
+}
+
+.image-container3 {
+	width: 70vw;
+	height: auto;
+	display: block;
+}
+
+.image-container3 img {
+	width: 70%;
+	height: auto;
+	display: block;
+	object-fit: cover;
+	border-radius: 10px;
+	max-width: 70%;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th,
+td {
+	border: 1px solid var(--primary-color);
+	padding: 5px;
+	text-align: left;
+	font-size: 12px;
+}
+
+th {
+	background-color: #444444;
+	color: #ffffff;
+}
+
+td {
+	background-color: #dddddd;
+	color: #000000;
+	/* Default text color */
+}
+
+.dark-mode td {
+	color: #000000;
+	/* Dark mode text color */
+}
+
+/* TYPOGRAPHY */
+
+label {
+	font-family: var(--default-font);
+	font-size: 18px;
+	text-align: left;
+	position: relative;
+}
+
+.label {
+	padding-bottom: 5px;
+	padding-top: 2px;
+	padding-inline: 10px;
+	background-color: var(--primary-color);
+	color: var(--light-mode-text);
+	font-family: var(--default-font);
+	font-size: 12px;
+	transition: background-color 0.3s, color 0.3s;
+
+	border: none;
+	/* Remove the border */
+	border-radius: 4px;
+	outline: none;
+	/* Remove the outline */
+	box-shadow: none;
+	/* Remove the box shadow */
+	width: auto;
+	/* Set the width to desired size */
+	height: auto;
+	/* Add the desired space below the button */
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+}
+
+.labelWhite18 {
+	font-family: var(--default-font);
+	font-size: 18px;
+	text-align: left;
+	color: var(--dark-mode-text);
+	position: relative;
+}
+
+.labelWhite12 {
+	font-family: var(--default-font);
+	font-size: 12px;
+	text-align: center;
+	color: var(--dark-mode-text);
+	position: relative;
+}
+
+.labelWhite12c {
+	font-family: var(--default-font);
+	font-size: 12px;
+	text-align: left;
+	color: var(--dark-mode-text);
+	position: relative;
+}
+
+.labelbig {
+	font-family: var(--default-font);
+	font-size: 25px;
+	text-align: center;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
+
+.label2 {
+	font-family: var(--default-font);
+	font-size: 12px;
+	text-align: left;
+	position: relative;
+}
+
+.label3 {
+	font-family: var(--default-font);
+	font-size: 10px;
+	text-align: center;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
+
+.label4 {
+	font-family: var(--default-font);
+	font-size: 14px;
+	text-align: center;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
+
+.label4:hover,
+.label4:focus {
+	background-color: var(--mouseover-color);
+}
+
+.label5 {
+	font-family: var(--default-font);
+	font-size: 10px;
+	text-align: left;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
+
+.labelleft {
+	font-family: var(--default-font);
+	font-size: 12px;
+	text-align: left;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
+
+.label-transparent {
+	font-family: var(--default-font);
+	font-size: 12px;
+	text-align: center;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+	background-color: none;
+	color: var(--light-mode-text);
+	border: none;
+	border-radius: 4px;
+	outline: none;
+	box-shadow: none;
+	width: auto;
+	height: auto;
+	margin: 2px;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.label-transparent .dark-mode {
+	background-color: none;
+	color: var(--dark-mode-text);
+}
+
+.label4:hover,
+.label4:focus {
+	background-color: red;
+}
+
+.labelleft {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	text-align: left;
+	position: relative;
+	padding: 2px;
+	margin-inline: 2px;
+}
