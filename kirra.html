@@ -29,6 +29,15 @@
 	<meta name="twitter:image" content="https://blastingapps.com/Kirra%20Head%20Shot%20Water%20colour.png">
 
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Device Dynamic Screens -->
+	<script>
+ 		 // Fix 100vh on mobile: set a custom --vh unit
+		 window.addEventListener('resize', () => {
+    			document.documentElement.style.setProperty('--vh', `${window.innerHeight * 0.01}px`);
+  		});
+  		window.dispatchEvent(new Event('resize'));
+	</script>
+	
 	<!-- Triangulation libraies -->
 	<script src="https://unpkg.com/d3-delaunay@6.0.1"></script>
 	<script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
