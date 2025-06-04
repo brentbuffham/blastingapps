@@ -365,9 +365,9 @@ canvas.addEventListener("mousedown", handleMouseDown);
 canvas.addEventListener("mousemove", handleMouseMove);
 canvas.addEventListener("mouseup", handleMouseUp);
 // Add event listeners for touch start, move, and end events
-canvas.addEventListener("touchstart", handleTouchStart, { passive: true });
-canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
-canvas.addEventListener("touchend", handleTouchEnd, { passive: true });
+canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+canvas.addEventListener("touchend", handleTouchEnd, { passive: false });
 
 // Event listener for the language dropdown
 document.getElementById("languageSelect").addEventListener("change", function () {
