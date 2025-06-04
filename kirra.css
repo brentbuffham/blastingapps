@@ -63,7 +63,7 @@ body.dark-mode {
 	right: 0;
 	bottom: 0;
 	width: 100%;
-	height: calc(100vh - var(--menubar-size));
+	height: calc((var(--vh, 1vh) * 100) - var(--menubar-size));
 	/* height: 100%; */
 	/* subtract menubar height */
 	overflow: hidden;
@@ -86,6 +86,7 @@ canvas {
 	bottom: 0;
 	width: 100%;
 	height: 100%;
+  	max-height: calc(var(--vh, 1vh) * 100);
 	overflow: hidden;
 	z-index: 10;
 	margin: 0;
@@ -97,7 +98,8 @@ canvas#canvas {
 	top: 0; /* Position at the top of .canvas-container */
 	left: 0; /* Position at the left of .canvas-container */
 	width: 100%; /* Fill 100% width of .canvas-container */
-	height: 100%; /* Fill 100% height of .canvas-container */
+	height: 100%; /* keep for desktop */
+	max-height: calc(var(--vh, 1vh) * 100); /* mobile-safe */
 	display: block;
 	margin: 0;
 	padding: 0;
