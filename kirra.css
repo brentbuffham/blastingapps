@@ -1767,52 +1767,67 @@ label {
 /* Universal mobile support */
 @media (max-width: 1024px) {
   html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
+    height: 100%;
     overflow: hidden;
-    overscroll-behavior: contain;
+    overscroll-behavior: none;
     touch-action: none;
   }
 
-  .main-content,
+  :root {
+    --vh: 1vh; /* fallback */
+  }
+
+  .menubar {
+    height: 60px; /* force height */
+    font-size: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 4px 6px;
+    gap: 2px;
+  }
+
+  .main-content {
+    position: absolute;
+    top: 60px; /* match menubar */
+    left: 0;
+    right: 0;
+    height: calc((var(--vh, 1vh) * 100) - 60px); /* dynamic height minus menu */
+    overflow: hidden;
+  }
+
   .canvas-container,
   canvas#canvas {
     width: 100vw;
-    height: 100vh;
+    height: 100%;
+    max-height: 100%;
     max-width: 100vw;
-    max-height: 80vh;
-    overflow: hidden;
     margin: 0;
     padding: 0;
+    overflow: hidden;
+  }
+
+  #floating-toolbar {
+    transform: scale(0.8);
+    top: 70px;
+    left: 5px;
+    position: fixed;
+    z-index: 1000;
   }
 
   .toggle-buttons-container {
-    display: flex;
     flex-wrap: wrap;
     justify-content: center;
     overflow-y: auto;
     max-height: 20vh;
-    z-index: 1000;
     background: rgba(255, 255, 255, 0.9);
+    z-index: 1000;
   }
 
-  #floating-toolbar {
-    transform: scale(0.75);
-    left: 5px;
-    top: 60px;
-    position: fixed;
-  }
-
-  .menubar {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 4px;
-    font-size: 9px;
-  }
-
-  .menu-title, .labelbig {
-    font-size: 9px;
+  .menu-title,
+  .labelbig {
+    font-size: 10px;
     padding: 2px 4px;
   }
 }
