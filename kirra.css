@@ -1817,15 +1817,22 @@ label {
     z-index: 1000;
   }
 
-  .toggle-buttons-container {
-    flex-wrap: wrap;
-    justify-content: center;
-    overflow-y: auto;
-    max-height: 20vh;
-    background: rgba(255, 255, 255, 0.9);
-    z-index: 1000;
-  }
-
+.toggle-buttons-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 20vh;
+  height: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.0);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 4px;
+}
   .menu-title,
   .labelbig {
     font-size: 10px;
