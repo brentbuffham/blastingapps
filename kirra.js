@@ -3802,7 +3802,18 @@ function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, ma
 //-----------------------------------------------------------------------------//
 // ----------------------// START IREDES EPIROC SECTION //---------------------//
 //-----------------------------------------------------------------------------//
-// Using SweetAlert Library Create a popup that gets input from the user.
+
+/**
+ * Using SweetAlert Library Create a popup that gets input from the user.
+ * @param {object[]} points - The points to convert
+ * @param {string} filename - The filename to use
+ * @param {string} planID - The plan ID to use
+ * @param {string} siteID - The site ID to use
+ * @param {boolean} holeOptions - Whether the hole options are on
+ * @param {boolean} mwd - Whether the mwd is on
+ * @param {string} chksumType - The type of checksum to calculate
+ * @returns {void}
+ */
 function saveIREDESPopup() {
     let blastName = points[0].entityName;
     //console.log("Points" + points);
@@ -3964,6 +3975,13 @@ function saveIREDESPopup() {
 </xsd:element>
 */
 
+/**
+ * Convert the points to an IREDES XML file
+ * @param {object[]} points - The points to convert
+ * @param {string} filename - The filename to use
+ * @param {string} planID - The plan ID to use
+ * @param {string} siteID - The site ID to use
+ */
 function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions, mwd, chksumType) {
     if (!points || !Array.isArray(points) || points.length === 0) return;
     const now = new Date();
@@ -4106,6 +4124,12 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
     return xml;
 }
 
+/**
+ * Calculate the CRC32 checksum of a string
+ * @param {string} str - The string to calculate the checksum of
+ * @param {string} chksumType - The type of checksum to calculate
+ * @returns {string} - The checksum in the specified format
+ */
 function crc32(str, chksumType) {
     const table = new Uint32Array(256);
     for (let i = 256; i--; ) {
@@ -4129,6 +4153,47 @@ function crc32(str, chksumType) {
     } else {
         return crc;
     }
+}
+/**
+ * Validate the IREDES XML file
+ * @param {string} xmlContent - The XML content to validate
+ * @returns {object} - An object containing the validation result
+ * @returns {boolean} valid - Whether the checksum is valid
+ * @returns {string} originalChecksum - The original checksum
+ * @returns {string} calculatedChecksum - The calculated checksum
+ * @returns {string} error - The error message if the checksum is invalid
+ */
+function validateIREDESXML(xmlContent) {
+    // Extract the checksum from the XML
+    const checksumMatch = xmlContent.match(/<IR:ChkSum>([^<]+)<\/IR:ChkSum>/);
+    if (!checksumMatch) {
+        return { valid: false, error: "No checksum found in XML" };
+    }
+
+    const originalChecksum = checksumMatch[1];
+
+    // Replace the checksum with "0" for validation
+    const xmlForValidation = xmlContent.replace(/<IR:ChkSum>[^<]+<\/IR:ChkSum>/, "<IR:ChkSum>0</IR:ChkSum>");
+
+    // Calculate the checksum of the modified XML
+    const calculatedChecksum = crc32(xmlForValidation);
+
+    // Compare checksums (handle both decimal and hex formats)
+    let isValid = false;
+    if (originalChecksum === calculatedChecksum) {
+        isValid = true; // Decimal match
+    } else if (originalChecksum.toUpperCase() === parseInt(calculatedChecksum, 10).toString(16).toUpperCase()) {
+        isValid = true; // Hex match
+    } else if (parseInt(originalChecksum, 16).toString(10) === calculatedChecksum) {
+        isValid = true; // Original was hex, calculated is decimal
+    }
+
+    return {
+        valid: isValid,
+        originalChecksum: originalChecksum,
+        calculatedChecksum: calculatedChecksum,
+        error: isValid ? null : "Checksum validation failed",
+    };
 }
 
 //-----------------------------------------------------------------------------//
