@@ -8370,7 +8370,7 @@ async function editBlastNamePopupAsync() {
 
     if (result.isConfirmed) {
         const blastNameInput = document.getElementById("blastName");
-        blastNameValue = blastNameInput.value.trim(); // Trim to remove leading/trailing spaces
+        blastNameValue = blastNameInput.value.trim();
         if (!blastNameValue) {
             Swal.fire({
                 title: "Invalid Blast Name",
@@ -8386,7 +8386,26 @@ async function editBlastNamePopupAsync() {
                     icon: "swal2-icon",
                 },
             });
-            return editBlastNamePopupAsync(); // Open the popup again
+            return await editBlastNamePopupAsync(); // Fixed: await the recursive call
+        } else {
+            // Add the blast name update logic
+            if (selectedHole) {
+                const index = points.findIndex((point) => point === selectedHole);
+                if (index !== -1) {
+                    const currentEntityName = points[index].entityName;
+                    // Update all holes with the same current entity name
+                    points.forEach((point) => {
+                        if (point.entityName === currentEntityName) {
+                            console.log("Before:point.fromHoleID : " + point.fromHoleID);
+                            point.entityName = blastNameValue;
+                            const [entity, id] = point.fromHoleID.split(":::");
+                            point.fromHoleID = blastNameValue + ":::" + id; // Update with new blast name
+                            console.log("After:point.fromHoleID : " + point.fromHoleID);
+                        }
+                    });
+                    drawData(points, selectedHole);
+                }
+            }
         }
     } else if (result.isDismissed) {
         return null;
@@ -8394,7 +8413,6 @@ async function editBlastNamePopupAsync() {
     console.log("Async popup - Blast Name : " + blastNameValue);
     return blastNameValue;
 }
-
 function editHoleLengthPopup() {
     Swal.fire({
         title: `Edit the length of hole. Hole: ${selectedHole.holeID} ?`,
