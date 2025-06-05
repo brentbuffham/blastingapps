@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250604.1752AWST"
-const buildVersion = "20250604.1752AWST"; //Backwards Compatible Date Format
+// Last Modified: "20250605.1804AWST"
+const buildVersion = "20250605.1804AWST"; //Backwards Compatible Date Format
 //-----------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -3799,6 +3799,171 @@ function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, ma
     return aqm;
 }
 
+//-----------------------------------------------------------------------------//
+// ----------------------// START IREDES EPIROC SECTION //---------------------//
+//-----------------------------------------------------------------------------//
+// Using SweetAlert Library Create a popup that gets input from the user.
+function saveIREDESPopup() {
+    let blastName = points[0].entityName;
+    //console.log("Points" + points);
+    console.log("blastName: " + blastName);
+    Swal.fire({
+        title: "Export IREDES file?",
+        showCancelButton: true,
+        confirmButtonText: "Confirm",
+        cancelButtonText: "Cancel",
+        html: `
+      <div class="button-container-2col">
+      <label class="labelWhite18" for="fileName">File Name</label>
+      <input type="text" id="fileName" placeholder="File Name" value="${blastName}_XML"/>
+			<label class="labelWhite18" for="planID">Drill Plan ID</label>
+			<input type="text" id="planID" placeholder="Plan ID" value="${blastName}"/>
+			<label class="labelWhite18" for="SiteID">Site ID</label>
+			<input type="text" id="siteID" placeholder="Site ID" value="SiteName"/>
+	        <label class="labelWhite18" for="holeOptions">Hole Options On (required for mwd)</label>
+      		<input type="checkbox" id="holeOptions" name="holeOptions" value="1" checked="true">
+	        <label class="labelWhite18" for="mwdOn">Set Measure While Drilling On</label>
+      		<input type="checkbox" id="mwdOn" name="mwdOn" value="1" checked="true">
+      		<label class="labelWhite18">Checksum Type:</label>
+				<select id="chksumValue">
+					<option value="CRC32-DECIMAL" selected>CRC32 Decimal (Epiroc)</option>
+					<option value="CRC32-HEXBINARY">HexBinary (XSD Spec)</option>
+					<option value="ZERO">Zero</option>
+					<option value="NONE">None</option>
+					<!-- <option value="MD5">MD5</option> -->
+					<!-- <option value="SHA1">SHA1</option> -->
+					<!-- <option value="SHA256">SHA256</option> -->
+				</select>
+      </div>
+			<label class="labelWhite12">This is an XML file in the format of an Epiroc Drill Plan Export</label>
+        `,
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            content: "swal2-content",
+            htmlContainer: "swal2-html-container",
+            icon: "swal2-icon",
+        },
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Get user input values
+            const fileNameInput = document.getElementById("fileName");
+            const fileNameValue = fileNameInput.value;
+
+            const planIDInput = document.getElementById("planID");
+            const planIDValue = planIDInput.value;
+
+            const siteIDInput = document.getElementById("siteID");
+            const siteIDValue = siteIDInput.value;
+
+            const holeOptionsInput = document.getElementById("holeOptions");
+            const holeOptionsValue = holeOptionsInput.checked ? true : false;
+
+            const mwdInput = document.getElementById("mwdOn");
+            const mwdValue = mwdInput.checked ? true : false;
+
+            const chksumInput = document.getElementById("chksumValue");
+            const chksumValue = chksumInput.value;
+
+            if (fileNameValue === "") {
+                // Show an alert to the user with a customized error button
+                Swal.fire({
+                    title: "File Name is Null or Invalid",
+                    icon: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "Error",
+                    customClass: {
+                        container: "custom-popup-container",
+                        title: "swal2-title",
+                        confirmButton: "cancel",
+                        //cancelButton: "cancel",
+                        content: "swal2-content",
+                        htmlContainer: "swal2-html-container",
+                        icon: "swal2-icon",
+                    },
+                });
+                return; // Exit the function
+            }
+
+            if (planIDValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Plan ID",
+                    text: "Please enter a Drill Plan ID.",
+                    icon: "error",
+                });
+                return; // Exit the function
+            }
+            //site Id checks
+            if (siteIDValue === "") {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid Site ID",
+                    text: "Please enter a Site ID.",
+                    icon: "error",
+                });
+                return; // Exit the function
+            }
+
+            // Generate the XML content using the convertPointsToIREDESXML function
+            const xmlContent = convertPointsToIREDESXML(points, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
+
+            if (isIOS()) {
+                // Create a Blob with the XML data
+                const blob = new Blob([xmlContent], {
+                    type: "text/xml;charset=utf-8",
+                });
+
+                // Create a URL for the Blob
+                const url = URL.createObjectURL(blob);
+
+                // Create an anchor element with the download link
+                const link = document.createElement("a");
+                link.href = url;
+
+                link.download = fileNameValue + ".xml";
+                link.textContent = "Click here to download";
+
+                // Append the link to the document
+                document.body.appendChild(link);
+
+                // Programmatically trigger the click event on the link
+                link.click();
+
+                // Remove the link from the document
+                document.body.removeChild(link);
+            } else {
+                // Create an invisible anchor element
+                const link = document.createElement("a");
+                link.style.display = "none";
+
+                // Set the XML content as the "href" attribute
+                link.href = "data:text/xml;charset=utf-8," + encodeURIComponent(xmlContent);
+                link.download = fileNameValue + ".xml";
+
+                // Append the link to the document
+                document.body.appendChild(link);
+
+                // Programmatically trigger the click event on the link
+                link.click();
+
+                // Remove the link from the document
+                document.body.removeChild(link);
+            }
+        }
+    });
+}
+//COMPLETED: Implement the IREDES XML file generation and checksum calculation on the Checksum CRC32 function
+/*
+<xsd:element name="ChkSum" type="xsd:hexBinary">
+<xsd:annotation> 
+<xsd:documentation>Check sum including all data Objects in the Data Set  Checksum is calculated over the ENTIRE XML file ready to send using the value string  "0" as ChkSum value. After calculating the checksum the resulting value is written into the ChkSum tag thereby replacing the "0" string. Thereafter the Data Set is issued. Interpretation is done in reverse order also using "0" as a defined value of the ChkSum tag for checksum validation. The algorithm is: CRC32</xsd:documentation>
+</xsd:annotation> 
+</xsd:element>
+*/
+
 function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions, mwd, chksumType) {
     if (!points || !Array.isArray(points) || points.length === 0) return;
     const now = new Date();
@@ -3823,7 +3988,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
     // Format the date as YYYY-MM-DDTHH:mm:ss
     const formattedDate = now.toISOString().slice(0, 19);
     let notes = "Notes";
-    const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generated by Kirra - https://blastingapps.xyz/kirra.html -->\n`;
+    const xmlHeader = `<?xml version="1.0" encoding="UTF-8"?>\n<!-- Generated by Kirra - https://blastingapps.com/kirra.html -->\n`;
     let xml = `${xmlHeader}<DRPPlan xmlns:IR="http://www.iredes.org/xml" IRVersion="V 1.0" IRDownwCompat="V 1.0" DRPPlanDownwCompat="V 1.0" DRPPlanVersion="V 1.0" xmlns="http://www.iredes.org/xml/DrillRig">\n`;
 
     // General Header
@@ -3902,6 +4067,13 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
         xml += `      </EndPoint>\n`;
         xml += `      <TypeOfHole>${iredesPoint.holeType.trim()}</TypeOfHole>\n`;
         xml += `      <DrillBitDia>${iredesPoint.holeDiameter}</DrillBitDia>\n`;
+        xml += `      <MwdOn>${mwd ? "1" : "0"}</MwdOn>\n`;
+        xml += `      <HoleOptions xmlns:opt="opt">\n`;
+        xml += `        <opt:HoleData>\n`;
+        xml += `          <ExtendedHoleStatus>${iredesPoint.measuredLength ? "Drilled" : "Undrilled"}</ExtendedHoleStatus>\n`;
+        xml += `        </opt:HoleData>\n`;
+        xml += `      </HoleOptions>\n`;
+        xml += `    </Hole>\n`;
     }
 
     // Placeholder for the checksum with the string "0"
@@ -3918,16 +4090,23 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
     xml += `  </IR:GenTrailer>\n`;
     xml += `</DRPPlan>`;
 
-    // Step 1: Calculate CRC32 checksum with the "0" as the initial checksum
-    let checksum = crc32(xml.replace(checksumPlaceholder, "0"));
+    // Step 1: Calculate CRC32 checksum with "0" as the initial checksum
+    let checksum = crc32(xml.replace(/<IR:ChkSum>0<\/IR:ChkSum>/, "<IR:ChkSum>0</IR:ChkSum>"), chksumType);
 
-    // Step 2: Replace the "0" with the actual checksum
-    xml = xml.replace(checksumPlaceholder, checksum);
+    // Step 2: Replace checksum in XML, format as needed
+    if (chksumType === "CRC32-DECIMAL") {
+        xml = xml.replace(/<IR:ChkSum>0<\/IR:ChkSum>/, `<IR:ChkSum>${checksum}</IR:ChkSum>`);
+    } else if (chksumType === "CRC32-HEXBINARY") {
+        xml = xml.replace(/<IR:ChkSum>0<\/IR:ChkSum>/, `<IR:ChkSum>${checksum.toString(16).toUpperCase()}</IR:ChkSum>`);
+    } else if (chksumType === "NONE") {
+        xml = xml.replace(/<IR:ChkSum>0<\/IR:ChkSum>/, `<IR:ChkSum> </IR:ChkSum>`);
+    } else {
+    }
 
     return xml;
 }
 
-function crc32(str) {
+function crc32(str, chksumType) {
     const table = new Uint32Array(256);
     for (let i = 256; i--; ) {
         let tmp = i;
@@ -3937,18 +4116,28 @@ function crc32(str) {
         table[i] = tmp;
     }
 
-    let crc = 0xffffffff; // Initialize with all bits set to 1 (equivalent to -1)
+    let crc = 0xffffffff;
     for (let i = 0, l = str.length; i < l; i++) {
         crc = (crc >>> 8) ^ table[(crc ^ str.charCodeAt(i)) & 255];
     }
 
-    // Ensure it's a 32-bit unsigned integer (force it to be positive)
-    crc = crc >>> 0;
+    crc = crc >>> 0; // Ensure unsigned
 
-    // Return the CRC32 as a string
-    return crc.toString(10);
+    // Format depending on chksumType
+    if (chksumType === "CRC32-HEXBINARY") {
+        return crc.toString(16).toUpperCase();
+    } else {
+        return crc;
+    }
 }
 
+//-----------------------------------------------------------------------------//
+// ----------------------// END IREDES EPIROC SECTION //-----------------------//
+//-----------------------------------------------------------------------------//
+
+//-----------------------------------------------------------------------------//
+// ----------------------// ALTERNATE CHECKSUMS //-----------------------------//
+//-----------------------------------------------------------------------------//
 function decimalChecksum(str) {
     let checksum = 0;
     for (let i = 0; i < str.length; i++) {
@@ -3970,6 +4159,10 @@ function calculateSHA256Checksum(data) {
     const hash = CryptoJS.SHA256(data);
     return hash.toString();
 }
+
+//-----------------------------------------------------------------------------//
+// ----------------------// END ALTERNATE CHECKSUMS //-------------------------//
+//-----------------------------------------------------------------------------//
 
 function calculateTimes(points) {
     if (!points || !Array.isArray(points) || points.length === 0) return;
@@ -7475,160 +7668,6 @@ function saveAQMPopup() {
     column10Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[9] : "Instruction";
     column11Dropdown.value = savedAQMPopupSettings.columnOrderArray ? savedAQMPopupSettings.columnOrderArray[10] : "Material Type";
     // Set values for more dropdowns as needed
-}
-
-// Using SweetAlert Library Create a popup that gets input from the user.
-function saveIREDESPopup() {
-    let blastName = points[0].entityName;
-    //console.log("Points" + points);
-    console.log("blastName: " + blastName);
-    Swal.fire({
-        title: "Export IREDES file?",
-        showCancelButton: true,
-        confirmButtonText: "Confirm",
-        cancelButtonText: "Cancel",
-        html: `
-      <div class="button-container-2col">
-      <label class="labelWhite18" for="fileName">File Name</label>
-      <input type="text" id="fileName" placeholder="File Name" value="${blastName}_XML"/>
-			<label class="labelWhite18" for="planID">Drill Plan ID</label>
-			<input type="text" id="planID" placeholder="Plan ID" value="${blastName}"/>
-			<label class="labelWhite18" for="SiteID">Site ID</label>
-			<input type="text" id="siteID" placeholder="Site ID" value="SiteName"/>
-	        <label class="labelWhite18" for="holeOptions">Hole Options On (required for mwd)</label>
-      		<input type="checkbox" id="holeOptions" name="holeOptions" value="1" checked="true">
-	        <label class="labelWhite18" for="mwdOn">Set Measure While Drilling On</label>
-      		<input type="checkbox" id="mwdOn" name="mwdOn" value="1" checked="true">
-      		<label class="labelWhite18">Checksum Type:</label>
-				<select id="chksumValue">
-					<!-- <option value="DECIMAL" selected>DECIMAL</option> -->
-					<option value="CRC32" selected>CRC32</option>
-					<!-- <option value="MD5">MD5</option> -->
-					<!-- <option value="SHA1">SHA1</option> -->
-					<!-- <option value="SHA256">SHA256</option> -->
-					<option value="ZERO">ZERO</option>
-					<option value="NONE">NONE</option>
-				</select>
-      </div>
-			<label class="labelWhite12">This is an XML file in the format of an Epiroc Drill Plan Export</label>
-        `,
-        customClass: {
-            container: "custom-popup-container",
-            title: "swal2-title",
-            confirmButton: "confirm",
-            cancelButton: "cancel",
-            content: "swal2-content",
-            htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Get user input values
-            const fileNameInput = document.getElementById("fileName");
-            const fileNameValue = fileNameInput.value;
-
-            const planIDInput = document.getElementById("planID");
-            const planIDValue = planIDInput.value;
-
-            const siteIDInput = document.getElementById("siteID");
-            const siteIDValue = siteIDInput.value;
-
-            const holeOptionsInput = document.getElementById("holeOptions");
-            const holeOptionsValue = holeOptionsInput.checked ? true : false;
-
-            const mwdInput = document.getElementById("mwdOn");
-            const mwdValue = mwdInput.checked ? true : false;
-
-            const chksumInput = document.getElementById("chksumValue");
-            const chksumValue = chksumInput.value;
-
-            if (fileNameValue === "") {
-                // Show an alert to the user with a customized error button
-                Swal.fire({
-                    title: "File Name is Null or Invalid",
-                    icon: "error",
-                    showCancelButton: false,
-                    confirmButtonText: "Error",
-                    customClass: {
-                        container: "custom-popup-container",
-                        title: "swal2-title",
-                        confirmButton: "cancel",
-                        //cancelButton: "cancel",
-                        content: "swal2-content",
-                        htmlContainer: "swal2-html-container",
-                        icon: "swal2-icon",
-                    },
-                });
-                return; // Exit the function
-            }
-
-            if (planIDValue === "") {
-                // Show an alert to the user
-                Swal.fire({
-                    title: "Invalid Plan ID",
-                    text: "Please enter a Drill Plan ID.",
-                    icon: "error",
-                });
-                return; // Exit the function
-            }
-            //site Id checks
-            if (siteIDValue === "") {
-                // Show an alert to the user
-                Swal.fire({
-                    title: "Invalid Site ID",
-                    text: "Please enter a Site ID.",
-                    icon: "error",
-                });
-                return; // Exit the function
-            }
-
-            // Generate the XML content using the convertPointsToIREDESXML function
-            const xmlContent = convertPointsToIREDESXML(points, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
-
-            if (isIOS()) {
-                // Create a Blob with the XML data
-                const blob = new Blob([xmlContent], {
-                    type: "text/xml;charset=utf-8",
-                });
-
-                // Create a URL for the Blob
-                const url = URL.createObjectURL(blob);
-
-                // Create an anchor element with the download link
-                const link = document.createElement("a");
-                link.href = url;
-
-                link.download = fileNameValue + ".xml";
-                link.textContent = "Click here to download";
-
-                // Append the link to the document
-                document.body.appendChild(link);
-
-                // Programmatically trigger the click event on the link
-                link.click();
-
-                // Remove the link from the document
-                document.body.removeChild(link);
-            } else {
-                // Create an invisible anchor element
-                const link = document.createElement("a");
-                link.style.display = "none";
-
-                // Set the XML content as the "href" attribute
-                link.href = "data:text/xml;charset=utf-8," + encodeURIComponent(xmlContent);
-                link.download = fileNameValue + ".xml";
-
-                // Append the link to the document
-                document.body.appendChild(link);
-
-                // Programmatically trigger the click event on the link
-                link.click();
-
-                // Remove the link from the document
-                document.body.removeChild(link);
-            }
-        }
-    });
 }
 
 // Using SweetAlert Library Create a popup that gets input from the user.
