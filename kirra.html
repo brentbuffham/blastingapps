@@ -3,7 +3,7 @@
 <!--
     Description: This file contains the main UI for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250605.1804AWST"
+    Last Modified: "20250607.1500AWST"
 -->
 
 <head>
@@ -65,8 +65,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
 
 	<!-- Include DXFParser from jsDeliver-->
-	<script src="https://cdn.jsdelivr.net/npm/dxf-parser@1.1.2/dist/dxf-parser.min.js"></script>
-
 	<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/d3-polygon@3"></script>
@@ -102,7 +100,7 @@
 	</script>
 	<script type="text/javascript">
 		(function (c, l, a, r, i, t, y) {
-			c[a] = c[a] || function () {(c[a].q = c[a].q || []).push(arguments)};
+			c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) };
 			t = l.createElement(r); t.async = 1; t.src = "https://www.clarity.ms/tag/" + i;
 			y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
 		})(window, document, "clarity", "script", "kfxj4dnxgg");
@@ -1024,7 +1022,7 @@
 		</div>
 		<div class="menu">
 			<b>
-				<font size="3">&nbsp;&nbsp;Kirra&nbsp;&nbsp;&nbsp;&nbsp;</font>
+				<font size="3">&nbsp;&nbsp;Kirra&nbsp;&nbsp;</font>
 			</b>
 		</div>
 		<div class="menu">
@@ -1038,25 +1036,33 @@
 			</select>
 		</div>
 
-		<div class="spacer"></div>
+		<!-- <div class="spacer"></div> -->
 
 		<div class="menu">
-			<button id="helpButton" type="button" title="Help">?</button>&nbsp;&nbsp;&nbsp;
+			<button id="helpButton" type="button" title="Help">
+				<img src="icons/help.png" alt="Help">
+			</button>
 		</div>
 		<div class="menu">
 			<!--Zoom In-->
-			<button id="zoomInButton">+</button>
+			<button id="zoomInButton" type="button" title="Zoom In">
+				<img src="icons/circle-plus.png" alt="Zoom In">
+			</button>
 		</div>
 		<div class="menu">
 			<!--Zoom Out-->
-			<button id="zoomOutButton">-</button>
+			<button id="zoomOutButton" type="button" title="Zoom Out">
+				<img src="icons/circle-minus.png" alt="Zoom Out">
+			</button>
 		</div>
+		<!-- <div class="menu">-->
+		<!--Reset Zoom-->
+		<!-- <button id="resetZoomButton">R</button>&nbsp;&nbsp;-->
+		<!--</div> -->
 		<div class="menu">
-			<!--Reset Zoom-->
-			<button id="resetZoomButton">R</button>&nbsp;&nbsp;
-		</div>
-		<div class="menu">
-			<a class="button-1" id="buttonGoBack" href="index.html">&#8592;</a>
+			<button id="buttonGoBack" type="button" title="Go Back" href="index.html">
+				<img src="icons/arrow-back.png" alt="Go Back">
+			</button>&nbsp;&nbsp;
 		</div>
 		<div class="spacer"></div>
 		<div class="dark-mode-toggle">
@@ -1773,6 +1779,7 @@
 	</div>
 	<!--END CANVAS AND MODE DISPLY BUTTONS-->
 	<div id="floating-toolbar">
+		═══
 		<!-- <div class="input"> -->
 		<input type="checkbox" id="selectPointer" name="selectPointer" value="selectPointer">
 		<label for="selectPointer" class="toggle-buttons-custom icon-button" title="selectPointer">
