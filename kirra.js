@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250607.1500AWST"
-const buildVersion = "20250607.1500AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250609.2240AWST"
+const buildVersion = "20250609.2240AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -372,6 +372,7 @@ const option2A = document.getElementById("display2A");
 const option3 = document.getElementById("display3");
 const option4 = document.getElementById("display4");
 const option5 = document.getElementById("display5");
+const option5B = document.getElementById("display5B"); //subdrill
 const option5A = document.getElementById("display5A");
 const option6 = document.getElementById("display6");
 const option6A = document.getElementById("display6A");
@@ -389,7 +390,7 @@ const option15 = document.getElementById("display15");
 const option16 = document.getElementById("display16"); //pf
 
 // after const option16 = …
-const allToggles = [option1, option2, option2A, option3, option4, option5, option5A, option6, option6A, option8, option8A, option8B, option8C, option9, option10, option11, option12, option13, option14, option15, option16];
+const allToggles = [option1, option2, option2A, option3, option4, option5, option5B, option5A, option6, option6A, option8, option8A, option8B, option8C, option9, option10, option11, option12, option13, option14, option15, option16];
 
 allToggles.forEach((opt) => {
     if (opt)
@@ -553,6 +554,7 @@ function updateTranslations(language) {
         document.querySelector("label[for='display3']").title = langTranslations.display_angle_title;
         document.querySelector("label[for='display4']").title = langTranslations.display_dip_title;
         document.querySelector("label[for='display5']").title = langTranslations.display_bearing_title;
+        document.querySelector("label[for='display5B']").title = langTranslations.display_subdrill_title;
         document.querySelector("label[for='display5A']").title = langTranslations.display_ties_title;
         document.querySelector("label[for='display6']").title = langTranslations.display_connectors_title;
         document.querySelector("label[for='display6A']").title = langTranslations.display_times_only_title;
@@ -1211,7 +1213,6 @@ editHolesToggle.addEventListener("change", function () {
     }
 });
 
-// Access the slider element and add an event listener to track changes
 const holeEastingSlider = document.getElementById("holeEastingSlider");
 holeEastingSlider.addEventListener("input", function () {
     if (isHoleEditing) {
@@ -1219,60 +1220,30 @@ holeEastingSlider.addEventListener("input", function () {
         holeEastingLabel.textContent = "Hole Easting (X): " + newHoleEasting.toFixed(2) + "mE";
 
         if (selectedHole) {
-            // Update the easting of the individual selected hole
             const index = points.findIndex((point) => point === selectedHole);
-            if (fixToeLocation == true) {
-                if (index !== -1) {
-                    points[index].startXLocation = newHoleEasting;
-                    // Assuming endXLocation should also be updated based on the new easting
-                    points[index].endXLocation += newHoleEasting - points[index].startXLocation;
-                    calculateEndXYZ(points[index], points[index].length, 1);
-                    // Redraw the updated data
-                    drawData(points, selectedHole);
-                }
-            } else {
-                if (index !== -1) {
-                    // Calculate the original delta between startXLocation and endXLocation
-                    let originalDeltaX = points[index].endXLocation - points[index].startXLocation;
-
-                    // Update startXLocation
-                    points[index].startXLocation = newHoleEasting;
-
-                    // Update endXLocation based on the new startXLocation and original delta
-                    points[index].endXLocation = newHoleEasting + originalDeltaX;
-
-                    // Redraw the updated data
-                    drawData(points, selectedHole);
-                }
+            if (index !== -1) {
+                clickedHole = points[index];
+                // Use calculateHoleGeometry with mode 4 (easting)
+                calculateHoleGeometry(clickedHole, newHoleEasting, 4);
+                drawData(points, selectedHole);
             }
         } else if (selectedMultipleHoles) {
-            // Update the easting of multiple selected holes
-            let sumEasting = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startXLocation, 0);
-            let averageEasting = sumEasting / selectedMultipleHoles.length;
-            let eastingDelta = newHoleEasting - averageEasting;
-
             selectedMultipleHoles.forEach((hole) => {
-                hole.startXLocation += eastingDelta;
-                // Assuming endXLocation should also be updated based on the new easting
-                hole.endXLocation += eastingDelta;
+                // Use calculateHoleGeometry with mode 4 (easting) for each hole
+                calculateHoleGeometry(hole, newHoleEasting, 4);
             });
-
-            // Redraw the updated data for multiple holes
-            drawData(points, null); // Pass null as the selected hole might not be relevant
+            drawData(points, null);
         }
 
         // Recalculate dependent data structures if necessary
         if (points.length > 0) {
-            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
             const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-
-            // directionArrows now contains the arrow data for later drawing
         }
     }
 });
 
-// Access the slider element and add an event listener to track changes
 const holeNorthingSlider = document.getElementById("holeNorthingSlider");
 holeNorthingSlider.addEventListener("input", function () {
     if (isHoleEditing) {
@@ -1280,56 +1251,26 @@ holeNorthingSlider.addEventListener("input", function () {
         holeNorthingLabel.textContent = "Hole Northing (Y): " + newHoleNorthing.toFixed(2) + "mN";
 
         if (selectedHole) {
-            // Update the easting of the individual selected hole
             const index = points.findIndex((point) => point === selectedHole);
-            if (fixToeLocation == true) {
-                if (index !== -1) {
-                    points[index].startYLocation = newHoleNorthing;
-                    // Assuming endYLocation should also be updated based on the new easting
-                    points[index].endYLocation += newHoleNorthing - points[index].startYLocation;
-                    calculateEndXYZ(points[index], points[index].length, 1);
-                    // Redraw the updated data
-                    drawData(points, selectedHole);
-                }
-            } else {
-                if (index !== -1) {
-                    // Calculate the original delta between startYLocation and endYLocation
-                    let originalDeltaY = points[index].endYLocation - points[index].startYLocation;
-
-                    // Update startYLocation
-                    points[index].startYLocation = newHoleNorthing;
-
-                    // Update endYLocation based on the new startYLocation and original delta
-                    points[index].endYLocation = newHoleNorthing + originalDeltaY;
-
-                    // Redraw the updated data
-                    drawData(points, selectedHole);
-                }
+            if (index !== -1) {
+                clickedHole = points[index];
+                // Use calculateHoleGeometry with mode 5 (northing)
+                calculateHoleGeometry(clickedHole, newHoleNorthing, 5);
+                drawData(points, selectedHole);
             }
         } else if (selectedMultipleHoles) {
-            // This is key
-            // Update the northing of multiple selected holes
-            let sumNorthing = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startYLocation, 0);
-            let averageNorthing = sumNorthing / selectedMultipleHoles.length;
-            let northingDelta = newHoleNorthing - averageNorthing;
-
             selectedMultipleHoles.forEach((hole) => {
-                // Iterates over selectedMultipleHoles
-                hole.startYLocation += northingDelta;
-                hole.endYLocation += northingDelta;
+                // Use calculateHoleGeometry with mode 5 (northing) for each hole
+                calculateHoleGeometry(hole, newHoleNorthing, 5);
             });
-
-            // Redraw the updated data for multiple holes
-            drawData(points, null); // Pass null as the selected hole might not be relevant
+            drawData(points, null);
         }
 
         // Recalculate dependent data structures if necessary
         if (points.length > 0) {
-            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+            const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
             const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-
-            // directionArrows now contains the arrow data for later drawing
         }
     }
 });
@@ -1349,7 +1290,7 @@ holeElevationSlider.addEventListener("input", function () {
                     points[index].startZLocation = newHoleElevation;
                     // Assuming endZLocation should also be updated based on the new easting
                     points[index].endZLocation += newHoleElevation - points[index].startZLocation;
-                    calculateEndXYZ(points[index], points[index].length, 1);
+                    calculateHoleGeometry(points[index], points[index].length, 1);
                     // Redraw the updated data
                     drawData(points, selectedHole);
                 }
@@ -1404,14 +1345,14 @@ holeLengthSlider.addEventListener("input", function () {
             if (index !== -1) {
                 clickedHole = points[index];
                 holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
-                calculateEndXYZ(clickedHole, newHoleLength, 1);
+                calculateHoleGeometry(clickedHole, newHoleLength, 1);
                 drawData(points, selectedHole);
             }
         }
         if (selectedMultipleHoles != null) {
             selectedMultipleHoles.forEach((hole) => {
                 holeLengthLabel.textContent = "Hole Length : " + parseFloat(newHoleLength).toFixed(1) + "m";
-                calculateEndXYZ(hole, newHoleLength, 1);
+                calculateHoleGeometry(hole, newHoleLength, 1);
                 drawData(points, selectedHole);
             });
         }
@@ -1427,16 +1368,29 @@ holeAngleSlider.addEventListener("input", function () {
             if (index !== -1) {
                 clickedHole = points[index];
                 holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
-                calculateEndXYZ(clickedHole, newHoleAngle, 2);
+                calculateHoleGeometry(clickedHole, newHoleAngle, 2);
+
+                // Update hole length slider to reflect the new calculated length
+                const newLength = clickedHole.holeLengthCalculated;
+                holeLengthSlider.value = newLength;
+                holeLengthLabel.textContent = "Hole Length : " + parseFloat(newLength).toFixed(1) + "m";
+
                 drawData(points, selectedHole);
             }
         }
         if (selectedMultipleHoles != null) {
             selectedMultipleHoles.forEach((hole) => {
                 holeAngleLabel.textContent = "Hole Angle : " + parseFloat(newHoleAngle).toFixed(0) + "\u00B0";
-                calculateEndXYZ(hole, newHoleAngle, 2);
+                calculateHoleGeometry(hole, newHoleAngle, 2);
                 drawData(points, selectedHole);
             });
+
+            // For multiple holes, use the first hole's length for the slider display
+            if (selectedMultipleHoles.length > 0) {
+                const newLength = selectedMultipleHoles[0].holeLengthCalculated;
+                holeLengthSlider.value = newLength;
+                holeLengthLabel.textContent = "Hole Length : " + parseFloat(newLength).toFixed(1) + "m";
+            }
         }
     }
 });
@@ -1450,14 +1404,14 @@ holeDiameterSlider.addEventListener("input", function () {
             if (index !== -1) {
                 clickedHole = points[index];
                 holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
-                calculateEndXYZ(clickedHole, newHoleDiameter, 7);
+                calculateHoleGeometry(clickedHole, newHoleDiameter, 7);
                 drawData(points, selectedHole);
             }
         }
         if (selectedMultipleHoles != null) {
             selectedMultipleHoles.forEach((hole) => {
                 holeDiameterLabel.textContent = "Hole Diameter : " + parseFloat(newHoleDiameter).toFixed(0) + "mm";
-                calculateEndXYZ(hole, newHoleDiameter, 7);
+                calculateHoleGeometry(hole, newHoleDiameter, 7);
                 drawData(points, selectedHole);
             });
         }
@@ -1476,7 +1430,7 @@ holeBearingSlider.addEventListener("input", function () {
                 holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
 
                 // Calculate endXYZ and draw points
-                calculateEndXYZ(clickedHole, newHoleBearing, 3);
+                calculateHoleGeometry(clickedHole, newHoleBearing, 3);
                 drawData(points, selectedHole);
             }
         }
@@ -1486,7 +1440,7 @@ holeBearingSlider.addEventListener("input", function () {
                 holeBearingLabel.textContent = "Hole Bearing : " + parseFloat(newHoleBearing).toFixed(1) + "\u00B0";
 
                 // Calculate endXYZ and draw points
-                calculateEndXYZ(hole, newHoleBearing, 3);
+                calculateHoleGeometry(hole, newHoleBearing, 3);
                 drawData(points, selectedHole);
             });
         }
@@ -1495,26 +1449,38 @@ holeBearingSlider.addEventListener("input", function () {
 
 const holeSubdrillSlider = document.getElementById("holeSubdrillSlider");
 holeSubdrillSlider.addEventListener("input", function () {
-    ///Not in use yet as the points array needs a subdrill component added.
-    // if (isHoleEditing) {
-    //     let newHoleSubdrill = parseFloat(holeSubdrillSlider.value);
-    //     if (selectedHole) {
-    //         const index = points.findIndex((point) => point === selectedHole);
-    //         if (index !== -1) {
-    //             clickedHole = points[index];
-    //             holeSubdrillLabel.textContent = "Hole Subdrill : " + parseFloat(newHoleSubdrill).toFixed(1) + "m";
-    //             calculateEndXYZ(clickedHole, newHoleSubdrill, 1);
-    //             drawData(points, selectedHole);
-    //         }
-    //     }
-    //     if (selectedMultipleHoles != null) {
-    //         selectedMultipleHoles.forEach((hole) => {
-    //             holeSubdrillLabel.textContent = "Hole Subdrill : " + parseFloat(newHoleSubdrill).toFixed(1) + "m";
-    //             calculateEndXYZ(hole, newHoleSubdrill, 1);
-    //             drawData(points, selectedHole);
-    //         });
-    //     }
-    // }
+    if (isHoleEditing) {
+        let newHoleSubdrill = parseFloat(holeSubdrillSlider.value);
+        if (selectedHole) {
+            const index = points.findIndex((point) => point === selectedHole);
+            if (index !== -1) {
+                clickedHole = points[index];
+                holeSubdrillLabel.textContent = "Hole Subdrill : " + parseFloat(newHoleSubdrill).toFixed(1) + "m";
+                calculateHoleGeometry(clickedHole, newHoleSubdrill, 8);
+
+                // Update hole length slider to reflect the new calculated length
+                const newLength = clickedHole.holeLengthCalculated;
+                holeLengthSlider.value = newLength;
+                holeLengthLabel.textContent = "Hole Length : " + parseFloat(newLength).toFixed(1) + "m";
+
+                drawData(points, selectedHole);
+            }
+        }
+        if (selectedMultipleHoles != null) {
+            selectedMultipleHoles.forEach((hole) => {
+                holeSubdrillLabel.textContent = "Hole Subdrill : " + parseFloat(newHoleSubdrill).toFixed(1) + "m";
+                calculateHoleGeometry(hole, newHoleSubdrill, 8);
+                drawData(points, selectedHole);
+            });
+
+            // For multiple holes, use the first hole's length for the slider display
+            if (selectedMultipleHoles.length > 0) {
+                const newLength = selectedMultipleHoles[0].holeLengthCalculated;
+                holeLengthSlider.value = newLength;
+                holeLengthLabel.textContent = "Hole Length : " + parseFloat(newLength).toFixed(1) + "m";
+            }
+        }
+    }
 });
 
 function resizeChart() {
@@ -1960,72 +1926,42 @@ timeOffsetSlider.addEventListener("input", function () {
     });
 });
 
-option1.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option2.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option2A.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option3.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option4.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option5.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option5A.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option6.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option6A.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option8.addEventListener("change", function () {
-    isDisplayingContours = true;
-    drawData(points, selectedHole);
-});
-option8A.addEventListener("change", function () {
-    isDisplayingSlopeTriangles = true;
-    drawData(points, selectedHole);
-});
-option8B.addEventListener("change", function () {
-    isDisplayingReliefTriangles = true;
-    drawData(points, selectedHole);
-});
-option8C.addEventListener("change", function () {
-    isDisplayingDirectionArrows = true;
-    drawData(points, selectedHole);
-});
-option9.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option10.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option11.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option12.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option13.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option14.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option15.addEventListener("change", function () {
-    drawData(points, selectedHole);
-});
-option16.addEventListener("change", function () {
-    drawData(points, selectedHole);
+// Create array of options and their corresponding flags
+const optionConfigs = [
+    { option: option1 },
+    { option: option2 },
+    { option: option2A },
+    { option: option3 },
+    { option: option4 },
+    { option: option5 },
+    { option: option5B },
+    { option: option5A },
+    { option: option6 },
+    { option: option6A },
+    { option: option8, flag: "isDisplayingContours" },
+    { option: option8A, flag: "isDisplayingSlopeTriangles" },
+    { option: option8B, flag: "isDisplayingReliefTriangles" },
+    { option: option8C, flag: "isDisplayingDirectionArrows" },
+    { option: option9 },
+    { option: option10 },
+    { option: option11 },
+    { option: option12 },
+    { option: option13 },
+    { option: option14 },
+    { option: option15 },
+    { option: option16 }
+];
+
+// Add event listeners programmatically
+optionConfigs.forEach((config) => {
+    if (config.option) {
+        config.option.addEventListener("change", function () {
+            if (config.flag) {
+                window[config.flag] = true;
+            }
+            drawData(points, selectedHole);
+        });
+    }
 });
 
 let touchStartTime;
@@ -2242,521 +2178,880 @@ function handleTouchMove(event) {
     }
 }
 
-let sessionLoadCount = 0;
-let blastNameValue = "BlastName" + sessionLoadCount;
-
 async function handleFileUpload(event) {
     const file = event.target.files[0];
-    if (!file) {
-        return; // Exit the function if file selection is canceled
-    }
+    if (!file) return;
 
     const reader = new FileReader();
 
     reader.onload = async function (event) {
         const data = event.target.result;
-        // Check if the file is a KAD file
+
         if (file.name.endsWith(".kad") || file.name.endsWith(".KAD") || file.name.endsWith(".txt") || file.name.endsWith(".TXT")) {
-            //try {
             parseKADFile(data);
             drawData(points, selectedHole);
         } else if (file.name.endsWith(".csv") || file.name.endsWith(".CSV")) {
-            // Handle CSV file parsing
-            let correctColumnNumbers = false;
-            const lines = data.split("\n");
-            for (let i = 0; i < lines.length; i++) {
-                const values = lines[i].split(",");
-                if (values.length === 14) {
-                    correctColumnNumbers = true; // CSV has 14 values, no need to ask for blast name
+            try {
+                points = parseCSV(data);
+
+                // Calculate centroid
+                let sumX = 0;
+                let sumY = 0;
+                for (let i = 0; i < points.length; i++) {
+                    sumX += points[i].startXLocation;
+                    sumY += points[i].startYLocation;
                 }
-            }
-            if (correctColumnNumbers) {
-                // If the CSV file has 14 values per row, no need to ask for a blast name
-                blastNameValue = "";
-            } else {
-                // If not, ask the user for a blast name
-                result = await editBlastNamePopup();
-                blastNameValue = result;
-                console.log("Async handle - blastNameValue: ", blastNameValue);
-            }
-            try {
-                // Ensure blastNameValue is set before calling parseCSV
-                points = parseCSV(data, blastNameValue);
-            } catch (error) {
-                console.log("Error: ", error);
-                throw error;
-            }
+                centroidX = sumX / points.length;
+                centroidY = sumY / points.length;
 
-            let sumX = 0;
-            let sumY = 0;
-            for (let i = 0; i < points.length; i++) {
-                sumX += points[i].startXLocation;
-                sumY += points[i].startYLocation;
-            }
-
-            centroidX = sumX / points.length;
-            centroidY = sumY / points.length;
-            try {
+                // Recalculate contours and triangles
                 const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
-
-                // directionArrows now contains the arrow data for later drawing
-
-                const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
+                const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
                 drawData(points, selectedHole);
                 countPoints = points.length;
             } catch (error) {
+                console.error("Error during CSV handling:", error);
                 fileFormatPopup(error);
             }
         }
     };
+
     reader.readAsText(file);
 }
 
-function parseCSV(data, blastNameValue) {
+let randomHex = Math.floor(Math.random() * 16777215).toString(16);
+
+function parseCSV(data) {
     if (!points || !Array.isArray(points)) points = [];
-    sessionLoadCount += 1;
+    randomHex = Math.floor(Math.random() * 16777215).toString(16);
+
     const lines = data.split("\n");
     let minX = Infinity;
     let minY = Infinity;
-    const entityName = blastNameValue;
-    const entityType = "hole";
+
+    const supportedLengths = [4, 7, 9, 12, 14, 20, 25, 30];
+    const warnings = [];
+
+    let blastNameValue = "BLAST_" + randomHex;
 
     for (let i = 0; i < lines.length; i++) {
-        const values = lines[i].split(",");
+        const rawLine = lines[i].trim();
+        if (rawLine === "") continue;
 
-        if (values.length > 20) {
+        const values = rawLine.split(",");
+        const len = values.length;
+
+        if (values.every((v) => v.trim() === "")) continue;
+        if (!supportedLengths.includes(len)) {
+            warnings.push("Line " + (i + 1) + " skipped: unsupported column count (" + len + ")");
             continue;
         }
 
-        if (values.length === 20) {
-            // check if it has the correct number of values
-            const entityName = values[0];
-            const entityType = "hole";
-            const holeID = values[2]; //Id of the blast hole
-            const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-            const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-            const holeType = values[10]; //type of the blast hole
-            const fromHoleID = values[11]; //from hole where the connector tail will be
-            const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-            const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-            // Parse optional fields
-            const measuredLength = values.length > 14 ? parseFloat(values[14]) : 0;
-            const measuredLengthTimeStamp = values.length > 15 ? values[15] : "09/05/1975 00:00:00";
-            const measuredMass = values.length > 16 ? parseFloat(values[16]) : 0;
-            const measuredMassTimeStamp = values.length > 17 ? values[17] : "09/05/1975 00:00:00";
-            const measuredComment = values.length > 18 ? values[18] : "None";
-            const measuredCommentTimeStamp = values.length > 19 ? values[19] : "09/05/1975 00:00:00";
+        let entityName = blastNameValue;
+        let holeID, startX, startY, startZ, endX, endY, endZ;
+        let holeDiameter = 0,
+            holeType = "Undefined",
+            fromHoleID = "",
+            delay = 0,
+            colour = "red";
+        let measuredLength = 0,
+            measuredLengthTimeStamp = "09/05/1975 00:00:00";
+        let measuredMass = 0,
+            measuredMassTimeStamp = "09/05/1975 00:00:00";
+        let measuredComment = "None",
+            measuredCommentTimeStamp = "09/05/1975 00:00:00";
+        let subdrill = 0;
 
-            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("X",deltaXAmount);
-            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Y",deltaYAmount);
-            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Z",deltaZAmount);
-            const verticalObject = {
-                x: 0,
-                y: 0,
-                z: 1
-            };
-            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-            const epsilon = 1e-10; // A small value to prevent division by zero
-            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
-            }
-        } else if (values.length === 14) {
-            // check if it has the correct number of values
-            const entityName = values[0];
-            const entityType = "hole";
-            const holeID = values[2]; //Id of the blast hole
-            const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-            const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-            const holeType = values[10]; //type of the blast hole
-            const fromHoleID = values[11]; //from hole where the connector tail will be
-            const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-            const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-            const measuredLength = 0;
-            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-            const measuredMass = 0;
-            const measuredMassTimeStamp = "09/05/1975 00:00:00";
-            const measuredComment = "None";
-            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("X",deltaXAmount);
-            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Y",deltaYAmount);
-            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Z",deltaZAmount);
-            const verticalObject = {
-                x: 0,
-                y: 0,
-                z: 1
-            };
-            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-            const epsilon = 1e-10; // A small value to prevent division by zero
-            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
-            }
-        } else if (values.length === 12) {
-            // Skip empty lines and lines with fewer than 12 values
-            if (values.length < 12) {
-                continue;
-            }
-            //files with id, x, y, z, x, y, z, diameter, type, fromHoleID, delay, colour
-            // check if it has the correct number of values
-            const entityName = blastNameValue;
-            const holeID = values[0]; //Id of the blast hole
-            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-            const holeDiameter = parseFloat(values[7]); //diameter of the blast hole
-            const holeType = values[8]; //type of the blast hole
-            const fromHoleID = values[9].includes(":::") ? values[9] : `${blastNameValue}:::${values[9]}`;
-            //from hole where the connector tail will be
-            const timingDelayMilliseconds = parseInt(values[10]); //delay from hole to Id of the blast
-            const colourHexDecimal = values[11].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-            const measuredLength = 0;
-            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-            const measuredMass = 0;
-            const measuredMassTimeStamp = "09/05/1975 00:00:00";
-            const measuredComment = "None";
-            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("X",deltaXAmount);
-            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Y",deltaYAmount);
-            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-            //console.log("Z",deltaZAmount);
-            const verticalObject = {
-                x: 0,
-                y: 0,
-                z: 1
-            };
-            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-            const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-            const epsilon = 1e-10; // A small value to prevent division by zero
-            const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-            const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
-            }
-            ////console.log(points);
-        } else if (values.length === 9) {
-            // Skip empty lines and lines with fewer than 9 values
-            if (values.length < 9) {
-                continue;
-            }
-            //files with id, x, y, z, x, y, z, diameter, type
-            // check if it has the correct number of values
-            const entityName = blastNameValue;
-            const holeID = values[0];
-            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-            const holeDiameter = parseFloat(values[7]);
-            const holeType = values[8];
-            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-            const verticalObject = {
-                x: 0,
-                y: 0,
-                z: 1
-            };
-            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-            const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-            const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-            const fromHoleID = `${blastNameValue}:::${values[0]}`;
-            const timingDelayMilliseconds = 0;
-            const colourHexDecimal = "red";
-            const measuredLength = 0;
-            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-            const measuredMass = 0;
-            const measuredMassTimeStamp = "09/05/1975 00:00:00";
-            const measuredComment = "None";
-            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
-            }
-        } else if (values.length === 7) {
-            //files with id, x, y, z, x, y, z
-            // check if it has the correct number of values
-            const entityName = blastNameValue;
-            const holeID = values[0];
-            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-            const holeDiameter = 0;
-            const holeType = "Undefined";
-            const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-            const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-            const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-            const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-            const verticalObject = {
-                x: 0,
-                y: 0,
-                z: 1
-            };
-            const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-            const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-            const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-            const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-            const fromHoleID = `${blastNameValue}:::${values[0]}`;
-            console.log("blastNameValue:", blastNameValue);
-            console.log("values[0]:", values[0]);
-            console.log("fromHoleID:", fromHoleID);
-            const timingDelayMilliseconds = 0;
-            const colourHexDecimal = "red";
-            const measuredLength = 0;
-            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-            const measuredMass = 0;
-            const measuredMassTimeStamp = "09/05/1975 00:00:00";
-            const measuredComment = "None";
-            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
-            }
+        if (len === 30) {
+            entityName = values[0];
+            holeID = values[2];
+            startX = parseFloat(values[3]);
+            startY = parseFloat(values[4]);
+            startZ = parseFloat(values[5]);
+            endX = parseFloat(values[6]);
+            endY = parseFloat(values[7]);
+            endZ = parseFloat(values[8]);
+            // Note: We'll ignore the saved calculated values and recalculate using calculateHoleGeometry
+            subdrill = parseFloat(values[12]);
+            holeDiameter = parseFloat(values[15]);
+            holeType = values[16];
+            fromHoleID = values[17];
+            delay = parseInt(values[18]);
+            colour = values[19].replace(/\r$/, "");
+            measuredLength = parseFloat(values[24]);
+            measuredLengthTimeStamp = values[25];
+            measuredMass = parseFloat(values[26]);
+            measuredMassTimeStamp = values[27];
+            measuredComment = values[28];
+            measuredCommentTimeStamp = values[29];
+        } else if (len === 14) {
+            entityName = values[0];
+            holeID = values[2];
+            startX = parseFloat(values[3]);
+            startY = parseFloat(values[4]);
+            startZ = parseFloat(values[5]);
+            endX = parseFloat(values[6]);
+            endY = parseFloat(values[7]);
+            endZ = parseFloat(values[8]);
+            holeDiameter = parseFloat(values[9]);
+            holeType = values[10];
+            fromHoleID = values[11];
+            delay = parseInt(values[12]);
+            colour = values[13].replace(/\r$/, "");
+        } else if (len === 12) {
+            holeID = values[0];
+            startX = parseFloat(values[1]);
+            startY = parseFloat(values[2]);
+            startZ = parseFloat(values[3]);
+            endX = parseFloat(values[4]);
+            endY = parseFloat(values[5]);
+            endZ = parseFloat(values[6]);
+            holeDiameter = parseFloat(values[7]);
+            holeType = values[8];
+            fromHoleID = values[9].includes(":::") ? values[9] : blastNameValue + ":::" + values[9];
+            delay = parseInt(values[10]);
+            colour = values[11].replace(/\r$/, "");
+        } else if (len === 9) {
+            holeID = values[0];
+            startX = parseFloat(values[1]);
+            startY = parseFloat(values[2]);
+            startZ = parseFloat(values[3]);
+            endX = parseFloat(values[4]);
+            endY = parseFloat(values[5]);
+            endZ = parseFloat(values[6]);
+            holeDiameter = parseFloat(values[7]);
+            holeType = values[8];
+            fromHoleID = blastNameValue + ":::" + holeID;
+        } else if (len === 7) {
+            holeID = values[0];
+            startX = parseFloat(values[1]);
+            startY = parseFloat(values[2]);
+            startZ = parseFloat(values[3]);
+            endX = parseFloat(values[4]);
+            endY = parseFloat(values[5]);
+            endZ = parseFloat(values[6]);
+            fromHoleID = blastNameValue + ":::" + holeID;
+        } else if (len === 4) {
+            holeID = values[0];
+            startX = parseFloat(values[1]);
+            startY = parseFloat(values[2]);
+            startZ = parseFloat(values[3]);
+            endX = startX;
+            endY = startY;
+            endZ = startZ;
+            fromHoleID = blastNameValue + ":::" + holeID;
         }
-        if (values.length === 4) {
-            //files with id, x, y, z
-            // check if it has the correct number of values
-            const entityName = blastNameValue;
-            const holeID = values[0];
-            const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-            const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-            const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-            const endXLocation = parseFloat(values[1]); //end of the blast hole X value
-            const endYLocation = parseFloat(values[2]); //end of the blast hole Y value
-            const endZLocation = parseFloat(values[3]); //end of the blast hole Z value
-            const holeDiameter = 0;
-            const holeType = "Undefined";
-            const holeLengthCalculated = 0;
-            const holeAngle = 0;
-            const holeBearing = 0;
-            const fromHoleID = `${blastNameValue}:::${values[0]}`;
-            const timingDelayMilliseconds = 0;
-            const colourHexDecimal = "red";
-            const measuredLength = 0;
-            const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-            const measuredMass = 0;
-            const measuredMassTimeStamp = "09/05/1975 00:00:00";
-            const measuredComment = "None";
-            const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-            if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation)) {
-                // check if they are valid numbers
-                points.push({
-                    entityName,
-                    entityType,
-                    holeID,
-                    startXLocation,
-                    startYLocation,
-                    startZLocation,
-                    endXLocation,
-                    endYLocation,
-                    endZLocation,
-                    holeDiameter,
-                    holeType,
-                    fromHoleID,
-                    timingDelayMilliseconds,
-                    colourHexDecimal,
-                    holeLengthCalculated,
-                    holeAngle,
-                    holeBearing,
-                    measuredLength,
-                    measuredLengthTimeStamp,
-                    measuredMass,
-                    measuredMassTimeStamp,
-                    measuredComment,
-                    measuredCommentTimeStamp
-                });
-                minX = Math.min(minX, startXLocation);
-                minY = Math.min(minY, startYLocation);
+
+        // Calculate basic hole properties using the same logic as calculateHoleGeometry
+        const dx = endX - startX;
+        const dy = endY - startY;
+        const dz = endZ - startZ;
+        const length = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+        const epsilon = 1e-10;
+        const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        const dotProduct = dz;
+        const normalizedDotProduct = magnitude < epsilon ? 0 : dotProduct / magnitude;
+
+        const angle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+        const bearing = (450 - Math.atan2(dy, dx) * (180 / Math.PI)) % 360;
+
+        if (!isNaN(startX) && !isNaN(startY) && !isNaN(startZ) && !isNaN(endX) && !isNaN(endY) && !isNaN(endZ)) {
+            // Create the hole object with initial values
+            const hole = {
+                entityName,
+                entityType: "hole",
+                holeID,
+                startXLocation: startX,
+                startYLocation: startY,
+                startZLocation: startZ,
+                endXLocation: endX,
+                endYLocation: endY,
+                endZLocation: endZ,
+                gradeXLocation: endX, // Will be recalculated
+                gradeYLocation: endY, // Will be recalculated
+                gradeZLocation: endZ, // Will be recalculated
+                subdrillAmount: subdrill,
+                subdrillLength: 0, // Will be recalculated
+                benchHeight: 0, // Will be recalculated
+                holeDiameter,
+                holeType,
+                fromHoleID,
+                timingDelayMilliseconds: delay,
+                colourHexDecimal: colour,
+                holeLengthCalculated: length,
+                holeAngle: angle,
+                holeBearing: bearing,
+                measuredLength,
+                measuredLengthTimeStamp,
+                measuredMass,
+                measuredMassTimeStamp,
+                measuredComment,
+                measuredCommentTimeStamp
+            };
+
+            // Add to points array first
+            points.push(hole);
+
+            // Calculate proper benchHeight and grade positions for ALL holes (not just when subdrill !== 0)
+            if (len !== 4) {
+                // Only skip for 4-point holes (which are just collar coordinates)
+                const cosAngle = Math.cos(angle * (Math.PI / 180));
+                if (Math.abs(cosAngle) > 1e-9) {
+                    // Calculate benchHeight from the Z difference minus subdrill
+                    hole.benchHeight = Math.abs(startZ - endZ) - subdrill;
+
+                    // Use calculateHoleGeometry to recalculate all derived positions
+                    // First recalculate based on the existing length to set up grade positions
+                    calculateHoleGeometry(hole, length, 1); // Mode 1 = length recalculation
+
+                    // If there's subdrill, also update that
+                    if (subdrill !== 0) {
+                        calculateHoleGeometry(hole, subdrill, 8); // Mode 8 = subdrill recalculation
+                    }
+                } else {
+                    // For horizontal holes, handle specially
+                    hole.benchHeight = Math.abs(startZ - endZ);
+                    hole.gradeXLocation = endX;
+                    hole.gradeYLocation = endY;
+                    hole.gradeZLocation = endZ - subdrill;
+                }
             }
-            //} else if (localStorage.getItem("kirraDataPoints") !== null) {
-            //return points;
+
+            minX = Math.min(minX, startX);
+            minY = Math.min(minY, startY);
         }
+    }
+
+    if (warnings.length > 0) {
+        console.warn("parseCSV warnings:\n" + warnings.join("\n"));
     }
 
     calculateTimes(points);
     drawData(points, selectedHole);
     return points;
 }
+//OLDER VERSION
+// function parseCSV(data, blastNameValue) {
+//     if (!points || !Array.isArray(points)) points = [];
+//     sessionLoadCount += 1;
+//     const lines = data.split("\n");
+//     let minX = Infinity;
+//     let minY = Infinity;
+//     const entityName = blastNameValue;
+//     const entityType = "hole";
+
+//     for (let i = 0; i < lines.length; i++) {
+//         const values = lines[i].split(",");
+
+//         if (values.length > 25) {
+//             continue;
+//         }
+
+//         if (values.length === 25) {
+//             const entityName = values[0];
+//             const entityType = "hole";
+//             const holeID = values[2]; //Id of the blast hole
+//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
+//             const gradeXLocation = parseFloat(values[9]); //grade of the blast hole X value
+//             const gradeYLocation = parseFloat(values[10]); //grade of the blast hole Y value
+//             const gradeZLocation = parseFloat(values[11]); //grade of the blast hole Z value
+//             const subdrillAmount = parseFloat(values[12]); //subdrill of the blast hole
+//             const subdrillLength = parseFloat(values[13]); //subdrill length of the blast hole
+//             const benchHeight = parseFloat(values[14]); //bench height of the blast hole
+//             const holeDiameter = parseFloat(values[15]); //diameter of the blast hole
+//             const holeType = values[16]; //type of the blast hole
+//             const fromHoleID = values[17]; //from hole where the connector tail will be
+//             const timingDelayMilliseconds = parseInt(values[18]); //delay from hole to Id of the blast
+//             const colourHexDecimal = values[19].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+//             const measuredLength = values.length > 20 ? parseFloat(values[20]) : 0;
+//             const measuredLengthTimeStamp = values.length > 21 ? values[21] : "09/05/1975 00:00:00";
+//             const measuredMass = values.length > 22 ? parseFloat(values[22]) : 0;
+//             const measuredMassTimeStamp = values.length > 23 ? values[23] : "09/05/1975 00:00:00";
+//             const measuredComment = values.length > 24 ? values[24] : "None";
+//             const measuredCommentTimeStamp = values.length > 25 ? values[25] : "09/05/1975 00:00:00";
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("X",deltaXAmount);
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Y",deltaYAmount);
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Z",deltaZAmount);
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+
+//             const epsilon = 1e-10; // A small value to prevent division by zero
+//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//         }
+//         if (values.length === 20) {
+//             // check if it has the correct number of values
+//             const entityName = values[0];
+//             const entityType = "hole";
+//             const holeID = values[2]; //Id of the blast hole
+//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
+//             const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
+//             const holeType = values[10]; //type of the blast hole
+//             const fromHoleID = values[11]; //from hole where the connector tail will be
+//             const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
+//             const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+//             // Parse optional fields
+//             const measuredLength = values.length > 14 ? parseFloat(values[14]) : 0;
+//             const measuredLengthTimeStamp = values.length > 15 ? values[15] : "09/05/1975 00:00:00";
+//             const measuredMass = values.length > 16 ? parseFloat(values[16]) : 0;
+//             const measuredMassTimeStamp = values.length > 17 ? values[17] : "09/05/1975 00:00:00";
+//             const measuredComment = values.length > 18 ? values[18] : "None";
+//             const measuredCommentTimeStamp = values.length > 19 ? values[19] : "09/05/1975 00:00:00";
+
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("X",deltaXAmount);
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Y",deltaYAmount);
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Z",deltaZAmount);
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+
+//             const epsilon = 1e-10; // A small value to prevent division by zero
+//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//         } else if (values.length === 14) {
+//             // check if it has the correct number of values
+//             const entityName = values[0];
+//             const entityType = "hole";
+//             const holeID = values[2]; //Id of the blast hole
+//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
+//             const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
+//             const holeType = values[10]; //type of the blast hole
+//             const fromHoleID = values[11]; //from hole where the connector tail will be
+//             const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
+//             const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+//             const measuredLength = 0;
+//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+//             const measuredMass = 0;
+//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
+//             const measuredComment = "None";
+//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("X",deltaXAmount);
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Y",deltaYAmount);
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Z",deltaZAmount);
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+
+//             const epsilon = 1e-10; // A small value to prevent division by zero
+//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//         } else if (values.length === 12) {
+//             // Skip empty lines and lines with fewer than 12 values
+//             if (values.length < 12) {
+//                 continue;
+//             }
+//             //files with id, x, y, z, x, y, z, diameter, type, fromHoleID, delay, colour
+//             // check if it has the correct number of values
+//             const entityName = blastNameValue;
+//             const holeID = values[0]; //Id of the blast hole
+//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+//             const holeDiameter = parseFloat(values[7]); //diameter of the blast hole
+//             const holeType = values[8]; //type of the blast hole
+//             const fromHoleID = values[9].includes(":::") ? values[9] : `${blastNameValue}:::${values[9]}`;
+//             //from hole where the connector tail will be
+//             const timingDelayMilliseconds = parseInt(values[10]); //delay from hole to Id of the blast
+//             const colourHexDecimal = values[11].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
+//             const measuredLength = 0;
+//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+//             const measuredMass = 0;
+//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
+//             const measuredComment = "None";
+//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("X",deltaXAmount);
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Y",deltaYAmount);
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             //console.log("Z",deltaZAmount);
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
+//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
+
+//             const epsilon = 1e-10; // A small value to prevent division by zero
+//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
+//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
+
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//             ////console.log(points);
+//         } else if (values.length === 9) {
+//             // Skip empty lines and lines with fewer than 9 values
+//             if (values.length < 9) {
+//                 continue;
+//             }
+//             //files with id, x, y, z, x, y, z, diameter, type
+//             // check if it has the correct number of values
+//             const entityName = blastNameValue;
+//             const holeID = values[0];
+//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+//             const holeDiameter = parseFloat(values[7]);
+//             const holeType = values[8];
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
+//             const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
+//             const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+
+//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
+//             const timingDelayMilliseconds = 0;
+//             const colourHexDecimal = "red";
+//             const measuredLength = 0;
+//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+//             const measuredMass = 0;
+//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
+//             const measuredComment = "None";
+//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//         } else if (values.length === 7) {
+//             //files with id, x, y, z, x, y, z
+//             // check if it has the correct number of values
+//             const entityName = blastNameValue;
+//             const holeID = values[0];
+//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
+//             const holeDiameter = 0;
+//             const holeType = "Undefined";
+//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
+//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
+//             const verticalObject = {
+//                 x: 0,
+//                 y: 0,
+//                 z: 1
+//             };
+//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
+//             const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
+//             const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
+//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
+//             console.log("blastNameValue:", blastNameValue);
+//             console.log("values[0]:", values[0]);
+//             console.log("fromHoleID:", fromHoleID);
+//             const timingDelayMilliseconds = 0;
+//             const colourHexDecimal = "red";
+//             const measuredLength = 0;
+//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+//             const measuredMass = 0;
+//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
+//             const measuredComment = "None";
+//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//         }
+//         if (values.length === 4) {
+//             //files with id, x, y, z
+//             // check if it has the correct number of values
+//             const entityName = blastNameValue;
+//             const holeID = values[0];
+//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
+//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
+//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
+//             const endXLocation = parseFloat(values[1]); //end of the blast hole X value
+//             const endYLocation = parseFloat(values[2]); //end of the blast hole Y value
+//             const endZLocation = parseFloat(values[3]); //end of the blast hole Z value
+//             const holeDiameter = 0;
+//             const holeType = "Undefined";
+//             const holeLengthCalculated = 0;
+//             const holeAngle = 0;
+//             const holeBearing = 0;
+//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
+//             const subdrillAmount = 0;
+//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
+//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
+//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
+//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
+//             const gradeZLocation = endZLocation - subdrillAmount;
+//             //then use the the start z location - grade z loacation to calculate the bench height
+//             const benchHeight = startZLocation - gradeZLocation;
+//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
+//             const timingDelayMilliseconds = 0;
+//             const colourHexDecimal = "red";
+//             const measuredLength = 0;
+//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
+//             const measuredMass = 0;
+//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
+//             const measuredComment = "None";
+//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
+//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation)) {
+//                 // check if they are valid numbers
+//                 points.push({
+//                     entityName,
+//                     entityType,
+//                     holeID,
+//                     startXLocation,
+//                     startYLocation,
+//                     startZLocation,
+//                     endXLocation,
+//                     endYLocation,
+//                     endZLocation,
+//                     gradeXLocation,
+//                     gradeYLocation,
+//                     gradeZLocation,
+//                     subdrillAmount,
+//                     subdrillLength,
+//                     benchHeight,
+//                     holeDiameter,
+//                     holeType,
+//                     fromHoleID,
+//                     timingDelayMilliseconds,
+//                     colourHexDecimal,
+//                     holeLengthCalculated,
+//                     holeAngle,
+//                     holeBearing,
+//                     measuredLength,
+//                     measuredLengthTimeStamp,
+//                     measuredMass,
+//                     measuredMassTimeStamp,
+//                     measuredComment,
+//                     measuredCommentTimeStamp
+//                 });
+//                 minX = Math.min(minX, startXLocation);
+//                 minY = Math.min(minY, startYLocation);
+//             }
+//             //} else if (localStorage.getItem("kirraDataPoints") !== null) {
+//             //return points;
+//         }
+//     }
+
+//     calculateTimes(points);
+//     drawData(points, selectedHole);
+//     return points;
+// }
 
 async function handleDXFUpload(event) {
     const file = event.target.files[0];
@@ -3113,7 +3408,7 @@ function fileFormatPopup(error) {
     return; // Exit the function
 }
 // Create a Map for each entity type to store entities by name
-const kadHolesMap = new Map();
+const kadHolesMap = new Map(); //Not used
 const kadPointsMap = new Map();
 const kadPolygonsMap = new Map();
 const kadLinesMap = new Map();
@@ -3746,16 +4041,19 @@ function convertPointsTo12ColumnCSV() {
 
 function convertPointsToAllDataCSV() {
     let csv = "";
-
+    /* STRUCTURE OF THE POINTS ARRAY
+        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+    */
     // Add the CSV header if needed
     const header =
-        "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
+        "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
     csv += header + "\n";
 
     // Iterate over the points array and convert each object to a CSV row
     for (let i = 0; i < points.length; i++) {
         const point = points[i];
-        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.holeTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.gradeXLocation},${point.gradeYLocation},${point.gradeZLocation},${point.subdrillAmount},${point.subdrillLength},${point.benchHeight},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.holeTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
         csv += row + "\n";
     }
 
@@ -4629,7 +4927,7 @@ function getVoronoiMetrics(points, useToeLocation) {
             area = Math.abs(area / 2); // in m² if coords are meters
 
             const p = points[i];
-            const length = parseFloat(p.measuredLength || p.holeLengthCalculated || 1);
+            const length = parseFloat(p.measuredLength || p.benchHeight || 1);
             const measuredLength = parseFloat(p.measuredLength || 0);
             const designedLength = parseFloat(p.holeLengthCalculated || 0);
             const holeFiringTime = parseFloat(p.holeTime || 0);
@@ -5421,13 +5719,51 @@ function drawKADTexts(x, y, z, text, color) {
 }
 
 /*** CODE TO DRAW POINTS FROM CSV DATA ***/
-function drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, strokeColour) {
+function drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, gradeX, gradeY, strokeColour, subdrillAmount) {
     ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(lineStartX, lineStartY);
-    ctx.lineTo(lineEndX, lineEndY);
-    ctx.strokeStyle = strokeColour;
-    ctx.stroke();
+
+    if (subdrillAmount < 0) {
+        // NEGATIVE SUBDRILL: Draw only from start to toe (bypass grade)
+        // Use 20% opacity for the entire line since it represents "over-drilling"
+        ctx.beginPath();
+        ctx.strokeStyle = strokeColour;
+        ctx.moveTo(lineStartX, lineStartY);
+        ctx.lineTo(lineEndX, lineEndY);
+        ctx.stroke();
+        // Draw from grade to toe (subdrill portion - red)
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(255, 0, 0, 0.2)"; // Red line (full opacity)
+        ctx.moveTo(lineEndX, lineEndY);
+        ctx.lineTo(gradeX, gradeY);
+        ctx.stroke();
+        // Draw grade marker with 20% opacity
+        ctx.beginPath();
+        ctx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = `rgba(255, 0, 0, 0.2)`; // Red marker with 20% opacity
+        ctx.fill();
+    } else {
+        // POSITIVE SUBDRILL: Draw from start to grade (dark), then grade to toe (red)
+
+        // Draw from start to grade point (bench drill portion - dark)
+        ctx.beginPath();
+        ctx.strokeStyle = strokeColour; // Dark line (full opacity)
+        ctx.moveTo(lineStartX, lineStartY);
+        ctx.lineTo(gradeX, gradeY);
+        ctx.stroke();
+
+        // Draw from grade to toe (subdrill portion - red)
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(255, 0, 0, 1.0)"; // Red line (full opacity)
+        ctx.moveTo(gradeX, gradeY);
+        ctx.lineTo(lineEndX, lineEndY);
+        ctx.stroke();
+
+        // Draw grade marker (full opacity)
+        ctx.beginPath();
+        ctx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+        ctx.fillStyle = "rgba(255, 0, 0, 1.0)"; // Red marker (full opacity)
+        ctx.fill();
+    }
 }
 
 function drawHoleToe(x, y, fillColour, strokeColour, radius) {
@@ -6217,7 +6553,7 @@ function getClickedHole(clickX, clickY) {
                 holeDiameterSlider.value = point.holeDiameter;
                 holeAngleSlider.value = point.holeAngle;
                 holeBearingSlider.value = point.holeBearing;
-                holeSubdrillSlider.value = point.holeSubdrill;
+                holeSubdrillSlider.value = point.subdrillAmount;
 
                 holeEastingLabel.textContent = "Hole Easting (X) : " + parseFloat(point.startXLocation).toFixed(2) + "mE";
                 holeNorthingLabel.textContent = "Hole Northing (Y): " + parseFloat(point.startYLocation).toFixed(2) + "mN";
@@ -6226,7 +6562,7 @@ function getClickedHole(clickX, clickY) {
                 holeLengthLabel.textContent = "Hole Length: " + parseFloat(point.holeLengthCalculated).toFixed(1) + "m";
                 holeAngleLabel.textContent = "Hole Angle: " + parseFloat(point.holeAngle).toFixed(0) + "\u00B0";
                 holeBearingLabel.textContent = "Hole Bearing: " + parseFloat(point.holeBearing).toFixed(1) + "\u00B0";
-                holeSubdrillLabel.textContent = "Hole Subdrill: " + parseFloat(point.holeSubdrill).toFixed(1) + "m";
+                holeSubdrillLabel.textContent = "Hole Subdrill: " + parseFloat(point.subdrillAmount).toFixed(1) + "m";
                 drawData(points, selectedHole);
                 return point; // Return the clicked hole
             }
@@ -6332,7 +6668,7 @@ function getMultipleClickedHoles(clickX, clickY) {
             diameterSum += parseFloat(hole.holeDiameter);
             angleSum += parseFloat(hole.holeAngle);
             bearingSum += parseFloat(hole.holeBearing);
-            subdrillSum += parseFloat(hole.holeSubdrill);
+            subdrillSum += parseFloat(hole.subdrillAmount);
             //console.log("Sums: \n   ", eastingSum, "\n   y", northingSum, "\n   z", elevationSum, "\n   l", lengthSum, "\n   d", diameterSum, "\n   a", angleSum, "\n   b", bearingSum);
             //console.log("Length: " + selectedMultipleHoles.length);
 
@@ -6400,7 +6736,7 @@ function updateSelectionAveragesAndSliders(selectedHoles) {
         diameterSum += parseFloat(hole.holeDiameter);
         angleSum += parseFloat(hole.holeAngle);
         bearingSum += parseFloat(hole.holeBearing);
-        subdrillSum += parseFloat(hole.holeSubdrill);
+        subdrillSum += parseFloat(hole.subdrillAmount);
     });
 
     // Calculate averages
@@ -8418,7 +8754,7 @@ function editHoleLengthPopup() {
                     holeLengthLabel.textContent = "Hole Length : " + parseFloat(lengthValue).toFixed(1) + "m";
 
                     // Calculate endXYZ and draw points
-                    calculateEndXYZ(clickedHole, lengthValue, 1);
+                    calculateHoleGeometry(clickedHole, lengthValue, 1);
                     drawData(points, selectedHole);
                 }
             }
@@ -8806,6 +9142,12 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     let measuredMassTimeStamp = "09/05/1975 00:00:00";
     let measuredComment = "None";
     let measuredCommentTimeStamp = "09/05/1975 00:00:00";
+    let subdrillAmount = 0;
+    let subdrillLength = 0;
+    let benchHeight = holeLengthCalculated * Math.cos(holeAngle * (Math.PI / 180));
+    let gradeXLocation = endXLocation;
+    let gradeYLocation = endYLocation;
+    let gradeZLocation = endZLocation;
 
     points.push({
         entityName: entityName,
@@ -8817,6 +9159,12 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
         endXLocation: endXLocation,
         endYLocation: endYLocation,
         endZLocation: endZLocation,
+        gradeXLocation: gradeXLocation,
+        gradeYLocation: gradeYLocation,
+        gradeZLocation: gradeZLocation,
+        subdrillAmount: subdrillAmount,
+        subdrillLength: subdrillLength,
+        benchHeight: benchHeight,
         holeDiameter: holeDiameter,
         holeType: holeType,
         holeLengthCalculated: holeLengthCalculated,
@@ -8850,6 +9198,18 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
             endYLocation +
             " EndZ: " +
             endZLocation +
+            "\nGradeX: " +
+            gradeXLocation +
+            " GradeY: " +
+            gradeYLocation +
+            " GradeZ: " +
+            gradeZLocation +
+            "\nSubdrill: " +
+            subdrillAmount +
+            " SubdrillLength: " +
+            subdrillLength +
+            " BenchHeight: " +
+            benchHeight +
             "\nDiameter: " +
             holeDiameter +
             " Type: " +
@@ -9124,119 +9484,270 @@ function recalculateContours(points, deltaX, deltaY) {
     }
 }
 
-function calculateEndXYZ(clickedHole, newValue, modeLAB) {
-    let startX = clickedHole.startXLocation;
-    let startY = clickedHole.startYLocation;
-    let startZ = clickedHole.startZLocation;
-    let holeLength = clickedHole.holeLengthCalculated;
-    let holeAngle = clickedHole.holeAngle;
-    let holeBearing = clickedHole.holeBearing;
-    let endX, endY, endZ;
-    // Include entityName in the search to get the index of the clicked hole within the points array
+function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
     const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
-
-    if (modeLAB === 1) {
-        //Length
-        endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
-        // Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].holeLengthCalculated = parseFloat(newValue);
-            //console.log("points[index].holeLengthCalculated: " + points[index].holeLengthCalculated);
-            //console.log("End X,Y,Z : " + endX + " | " + endY + " | " + endZ);
-        }
-    } else if (modeLAB === 2) {
-        //hole angle
-        //calculate the endXYZ based on the new hole angle
-        endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
-        //Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].holeAngle = parseFloat(newValue);
-        }
-    } else if (modeLAB === 3) {
-        //Calculate the endXYZ based on the new hole bearing
-        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
-        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
-        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-        //Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].holeBearing = parseFloat(newValue);
-        }
-    } else if (modeLAB === 4) {
-        // Easting Adjustment
-        const deltaX = newValue - clickedHole.startXLocation;
-        clickedHole.startXLocation = newValue;
-        clickedHole.endXLocation += deltaX;
-        //calculate the new toe XYZ based on the new startXlocation
-        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-        // Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].startXLocation = clickedHole.startXLocation;
-        }
-    } else if (modeLAB === 5) {
-        // Northing Adjustment
-        const deltaY = newValue - clickedHole.startYLocation;
-        clickedHole.startYLocation = newValue;
-        clickedHole.endYLocation += deltaY;
-        //calculate the new toe XYZ based on the new startYlocation
-        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-        // Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].startYLocation = clickedHole.startYLocation;
-        }
-    } else if (modeLAB === 6) {
-        // Elevation Adjustment
-        const deltaZ = newValue - clickedHole.startZLocation;
-        clickedHole.startZLocation = newValue;
-        clickedHole.endZLocation += deltaZ;
-        //calculate the new toe XYZ based on the new startZlocation
-        endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-        endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-
-        // Update the points array with the new values
-        if (index !== -1) {
-            points[index].endXLocation = endX;
-            points[index].endYLocation = endY;
-            points[index].endZLocation = endZ;
-            points[index].startZLocation = clickedHole.startZLocation;
-        }
-    } else if (modeLAB === 7) {
-        const diameter = newValue;
-        // Update the points array with the new values
-        if (index !== -1) {
-            points[index].holeDiameter = diameter;
-        }
+    if (index === -1) {
+        return; // Hole not found
     }
 
-    return {
-        endX,
-        endY,
-        endZ
-    };
+    // Work directly on the original hole object instead of creating a copy
+    let hole = points[index];
+
+    // Destructure for easier access
+    let { startXLocation: startX, startYLocation: startY, startZLocation: startZ, holeAngle, holeBearing, benchHeight, subdrillAmount } = hole;
+
+    if (modeLAB === 1) {
+        // Length
+        const newLength = parseFloat(newValue);
+        const radAngle = holeAngle * (Math.PI / 180);
+        const cosAngle = Math.cos(radAngle);
+        const sinAngle = Math.sin(radAngle);
+        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
+
+        hole.holeLengthCalculated = newLength;
+
+        if (Math.abs(cosAngle) > 1e-9) {
+            const subdrillLength = subdrillAmount / cosAngle;
+            const newBenchDrillLength = newLength - subdrillLength;
+            hole.benchHeight = newBenchDrillLength * cosAngle;
+            hole.subdrillLength = subdrillLength;
+        }
+
+        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
+        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
+        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
+        hole.gradeZLocation = startZ - hole.benchHeight;
+
+        hole.endXLocation = startX + newLength * sinAngle * Math.cos(radBearing);
+        hole.endYLocation = startY + newLength * sinAngle * Math.sin(radBearing);
+        hole.endZLocation = startZ - newLength * cosAngle;
+    } else if (modeLAB === 2) {
+        // Angle
+        const newAngle = parseFloat(newValue);
+        const radAngle = newAngle * (Math.PI / 180);
+        const cosAngle = Math.cos(radAngle);
+        const sinAngle = Math.sin(radAngle);
+        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
+
+        hole.holeAngle = newAngle;
+
+        if (Math.abs(cosAngle) > 1e-9) {
+            const benchDrillLength = benchHeight / cosAngle;
+            const subdrillLength = subdrillAmount / cosAngle;
+            hole.holeLengthCalculated = benchDrillLength + subdrillLength;
+            hole.subdrillLength = subdrillLength;
+        }
+
+        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
+        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
+        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
+
+        const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
+        hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(radBearing);
+        hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(radBearing);
+        hole.endZLocation = startZ - hole.holeLengthCalculated * cosAngle;
+    } else if (modeLAB === 3) {
+        // Bearing
+        const newBearing = parseFloat(newValue);
+        const radAngle = holeAngle * (Math.PI / 180);
+        const cosAngle = Math.cos(radAngle);
+        const sinAngle = Math.sin(radAngle);
+        const radBearing = ((450 - newBearing) % 360) * (Math.PI / 180);
+
+        hole.holeBearing = newBearing;
+
+        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
+        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
+        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
+
+        const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
+        hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(radBearing);
+        hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(radBearing);
+    } else if (modeLAB === 4) {
+        // Easting (X) - Simple delta shift with debug
+        const deltaX = newValue - hole.startXLocation;
+        hole.startXLocation = newValue;
+        hole.gradeXLocation += deltaX;
+        hole.endXLocation += deltaX;
+    } else if (modeLAB === 5) {
+        // Northing (Y) - Simple delta shift with debug
+        const deltaY = newValue - hole.startYLocation;
+        hole.startYLocation = newValue;
+        hole.gradeYLocation += deltaY;
+        hole.endYLocation += deltaY;
+    } else if (modeLAB === 6) {
+        // Elevation (Z)
+        const deltaZ = newValue - hole.startZLocation;
+        hole.startZLocation = newValue;
+        hole.gradeZLocation += deltaZ;
+        hole.endZLocation += deltaZ;
+    } else if (modeLAB === 7) {
+        // Diameter
+        hole.holeDiameter = newValue;
+    } else if (modeLAB === 8) {
+        // Subdrill Amount
+        const newSubdrillAmount = parseFloat(newValue);
+
+        // Add validation for NaN values
+        if (isNaN(newSubdrillAmount)) {
+            console.warn("Invalid subdrill amount:", newValue);
+            return;
+        }
+
+        const radAngle = holeAngle * (Math.PI / 180);
+        const cosAngle = Math.cos(radAngle);
+        const sinAngle = Math.sin(radAngle);
+        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
+
+        hole.subdrillAmount = newSubdrillAmount;
+
+        if (Math.abs(cosAngle) > 1e-9) {
+            const benchDrillLength = benchHeight / cosAngle;
+            hole.subdrillLength = newSubdrillAmount / cosAngle;
+            hole.holeLengthCalculated = benchDrillLength + hole.subdrillLength;
+        } else {
+            // Handle horizontal holes case
+            hole.subdrillLength = newSubdrillAmount;
+        }
+
+        const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
+        hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(radBearing);
+        hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(radBearing);
+        hole.endZLocation = startZ - hole.holeLengthCalculated * cosAngle;
+    }
+
+    // No need to reassign points[index] since we're working on the original object
+    // This preserves the selectedHole reference
 }
+
+// function calculateEndXYZ(clickedHole, newValue, modeLAB) {
+//     let startX = clickedHole.startXLocation;
+//     let startY = clickedHole.startYLocation;
+//     let startZ = clickedHole.startZLocation;
+//     let holeLength = clickedHole.holeLengthCalculated;
+//     let holeAngle = clickedHole.holeAngle;
+//     let holeBearing = clickedHole.holeBearing;
+//     let endX, endY, endZ;
+//     // Include entityName in the search to get the index of the clicked hole within the points array
+//     const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
+
+//     if (modeLAB === 1) {
+//         //Length is calculated in ModeLAB = 1
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole length
+//         endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
+//         // Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].holeLengthCalculated = parseFloat(newValue);
+//             //console.log("points[index].holeLengthCalculated: " + points[index].holeLengthCalculated);
+//             //console.log("End X,Y,Z : " + endX + " | " + endY + " | " + endZ);
+//         }
+//     } else if (modeLAB === 2) {
+//         //hole angle and endXYZ is calculated in ModeLAB = 1
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole angle
+//         //calculate the endXYZ based on the new hole angle
+//         endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
+//         //Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].holeAngle = parseFloat(newValue);
+//         }
+//     } else if (modeLAB === 3) {
+//         //Calculate the endXYZ based on the new hole bearing
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole bearing
+//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
+//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
+//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+//         //Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].holeBearing = parseFloat(newValue);
+//         }
+//     } else if (modeLAB === 4) {
+//         // Easting Adjustment
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Easting
+//         const deltaX = newValue - clickedHole.startXLocation;
+//         clickedHole.startXLocation = newValue;
+//         clickedHole.endXLocation += deltaX;
+//         //calculate the new toe XYZ based on the new startXlocation
+//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+//         // Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].startXLocation = clickedHole.startXLocation;
+//         }
+//     } else if (modeLAB === 5) {
+//         // Northing Adjustment
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Northing
+//         const deltaY = newValue - clickedHole.startYLocation;
+//         clickedHole.startYLocation = newValue;
+//         clickedHole.endYLocation += deltaY;
+//         //calculate the new toe XYZ based on the new startYlocation
+//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+//         // Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].startYLocation = clickedHole.startYLocation;
+//         }
+//     } else if (modeLAB === 6) {
+//         // Elevation Adjustment
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Elevation
+//         const deltaZ = newValue - clickedHole.startZLocation;
+//         clickedHole.startZLocation = newValue;
+//         clickedHole.endZLocation += deltaZ;
+//         //calculate the new toe XYZ based on the new startZlocation
+//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
+//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
+
+//         // Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].endXLocation = endX;
+//             points[index].endYLocation = endY;
+//             points[index].endZLocation = endZ;
+//             points[index].startZLocation = clickedHole.startZLocation;
+//         }
+//     } else if (modeLAB === 7) {
+//         const diameter = newValue;
+//         // Update the points array with the new values
+//         if (index !== -1) {
+//             points[index].holeDiameter = diameter;
+//         }
+//     } else if (modeLAB === 8) {
+//         // Subdrill
+//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Subdrill
+//         const deltaZ = newValue - clickedHole.startZLocation;
+//         clickedHole.startZLocation = newValue;
+//         clickedHole.endZLocation += deltaZ;
+//     }
+
+//     return {
+//         endX,
+//         endY,
+//         endZ
+//     };
+// }
 
 function timeChart() {
     if (!Array.isArray(holeTimes)) return;
@@ -9537,6 +10048,7 @@ function getDisplayOptions() {
         holeAng: document.getElementById("display3").checked,
         holeDip: document.getElementById("display4").checked,
         holeBea: document.getElementById("display5").checked,
+        holeSubdrill: document.getElementById("display5B").checked,
         connector: document.getElementById("display5A").checked,
         delayValue: document.getElementById("display6").checked,
         initiationTime: document.getElementById("display6A").checked,
@@ -10040,6 +10552,7 @@ function drawData(points, selectedHole) {
         if (points && Array.isArray(points) && points.length > 0) {
             for (const point of points) {
                 const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
+                const [gradeX, gradeY] = worldToCanvas(point.gradeXLocation, point.gradeYLocation);
                 const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
 
                 toeSizeInMeters = document.getElementById("toeSlider").value;
@@ -10047,7 +10560,7 @@ function drawData(points, selectedHole) {
 
                 // Draw collar-to-toe track if angled
                 if (point.holeAngle > 0) {
-                    drawTrack(x, y, lineEndX, lineEndY, strokeColour);
+                    drawTrack(x, y, lineEndX, lineEndY, gradeX, gradeY, strokeColour, point.subdrillAmount);
                 }
 
                 // Highlight selected holes for animation/time window selection
@@ -10190,6 +10703,9 @@ function drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, ctxObj) {
     }
     if (displayOptions.holeBea) {
         drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.holeBearing).toFixed(1), "red");
+    }
+    if (displayOptions.holeSubdrill) {
+        drawRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.subdrillAmount).toFixed(1), "blue");
     }
     if (displayOptions.initiationTime) {
         drawRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
@@ -10362,8 +10878,12 @@ function resetZoom() {
 ///SAVE and LOAD POINTS ARRAY TO LOCAL STORAGE /////////////////////////////////
 function saveHolesToLocalStorage(points) {
     if (points !== null) {
+        /* STRUCTURE OF THE POINTS ARRAY
+        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+    */
         const lines = points.map((point) => {
-            return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}\n`;
+            return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.gradeXLocation},${point.gradeYLocation},${point.gradeZLocation},${point.subdrillAmount},${point.subdrillLength},${point.benchHeight},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colourHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.initiationTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}\n`;
         });
 
         const csvString = lines.join("\n");
@@ -10394,7 +10914,7 @@ function refreshPoints() {
     // Load points from local storage
     const csvString = localStorage.getItem("kirraDataPoints");
     if (csvString) {
-        points = parseCSV(csvString, null);
+        points = parseCSV(csvString);
         //updateCentroids();
         calculateTimes(points);
         const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
@@ -10431,6 +10951,10 @@ function loadHolesFromLocalStorage() {
     if (points === null) {
         points = [];
     }
+    /* STRUCTURE OF THE POINTS ARRAY
+        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+    */
     const csvString = localStorage.getItem("kirraDataPoints");
     //console.log(csvString);
     if (csvString) {
@@ -10455,7 +10979,8 @@ function loadHolesFromLocalStorage() {
         for (const entity of pointsMap.values()) {
             //console.log(entity);
         }
-        // console.log(points);
+        console.log("///////////////////POINTS DATA ON LOAD//////////////");
+        console.log(points);
         return points;
     }
     return null;
@@ -11133,8 +11658,8 @@ function updatePopup() {
 		</svg>
 			<br>
 				<label class="labelWhite18">Update - NEW FEATURES:</label>
-				<br><label class="labelWhite18">Huge UI rebuild and Icons Added </label>
-				<br><label class="labelWhite18">Floating Toolbar shuffled when left nav is opened</label>
+				<br><label class="labelWhite18">UI rebuild, Icons, Floating Toolbar shuffled </label>
+				<br><label class="labelWhite18">Subdrill Function and display, Voronoi PF on Bench Height</label>
 				<br><label class="labelWhite18">Selection by Pointer and Polygon</label>
 				<br><label class="labelWhite18">Location crosshair onclick fixed</label>
                 <br><label class="labelWhite18">Escape keylistener added to null all selection variables</label>

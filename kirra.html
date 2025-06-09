@@ -2,8 +2,8 @@
 <html lang="en">
 <!--
     Description: This file contains the main UI for the Kirra App
-    Author: Brent Buffham
-    Last Modified: "20250607.1500AWST"
+	Author: Brent Buffham
+	Last Modified: "20250609.2240AWST"
 -->
 
 <head>
@@ -230,6 +230,7 @@
 					"display_angle_title": "Hole Angle",
 					"display_dip_title": "Hole Dip",
 					"display_bearing_title": "Hole Bearing",
+					"display_subdrill_title": "Hole Subdrill",
 					"display_ties_title": "Ties",
 					"display_connectors_title": "Delay Value",
 					"display_times_only_title": "Hole Time",
@@ -370,6 +371,7 @@
 					"display_angle_title": "Нүхний өнцөг",
 					"display_dip_title": "Нүхний налуу",
 					"display_bearing_title": "Нүхний чиглэл",
+					"display_subdrill_title": "Нүхний саатал",
 					"display_ties_title": "Холбоосууд",
 					"display_connectors_title": "Саатлын утга",
 					"display_times_only_title": "Нүхний цаг",
@@ -510,6 +512,7 @@
 					"display_angle_title": "Angle du trou",
 					"display_dip_title": "Inclinaison du trou",
 					"display_bearing_title": "Relèvement du trou",
+					"display_subdrill_title": "Profondeur de forage",
 					"display_ties_title": "Liens",
 					"display_connectors_title": "Valeur de délai",
 					"display_times_only_title": "Temps du trou",
@@ -650,6 +653,7 @@
 					"display_angle_title": "Угол отверстия",
 					"display_dip_title": "Наклон отверстия",
 					"display_bearing_title": "Азимут отверстия",
+					"display_subdrill_title": "Глубина отверстия",
 					"display_ties_title": "Связи",
 					"display_connectors_title": "Значение задержки",
 					"display_times_only_title": "Время отверстия",
@@ -790,6 +794,7 @@
 					"display_angle_title": "Ángulo del agujero",
 					"display_dip_title": "Inclinación del agujero",
 					"display_bearing_title": "Rumbo del agujero",
+					"display_subdrill_title": "Profundidad del agujero",
 					"display_ties_title": "Enlaces",
 					"display_connectors_title": "Valor de retraso",
 					"display_times_only_title": "Tiempo del agujero",
@@ -930,6 +935,7 @@
 					"display_angle_title": "孔角度",
 					"display_dip_title": "孔倾角",
 					"display_bearing_title": "孔方位",
+					"display_subdrill_title": "孔深度",
 					"display_ties_title": "连接",
 					"display_connectors_title": "延迟值",
 					"display_times_only_title": "孔时间",
@@ -1109,6 +1115,10 @@
 					<input type="checkbox" id="display5" name="display" value="Bearing" placeholder="Bearing">
 					<label for="display5" class="icon-button" title="Hole Bearing">
 						<img src="icons/holebearing.png" alt="Hole Bearing">
+					</label>
+					<input type="checkbox" id="display5B" name="display" value="Subdrill" placeholder="Subdrill">
+					<label for="display5B" class="icon-button" title="Hole Subdrill">
+						<img src="icons/holesubdrill.png" alt="Hole Subdrill">
 					</label>
 					<input type="checkbox" id="display5A" name="display" value="Ties" placeholder="Ties">
 					<label for="display5A" class="icon-button" title="Ties">
@@ -1464,8 +1474,17 @@
 						<br>4 column (ID, X, Y, Z) = Dummy Holes or
 						<br>7 column (ID, X, Y, Z, toeX, toeY, toeZ) = Blast Holes or
 						<br>9 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type) or
-						<br>12 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type, FromHole, Delay,
-						Colour)
+						<br>12 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type, FromHole, Delay, Colour)
+						or
+						<br>14 column (entityName, entityType, ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type,
+						FromHole, Delay, Colour,
+						Colour) or
+						<br>30 column (entityName,entityType,ID ,X,Y,Z,toeX,toeY,gradeX,gradeY, gradeZ, subdrillAmount,
+						subdrillLength, benchHeight, holeDiameter, holeType, fromHoleID, timingDelayMilliseconds,
+						colourHexDecimal, holeLengthCalculated, holeAngle,holeBearing,initiationTime, measuredLength,
+						measuredLengthTimeStamp, measuredMass, measuredMassTimeStamp, measuredComment,
+						measuredCommentTimeStamp) full hole data
+						<br>
 				</font></i>
 			</div>
 			<div id="resizeHandleLeft" class="resize-handle-left"></div>
