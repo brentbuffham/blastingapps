@@ -225,7 +225,7 @@ const switches = [
     measuredMassSwitch,
     measuredCommentSwitch,
     selectionModeButton,
-    editHolesToggle
+    editHolesToggle,
 ];
 
 const bools = [
@@ -260,7 +260,7 @@ const bools = [
     isModifyingText,
     isOffsetLinePoly,
     isMeasureRecording,
-    selectionMode //check this
+    selectionMode, //check this
 ];
 
 // Boolean set to False
@@ -1228,9 +1228,15 @@ holeEastingSlider.addEventListener("input", function () {
                 drawData(points, selectedHole);
             }
         } else if (selectedMultipleHoles) {
+            // Calculate the average easting of all selected holes
+            let sumEasting = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startXLocation, 0);
+            let averageEasting = sumEasting / selectedMultipleHoles.length;
+            let eastingDelta = newHoleEasting - averageEasting;
+
             selectedMultipleHoles.forEach((hole) => {
-                // Use calculateHoleGeometry with mode 4 (easting) for each hole
-                calculateHoleGeometry(hole, newHoleEasting, 4);
+                // Apply the delta to each hole's current position
+                let newHoleX = hole.startXLocation + eastingDelta;
+                calculateHoleGeometry(hole, newHoleX, 4);
             });
             drawData(points, null);
         }
@@ -1259,9 +1265,15 @@ holeNorthingSlider.addEventListener("input", function () {
                 drawData(points, selectedHole);
             }
         } else if (selectedMultipleHoles) {
+            // Calculate the average northing of all selected holes
+            let sumNorthing = selectedMultipleHoles.reduce((sum, hole) => sum + hole.startYLocation, 0);
+            let averageNorthing = sumNorthing / selectedMultipleHoles.length;
+            let northingDelta = newHoleNorthing - averageNorthing;
+
             selectedMultipleHoles.forEach((hole) => {
-                // Use calculateHoleGeometry with mode 5 (northing) for each hole
-                calculateHoleGeometry(hole, newHoleNorthing, 5);
+                // Apply the delta to each hole's current position
+                let newHoleY = hole.startYLocation + northingDelta;
+                calculateHoleGeometry(hole, newHoleY, 5);
             });
             drawData(points, null);
         }
@@ -1487,7 +1499,7 @@ function resizeChart() {
     if (Array.isArray(holeTimes)) {
         const newWidth = document.documentElement.clientWidth;
         Plotly.relayout(timeChartObject, {
-            width: newWidth
+            width: newWidth,
         });
     }
 }
@@ -1565,7 +1577,7 @@ document.getElementById("saveHoles").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8"
+            type: "text/csv;charset=utf-8",
         });
 
         // Create a URL for the Blob
@@ -1616,7 +1628,7 @@ document.getElementById("saveAll").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8"
+            type: "text/csv;charset=utf-8",
         });
 
         // Create a URL for the Blob
@@ -1672,7 +1684,7 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8"
+            type: "text/csv;charset=utf-8",
         });
 
         // Create a URL for the Blob
@@ -1832,7 +1844,7 @@ canvasContainer.addEventListener(
         }
     },
     {
-        passive: false
+        passive: false,
     }
 );
 
@@ -1907,8 +1919,8 @@ timeSlider.addEventListener("input", function () {
     Plotly.relayout("timeChart", {
         width: newWidthRight - 50,
         yaxis: {
-            autorange: true // Adjust the y-axis range to fit the data
-        }
+            autorange: true, // Adjust the y-axis range to fit the data
+        },
     });
 });
 
@@ -1921,8 +1933,8 @@ timeOffsetSlider.addEventListener("input", function () {
     Plotly.relayout("timeChart", {
         width: newWidthRight - 50,
         yaxis: {
-            autorange: true // Adjust the y-axis range to fit the data
-        }
+            autorange: true, // Adjust the y-axis range to fit the data
+        },
     });
 });
 
@@ -1949,7 +1961,7 @@ const optionConfigs = [
     { option: option13 },
     { option: option14 },
     { option: option15 },
-    { option: option16 }
+    { option: option16 },
 ];
 
 // Add event listeners programmatically
@@ -2008,7 +2020,7 @@ function handleMouseMove(event) {
     if (isResizingRight) {
         newWidthRight = window.innerWidth - event.clientX;
         Plotly.relayout("timeChart", {
-            width: newWidthRight - 50
+            width: newWidthRight - 50,
         });
         document.getElementById("sidenavRight").style.width = newWidthRight + "px";
     }
@@ -2387,7 +2399,7 @@ function parseCSV(data) {
                 measuredMass,
                 measuredMassTimeStamp,
                 measuredComment,
-                measuredCommentTimeStamp
+                measuredCommentTimeStamp,
             };
 
             // Add to points array first
@@ -3079,7 +3091,7 @@ function parseDXFtoKadMaps(dxf) {
         line: kadLinesMap.size,
         poly: kadPolygonsMap.size,
         circle: kadCirclesMap.size,
-        text: kadTextsMap.size
+        text: kadTextsMap.size,
     };
 
     // 2) kirra.js centroid offsets
@@ -3121,9 +3133,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointXLocation: x,
                             pointYLocation: y,
                             pointZLocation: z,
-                            colour: color
-                        }
-                    ]
+                            colour: color,
+                        },
+                    ],
                 });
             }
         }
@@ -3147,9 +3159,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointXLocation: xi,
                             pointYLocation: yi,
                             pointZLocation: zi,
-                            colour: color
-                        }
-                    ]
+                            colour: color,
+                        },
+                    ],
                 });
             }
         }
@@ -3177,9 +3189,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointYTarget: v1.y - offsetY,
                             pointZTarget: v1.z || 0,
                             lineWidth: 1,
-                            colour: color
-                        }
-                    ]
+                            colour: color,
+                        },
+                    ],
                 });
             }
         }
@@ -3193,7 +3205,7 @@ function parseDXFtoKadMaps(dxf) {
                 kadPolygonsMap.set(nameP, {
                     name: nameP,
                     entityType: "poly",
-                    data: []
+                    data: [],
                 });
                 var dataP = kadPolygonsMap.get(nameP).data;
                 verts.forEach(function (v, i) {
@@ -3206,7 +3218,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: v.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: false
+                        closed: false,
                     });
                 });
                 // close if flagged
@@ -3221,7 +3233,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: v0p.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: true
+                        closed: true,
                     });
                 }
             }
@@ -3245,9 +3257,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointZLocation: ent.center.z || 0,
                             radius: ent.radius,
                             lineWidth: 1,
-                            colour: color
-                        }
-                    ]
+                            colour: color,
+                        },
+                    ],
                 });
             }
         }
@@ -3260,7 +3272,7 @@ function parseDXFtoKadMaps(dxf) {
                 kadPolygonsMap.set(nameE, {
                     name: nameE,
                     entityType: "poly",
-                    data: []
+                    data: [],
                 });
                 var dataE = kadPolygonsMap.get(nameE).data;
                 var segs = 64;
@@ -3278,7 +3290,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: ent.center.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: closed
+                        closed: closed,
                     });
                 }
                 // close loop
@@ -3304,9 +3316,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointYLocation: pos.y - offsetY,
                             pointZLocation: pos.z || 0,
                             text: ent.text,
-                            colour: color
-                        }
-                    ]
+                            colour: color,
+                        },
+                    ],
                 });
             }
         }
@@ -3321,7 +3333,7 @@ function parseDXFtoKadMaps(dxf) {
         lines: kadLinesMap,
         polys: kadPolygonsMap,
         circles: kadCirclesMap,
-        texts: kadTextsMap
+        texts: kadTextsMap,
     });
     //console.log("DXF parsed successfully");
     //call drawData and reset the view
@@ -3397,8 +3409,8 @@ function fileFormatPopup(error) {
             confirmButton: "confirm",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             //console.log("Confirmed");
@@ -3435,7 +3447,7 @@ function parseKADFile(fileData) {
                     kadPointsMap.set(entityName, {
                         entityName: entityName, // Store the entityName
                         entityType: entityType,
-                        data: []
+                        data: [],
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3450,7 +3462,7 @@ function parseKADFile(fileData) {
                     pointXLocation: pointXLocation,
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
-                    colour: colour
+                    colour: colour,
                 });
                 break;
             case "poly":
@@ -3459,7 +3471,7 @@ function parseKADFile(fileData) {
                     kadPolygonsMap.set(entityName, {
                         entityName: entityName, // Store the entityName
                         entityType: entityType,
-                        data: []
+                        data: [],
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3478,7 +3490,7 @@ function parseKADFile(fileData) {
                     pointZLocation: pointZLocation,
                     lineWidth: lineWidth,
                     colour: colour,
-                    closed: closed
+                    closed: closed,
                 });
                 break;
             case "line":
@@ -3487,7 +3499,7 @@ function parseKADFile(fileData) {
                     kadLinesMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: []
+                        data: [],
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3504,7 +3516,7 @@ function parseKADFile(fileData) {
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
                     lineWidth: lineWidth,
-                    colour: colour
+                    colour: colour,
                 });
                 break;
             case "circle":
@@ -3513,7 +3525,7 @@ function parseKADFile(fileData) {
                     kadCirclesMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: []
+                        data: [],
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3532,7 +3544,7 @@ function parseKADFile(fileData) {
                     pointZLocation: pointZLocation,
                     radius: radius,
                     lineWidth: lineWidth,
-                    colour: colour
+                    colour: colour,
                 });
                 break;
             case "text":
@@ -3541,7 +3553,7 @@ function parseKADFile(fileData) {
                     kadTextsMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: []
+                        data: [],
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3558,7 +3570,7 @@ function parseKADFile(fileData) {
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
                     text: text,
-                    colour: colour
+                    colour: colour,
                 });
                 break;
             default:
@@ -3685,12 +3697,12 @@ function exportKADFile(mapData) {
     }
     // Create a Blob with the CSV content for .kad file
     const blobKAD = new Blob([csvContentKAD], {
-        type: "text/csv"
+        type: "text/csv",
     });
 
     // Create a Blob with the CSV content for .txt file
     const blobTXT = new Blob([csvContentTXT], {
-        type: "text/plain"
+        type: "text/plain",
     });
 
     // Create temporary anchor elements to trigger the download for both files
@@ -4206,8 +4218,8 @@ function saveIREDESPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             // Get user input values
@@ -4243,8 +4255,8 @@ function saveIREDESPopup() {
                         //cancelButton: "cancel",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "swal2-icon"
-                    }
+                        icon: "swal2-icon",
+                    },
                 });
                 return; // Exit the function
             }
@@ -4254,7 +4266,7 @@ function saveIREDESPopup() {
                 Swal.fire({
                     title: "Invalid Plan ID",
                     text: "Please enter a Drill Plan ID.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -4264,7 +4276,7 @@ function saveIREDESPopup() {
                 Swal.fire({
                     title: "Invalid Site ID",
                     text: "Please enter a Site ID.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -4275,7 +4287,7 @@ function saveIREDESPopup() {
             if (isIOS()) {
                 // Create a Blob with the XML data
                 const blob = new Blob([xmlContent], {
-                    type: "text/xml;charset=utf-8"
+                    type: "text/xml;charset=utf-8",
                 });
 
                 // Create a URL for the Blob
@@ -4349,7 +4361,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
             endYLocation: point.endYLocation,
             endZLocation: point.endZLocation,
             holeDiameter: point.holeDiameter,
-            holeType: point.holeType
+            holeType: point.holeType,
         });
     });
     iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
@@ -4543,7 +4555,7 @@ function validateIREDESXML(xmlContent) {
         valid: isValid,
         originalChecksum: originalChecksum,
         calculatedChecksum: calculatedChecksum,
-        error: isValid ? null : "Checksum validation failed"
+        error: isValid ? null : "Checksum validation failed",
     };
 }
 
@@ -4596,7 +4608,7 @@ function calculateTimes(points) {
                 const combinedFromHoleID = point.fromHoleID;
                 surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
                     time: 0,
-                    delay: point.timingDelayMilliseconds
+                    delay: point.timingDelayMilliseconds,
                 };
 
                 holeTimes[combinedHoleID] = null;
@@ -4753,7 +4765,7 @@ function interpolate(p1, p2, contourLevel) {
     const t = (contourLevel - p1.z) / (p2.z - p1.z);
     return {
         x: p1.x + t * (p2.x - p1.x),
-        y: p1.y + t * (p2.y - p1.y)
+        y: p1.y + t * (p2.y - p1.y),
     };
 }
 
@@ -4772,8 +4784,8 @@ function simplifyLine(line, epsilon) {
                     maxDist: distSq,
                     maxDistPoint: {
                         index: i + 1,
-                        point
-                    }
+                        point,
+                    },
                 };
             }
             return result;
@@ -4782,8 +4794,8 @@ function simplifyLine(line, epsilon) {
             maxDist: 0,
             maxDistPoint: {
                 index: 0,
-                point: null
-            }
+                point: null,
+            },
         }
     );
 
@@ -4860,13 +4872,13 @@ function delaunayTriangles(points, maxEdgeLength) {
                 resultTriangles.push([
                     [getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
                     [getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
+                    [getX(p3), getY(p3), p3.startZLocation], // [x, y, z] of point 3
                 ]);
 
                 reliefTriangles.push([
                     [getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
                     [getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
+                    [getX(p3), getY(p3), p3.holeTime], // [x, y, z] of point 3
                 ]);
             }
         }
@@ -4947,7 +4959,7 @@ function getVoronoiMetrics(points, useToeLocation) {
                 holeFiringTime: holeFiringTime,
                 volume: volume,
                 mass: mass,
-                powderFactor: powderFactor
+                powderFactor: powderFactor,
                 //add a scaled heelan vibration calculation here
             });
         }
@@ -5285,8 +5297,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
                         lineWidth: 5,
                         colour: 1,
                         closed: true,
-                        entityType: "poly"
-                    }))
+                        entityType: "poly",
+                    })),
                 });
             });
         }
@@ -5297,7 +5309,7 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
     const clipperPolys = rawPolygons.map((poly) =>
         poly.map((pt) => ({
             X: Math.round(pt.x * scale),
-            Y: Math.round(pt.y * scale)
+            Y: Math.round(pt.y * scale),
         }))
     );
 
@@ -5357,8 +5369,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
                     lineWidth: lineWidth || 5,
                     colour: colour || 1,
                     closed: true,
-                    entityType: "poly"
-                }))
+                    entityType: "poly",
+                })),
             });
         });
     }
@@ -5397,7 +5409,7 @@ function clipVoronoiCells(voronoiMetrics) {
 
         const subjPath = cell.polygon.map((p) => ({
             X: Math.round((p.x || p[0]) * scale),
-            Y: Math.round((p.y || p[1]) * scale)
+            Y: Math.round((p.y || p[1]) * scale),
         }));
 
         let cellSuccessfullyClippedAndAdded = false;
@@ -5408,7 +5420,7 @@ function clipVoronoiCells(voronoiMetrics) {
             // Convert the current boundary polygon to Clipper format
             const clipperSingleClipPath = currentBoundaryPolygon.map((p) => ({
                 X: Math.round(p.x * scale),
-                Y: Math.round(p.y * scale)
+                Y: Math.round(p.y * scale),
             }));
 
             const clipper = new ClipperLib.Clipper();
@@ -5422,7 +5434,7 @@ function clipVoronoiCells(voronoiMetrics) {
                 // Check solution[0] for valid polygon
                 const clippedResultPolygon = solution[0].map((pt) => ({
                     x: pt.X / scale,
-                    y: pt.Y / scale
+                    y: pt.Y / scale,
                 }));
 
                 const area = Math.abs(
@@ -5439,7 +5451,7 @@ function clipVoronoiCells(voronoiMetrics) {
                     polygon: clippedResultPolygon,
                     area,
                     volume,
-                    powderFactor
+                    powderFactor,
                 });
                 cellSuccessfullyClippedAndAdded = true;
                 break; // Important: Cell is clipped by this boundary, no need to check others
@@ -5456,7 +5468,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
     const scale = 100000;
     const scaledPath = polygon.map((p) => ({
         X: Math.round((p.x || p[0]) * scale),
-        Y: Math.round((p.y || p[1]) * scale)
+        Y: Math.round((p.y || p[1]) * scale),
     }));
 
     const c = new ClipperLib.Clipper();
@@ -5466,7 +5478,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 
     const simplified = cleaned.map((p) => ({
         x: p.X / scale,
-        y: p.Y / scale
+        y: p.Y / scale,
     }));
 
     if (forceClose && simplified.length > 0) {
@@ -5484,7 +5496,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
     // Convert to Clipper path format
     const path = polygon.map((p) => ({
         X: Math.round(p.x * scale),
-        Y: Math.round(p.y * scale)
+        Y: Math.round(p.y * scale),
     }));
 
     // Initialize and execute offset
@@ -5498,7 +5510,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
     if (offsetPaths.length === 0) return [];
     return offsetPaths[0].map((p) => ({
         x: p.X / scale,
-        y: p.Y / scale
+        y: p.Y / scale,
     }));
 }
 
@@ -5554,11 +5566,11 @@ function offsetPolygonMathematical(polygon, offset) {
 
         const p1 = {
             x: polygon[i].x + dx,
-            y: polygon[i].y + dy
+            y: polygon[i].y + dy,
         };
         const p2 = {
             x: polygon[(i + 1) % n].x + dx,
-            y: polygon[(i + 1) % n].y + dy
+            y: polygon[(i + 1) % n].y + dy,
         };
         offsetSegments.push([p1, p2]);
     }
@@ -6012,17 +6024,17 @@ function drawDelauanySlopeMap(triangles, centroid, strokeColour) {
         const edge1 = {
             x: tBX - tAX,
             y: tBY - tAY,
-            z: tBZ - tAZ
+            z: tBZ - tAZ,
         };
         const edge2 = {
             x: tCX - tAX,
             y: tCY - tAY,
-            z: tCZ - tAZ
+            z: tCZ - tAZ,
         };
         const edge3 = {
             x: tCX - tBX,
             y: tCY - tBY,
-            z: tCZ - tBZ
+            z: tCZ - tBZ,
         };
 
         // Calculate the maximum absolute slope angle for this triangle
@@ -6218,7 +6230,7 @@ function calculateTriangleCentroid(triangle) {
     const triangleCentroid = {
         x: (tAX + tBX + tCX) / 3,
         y: (tAY + tBY + tCY) / 3,
-        z: (tAZ + tBZ + tCZ) / 3
+        z: (tAZ + tBZ + tCZ) / 3,
     };
     return triangleCentroid;
 }
@@ -6999,7 +7011,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
         const newEntity = {
             entityName: `${entityName}_offset`, // Modify this as needed
             entityType: entityType,
-            data: []
+            data: [],
         };
 
         let prevPoint = null;
@@ -7039,7 +7051,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
                 pointYLocation: offsetY,
                 pointZLocation: point.pointZLocation,
                 lineWidth: point.lineWidth,
-                colour: point.colour
+                colour: point.colour,
             });
 
             if (extendIfNecessary && prevPoint) {
@@ -7055,7 +7067,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
                         pointYLocation: offsetY,
                         pointZLocation: point.pointZLocation,
                         lineWidth: point.lineWidth,
-                        colour: point.colour
+                        colour: point.colour,
                     });
                 }
             }
@@ -7422,7 +7434,7 @@ function addKADPoint() {
             pointXLocation: pointXLocation, //3
             pointYLocation: pointYLocation, //4
             pointZLocation: pointZLocation, //5
-            colour: colour //6
+            colour: colour, //6
         };
 
         // Add the point to kadPointsMap
@@ -7430,7 +7442,7 @@ function addKADPoint() {
             kadPointsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: []
+                data: [],
             });
         }
         kadPointsMap.get(entityName).data.push(pointObject);
@@ -7486,7 +7498,7 @@ function addKADLine() {
             pointYLocation: pointYLocation,
             pointZLocation: pointZLocation,
             lineWidth: lineWidth,
-            colour: colour
+            colour: colour,
         };
 
         // Add the point to kadPointsMap
@@ -7494,7 +7506,7 @@ function addKADLine() {
             kadLinesMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: []
+                data: [],
             });
         }
         kadLinesMap.get(entityName).data.push(lineObject);
@@ -7553,7 +7565,7 @@ function addKADPoly() {
             pointZLocation: pointZLocation,
             lineWidth: lineWidth,
             colour: colour,
-            closed: closed // Set to true if the polygon is closed
+            closed: closed, // Set to true if the polygon is closed
         };
 
         // Add the point to kadPointsMap
@@ -7561,7 +7573,7 @@ function addKADPoly() {
             kadPolygonsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: []
+                data: [],
             });
         }
         kadPolygonsMap.get(entityName).data.push(polyObject);
@@ -7621,7 +7633,7 @@ function addKADCircle() {
             pointZLocation: pointZLocation,
             radius: radius,
             lineWidth: lineWidth,
-            colour: colour
+            colour: colour,
         };
 
         // Add the point to kadPointsMap
@@ -7629,7 +7641,7 @@ function addKADCircle() {
             kadCirclesMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: []
+                data: [],
             });
         }
         kadCirclesMap.get(entityName).data.push(circleObject);
@@ -7691,7 +7703,7 @@ function addKADText() {
             pointYLocation: pointYLocation,
             pointZLocation: pointZLocation,
             text: text,
-            colour: colour
+            colour: colour,
         };
 
         // Add the point to kadPointsMap
@@ -7699,7 +7711,7 @@ function addKADText() {
             kadTextsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: []
+                data: [],
             });
         }
         kadTextsMap.get(entityName).data.push(textObject);
@@ -7914,7 +7926,7 @@ function saveAQMPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
+            icon: "swal2-icon",
         },
         preConfirm: () => {
             // Get user input values
@@ -7969,7 +7981,7 @@ function saveAQMPopup() {
             savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
             savedAQMPopupSettings.columnOrderArray = columnOrderArray;
             localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-        }
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             // Get user input values
@@ -7996,8 +8008,8 @@ function saveAQMPopup() {
                         confirmButton: "cancel",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "swal2-icon"
-                    }
+                        icon: "swal2-icon",
+                    },
                 });
                 return; // Exit the function
             }
@@ -8033,7 +8045,7 @@ function saveAQMPopup() {
             if (isIOS()) {
                 // Create a Blob with the XML data
                 const blob = new Blob([aqm], {
-                    type: "text/csv;charset=utf-8"
+                    type: "text/csv;charset=utf-8",
                 });
                 // Create a URL for the Blob
                 const url = URL.createObjectURL(blob);
@@ -8123,7 +8135,7 @@ function addHolePopup() {
         type: savedAddHolePopupSettings.type || "Production",
         length: savedAddHolePopupSettings.length || 0,
         angle: savedAddHolePopupSettings.angle || 0,
-        bearing: savedAddHolePopupSettings.bearing || 0
+        bearing: savedAddHolePopupSettings.bearing || 0,
     };
 
     Swal.fire({
@@ -8160,8 +8172,8 @@ function addHolePopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
@@ -8182,8 +8194,8 @@ function addHolePopup() {
                         cancelButton: "Try Again",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "error"
-                    }
+                        icon: "error",
+                    },
                 });
                 return; // Exit the function
             }
@@ -8196,7 +8208,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Diameter",
                     text: "Please enter an diameter between 0 and 1000 millimeters.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8208,7 +8220,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Type",
                     text: "Please enter a Type.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8219,7 +8231,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Elevation",
                     text: "Please enter an elevation between -2000 and 8000 meters.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8230,7 +8242,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid length",
                     text: "Please enter an length between 0 and 100 meters.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8242,7 +8254,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Angle",
                     text: "Please enter an angle between 0 and 60 degrees.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8254,7 +8266,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Bearing",
                     text: "Please enter an bearing between 0 and 360 degrees.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             }
@@ -8268,7 +8280,7 @@ function addHolePopup() {
                 type: typeValue,
                 length: lengthValue,
                 angle: angleValue,
-                bearing: bearingValue
+                bearing: bearingValue,
             };
             localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
@@ -8329,7 +8341,7 @@ function addPatternPopup(worldX, worldY) {
         burden: savedAddPatternPopupSettings.burden || 3.0,
         spacing: savedAddPatternPopupSettings.spacing || 3.3,
         rows: savedAddPatternPopupSettings.rows || 6,
-        holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
+        holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10,
     };
 
     //${lastValues.}
@@ -8387,8 +8399,8 @@ function addPatternPopup(worldX, worldY) {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     })
         .then((result) => {
             if (result.isConfirmed) {
@@ -8417,7 +8429,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Blast Name",
                         text: "Please enter a Blast Name.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8427,7 +8439,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Offset",
                         text: "Please enter an offset between -1 and 1.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8437,7 +8449,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Name Type",
                         text: "Please enter a Name Type.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8447,7 +8459,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Row Orientation",
                         text: "Please enter a row orientation between 0 and 359.999 degrees.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8457,7 +8469,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid X",
                         text: "Please enter an X value in meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8467,7 +8479,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Y",
                         text: "Please enter an Y value in meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8477,7 +8489,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Z",
                         text: "Please enter an Z value in meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8487,7 +8499,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Diameter",
                         text: "Please enter an diameter between 0 and 1000 millimeters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8497,7 +8509,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Type",
                         text: "Please enter a Type.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8507,7 +8519,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Angle",
                         text: "Please enter an angle between 0 and 60 degrees.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8517,7 +8529,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Bearing",
                         text: "Please enter an bearing between 0 and 360 degrees.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8527,7 +8539,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Length",
                         text: "Please enter an length between 0 and 200 meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8537,7 +8549,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Burden",
                         text: "Please enter an burden between 0.1 and 50 meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8547,7 +8559,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Spacing",
                         text: "Please enter an spacing between 0.1 and 50 meters.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8557,7 +8569,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Rows",
                         text: "Please enter an rows between 1 and 500.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8567,7 +8579,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Holes Per Row",
                         text: "Please enter an holes per row between 1 and 500.",
-                        icon: "error"
+                        icon: "error",
                     });
                     return; // Exit the function
                 }
@@ -8588,7 +8600,7 @@ function addPatternPopup(worldX, worldY) {
                     burden: burden,
                     spacing: spacing,
                     rows: rows,
-                    holesPerRow: holesPerRow
+                    holesPerRow: holesPerRow,
                 };
                 localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
@@ -8731,8 +8743,8 @@ function editHoleLengthPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const lengthInput = document.getElementById("length");
@@ -8742,7 +8754,7 @@ function editHoleLengthPopup() {
                 Swal.fire({
                     title: "Invalid length",
                     text: "Please enter an length between 0 and 100 meters.",
-                    icon: "error"
+                    icon: "error",
                 });
                 return; // Exit the function
             } else if (selectedHole) {
@@ -8793,8 +8805,8 @@ function measuredLengthPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const lengthInput = document.getElementById("length");
@@ -8836,8 +8848,8 @@ function measuredMassPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const massInput = document.getElementById("mass");
@@ -8889,8 +8901,8 @@ function measuredCommentPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const commentInput = document.getElementById("comment");
@@ -8970,8 +8982,8 @@ function editBlastNamePopup(selectedHole) {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const blastNameInput = document.getElementById("blastName");
@@ -9053,8 +9065,8 @@ function editHoleTypePopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon"
-        }
+            icon: "swal2-icon",
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             const typeInput = document.getElementById("type");
@@ -9178,7 +9190,7 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
         measuredMass: measuredMass,
         measuredMassTimeStamp: measuredMassTimeStamp,
         measuredComment: measuredComment,
-        measuredCommentTimeStamp: measuredCommentTimeStamp
+        measuredCommentTimeStamp: measuredCommentTimeStamp,
     });
     console.log("Added Hole: " + newHoleID);
     console.log(
@@ -9450,7 +9462,7 @@ function recalculateContours(points, deltaX, deltaY) {
                 contourData.push({
                     x: point.startXLocation,
                     y: point.startYLocation,
-                    z: time
+                    z: time,
                 });
             }
         }
@@ -9832,7 +9844,7 @@ function timeChart() {
         title: {
             text: "Time Window Chart",
             xanchor: "right",
-            font: { size: 10 }
+            font: { size: 10 },
         },
         plot_bgcolor: noneColour,
         paper_bgcolor: noneColour,
@@ -9842,7 +9854,7 @@ function timeChart() {
             bgcolor: noneColour,
             color: "rgba(255, 0, 0, 0.4)",
             activecolor: "red",
-            position: "left"
+            position: "left",
         },
         margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
         xaxis: {
@@ -9850,16 +9862,16 @@ function timeChart() {
             showgrid: true,
             rangeslider: { visible: true, thickness: 0.1 },
             tickvals: "auto", //tickvals, // if you want bin ranges
-            ticktext: "~s" //ticktext, //if you want bin ranges
+            ticktext: "~s", //ticktext, //if you want bin ranges
         },
         yaxis: {
             title: { text: newYLabel, font: { size: 10 } },
             showgrid: true,
             automargin: true,
-            range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
+            range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
         },
         height: 380,
-        width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
+        width: chart.offsetWidth - 50, // ✅ dynamic width based on container,
     };
 
     const data = [
@@ -9872,15 +9884,15 @@ function timeChart() {
             text: hoverText,
             textposition: "none", // ✅ disables labels drawn on bars
             //hoverinfo: "text+y",
-            hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
-        }
+            hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>",
+        },
     ];
 
     Plotly.react("timeChart", data, layout, {
         responsive: true,
         displayModeBar: true,
         modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-        modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
+        modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
     });
 
     // ✅ Clear previously registered listeners
@@ -10063,7 +10075,7 @@ function getDisplayOptions() {
         measuredLength: document.getElementById("display13").checked,
         measuredMass: document.getElementById("display14").checked,
         measuredComment: document.getElementById("display15").checked,
-        voronoiPF: document.getElementById("display16").checked
+        voronoiPF: document.getElementById("display16").checked,
     };
 }
 
@@ -10598,7 +10610,7 @@ function drawData(points, selectedHole) {
                     middleSideCollar,
                     bottomSideCollar,
                     holeMap,
-                    displayOptions
+                    displayOptions,
                 });
 
                 // Draw main hole geometry, with selection highlight logic
@@ -10847,7 +10859,7 @@ function getMousePos(canvas, evt) {
 
     return {
         x: canvasX,
-        y: canvasY
+        y: canvasY,
     };
 }
 
@@ -11375,7 +11387,7 @@ function openNavRight() {
         sidenavRight.style.height = "350px";
         //resize the timechart
         plotly.relayout("timeChart", {
-            width: 280
+            width: 280,
         });
     } else {
         body.style.marginRight = "315px"; // Push body to the left
@@ -11389,7 +11401,7 @@ function openNavRight() {
         timeChart();
         newWidthRight = 315;
         Plotly.relayout("timeChart", {
-            width: newWidthRight - 50
+            width: newWidthRight - 50,
         });
     }
 }
@@ -11684,7 +11696,7 @@ function updatePopup() {
 	        <br>
 	        <label class="labelWhite12c">Version: Build ${buildVersion}</label>
 		  `,
-        customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
+        customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" },
     }).then((result) => {
         if (result.isConfirmed) {
         }
