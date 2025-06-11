@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250609.2240AWST"
+    Last Modified: "20250611.2220AWST"
 */
 
 :root {
@@ -214,14 +214,14 @@ body.dark-mode #dark-mode-toggle::after {
     position: absolute;
     top: 100px;
     left: 15px;
-    padding: 5px 5px 5px 5px; /* Consider adjusting padding if buttons seem too close to edge */
+    padding: 3px 3px 3px 3px; /* Consider adjusting padding if buttons seem too close to edge */
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: var(--default-background-color);
     border: 1px solid var(--light-mode-border);
-    border-radius: 8px;
-    box-shadow: 0 4px 4px rgba(50, 50, 50, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 4px 4px rgba(50, 50, 50, 0.5);
     z-index: 1000;
     cursor: move; /* For dragging the toolbar itself, if implemented */
     transition: left 0.5s ease;
@@ -229,25 +229,27 @@ body.dark-mode #dark-mode-toggle::after {
 
 /* Styles for the labels which act as buttons */
 #floating-toolbar label.icon-button {
-    display: inline-flex; /* Or flex if they are stacked and you want to center content */
+    display: flex; /* Change from inline-flex to flex */
     align-items: center;
     justify-content: center;
-    width: 28px; /* Adjust as needed */
-    height: 28px; /* Adjust as needed */
-    background-color: var(--primary-color); /* Default background */
-    border: 1px solid var(--light-mode-border); /* Default border */
+    width: 26px;
+    height: 26px;
+    background-color: var(--primary-color);
+    border: 1px solid var(--light-mode-border);
     border-radius: 4px;
-    margin-top: 5px; /* Spacing between buttons if stacked vertically */
-    margin-bottom: 5px; /* Spacing between buttons if stacked vertically */
-    font-size: 20px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: 0; /* Add this to eliminate any text spacing */
+    line-height: 0; /* Add this to eliminate line-height spacing */
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
 #floating-toolbar label.icon-button img {
-    width: 24px; /* Adjust icon size */
-    height: 24px; /* Adjust icon size */
+    width: 26px;
+    height: 26px;
     object-fit: contain;
+    display: block; /* Add this */
 }
 
 /* Hover state for the icon buttons within the toolbar */

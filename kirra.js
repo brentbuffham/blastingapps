@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
 // Last Modified: "20250609.2240AWST"
-const buildVersion = "20250609.2240AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+const buildVersion = "20250611.2220AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -124,7 +124,10 @@ let isMeasureRecording = false;
 
 //has selected multiple holes
 let hasSelectedMultipleHoles = false;
-let selectionMode = false; // Selection mode is set to single hole by default
+let selectionMode = false; // Selection mode is false if single ONLY hole selection on each click and true when each click adds a hole to the selection.  It does not indicate that selection is active or inactive.
+let isMoveToolActive = false;
+let isMovingHole = false;
+let holeToMove = null;
 
 let maxEdgeLength = 15;
 let clickedHole; // Declare clickedHole outside the event listener
@@ -194,17 +197,9 @@ const switches = [
     addMultiConnectorButton,
     addPatternSwitch,
     addHoleSwitch,
-    // editAngleSwitch,
-    // editBearingSwitch,
-    // editEastingSwitch,
-    // editNorthingSwitch,
-    // editElevationSwitch,
-    // editLengthSwitch,
     editLengthPopupSwitch,
     editTypeSwitch,
     editBlastNameSwitch,
-    // editDiameterSwitch,
-
     deleteHoleSwitch,
     modifyPointSwitch,
     modifyCircleSwitch,
@@ -225,7 +220,7 @@ const switches = [
     measuredMassSwitch,
     measuredCommentSwitch,
     selectionModeButton,
-    editHolesToggle,
+    editHolesToggle
 ];
 
 const bools = [
@@ -260,7 +255,7 @@ const bools = [
     isModifyingText,
     isOffsetLinePoly,
     isMeasureRecording,
-    selectionMode, //check this
+    selectionMode //check this
 ];
 
 // Boolean set to False
@@ -297,6 +292,8 @@ function setAllBoolsToFalse() {
     isOffsetLinePoly = false;
     isMeasureRecording = false;
     selectionMode = false;
+    isMoveToolActive = false;
+    isMovingHole = false;
 }
 
 // Function 2: Reset all switches and toggles
@@ -325,20 +322,25 @@ function resetAllSelectedStores() {
     selectedHole = null;
     firstSelectedHole = null;
     secondSelectedHole = null;
-    selectedMultipleHoles = null;
+    selectedMultipleHoles = [];
     clickedHole = null;
-    timingWindowHolesSelected = null;
+    timingWindowHolesSelected = [];
 
     // Reset any other state variables
     blastNameValue = "";
     currentEntityName = "";
 }
 
+// Update resetFloatingToolbarButtons to include isMoveToolActive
 function resetFloatingToolbarButtons() {
     isSelectionPointerActive = false;
     isPolygonSelectionActive = false;
+    isMoveToolActive = false;
     selectPointerTool.checked = false;
     selectByPolygonTool.checked = false;
+    moveToTool.checked = false;
+    tieConnectTool.checked = false;
+    tieConnectMultiTool.checked = false;
     // drawData(points, selectedHole);
 }
 
@@ -577,6 +579,36 @@ function updateTranslations(language) {
 
 //drawing elevation value
 const drawingElevation = document.getElementById("drawingElevation");
+
+// Tie Connect Tool event listener
+const tieConnectTool = document.getElementById("tieConnectTool");
+tieConnectTool.addEventListener("change", function () {
+    // Activate the right side nav "tie in one by one" switch
+    addConnectorButton.checked = tieConnectTool.checked;
+    selectByPolygonTool.checked = false;
+    selectPointerTool.checked = false;
+    moveToTool.checked = false;
+    resetViewTool.checked = false;
+    tieConnectMultiTool.checked = false;
+    addMultiConnectorButton.checked = false;
+    // Trigger the change event to activate the functionality
+    addConnectorButton.dispatchEvent(new Event("change"));
+});
+
+// Tie Connect Multi Tool event listener
+const tieConnectMultiTool = document.getElementById("tieConnectMultiTool");
+tieConnectMultiTool.addEventListener("change", function () {
+    // Activate the right side nav "tie in in a line" switch
+    addMultiConnectorButton.checked = tieConnectMultiTool.checked;
+    selectByPolygonTool.checked = false;
+    selectPointerTool.checked = false;
+    moveToTool.checked = false;
+    resetViewTool.checked = false;
+    tieConnectTool.checked = false;
+    addConnectorButton.checked = false;
+    // Trigger the change event to activate the functionality
+    addMultiConnectorButton.dispatchEvent(new Event("change"));
+});
 
 //Selection Mode
 selectionModeButton.addEventListener("change", function () {
@@ -1499,7 +1531,7 @@ function resizeChart() {
     if (Array.isArray(holeTimes)) {
         const newWidth = document.documentElement.clientWidth;
         Plotly.relayout(timeChartObject, {
-            width: newWidth,
+            width: newWidth
         });
     }
 }
@@ -1577,7 +1609,7 @@ document.getElementById("saveHoles").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8",
+            type: "text/csv;charset=utf-8"
         });
 
         // Create a URL for the Blob
@@ -1628,7 +1660,7 @@ document.getElementById("saveAll").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8",
+            type: "text/csv;charset=utf-8"
         });
 
         // Create a URL for the Blob
@@ -1684,7 +1716,7 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
 
         // Create a Blob with the CSV data
         const blob = new Blob([csv], {
-            type: "text/csv;charset=utf-8",
+            type: "text/csv;charset=utf-8"
         });
 
         // Create a URL for the Blob
@@ -1844,7 +1876,7 @@ canvasContainer.addEventListener(
         }
     },
     {
-        passive: false,
+        passive: false
     }
 );
 
@@ -1919,8 +1951,8 @@ timeSlider.addEventListener("input", function () {
     Plotly.relayout("timeChart", {
         width: newWidthRight - 50,
         yaxis: {
-            autorange: true, // Adjust the y-axis range to fit the data
-        },
+            autorange: true // Adjust the y-axis range to fit the data
+        }
     });
 });
 
@@ -1933,8 +1965,8 @@ timeOffsetSlider.addEventListener("input", function () {
     Plotly.relayout("timeChart", {
         width: newWidthRight - 50,
         yaxis: {
-            autorange: true, // Adjust the y-axis range to fit the data
-        },
+            autorange: true // Adjust the y-axis range to fit the data
+        }
     });
 });
 
@@ -1961,7 +1993,7 @@ const optionConfigs = [
     { option: option13 },
     { option: option14 },
     { option: option15 },
-    { option: option16 },
+    { option: option16 }
 ];
 
 // Add event listeners programmatically
@@ -2020,7 +2052,7 @@ function handleMouseMove(event) {
     if (isResizingRight) {
         newWidthRight = window.innerWidth - event.clientX;
         Plotly.relayout("timeChart", {
-            width: newWidthRight - 50,
+            width: newWidthRight - 50
         });
         document.getElementById("sidenavRight").style.width = newWidthRight + "px";
     }
@@ -2031,7 +2063,7 @@ function handleMouseMove(event) {
 
     // If in selection mode and there's a selection, prevent getMultipleClickedHoles from re-evaluating during this move
     if (selectionMode && selectedMultipleHoles.length > 0) {
-        isUpdatingSelectionFromMove = true;
+        isUpdatingSelectionFromMove = true; // Flag to prevent re-evaluating selection during mouse move
     }
 
     drawData(points, selectedHole);
@@ -2399,7 +2431,7 @@ function parseCSV(data) {
                 measuredMass,
                 measuredMassTimeStamp,
                 measuredComment,
-                measuredCommentTimeStamp,
+                measuredCommentTimeStamp
             };
 
             // Add to points array first
@@ -3091,7 +3123,7 @@ function parseDXFtoKadMaps(dxf) {
         line: kadLinesMap.size,
         poly: kadPolygonsMap.size,
         circle: kadCirclesMap.size,
-        text: kadTextsMap.size,
+        text: kadTextsMap.size
     };
 
     // 2) kirra.js centroid offsets
@@ -3133,9 +3165,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointXLocation: x,
                             pointYLocation: y,
                             pointZLocation: z,
-                            colour: color,
-                        },
-                    ],
+                            colour: color
+                        }
+                    ]
                 });
             }
         }
@@ -3159,9 +3191,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointXLocation: xi,
                             pointYLocation: yi,
                             pointZLocation: zi,
-                            colour: color,
-                        },
-                    ],
+                            colour: color
+                        }
+                    ]
                 });
             }
         }
@@ -3189,9 +3221,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointYTarget: v1.y - offsetY,
                             pointZTarget: v1.z || 0,
                             lineWidth: 1,
-                            colour: color,
-                        },
-                    ],
+                            colour: color
+                        }
+                    ]
                 });
             }
         }
@@ -3205,7 +3237,7 @@ function parseDXFtoKadMaps(dxf) {
                 kadPolygonsMap.set(nameP, {
                     name: nameP,
                     entityType: "poly",
-                    data: [],
+                    data: []
                 });
                 var dataP = kadPolygonsMap.get(nameP).data;
                 verts.forEach(function (v, i) {
@@ -3218,7 +3250,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: v.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: false,
+                        closed: false
                     });
                 });
                 // close if flagged
@@ -3233,7 +3265,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: v0p.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: true,
+                        closed: true
                     });
                 }
             }
@@ -3257,9 +3289,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointZLocation: ent.center.z || 0,
                             radius: ent.radius,
                             lineWidth: 1,
-                            colour: color,
-                        },
-                    ],
+                            colour: color
+                        }
+                    ]
                 });
             }
         }
@@ -3272,7 +3304,7 @@ function parseDXFtoKadMaps(dxf) {
                 kadPolygonsMap.set(nameE, {
                     name: nameE,
                     entityType: "poly",
-                    data: [],
+                    data: []
                 });
                 var dataE = kadPolygonsMap.get(nameE).data;
                 var segs = 64;
@@ -3290,7 +3322,7 @@ function parseDXFtoKadMaps(dxf) {
                         pointZLocation: ent.center.z || 0,
                         lineWidth: 1,
                         colour: color,
-                        closed: closed,
+                        closed: closed
                     });
                 }
                 // close loop
@@ -3316,9 +3348,9 @@ function parseDXFtoKadMaps(dxf) {
                             pointYLocation: pos.y - offsetY,
                             pointZLocation: pos.z || 0,
                             text: ent.text,
-                            colour: color,
-                        },
-                    ],
+                            colour: color
+                        }
+                    ]
                 });
             }
         }
@@ -3333,7 +3365,7 @@ function parseDXFtoKadMaps(dxf) {
         lines: kadLinesMap,
         polys: kadPolygonsMap,
         circles: kadCirclesMap,
-        texts: kadTextsMap,
+        texts: kadTextsMap
     });
     //console.log("DXF parsed successfully");
     //call drawData and reset the view
@@ -3409,8 +3441,8 @@ function fileFormatPopup(error) {
             confirmButton: "confirm",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             //console.log("Confirmed");
@@ -3447,7 +3479,7 @@ function parseKADFile(fileData) {
                     kadPointsMap.set(entityName, {
                         entityName: entityName, // Store the entityName
                         entityType: entityType,
-                        data: [],
+                        data: []
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3462,7 +3494,7 @@ function parseKADFile(fileData) {
                     pointXLocation: pointXLocation,
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
-                    colour: colour,
+                    colour: colour
                 });
                 break;
             case "poly":
@@ -3471,7 +3503,7 @@ function parseKADFile(fileData) {
                     kadPolygonsMap.set(entityName, {
                         entityName: entityName, // Store the entityName
                         entityType: entityType,
-                        data: [],
+                        data: []
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3490,7 +3522,7 @@ function parseKADFile(fileData) {
                     pointZLocation: pointZLocation,
                     lineWidth: lineWidth,
                     colour: colour,
-                    closed: closed,
+                    closed: closed
                 });
                 break;
             case "line":
@@ -3499,7 +3531,7 @@ function parseKADFile(fileData) {
                     kadLinesMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: [],
+                        data: []
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3516,7 +3548,7 @@ function parseKADFile(fileData) {
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
                     lineWidth: lineWidth,
-                    colour: colour,
+                    colour: colour
                 });
                 break;
             case "circle":
@@ -3525,7 +3557,7 @@ function parseKADFile(fileData) {
                     kadCirclesMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: [],
+                        data: []
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3544,7 +3576,7 @@ function parseKADFile(fileData) {
                     pointZLocation: pointZLocation,
                     radius: radius,
                     lineWidth: lineWidth,
-                    colour: colour,
+                    colour: colour
                 });
                 break;
             case "text":
@@ -3553,7 +3585,7 @@ function parseKADFile(fileData) {
                     kadTextsMap.set(entityName, {
                         name: entityName, // Store the entityName
                         entityType: entityType,
-                        data: [],
+                        data: []
                     });
                 }
                 pointID = row[2]; // Id of the point
@@ -3570,7 +3602,7 @@ function parseKADFile(fileData) {
                     pointYLocation: pointYLocation,
                     pointZLocation: pointZLocation,
                     text: text,
-                    colour: colour,
+                    colour: colour
                 });
                 break;
             default:
@@ -3697,12 +3729,12 @@ function exportKADFile(mapData) {
     }
     // Create a Blob with the CSV content for .kad file
     const blobKAD = new Blob([csvContentKAD], {
-        type: "text/csv",
+        type: "text/csv"
     });
 
     // Create a Blob with the CSV content for .txt file
     const blobTXT = new Blob([csvContentTXT], {
-        type: "text/plain",
+        type: "text/plain"
     });
 
     // Create temporary anchor elements to trigger the download for both files
@@ -4218,8 +4250,8 @@ function saveIREDESPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             // Get user input values
@@ -4255,8 +4287,8 @@ function saveIREDESPopup() {
                         //cancelButton: "cancel",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "swal2-icon",
-                    },
+                        icon: "swal2-icon"
+                    }
                 });
                 return; // Exit the function
             }
@@ -4266,7 +4298,7 @@ function saveIREDESPopup() {
                 Swal.fire({
                     title: "Invalid Plan ID",
                     text: "Please enter a Drill Plan ID.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -4276,7 +4308,7 @@ function saveIREDESPopup() {
                 Swal.fire({
                     title: "Invalid Site ID",
                     text: "Please enter a Site ID.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -4287,7 +4319,7 @@ function saveIREDESPopup() {
             if (isIOS()) {
                 // Create a Blob with the XML data
                 const blob = new Blob([xmlContent], {
-                    type: "text/xml;charset=utf-8",
+                    type: "text/xml;charset=utf-8"
                 });
 
                 // Create a URL for the Blob
@@ -4361,7 +4393,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
             endYLocation: point.endYLocation,
             endZLocation: point.endZLocation,
             holeDiameter: point.holeDiameter,
-            holeType: point.holeType,
+            holeType: point.holeType
         });
     });
     iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
@@ -4555,7 +4587,7 @@ function validateIREDESXML(xmlContent) {
         valid: isValid,
         originalChecksum: originalChecksum,
         calculatedChecksum: calculatedChecksum,
-        error: isValid ? null : "Checksum validation failed",
+        error: isValid ? null : "Checksum validation failed"
     };
 }
 
@@ -4608,7 +4640,7 @@ function calculateTimes(points) {
                 const combinedFromHoleID = point.fromHoleID;
                 surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
                     time: 0,
-                    delay: point.timingDelayMilliseconds,
+                    delay: point.timingDelayMilliseconds
                 };
 
                 holeTimes[combinedHoleID] = null;
@@ -4765,7 +4797,7 @@ function interpolate(p1, p2, contourLevel) {
     const t = (contourLevel - p1.z) / (p2.z - p1.z);
     return {
         x: p1.x + t * (p2.x - p1.x),
-        y: p1.y + t * (p2.y - p1.y),
+        y: p1.y + t * (p2.y - p1.y)
     };
 }
 
@@ -4784,8 +4816,8 @@ function simplifyLine(line, epsilon) {
                     maxDist: distSq,
                     maxDistPoint: {
                         index: i + 1,
-                        point,
-                    },
+                        point
+                    }
                 };
             }
             return result;
@@ -4794,8 +4826,8 @@ function simplifyLine(line, epsilon) {
             maxDist: 0,
             maxDistPoint: {
                 index: 0,
-                point: null,
-            },
+                point: null
+            }
         }
     );
 
@@ -4872,13 +4904,13 @@ function delaunayTriangles(points, maxEdgeLength) {
                 resultTriangles.push([
                     [getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
                     [getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.startZLocation], // [x, y, z] of point 3
+                    [getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
                 ]);
 
                 reliefTriangles.push([
                     [getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
                     [getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.holeTime], // [x, y, z] of point 3
+                    [getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
                 ]);
             }
         }
@@ -4959,7 +4991,7 @@ function getVoronoiMetrics(points, useToeLocation) {
                 holeFiringTime: holeFiringTime,
                 volume: volume,
                 mass: mass,
-                powderFactor: powderFactor,
+                powderFactor: powderFactor
                 //add a scaled heelan vibration calculation here
             });
         }
@@ -5297,8 +5329,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
                         lineWidth: 5,
                         colour: 1,
                         closed: true,
-                        entityType: "poly",
-                    })),
+                        entityType: "poly"
+                    }))
                 });
             });
         }
@@ -5309,7 +5341,7 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
     const clipperPolys = rawPolygons.map((poly) =>
         poly.map((pt) => ({
             X: Math.round(pt.x * scale),
-            Y: Math.round(pt.y * scale),
+            Y: Math.round(pt.y * scale)
         }))
     );
 
@@ -5369,8 +5401,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineW
                     lineWidth: lineWidth || 5,
                     colour: colour || 1,
                     closed: true,
-                    entityType: "poly",
-                })),
+                    entityType: "poly"
+                }))
             });
         });
     }
@@ -5409,7 +5441,7 @@ function clipVoronoiCells(voronoiMetrics) {
 
         const subjPath = cell.polygon.map((p) => ({
             X: Math.round((p.x || p[0]) * scale),
-            Y: Math.round((p.y || p[1]) * scale),
+            Y: Math.round((p.y || p[1]) * scale)
         }));
 
         let cellSuccessfullyClippedAndAdded = false;
@@ -5420,7 +5452,7 @@ function clipVoronoiCells(voronoiMetrics) {
             // Convert the current boundary polygon to Clipper format
             const clipperSingleClipPath = currentBoundaryPolygon.map((p) => ({
                 X: Math.round(p.x * scale),
-                Y: Math.round(p.y * scale),
+                Y: Math.round(p.y * scale)
             }));
 
             const clipper = new ClipperLib.Clipper();
@@ -5434,7 +5466,7 @@ function clipVoronoiCells(voronoiMetrics) {
                 // Check solution[0] for valid polygon
                 const clippedResultPolygon = solution[0].map((pt) => ({
                     x: pt.X / scale,
-                    y: pt.Y / scale,
+                    y: pt.Y / scale
                 }));
 
                 const area = Math.abs(
@@ -5451,7 +5483,7 @@ function clipVoronoiCells(voronoiMetrics) {
                     polygon: clippedResultPolygon,
                     area,
                     volume,
-                    powderFactor,
+                    powderFactor
                 });
                 cellSuccessfullyClippedAndAdded = true;
                 break; // Important: Cell is clipped by this boundary, no need to check others
@@ -5468,7 +5500,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
     const scale = 100000;
     const scaledPath = polygon.map((p) => ({
         X: Math.round((p.x || p[0]) * scale),
-        Y: Math.round((p.y || p[1]) * scale),
+        Y: Math.round((p.y || p[1]) * scale)
     }));
 
     const c = new ClipperLib.Clipper();
@@ -5478,7 +5510,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 
     const simplified = cleaned.map((p) => ({
         x: p.X / scale,
-        y: p.Y / scale,
+        y: p.Y / scale
     }));
 
     if (forceClose && simplified.length > 0) {
@@ -5496,7 +5528,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
     // Convert to Clipper path format
     const path = polygon.map((p) => ({
         X: Math.round(p.x * scale),
-        Y: Math.round(p.y * scale),
+        Y: Math.round(p.y * scale)
     }));
 
     // Initialize and execute offset
@@ -5510,7 +5542,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
     if (offsetPaths.length === 0) return [];
     return offsetPaths[0].map((p) => ({
         x: p.X / scale,
-        y: p.Y / scale,
+        y: p.Y / scale
     }));
 }
 
@@ -5566,11 +5598,11 @@ function offsetPolygonMathematical(polygon, offset) {
 
         const p1 = {
             x: polygon[i].x + dx,
-            y: polygon[i].y + dy,
+            y: polygon[i].y + dy
         };
         const p2 = {
             x: polygon[(i + 1) % n].x + dx,
-            y: polygon[(i + 1) % n].y + dy,
+            y: polygon[(i + 1) % n].y + dy
         };
         offsetSegments.push([p1, p2]);
     }
@@ -6024,17 +6056,17 @@ function drawDelauanySlopeMap(triangles, centroid, strokeColour) {
         const edge1 = {
             x: tBX - tAX,
             y: tBY - tAY,
-            z: tBZ - tAZ,
+            z: tBZ - tAZ
         };
         const edge2 = {
             x: tCX - tAX,
             y: tCY - tAY,
-            z: tCZ - tAZ,
+            z: tCZ - tAZ
         };
         const edge3 = {
             x: tCX - tBX,
             y: tCY - tBY,
-            z: tCZ - tBZ,
+            z: tCZ - tBZ
         };
 
         // Calculate the maximum absolute slope angle for this triangle
@@ -6230,7 +6262,7 @@ function calculateTriangleCentroid(triangle) {
     const triangleCentroid = {
         x: (tAX + tBX + tCX) / 3,
         y: (tAY + tBY + tCY) / 3,
-        z: (tAZ + tBZ + tCZ) / 3,
+        z: (tAZ + tBZ + tCZ) / 3
     };
     return triangleCentroid;
 }
@@ -6448,7 +6480,8 @@ function getClickedHole(clickX, clickY) {
         threshold = 0.2;
     }
 
-    if (!selectionMode) {
+    //keep an existing selection while the Move tool is active
+    if (!selectionMode && !isMoveToolActive) {
         selectedMultipleHoles = [];
         drawData(points, selectedHole);
     }
@@ -7011,7 +7044,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
         const newEntity = {
             entityName: `${entityName}_offset`, // Modify this as needed
             entityType: entityType,
-            data: [],
+            data: []
         };
 
         let prevPoint = null;
@@ -7051,7 +7084,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
                 pointYLocation: offsetY,
                 pointZLocation: point.pointZLocation,
                 lineWidth: point.lineWidth,
-                colour: point.colour,
+                colour: point.colour
             });
 
             if (extendIfNecessary && prevPoint) {
@@ -7067,7 +7100,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
                         pointYLocation: offsetY,
                         pointZLocation: point.pointZLocation,
                         lineWidth: point.lineWidth,
-                        colour: point.colour,
+                        colour: point.colour
                     });
                 }
             }
@@ -7434,7 +7467,7 @@ function addKADPoint() {
             pointXLocation: pointXLocation, //3
             pointYLocation: pointYLocation, //4
             pointZLocation: pointZLocation, //5
-            colour: colour, //6
+            colour: colour //6
         };
 
         // Add the point to kadPointsMap
@@ -7442,7 +7475,7 @@ function addKADPoint() {
             kadPointsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: [],
+                data: []
             });
         }
         kadPointsMap.get(entityName).data.push(pointObject);
@@ -7498,7 +7531,7 @@ function addKADLine() {
             pointYLocation: pointYLocation,
             pointZLocation: pointZLocation,
             lineWidth: lineWidth,
-            colour: colour,
+            colour: colour
         };
 
         // Add the point to kadPointsMap
@@ -7506,7 +7539,7 @@ function addKADLine() {
             kadLinesMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: [],
+                data: []
             });
         }
         kadLinesMap.get(entityName).data.push(lineObject);
@@ -7565,7 +7598,7 @@ function addKADPoly() {
             pointZLocation: pointZLocation,
             lineWidth: lineWidth,
             colour: colour,
-            closed: closed, // Set to true if the polygon is closed
+            closed: closed // Set to true if the polygon is closed
         };
 
         // Add the point to kadPointsMap
@@ -7573,7 +7606,7 @@ function addKADPoly() {
             kadPolygonsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: [],
+                data: []
             });
         }
         kadPolygonsMap.get(entityName).data.push(polyObject);
@@ -7633,7 +7666,7 @@ function addKADCircle() {
             pointZLocation: pointZLocation,
             radius: radius,
             lineWidth: lineWidth,
-            colour: colour,
+            colour: colour
         };
 
         // Add the point to kadPointsMap
@@ -7641,7 +7674,7 @@ function addKADCircle() {
             kadCirclesMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: [],
+                data: []
             });
         }
         kadCirclesMap.get(entityName).data.push(circleObject);
@@ -7703,7 +7736,7 @@ function addKADText() {
             pointYLocation: pointYLocation,
             pointZLocation: pointZLocation,
             text: text,
-            colour: colour,
+            colour: colour
         };
 
         // Add the point to kadPointsMap
@@ -7711,7 +7744,7 @@ function addKADText() {
             kadTextsMap.set(entityName, {
                 name: entityName,
                 entityType: entityType,
-                data: [],
+                data: []
             });
         }
         kadTextsMap.get(entityName).data.push(textObject);
@@ -7926,7 +7959,7 @@ function saveAQMPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
+            icon: "swal2-icon"
         },
         preConfirm: () => {
             // Get user input values
@@ -7981,7 +8014,7 @@ function saveAQMPopup() {
             savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
             savedAQMPopupSettings.columnOrderArray = columnOrderArray;
             localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-        },
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             // Get user input values
@@ -8008,8 +8041,8 @@ function saveAQMPopup() {
                         confirmButton: "cancel",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "swal2-icon",
-                    },
+                        icon: "swal2-icon"
+                    }
                 });
                 return; // Exit the function
             }
@@ -8045,7 +8078,7 @@ function saveAQMPopup() {
             if (isIOS()) {
                 // Create a Blob with the XML data
                 const blob = new Blob([aqm], {
-                    type: "text/csv;charset=utf-8",
+                    type: "text/csv;charset=utf-8"
                 });
                 // Create a URL for the Blob
                 const url = URL.createObjectURL(blob);
@@ -8135,7 +8168,7 @@ function addHolePopup() {
         type: savedAddHolePopupSettings.type || "Production",
         length: savedAddHolePopupSettings.length || 0,
         angle: savedAddHolePopupSettings.angle || 0,
-        bearing: savedAddHolePopupSettings.bearing || 0,
+        bearing: savedAddHolePopupSettings.bearing || 0
     };
 
     Swal.fire({
@@ -8172,8 +8205,8 @@ function addHolePopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
@@ -8194,8 +8227,8 @@ function addHolePopup() {
                         cancelButton: "Try Again",
                         content: "swal2-content",
                         htmlContainer: "swal2-html-container",
-                        icon: "error",
-                    },
+                        icon: "error"
+                    }
                 });
                 return; // Exit the function
             }
@@ -8208,7 +8241,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Diameter",
                     text: "Please enter an diameter between 0 and 1000 millimeters.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8220,7 +8253,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Type",
                     text: "Please enter a Type.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8231,7 +8264,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Elevation",
                     text: "Please enter an elevation between -2000 and 8000 meters.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8242,7 +8275,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid length",
                     text: "Please enter an length between 0 and 100 meters.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8254,7 +8287,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Angle",
                     text: "Please enter an angle between 0 and 60 degrees.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8266,7 +8299,7 @@ function addHolePopup() {
                 Swal.fire({
                     title: "Invalid Bearing",
                     text: "Please enter an bearing between 0 and 360 degrees.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             }
@@ -8280,7 +8313,7 @@ function addHolePopup() {
                 type: typeValue,
                 length: lengthValue,
                 angle: angleValue,
-                bearing: bearingValue,
+                bearing: bearingValue
             };
             localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
@@ -8341,7 +8374,7 @@ function addPatternPopup(worldX, worldY) {
         burden: savedAddPatternPopupSettings.burden || 3.0,
         spacing: savedAddPatternPopupSettings.spacing || 3.3,
         rows: savedAddPatternPopupSettings.rows || 6,
-        holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10,
+        holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
     };
 
     //${lastValues.}
@@ -8399,8 +8432,8 @@ function addPatternPopup(worldX, worldY) {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     })
         .then((result) => {
             if (result.isConfirmed) {
@@ -8429,7 +8462,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Blast Name",
                         text: "Please enter a Blast Name.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8439,7 +8472,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Offset",
                         text: "Please enter an offset between -1 and 1.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8449,7 +8482,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Name Type",
                         text: "Please enter a Name Type.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8459,7 +8492,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Row Orientation",
                         text: "Please enter a row orientation between 0 and 359.999 degrees.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8469,7 +8502,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid X",
                         text: "Please enter an X value in meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8479,7 +8512,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Y",
                         text: "Please enter an Y value in meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8489,7 +8522,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Z",
                         text: "Please enter an Z value in meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8499,7 +8532,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Diameter",
                         text: "Please enter an diameter between 0 and 1000 millimeters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8509,7 +8542,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Type",
                         text: "Please enter a Type.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8519,7 +8552,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Angle",
                         text: "Please enter an angle between 0 and 60 degrees.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8529,7 +8562,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Bearing",
                         text: "Please enter an bearing between 0 and 360 degrees.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8539,7 +8572,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Length",
                         text: "Please enter an length between 0 and 200 meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8549,7 +8582,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Burden",
                         text: "Please enter an burden between 0.1 and 50 meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8559,7 +8592,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Spacing",
                         text: "Please enter an spacing between 0.1 and 50 meters.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8569,7 +8602,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Rows",
                         text: "Please enter an rows between 1 and 500.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8579,7 +8612,7 @@ function addPatternPopup(worldX, worldY) {
                     Swal.fire({
                         title: "Invalid Holes Per Row",
                         text: "Please enter an holes per row between 1 and 500.",
-                        icon: "error",
+                        icon: "error"
                     });
                     return; // Exit the function
                 }
@@ -8600,7 +8633,7 @@ function addPatternPopup(worldX, worldY) {
                     burden: burden,
                     spacing: spacing,
                     rows: rows,
-                    holesPerRow: holesPerRow,
+                    holesPerRow: holesPerRow
                 };
                 localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
@@ -8743,8 +8776,8 @@ function editHoleLengthPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const lengthInput = document.getElementById("length");
@@ -8754,7 +8787,7 @@ function editHoleLengthPopup() {
                 Swal.fire({
                     title: "Invalid length",
                     text: "Please enter an length between 0 and 100 meters.",
-                    icon: "error",
+                    icon: "error"
                 });
                 return; // Exit the function
             } else if (selectedHole) {
@@ -8805,8 +8838,8 @@ function measuredLengthPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const lengthInput = document.getElementById("length");
@@ -8848,8 +8881,8 @@ function measuredMassPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const massInput = document.getElementById("mass");
@@ -8901,8 +8934,8 @@ function measuredCommentPopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const commentInput = document.getElementById("comment");
@@ -8982,8 +9015,8 @@ function editBlastNamePopup(selectedHole) {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const blastNameInput = document.getElementById("blastName");
@@ -9065,8 +9098,8 @@ function editHoleTypePopup() {
             cancelButton: "cancel",
             content: "swal2-content",
             htmlContainer: "swal2-html-container",
-            icon: "swal2-icon",
-        },
+            icon: "swal2-icon"
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const typeInput = document.getElementById("type");
@@ -9190,7 +9223,7 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
         measuredMass: measuredMass,
         measuredMassTimeStamp: measuredMassTimeStamp,
         measuredComment: measuredComment,
-        measuredCommentTimeStamp: measuredCommentTimeStamp,
+        measuredCommentTimeStamp: measuredCommentTimeStamp
     });
     console.log("Added Hole: " + newHoleID);
     console.log(
@@ -9462,7 +9495,7 @@ function recalculateContours(points, deltaX, deltaY) {
                 contourData.push({
                     x: point.startXLocation,
                     y: point.startYLocation,
-                    z: time,
+                    z: time
                 });
             }
         }
@@ -9635,132 +9668,6 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
     // This preserves the selectedHole reference
 }
 
-// function calculateEndXYZ(clickedHole, newValue, modeLAB) {
-//     let startX = clickedHole.startXLocation;
-//     let startY = clickedHole.startYLocation;
-//     let startZ = clickedHole.startZLocation;
-//     let holeLength = clickedHole.holeLengthCalculated;
-//     let holeAngle = clickedHole.holeAngle;
-//     let holeBearing = clickedHole.holeBearing;
-//     let endX, endY, endZ;
-//     // Include entityName in the search to get the index of the clicked hole within the points array
-//     const index = points.findIndex((point) => point.holeID === clickedHole.holeID && point.entityName === clickedHole.entityName);
-
-//     if (modeLAB === 1) {
-//         //Length is calculated in ModeLAB = 1
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole length
-//         endX = startX + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endY = startY + newValue * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endZ = startZ - newValue * Math.cos(holeAngle * (Math.PI / 180));
-//         // Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].holeLengthCalculated = parseFloat(newValue);
-//             //console.log("points[index].holeLengthCalculated: " + points[index].holeLengthCalculated);
-//             //console.log("End X,Y,Z : " + endX + " | " + endY + " | " + endZ);
-//         }
-//     } else if (modeLAB === 2) {
-//         //hole angle and endXYZ is calculated in ModeLAB = 1
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole angle
-//         //calculate the endXYZ based on the new hole angle
-//         endX = startX + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endY = startY + holeLength * Math.cos((90 - newValue) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endZ = startZ - holeLength * Math.cos(newValue * (Math.PI / 180));
-//         //Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].holeAngle = parseFloat(newValue);
-//         }
-//     } else if (modeLAB === 3) {
-//         //Calculate the endXYZ based on the new hole bearing
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole bearing
-//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - newValue) % 360) * (Math.PI / 180));
-//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - newValue) % 360) * (Math.PI / 180));
-//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-//         //Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].holeBearing = parseFloat(newValue);
-//         }
-//     } else if (modeLAB === 4) {
-//         // Easting Adjustment
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Easting
-//         const deltaX = newValue - clickedHole.startXLocation;
-//         clickedHole.startXLocation = newValue;
-//         clickedHole.endXLocation += deltaX;
-//         //calculate the new toe XYZ based on the new startXlocation
-//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-//         // Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].startXLocation = clickedHole.startXLocation;
-//         }
-//     } else if (modeLAB === 5) {
-//         // Northing Adjustment
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Northing
-//         const deltaY = newValue - clickedHole.startYLocation;
-//         clickedHole.startYLocation = newValue;
-//         clickedHole.endYLocation += deltaY;
-//         //calculate the new toe XYZ based on the new startYlocation
-//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-//         // Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].startYLocation = clickedHole.startYLocation;
-//         }
-//     } else if (modeLAB === 6) {
-//         // Elevation Adjustment
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Elevation
-//         const deltaZ = newValue - clickedHole.startZLocation;
-//         clickedHole.startZLocation = newValue;
-//         clickedHole.endZLocation += deltaZ;
-//         //calculate the new toe XYZ based on the new startZlocation
-//         endX = startX + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.cos(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endY = startY + holeLength * Math.cos((90 - holeAngle) * (Math.PI / 180)) * Math.sin(((450 - holeBearing) % 360) * (Math.PI / 180));
-//         endZ = startZ - holeLength * Math.cos(holeAngle * (Math.PI / 180));
-
-//         // Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].endXLocation = endX;
-//             points[index].endYLocation = endY;
-//             points[index].endZLocation = endZ;
-//             points[index].startZLocation = clickedHole.startZLocation;
-//         }
-//     } else if (modeLAB === 7) {
-//         const diameter = newValue;
-//         // Update the points array with the new values
-//         if (index !== -1) {
-//             points[index].holeDiameter = diameter;
-//         }
-//     } else if (modeLAB === 8) {
-//         // Subdrill
-//         //TODO calculate gradeXLocation, gradeYLocation, gradeZLocation based on the new hole Subdrill
-//         const deltaZ = newValue - clickedHole.startZLocation;
-//         clickedHole.startZLocation = newValue;
-//         clickedHole.endZLocation += deltaZ;
-//     }
-
-//     return {
-//         endX,
-//         endY,
-//         endZ
-//     };
-// }
-
 function timeChart() {
     if (!Array.isArray(holeTimes)) return;
 
@@ -9844,7 +9751,7 @@ function timeChart() {
         title: {
             text: "Time Window Chart",
             xanchor: "right",
-            font: { size: 10 },
+            font: { size: 10 }
         },
         plot_bgcolor: noneColour,
         paper_bgcolor: noneColour,
@@ -9854,7 +9761,7 @@ function timeChart() {
             bgcolor: noneColour,
             color: "rgba(255, 0, 0, 0.4)",
             activecolor: "red",
-            position: "left",
+            position: "left"
         },
         margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
         xaxis: {
@@ -9862,16 +9769,16 @@ function timeChart() {
             showgrid: true,
             rangeslider: { visible: true, thickness: 0.1 },
             tickvals: "auto", //tickvals, // if you want bin ranges
-            ticktext: "~s", //ticktext, //if you want bin ranges
+            ticktext: "~s" //ticktext, //if you want bin ranges
         },
         yaxis: {
             title: { text: newYLabel, font: { size: 10 } },
             showgrid: true,
             automargin: true,
-            range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
+            range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
         },
         height: 380,
-        width: chart.offsetWidth - 50, // ✅ dynamic width based on container,
+        width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
     };
 
     const data = [
@@ -9884,15 +9791,15 @@ function timeChart() {
             text: hoverText,
             textposition: "none", // ✅ disables labels drawn on bars
             //hoverinfo: "text+y",
-            hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>",
-        },
+            hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
+        }
     ];
 
     Plotly.react("timeChart", data, layout, {
         responsive: true,
         displayModeBar: true,
         modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-        modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+        modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
     });
 
     // ✅ Clear previously registered listeners
@@ -10075,7 +9982,7 @@ function getDisplayOptions() {
         measuredLength: document.getElementById("display13").checked,
         measuredMass: document.getElementById("display14").checked,
         measuredComment: document.getElementById("display15").checked,
-        voronoiPF: document.getElementById("display16").checked,
+        voronoiPF: document.getElementById("display16").checked
     };
 }
 
@@ -10610,7 +10517,7 @@ function drawData(points, selectedHole) {
                     middleSideCollar,
                     bottomSideCollar,
                     holeMap,
-                    displayOptions,
+                    displayOptions
                 });
 
                 // Draw main hole geometry, with selection highlight logic
@@ -10859,7 +10766,7 @@ function getMousePos(canvas, evt) {
 
     return {
         x: canvasX,
-        y: canvasY,
+        y: canvasY
     };
 }
 
@@ -11387,7 +11294,7 @@ function openNavRight() {
         sidenavRight.style.height = "350px";
         //resize the timechart
         plotly.relayout("timeChart", {
-            width: 280,
+            width: 280
         });
     } else {
         body.style.marginRight = "315px"; // Push body to the left
@@ -11401,7 +11308,7 @@ function openNavRight() {
         timeChart();
         newWidthRight = 315;
         Plotly.relayout("timeChart", {
-            width: newWidthRight - 50,
+            width: newWidthRight - 50
         });
     }
 }
@@ -11453,14 +11360,149 @@ document.addEventListener("mouseup", () => {
 const selectPointerTool = document.getElementById("selectPointer");
 const selectByPolygonTool = document.getElementById("selectByPolygon");
 const resetViewTool = document.getElementById("resetViewTool");
-// Add these variables at the top with your other state variables
+const moveToTool = document.getElementById("moveToTool");
 
+//---------------MOVE TOOL---------------//
+// --- Move Tool State ---
+
+let isDraggingHole = false;
+let dragStartX = 0,
+    dragStartY = 0;
+let dragStartWorldX = 0,
+    dragStartWorldY = 0;
+let dragInitialPositions = [];
+
+// --- Move Tool Activation ---
+moveToTool.addEventListener("change", function () {
+    if (this.checked) {
+        isMoveToolActive = false;
+        isSelectionPointerActive = true;
+        isPolygonSelectionActive = false;
+        selectPointerTool.checked = false;
+        selectByPolygonTool.checked = false;
+
+        // Suspend default canvas-panning handlers
+        canvas.removeEventListener("mousedown", handleMouseDown);
+        canvas.removeEventListener("mousemove", handleMouseMove);
+        canvas.removeEventListener("mouseup", handleMouseUp);
+        canvas.removeEventListener("touchstart", handleTouchStart);
+        canvas.removeEventListener("touchmove", handleTouchMove);
+        canvas.removeEventListener("touchend", handleTouchEnd);
+
+        // Activate Move-tool handlers
+        canvas.addEventListener("mousedown", handleMoveToolMouseDown);
+        canvas.addEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.addEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.addEventListener("touchmove", handleMoveToolMouseMove);
+
+        drawData(points, selectedHole);
+    } else {
+        isMoveToolActive = false;
+        isDraggingHole = false;
+
+        // De-register Move-tool handlers
+        canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+        canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+
+        // Restore default canvas-panning handlers
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchmove", handleTouchMove);
+        canvas.addEventListener("touchend", handleTouchEnd);
+
+        drawData(points, selectedHole);
+    }
+});
+
+// --- Move Tool Handlers ---
+function handleMoveToolMouseDown(event) {
+    // If a multi-hole selection already exists, prioritize dragging it.
+    if (selectedMultipleHoles.length > 0) {
+        isDraggingHole = true;
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
+        dragInitialPositions = selectedMultipleHoles.map((hole) => ({
+            hole: hole,
+            x: hole.startXLocation,
+            y: hole.startYLocation
+        }));
+
+        // Suspend canvas panning during the drag.
+        canvas.removeEventListener("mousemove", handleMouseMove);
+        canvas.removeEventListener("touchmove", handleTouchMove);
+        return;
+    }
+
+    // If there's no selection, try to start a new drag on a single hole.
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    const clickedHole = getClickedHole(clickX, clickY);
+
+    if (clickedHole) {
+        // A single hole was clicked, so select it and start the drag.
+        selectedMultipleHoles = [clickedHole];
+        selectedHole = clickedHole;
+        updateSelectionAveragesAndSliders(selectedMultipleHoles);
+        drawData(points, selectedHole);
+
+        isDraggingHole = true;
+        dragStartX = event.clientX;
+        dragStartY = event.clientY;
+        dragInitialPositions = [{ hole: clickedHole, x: clickedHole.startXLocation, y: clickedHole.startYLocation }];
+
+        // Suspend canvas panning during the drag.
+        canvas.removeEventListener("mousemove", handleMouseMove);
+        canvas.removeEventListener("touchmove", handleTouchMove);
+        return;
+    }
+
+    // If the click was on an empty space with no prior selection, do nothing.
+    isDraggingHole = false;
+}
+
+function handleMoveToolMouseMove(event) {
+    //remove the default mouse move
+    // canvas.removeEventListener("mousemove", handleMouseMove);
+    // canvas.removeEventListener("touchmove", handleTouchMove);
+
+    if (!isDraggingHole) return;
+
+    const deltaX = (event.clientX - dragStartX) / currentScale;
+    const deltaY = -(event.clientY - dragStartY) / currentScale; // Y axis is flipped
+
+    dragInitialPositions.forEach(({ hole, x, y }) => {
+        calculateHoleGeometry(hole, x + deltaX, 4); // Easting
+        calculateHoleGeometry(hole, y + deltaY, 5); // Northing
+    });
+
+    drawData(points, selectedHole);
+}
+
+function handleMoveToolMouseUp(event) {
+    if (isDraggingHole) {
+        isDraggingHole = false;
+        saveHolesToLocalStorage(points);
+
+        // Re-enable panning after dragging has finished
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("touchmove", handleTouchMove);
+    }
+}
+
+//---------------SELECTION TOOLS---------------//
 selectPointerTool.addEventListener("change", function () {
     if (this.checked) {
         isSelectionPointerActive = true;
         isPolygonSelectionActive = false;
         // Uncheck the other button
         selectByPolygonTool.checked = false;
+        moveToTool.checked = false;
+
         // Enable point selection mode
         canvas.addEventListener("click", handleSelection);
         console.log("Point selection mode enabled");
@@ -11557,11 +11599,81 @@ function isPointInPolygon(x, y, polyX, polyY) {
     return inside;
 }
 
-// Update the event listener setup
+// Create a new touch handler for polygon selection
+function selectInsidePolygonTouch(event) {
+    if (!isPolygonSelectionActive) return;
+
+    event.preventDefault(); // Prevent default touch behavior
+
+    const rect = canvas.getBoundingClientRect();
+    const touch = event.touches[0] || event.changedTouches[0];
+    const clickX = touch.clientX - rect.left;
+    const clickY = touch.clientY - rect.top;
+
+    // Convert touch coordinates to world coordinates
+    const worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+
+    // Two finger tap to finish polygon and select holes
+    if (event.touches.length >= 2) {
+        if (polyPointsX.length >= 3) {
+            // Clear existing selection
+            selectedMultipleHoles = [];
+
+            // Check ALL holes against the polygon
+            points.forEach((point) => {
+                if (!point) return;
+
+                // Get hole coordinates
+                const holeX = point.startXLocation;
+                const holeY = point.startYLocation;
+
+                console.log("Checking hole:", point.holeID, "at:", holeX, holeY, "against polygon with points:", polyPointsX.length);
+
+                if (isPointInPolygon(holeX, holeY, polyPointsX, polyPointsY)) {
+                    selectedMultipleHoles.push(point);
+                    console.log("Selected hole:", point.holeID);
+                }
+            });
+
+            // Update averages and sliders after selection
+            if (selectedMultipleHoles.length > 0) {
+                updateSelectionAveragesAndSliders(selectedMultipleHoles);
+            }
+
+            console.log("Total holes selected:", selectedMultipleHoles.length);
+        }
+
+        // Clear the polygon after selection
+        polyPointsX = [];
+        polyPointsY = [];
+        drawData(points, selectedHole);
+        return;
+    }
+
+    // Single finger tap - add point to polygon
+    polyPointsX.push(worldX);
+    polyPointsY.push(worldY);
+
+    // If this is the first point, duplicate it for the moving point
+    if (polyPointsX.length === 1) {
+        polyPointsX.push(worldX);
+        polyPointsY.push(worldY);
+    } else {
+        // Update the last point (moving point)
+        polyPointsX[polyPointsX.length - 1] = worldX;
+        polyPointsY[polyPointsY.length - 1] = worldY;
+    }
+
+    drawData(points, selectedHole);
+}
+
+// Update the polygon tool event listener to include touch support
 selectByPolygonTool.addEventListener("change", function () {
     if (this.checked) {
         // Uncheck the other button
         selectPointerTool.checked = false;
+        moveToTool.checked = false;
         isPolygonSelectionActive = true;
         selectedHole = null;
         // Remove other listeners
@@ -11570,6 +11682,7 @@ selectByPolygonTool.addEventListener("change", function () {
 
         // Add polygon selection listeners
         canvas.addEventListener("click", selectInsidePolygon);
+        canvas.addEventListener("touchstart", selectInsidePolygonTouch); // ADD THIS LINE
         canvas.addEventListener("mousemove", handlePolygonMouseMove);
         canvas.addEventListener("contextmenu", function (e) {
             e.preventDefault(); // Prevent context menu
@@ -11585,6 +11698,7 @@ selectByPolygonTool.addEventListener("change", function () {
 
         // Remove all listeners
         canvas.removeEventListener("click", selectInsidePolygon);
+        canvas.removeEventListener("touchstart", selectInsidePolygonTouch); // ADD THIS LINE
         canvas.removeEventListener("mousemove", handlePolygonMouseMove);
 
         // Clear polygon points
@@ -11593,6 +11707,7 @@ selectByPolygonTool.addEventListener("change", function () {
         drawData(points, selectedHole);
     }
 });
+
 // Add mouse move handler for live polygon preview
 function handlePolygonMouseMove(event) {
     if (!isPolygonSelectionActive || polyPointsX.length === 0) return;
@@ -11673,7 +11788,7 @@ function updatePopup() {
 				<br><label class="labelWhite18">UI rebuild, Icons, Floating Toolbar shuffled </label>
 				<br><label class="labelWhite18">Subdrill Function and display, Voronoi PF on Bench Height</label>
 				<br><label class="labelWhite18">Selection by Pointer and Polygon</label>
-				<br><label class="labelWhite18">Location crosshair onclick fixed</label>
+				<br><label class="labelWhite18">tie in and move tools on toolbar</label>
                 <br><label class="labelWhite18">Escape keylistener added to null all selection variables</label>
                 <br><label class="labelWhite18">IREDES output hopefully fixed</label>
 				<br><label class="labelWhite18"></label>
@@ -11696,7 +11811,7 @@ function updatePopup() {
 	        <br>
 	        <label class="labelWhite12c">Version: Build ${buildVersion}</label>
 		  `,
-        customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" },
+        customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
     }).then((result) => {
         if (result.isConfirmed) {
         }
