@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250609.2240AWST"
-const buildVersion = "20250611.2220AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250616.2230AWST"
+const buildVersion = "20250616.2230AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -75,6 +75,7 @@ let intervalAmount = document.getElementById("intervalSlider").value;
 let firstMovementSize = document.getElementById("firstMovementSlider").value;
 let connectAmount = document.getElementById("connectSlider").value;
 let contourLevel = 0;
+let contourUpdatePending = false;
 let minX;
 let minY;
 let worldX = null;
@@ -94,6 +95,18 @@ let isSelectionPointerActive = false;
 let polyPointsX = [];
 let polyPointsY = [];
 let isPolygonSelectionActive = false;
+let isBearingToolActive = false;
+// Add this declaration around line 99 (after bearingToolSelectedHole declaration)
+let bearingToolSelectedHole = null;
+let moveToolSelectedHole = null; // Add this declaration
+let bearingToolStartAngle = 0;
+let bearingToolStartMouseAngle = 0;
+let isDraggingBearing = false;
+let rulerStartPoint = null;
+let rulerEndPoint = null;
+let rulerProtractorPoints = []; // For 3-point bearing measurement
+let isRulerActive = false;
+let isRulerProtractorActive = false;
 let isLengthPopupEditing = false;
 let isDisplayingContours = false;
 let isDisplayingSlopeTriangles = false;
@@ -331,17 +344,45 @@ function resetAllSelectedStores() {
     currentEntityName = "";
 }
 
-// Update resetFloatingToolbarButtons to include isMoveToolActive
-function resetFloatingToolbarButtons() {
+// Update resetFloatingToolbarButtons to only clear floating toolbar related bools
+function resetFloatingToolbarButtons(excluding) {
+    // Clear only floating toolbar tool states
     isSelectionPointerActive = false;
     isPolygonSelectionActive = false;
     isMoveToolActive = false;
-    selectPointerTool.checked = false;
-    selectByPolygonTool.checked = false;
-    moveToTool.checked = false;
-    tieConnectTool.checked = false;
-    tieConnectMultiTool.checked = false;
-    // drawData(points, selectedHole);
+    isBearingToolActive = false;
+    isRulerActive = false;
+    isRulerProtractorActive = false;
+
+    // Set all tool checkboxes to false except the excluded one
+    selectPointerTool.checked = excluding === "selectPointerTool" ? true : false;
+    selectByPolygonTool.checked = excluding === "selectByPolygonTool" ? true : false;
+    moveToTool.checked = excluding === "moveToTool" ? true : false;
+    tieConnectTool.checked = excluding === "tieConnectTool" ? true : false;
+    tieConnectMultiTool.checked = excluding === "tieConnectMultiTool" ? true : false;
+    bearingTool.checked = excluding === "bearingTool" ? true : false;
+    rulerTool.checked = excluding === "rulerTool" ? true : false;
+    rulerProtractorTool.checked = excluding === "rulerProtractorTool" ? true : false;
+
+    // Set only the excluded tool's active state to true
+    isSelectionPointerActive = excluding === "selectPointerTool" ? true : false;
+    isPolygonSelectionActive = excluding === "selectByPolygonTool" ? true : false;
+    isMoveToolActive = excluding === "moveToTool" ? true : false;
+    isBearingToolActive = excluding === "bearingTool" ? true : false;
+    isRulerActive = excluding === "rulerTool" ? true : false;
+    isRulerProtractorActive = excluding === "rulerProtractorTool" ? true : false;
+
+    // Reset floating toolbar tool-specific state variables
+    rulerStartPoint = null;
+    rulerEndPoint = null;
+    rulerProtractorPoints = [];
+    bearingToolSelectedHole = null;
+    isDraggingBearing = false;
+    isDraggingHole = false;
+
+    // Reset selection-related variables for floating toolbar tools
+    firstSelectedHole = null;
+    secondSelectedHole = null;
 }
 
 // Master function to reset everything
@@ -349,7 +390,7 @@ function resetAppToDefaults() {
     setAllBoolsToFalse();
     resetAllSwitchesAndToggles();
     resetAllSelectedStores();
-    resetFloatingToolbarButtons();
+    resetFloatingToolbarButtons("none");
     console.log("App reset to defaults: bools, switches, toggles, and stores cleared");
 }
 
@@ -368,31 +409,54 @@ document.getElementById("deleteHoleButton").addEventListener("click", deleteSele
 document.getElementById("deletePatternButton").addEventListener("click", deleteSelectedPattern);
 document.getElementById("deleteAllPatternsButton").addEventListener("click", deleteSelectedAllPatterns);
 
-const option1 = document.getElementById("display1");
-const option2 = document.getElementById("display2");
-const option2A = document.getElementById("display2A");
-const option3 = document.getElementById("display3");
-const option4 = document.getElementById("display4");
-const option5 = document.getElementById("display5");
-const option5B = document.getElementById("display5B"); //subdrill
-const option5A = document.getElementById("display5A");
-const option6 = document.getElementById("display6");
-const option6A = document.getElementById("display6A");
-const option8 = document.getElementById("display8");
-const option8A = document.getElementById("display8A"); //Slope
-const option8B = document.getElementById("display8B"); //Relief
-const option8C = document.getElementById("display8C"); //FirstMovements
-const option9 = document.getElementById("display9");
-const option10 = document.getElementById("display10");
-const option11 = document.getElementById("display11");
-const option12 = document.getElementById("display12");
-const option13 = document.getElementById("display13");
-const option14 = document.getElementById("display14");
-const option15 = document.getElementById("display15");
-const option16 = document.getElementById("display16"); //pf
+const displayHoleId = document.getElementById("display1"); //holeID
+const displayHoleLength = document.getElementById("display2"); //holeLength
+const displayHoleDiameter = document.getElementById("display2A"); //holeDiameter
+const displayHoleAngle = document.getElementById("display3"); //holeAngle
+const displayHoleDip = document.getElementById("display4"); //holeDip
+const displayHoleBearing = document.getElementById("display5"); //holeBearing
+const displayHoleSubdrill = document.getElementById("display5B"); //subdrill
+const displayConnectors = document.getElementById("display5A"); //connectors
+const displayDelays = document.getElementById("display6"); //delays
+const displayTimes = document.getElementById("display6A"); //times only
+const displayContours = document.getElementById("display8"); //contours
+const displaySlope = document.getElementById("display8A"); //slope
+const displayRelief = document.getElementById("display8B"); //relief
+const displayFirstMovements = document.getElementById("display8C"); //direction
+const displayXLocation = document.getElementById("display9"); //xlocation
+const displayYLocation = document.getElementById("display10"); //ylocation
+const displayElevation = document.getElementById("display11"); //zlocation
+const displayHoleType = document.getElementById("display12"); //holeType
+const displayMLength = document.getElementById("display13"); //holeLength
+const displayMMass = document.getElementById("display14"); //holeMass
+const displayMComment = document.getElementById("display15"); //holeComment
+const displayVaronoiCells = document.getElementById("display16"); //voronoi
 
 // after const option16 = …
-const allToggles = [option1, option2, option2A, option3, option4, option5, option5B, option5A, option6, option6A, option8, option8A, option8B, option8C, option9, option10, option11, option12, option13, option14, option15, option16];
+const allToggles = [
+    displayHoleId,
+    displayHoleLength,
+    displayHoleDiameter,
+    displayHoleAngle,
+    displayHoleDip,
+    displayHoleBearing,
+    displayHoleSubdrill,
+    displayConnectors,
+    displayDelays,
+    displayTimes,
+    displayContours,
+    displaySlope,
+    displayRelief,
+    displayFirstMovements,
+    displayXLocation,
+    displayYLocation,
+    displayElevation,
+    displayHoleType,
+    displayMLength,
+    displayMMass,
+    displayMComment,
+    displayVaronoiCells
+];
 
 allToggles.forEach((opt) => {
     if (opt)
@@ -583,7 +647,9 @@ const drawingElevation = document.getElementById("drawingElevation");
 // Tie Connect Tool event listener
 const tieConnectTool = document.getElementById("tieConnectTool");
 tieConnectTool.addEventListener("change", function () {
+    resetFloatingToolbarButtons("tieConnectTool");
     // Activate the right side nav "tie in one by one" switch
+
     addConnectorButton.checked = tieConnectTool.checked;
     selectByPolygonTool.checked = false;
     selectPointerTool.checked = false;
@@ -598,6 +664,7 @@ tieConnectTool.addEventListener("change", function () {
 // Tie Connect Multi Tool event listener
 const tieConnectMultiTool = document.getElementById("tieConnectMultiTool");
 tieConnectMultiTool.addEventListener("change", function () {
+    resetFloatingToolbarButtons("tieConnectMultiTool");
     // Activate the right side nav "tie in in a line" switch
     addMultiConnectorButton.checked = tieConnectMultiTool.checked;
     selectByPolygonTool.checked = false;
@@ -1839,7 +1906,7 @@ canvasContainer.addEventListener(
 
             // Calculate the new scale
             currentScale *= zoomFactor;
-            currentFontSize *= zoomFactor;
+            currentFontSize = Math.min(Math.max(currentFontSize * zoomFactor, 0), 100);
 
             // Adjust the centroid position based on the offsets and zoom direction
             if (deltaX < 0 && deltaY < 0) {
@@ -1908,6 +1975,8 @@ connSlider.addEventListener("input", function () {
     drawData(points, selectedHole);
 });
 const fontSlider = document.getElementById("fontSlider");
+fontSlider.min = "0";
+fontSlider.max = "100";
 fontSlider.addEventListener("input", function () {
     currentFontSize = this.value;
     currentFontSize = document.getElementById("fontSlider").value;
@@ -1972,28 +2041,28 @@ timeOffsetSlider.addEventListener("input", function () {
 
 // Create array of options and their corresponding flags
 const optionConfigs = [
-    { option: option1 },
-    { option: option2 },
-    { option: option2A },
-    { option: option3 },
-    { option: option4 },
-    { option: option5 },
-    { option: option5B },
-    { option: option5A },
-    { option: option6 },
-    { option: option6A },
-    { option: option8, flag: "isDisplayingContours" },
-    { option: option8A, flag: "isDisplayingSlopeTriangles" },
-    { option: option8B, flag: "isDisplayingReliefTriangles" },
-    { option: option8C, flag: "isDisplayingDirectionArrows" },
-    { option: option9 },
-    { option: option10 },
-    { option: option11 },
-    { option: option12 },
-    { option: option13 },
-    { option: option14 },
-    { option: option15 },
-    { option: option16 }
+    { option: displayHoleId },
+    { option: displayHoleLength },
+    { option: displayHoleDiameter },
+    { option: displayHoleAngle },
+    { option: displayHoleDip },
+    { option: displayHoleBearing },
+    { option: displayHoleSubdrill },
+    { option: displayConnectors },
+    { option: displayDelays },
+    { option: displayTimes },
+    { option: displayContours, flag: "isDisplayingContours" },
+    { option: displaySlope, flag: "isDisplayingSlopeTriangles" },
+    { option: displayRelief, flag: "isDisplayingReliefTriangles" },
+    { option: displayFirstMovements, flag: "isDisplayingDirectionArrows" },
+    { option: displayXLocation },
+    { option: displayYLocation },
+    { option: displayElevation },
+    { option: displayHoleType },
+    { option: displayMLength },
+    { option: displayMMass },
+    { option: displayMComment },
+    { option: displayVaronoiCells }
 ];
 
 // Add event listeners programmatically
@@ -2030,6 +2099,8 @@ function handleMouseDown(event) {
     const rect = canvas.getBoundingClientRect();
     lastMouseX = event.clientX - rect.left;
     lastMouseY = event.clientY - rect.top;
+    // Block tool-specific behaviors only if tools are dragging
+    if (isDraggingBearing || isDraggingHole) return;
 }
 
 function handleMouseMove(event) {
@@ -2037,7 +2108,7 @@ function handleMouseMove(event) {
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
-    if (isDragging) {
+    if (isDragging && !isDraggingBearing && !isDraggingHole) {
         deltaX = mouseX - lastMouseX;
         deltaY = mouseY - lastMouseY;
         centroidX -= deltaX / currentScale;
@@ -2074,7 +2145,8 @@ function handleMouseMove(event) {
 function handleMouseUp(event) {
     isDragging = false;
     clearTimeout(longPressTimeout); // Clear the long press timeout
-
+    // Block tool-specific behaviors only if tools are dragging
+    if (isDraggingBearing || isDraggingHole) return;
     //touchDuration = Date.now() - touchStartTime;
 
     if (isAddingHole && touchDuration <= longPressDuration) {
@@ -2135,7 +2207,9 @@ function handleTouchStart(event) {
 
     // Continue handling the touch start event as before
     if (event.touches.length === 1) {
-        isTouchDragging = true;
+        if (!isDraggingBearing && !isDraggingHole) {
+            isTouchDragging = true;
+        }
         touchStartX = event.touches[0].clientX;
         touchStartY = event.touches[0].clientY;
     } else if (event.touches.length === 2) {
@@ -2154,6 +2228,9 @@ function handleTouchEnd(event) {
     isTouchDragging = false;
 
     touchDuration = Date.now() - touchStartTime;
+    // Block tool-specific behaviors if tools are dragging
+    if (isDraggingBearing || isDraggingHole) return;
+
     if (isAddingHole && touchDuration <= longPressDuration) {
         touchStartX = event.changedTouches[0].clientX;
         touchStartY = event.changedTouches[0].clientY;
@@ -2191,7 +2268,8 @@ function handleTouchEnd(event) {
 }
 
 function handleTouchMove(event) {
-    if (event.touches.length === 1 && isTouchDragging) {
+    if (event.touches.length === 1 && isTouchDragging && !isDraggingBearing && !isDraggingHole) {
+        // Only do canvas panning if tools aren't dragging
         event.preventDefault();
         let touchX = event.touches[0].clientX;
         let touchY = event.touches[0].clientY;
@@ -4710,9 +4788,52 @@ function updateSurfaceTimes(combinedHoleID, time, surfaces, holeTimes, visited =
 }
 
 function delaunayContours(contourData, contourLevel, maxEdgeLength) {
+    // Only do the expensive calculation if contours or direction arrows are being displayed
+    if (!displayContours.checked && !displayFirstMovements.checked) {
+        return { contourLines: [], directionArrows: [] };
+    }
+
+    if (!points || !Array.isArray(points) || points.length === 0) return;
+
+    const factor = 1.6;
+    const minAngleThreshold = 5;
+    const surfaceAreaThreshold = 0.1;
+
     if (!points || !Array.isArray(points) || points.length === 0) return;
     // Filter out points where holeTime is null
     const filteredContourData = contourData.filter((point) => point.holeTime !== null);
+
+    if (filteredContourData.length < 3) return;
+
+    // Helper function to get average distance to N nearest neighbors for a specific point
+    function getLocalAverageDistance(targetPoint, allPoints, neighborCount = 6) {
+        const distances = [];
+
+        for (let i = 0; i < allPoints.length; i++) {
+            if (allPoints[i] === targetPoint) continue; // Skip self
+
+            const dx = targetPoint.x - allPoints[i].x;
+            const dy = targetPoint.y - allPoints[i].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            distances.push(distance);
+        }
+
+        // Sort distances and take the closest N neighbors
+        distances.sort((a, b) => a - b);
+        const nearestDistances = distances.slice(0, Math.min(neighborCount, distances.length));
+
+        // Return average of nearest neighbors
+        return nearestDistances.length > 0 ? nearestDistances.reduce((sum, dist) => sum + dist, 0) / nearestDistances.length : maxEdgeLength;
+    }
+
+    // Cache for local averages to improve performance
+    const localAverageCache = new Map();
+    function getCachedLocalAverage(point) {
+        if (!localAverageCache.has(point)) {
+            localAverageCache.set(point, getLocalAverageDistance(point, filteredContourData, 6));
+        }
+        return localAverageCache.get(point);
+    }
 
     // Compute Delaunay triangulation
     const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
@@ -4729,6 +4850,17 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
         const p1 = contourData[triangles[i]];
         const p2 = contourData[triangles[i + 1]];
         const p3 = contourData[triangles[i + 2]];
+
+        // Get cached local average distances for each vertex of the triangle
+        const p1LocalAvg = getCachedLocalAverage(p1);
+        const p2LocalAvg = getCachedLocalAverage(p2);
+        const p3LocalAvg = getCachedLocalAverage(p3);
+
+        // Use the average of the three vertices' local averages
+        const triangleLocalAverage = (p1LocalAvg + p2LocalAvg + p3LocalAvg) / 3;
+
+        // Create adaptive max edge length for this specific triangle
+        const adaptiveMaxEdgeLength = Math.min(maxEdgeLength, triangleLocalAverage * factor);
 
         // Calculate the centroid of the triangle (average of x, y coordinates)
         const centroidX = (p1.x + p2.x + p3.x) / 3;
@@ -4762,36 +4894,162 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
         // Get the triangle's surface area
         const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
 
-        if (surfaceArea > 0.2) {
-            // Store the arrow (start at the centroid, end at the calculated slope direction)
-            directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+        // Check if triangle passes the local adaptive filtering
+        let trianglePassesFilter = true;
+
+        // Calculate edge lengths and check against adaptive limit
+        const edge1Length = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        const edge2Length = Math.sqrt(Math.pow(p3.x - p2.x, 2) + Math.pow(p3.y - p2.y, 2));
+        const edge3Length = Math.sqrt(Math.pow(p1.x - p3.x, 2) + Math.pow(p1.y - p3.y, 2));
+
+        if (edge1Length > adaptiveMaxEdgeLength || edge2Length > adaptiveMaxEdgeLength || edge3Length > adaptiveMaxEdgeLength) {
+            trianglePassesFilter = false;
         }
-        // Process the contour lines (unchanged logic)
-        for (let j = 0; j < 3; j++) {
-            const p1 = contourData[triangles[i + j]];
-            const p2 = contourData[triangles[i + ((j + 1) % 3)]];
 
-            // Calculate distance between p1 and p2
-            const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+        // Optional: Add angle check to reject very acute triangles
+        if (trianglePassesFilter) {
+            // Calculate angles using law of cosines
+            const edge1Squared = edge1Length * edge1Length;
+            const edge2Squared = edge2Length * edge2Length;
+            const edge3Squared = edge3Length * edge3Length;
 
-            // If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
-            if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
-                const point = interpolate(p1, p2, contourLevel);
-                contourLine.push(point);
+            const angle1 = Math.acos(Math.max(-1, Math.min(1, (edge2Squared + edge3Squared - edge1Squared) / (2 * edge2Length * edge3Length)))) * (180 / Math.PI);
+            const angle2 = Math.acos(Math.max(-1, Math.min(1, (edge1Squared + edge3Squared - edge2Squared) / (2 * edge1Length * edge3Length)))) * (180 / Math.PI);
+            const angle3 = Math.acos(Math.max(-1, Math.min(1, (edge1Squared + edge2Squared - edge3Squared) / (2 * edge1Length * edge2Length)))) * (180 / Math.PI);
+
+            const minAngle = Math.min(angle1, angle2, angle3);
+
+            // Reject triangles with very acute angles (likely bridging triangles)
+            if (minAngle < minAngleThreshold) {
+                trianglePassesFilter = false;
             }
         }
 
-        if (contourLine.length === 2) {
-            contourLines.push(contourLine);
+        // Only process triangles that pass the adaptive filtering
+        if (trianglePassesFilter) {
+            if (surfaceArea > surfaceAreaThreshold) {
+                // Store the arrow (start at the centroid, end at the calculated slope direction)
+                directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+            }
+
+            // Process the contour lines with adaptive edge length filtering
+            for (let j = 0; j < 3; j++) {
+                const p1 = contourData[triangles[i + j]];
+                const p2 = contourData[triangles[i + ((j + 1) % 3)]];
+
+                // Calculate distance between p1 and p2
+                const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+                // Use adaptive edge length instead of global maxEdgeLength
+                if (distance <= adaptiveMaxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
+                    const point = interpolate(p1, p2, contourLevel);
+                    contourLine.push(point);
+                }
+            }
+
+            if (contourLine.length === 2) {
+                contourLines.push(contourLine);
+            }
         }
     }
 
     const interval = 1; // Keep every arrow
     directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
 
+    // Optional: Log some statistics for debugging
+    console.log("Contour generation completed:");
+    console.log("- Total contour lines:", contourLines.length);
+    console.log("- Direction arrows:", directionArrows.length);
+    console.log("- Cache size:", localAverageCache.size);
+
     // Return both contour lines and the newly created arrows
     return { contourLines, directionArrows };
 }
+
+//Old VERSION of CONTOURS AND ARROWS.
+// function delaunayContours(contourData, contourLevel, maxEdgeLength) {
+// 	if (!points || !Array.isArray(points) || points.length === 0) return;
+// 	// Filter out points where holeTime is null
+// 	const filteredContourData = contourData.filter((point) => point.holeTime !== null);
+
+// 	// Compute Delaunay triangulation
+// 	const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
+// 	const triangles = delaunay.triangles; // Access the triangles property directly
+
+// 	if (!triangles || triangles.length === 0) return;
+
+// 	const contourLines = [];
+// 	directionArrows = []; // Initialize an array to store the arrows
+
+// 	for (let i = 0; i < triangles.length; i += 3) {
+// 		const contourLine = [];
+
+// 		const p1 = contourData[triangles[i]];
+// 		const p2 = contourData[triangles[i + 1]];
+// 		const p3 = contourData[triangles[i + 2]];
+
+// 		// Calculate the centroid of the triangle (average of x, y coordinates)
+// 		const centroidX = (p1.x + p2.x + p3.x) / 3;
+// 		const centroidY = (p1.y + p2.y + p3.y) / 3;
+
+// 		// Calculate the vector representing the slope (using Z differences)
+// 		// We'll calculate two vectors: p1->p2 and p1->p3 to get a slope direction
+// 		const v1X = p2.x - p1.x;
+// 		const v1Y = p2.y - p1.y;
+// 		const v1Z = p2.z - p1.z; // Time difference between p1 and p2
+
+// 		const v2X = p3.x - p1.x;
+// 		const v2Y = p3.y - p1.y;
+// 		const v2Z = p3.z - p1.z; // Time difference between p1 and p3
+
+// 		// Now we calculate the cross product of these two vectors to get the slope normal
+// 		const slopeX = v1Y * v2Z - v1Z * v2Y;
+// 		const slopeY = v1Z * v2X - v1X * v2Z;
+// 		const slopeZ = v1X * v2Y - v1Y * v2X;
+
+// 		// Normalize the slope vector (we don't care about the Z component for 2D projection)
+// 		const slopeLength = Math.sqrt(slopeX * slopeX + slopeY * slopeY);
+// 		const normSlopeX = slopeX / slopeLength;
+// 		const normSlopeY = slopeY / slopeLength;
+
+// 		// Calculate the end point for the arrow based on the normalized slope
+// 		const arrowLength = 2; // Arrow length
+// 		const arrowEndX = centroidX - normSlopeX * firstMovementSize;
+// 		const arrowEndY = centroidY - normSlopeY * firstMovementSize;
+
+// 		// Get the triangle's surface area
+// 		const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
+
+// 		if (surfaceArea > 0.2) {
+// 			// Store the arrow (start at the centroid, end at the calculated slope direction)
+// 			directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
+// 		}
+// 		// Process the contour lines (unchanged logic)
+// 		for (let j = 0; j < 3; j++) {
+// 			const p1 = contourData[triangles[i + j]];
+// 			const p2 = contourData[triangles[i + ((j + 1) % 3)]];
+
+// 			// Calculate distance between p1 and p2
+// 			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+// 			// If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
+// 			if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
+// 				const point = interpolate(p1, p2, contourLevel);
+// 				contourLine.push(point);
+// 			}
+// 		}
+
+// 		if (contourLine.length === 2) {
+// 			contourLines.push(contourLine);
+// 		}
+// 	}
+
+// 	const interval = 1; // Keep every arrow
+// 	directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
+
+// 	// Return both contour lines and the newly created arrows
+// 	return { contourLines, directionArrows };
+// }
 
 function interpolate(p1, p2, contourLevel) {
     const t = (contourLevel - p1.z) / (p2.z - p1.z);
@@ -4864,6 +5122,17 @@ function pointToLineDistanceSq(point, lineStart, lineEnd, lineDistSq) {
  * each point being an array of 3 numbers (x, y, z)
  */
 function delaunayTriangles(points, maxEdgeLength) {
+    // Only do the expensive calculation if slope or relief triangles are being displayed
+    if (!displaySlope.checked && !displayRelief.checked) {
+        return { resultTriangles: [], reliefTriangles: [] };
+    }
+
+    if (!points || !Array.isArray(points) || points.length < 3) {
+        return { resultTriangles: [], reliefTriangles: [] };
+    }
+
+    const factor = 1.6;
+    const minAngleThreshold = 5;
     if (!points || !Array.isArray(points) || points.length < 3) {
         return { resultTriangles: [], reliefTriangles: [] };
     }
@@ -4872,6 +5141,36 @@ function delaunayTriangles(points, maxEdgeLength) {
     try {
         const getX = (point) => parseFloat(point.startXLocation);
         const getY = (point) => parseFloat(point.startYLocation);
+
+        // Helper function to get average distance to N nearest neighbors for a specific point
+        function getLocalAverageDistance(targetPoint, allPoints, neighborCount = 6) {
+            const distances = [];
+
+            for (let i = 0; i < allPoints.length; i++) {
+                if (allPoints[i] === targetPoint) continue; // Skip self
+
+                const dx = getX(targetPoint) - getX(allPoints[i]);
+                const dy = getY(targetPoint) - getY(allPoints[i]);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                distances.push(distance);
+            }
+
+            // Sort distances and take the closest N neighbors
+            distances.sort((a, b) => a - b);
+            const nearestDistances = distances.slice(0, Math.min(neighborCount, distances.length));
+
+            // Return average of nearest neighbors
+            return nearestDistances.length > 0 ? nearestDistances.reduce((sum, dist) => sum + dist, 0) / nearestDistances.length : maxEdgeLength;
+        }
+
+        // Cache for local averages to improve performance
+        const localAverageCache = new Map();
+        function getCachedLocalAverage(point) {
+            if (!localAverageCache.has(point)) {
+                localAverageCache.set(point, getLocalAverageDistance(point, points, 6));
+            }
+            return localAverageCache.get(point);
+        }
 
         // Construct the Delaunay triangulation object
         const delaunay = Delaunator.from(points, getX, getY);
@@ -4892,36 +5191,130 @@ function delaunayTriangles(points, maxEdgeLength) {
             const p2 = points[p2Index];
             const p3 = points[p3Index];
 
+            // Get cached local average distances for each vertex of the triangle
+            const p1LocalAvg = getCachedLocalAverage(p1);
+            const p2LocalAvg = getCachedLocalAverage(p2);
+            const p3LocalAvg = getCachedLocalAverage(p3);
+
+            // Use the average of the three vertices' local averages
+            const triangleLocalAverage = (p1LocalAvg + p2LocalAvg + p3LocalAvg) / 3;
+
+            // Create adaptive max edge length for this specific triangle
+            // You can adjust the 1.8 multiplier to be more or less restrictive
+            const adaptiveMaxEdgeLength = Math.min(maxEdgeLength, triangleLocalAverage * factor);
+
             // Calculate squared edge lengths
             const edge1Squared = distanceSquared([getX(p1), getY(p1)], [getX(p2), getY(p2)]);
             const edge2Squared = distanceSquared([getX(p2), getY(p2)], [getX(p3), getY(p3)]);
             const edge3Squared = distanceSquared([getX(p3), getY(p3)], [getX(p1), getY(p1)]);
 
-            // Check if all edge lengths are less than or equal to the maxEdgeLength squared
-            if (edge1Squared <= maxEdgeLength ** 2 && edge2Squared <= maxEdgeLength ** 2 && edge3Squared <= maxEdgeLength ** 2) {
-                // Add the triangle to the result if the condition is met
+            // Use the adaptive max edge length for this triangle
+            const maxEdgeLengthSquared = adaptiveMaxEdgeLength ** 2;
 
-                resultTriangles.push([
-                    [getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
-                    [getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
-                ]);
+            // Check if all edge lengths are within the adaptive limit
+            if (edge1Squared <= maxEdgeLengthSquared && edge2Squared <= maxEdgeLengthSquared && edge3Squared <= maxEdgeLengthSquared) {
+                // Optional: Add angle check to reject very acute triangles (bridging triangles)
+                const edge1 = Math.sqrt(edge1Squared);
+                const edge2 = Math.sqrt(edge2Squared);
+                const edge3 = Math.sqrt(edge3Squared);
 
-                reliefTriangles.push([
-                    [getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
-                    [getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-                    [getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
-                ]);
+                // Calculate angles using law of cosines
+                const angle1 = Math.acos(Math.max(-1, Math.min(1, (edge2Squared + edge3Squared - edge1Squared) / (2 * edge2 * edge3)))) * (180 / Math.PI);
+                const angle2 = Math.acos(Math.max(-1, Math.min(1, (edge1Squared + edge3Squared - edge2Squared) / (2 * edge1 * edge3)))) * (180 / Math.PI);
+                const angle3 = Math.acos(Math.max(-1, Math.min(1, (edge1Squared + edge2Squared - edge3Squared) / (2 * edge1 * edge2)))) * (180 / Math.PI);
+
+                const minAngle = Math.min(angle1, angle2, angle3);
+
+                // Only accept triangles with reasonable angles (reject very acute triangles)
+                // You can adjust the 12 degree minimum angle threshold
+                if (minAngle >= minAngleThreshold) {
+                    // Add the triangle to the result
+                    resultTriangles.push([
+                        [getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
+                        [getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
+                        [getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
+                    ]);
+
+                    reliefTriangles.push([
+                        [getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
+                        [getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
+                        [getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
+                    ]);
+                }
             }
         }
-        //console.log("Triangles", resultTriangles);
-        //console.log("Relief Triangles", reliefTriangles);
+
+        // Optional: Log some statistics for debugging
+        console.log("Triangulation completed:");
+        console.log("- Total triangles generated:", resultTriangles.length);
+        console.log("- Cache size:", localAverageCache.size);
+
         return { resultTriangles, reliefTriangles };
     } catch (err) {
-        console.log(err);
+        console.log("Error in delaunayTriangles:", err);
         return { resultTriangles: [], reliefTriangles: [] };
     }
 }
+//OLD VERSION OF DELTAUNAY TRIANGULATION
+// function delaunayTriangles(points, maxEdgeLength) {
+// 	if (!points || !Array.isArray(points) || points.length < 3) {
+// 		return { resultTriangles: [], reliefTriangles: [] };
+// 	}
+// 	let resultTriangles = [];
+// 	let reliefTriangles = [];
+// 	try {
+// 		const getX = (point) => parseFloat(point.startXLocation);
+// 		const getY = (point) => parseFloat(point.startYLocation);
+
+// 		// Construct the Delaunay triangulation object
+// 		const delaunay = Delaunator.from(points, getX, getY);
+
+// 		// Helper function to calculate the squared distance between two points
+// 		function distanceSquared(p1, p2) {
+// 			const dx = p1[0] - p2[0];
+// 			const dy = p1[1] - p2[1];
+// 			return dx * dx + dy * dy;
+// 		}
+
+// 		for (let i = 0; i < delaunay.triangles.length; i += 3) {
+// 			const p1Index = delaunay.triangles[i];
+// 			const p2Index = delaunay.triangles[i + 1];
+// 			const p3Index = delaunay.triangles[i + 2];
+
+// 			const p1 = points[p1Index];
+// 			const p2 = points[p2Index];
+// 			const p3 = points[p3Index];
+
+// 			// Calculate squared edge lengths
+// 			const edge1Squared = distanceSquared([getX(p1), getY(p1)], [getX(p2), getY(p2)]);
+// 			const edge2Squared = distanceSquared([getX(p2), getY(p2)], [getX(p3), getY(p3)]);
+// 			const edge3Squared = distanceSquared([getX(p3), getY(p3)], [getX(p1), getY(p1)]);
+
+// 			// Check if all edge lengths are less than or equal to the maxEdgeLength squared
+// 			if (edge1Squared <= maxEdgeLength ** 2 && edge2Squared <= maxEdgeLength ** 2 && edge3Squared <= maxEdgeLength ** 2) {
+// 				// Add the triangle to the result if the condition is met
+
+// 				resultTriangles.push([
+// 					[getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
+// 					[getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
+// 					[getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
+// 				]);
+
+// 				reliefTriangles.push([
+// 					[getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
+// 					[getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
+// 					[getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
+// 				]);
+// 			}
+// 		}
+// 		//console.log("Triangles", resultTriangles);
+// 		//console.log("Relief Triangles", reliefTriangles);
+// 		return { resultTriangles, reliefTriangles };
+// 	} catch (err) {
+// 		console.log(err);
+// 		return { resultTriangles: [], reliefTriangles: [] };
+// 	}
+// }
 //Delaunay triangulation helper function
 function getDelaunayFromPoints(points, useToeLocation) {
     try {
@@ -5911,6 +6304,13 @@ function drawHexagon(x, y, sideLength, fillColour, strokeColour) {
     ctx.lineWidth = 5;
     ctx.stroke(); // draw the hexagon border with the stroke colour
 }
+// Helper function to draw multiline text
+function drawMultilineText(ctx, text, x, y, lineHeight = 16) {
+    const lines = text.split("\n");
+    for (let i = 0; i < lines.length; i++) {
+        ctx.fillText(lines[i], x, y + i * lineHeight);
+    }
+}
 //Left-align the text
 function drawText(x, y, text, color) {
     ctx.font = parseInt(currentFontSize - 2) + "px Arial";
@@ -6541,7 +6941,7 @@ function getClickedHole(clickX, clickY) {
                 return point; // Return the clicked hole
             }
         }
-    } else if (!selectionMode && (isSelectionPointerActive || isPolygonSelectionActive || isHoleEditing || isLengthPopupEditing || isDeletingHole || isBlastNameEditing)) {
+    } else if (!selectionMode && (isSelectionPointerActive || isPolygonSelectionActive || isHoleEditing || isLengthPopupEditing || isDeletingHole || isBlastNameEditing || isBearingToolActive || isMoveToolActive)) {
         for (let i = 0; i < points.length; i++) {
             let point = points[i];
             let holeX = point.startXLocation;
@@ -9479,6 +9879,11 @@ function handleHoleEditingSelection(event) {
 }
 
 function recalculateContours(points, deltaX, deltaY) {
+    // Only recalculate if contours or direction arrows are being displayed
+    if (!displayContours.checked && !displayFirstMovements.checked) {
+        return { contourLinesArray: [], directionArrows: [] };
+    }
+
     try {
         const contourData = [];
         holeTimes = calculateTimes(points);
@@ -9541,53 +9946,52 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
     // Destructure for easier access
     let { startXLocation: startX, startYLocation: startY, startZLocation: startZ, holeAngle, holeBearing, benchHeight, subdrillAmount } = hole;
 
+    const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
+
     if (modeLAB === 1) {
         // Length
         const newLength = parseFloat(newValue);
+        hole.holeLengthCalculated = newLength;
+
         const radAngle = holeAngle * (Math.PI / 180);
         const cosAngle = Math.cos(radAngle);
         const sinAngle = Math.sin(radAngle);
-        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
-
-        hole.holeLengthCalculated = newLength;
 
         if (Math.abs(cosAngle) > 1e-9) {
             const subdrillLength = subdrillAmount / cosAngle;
             const newBenchDrillLength = newLength - subdrillLength;
             hole.benchHeight = newBenchDrillLength * cosAngle;
-            hole.subdrillLength = subdrillLength;
         }
 
-        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
-        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
-        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
-        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
-        hole.gradeZLocation = startZ - hole.benchHeight;
+        // Recalculate everything based on the new length
+        const newTotalVerticalDrop = newLength * cosAngle;
+        hole.endZLocation = startZ - newTotalVerticalDrop;
+        const horizontalProjection = newLength * sinAngle;
+        hole.endXLocation = startX + horizontalProjection * Math.cos(radBearing);
+        hole.endYLocation = startY + horizontalProjection * Math.sin(radBearing);
 
-        hole.endXLocation = startX + newLength * sinAngle * Math.cos(radBearing);
-        hole.endYLocation = startY + newLength * sinAngle * Math.sin(radBearing);
-        hole.endZLocation = startZ - newLength * cosAngle;
+        hole.gradeZLocation = startZ - hole.benchHeight;
+        const benchDrillLength = hole.benchHeight / (Math.abs(cosAngle) > 1e-9 ? cosAngle : 1);
+        const horizontalProjectionToGrade = benchDrillLength * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionToGrade * Math.cos(radBearing);
+        hole.gradeYLocation = startY + horizontalProjectionToGrade * Math.sin(radBearing);
     } else if (modeLAB === 2) {
         // Angle
         const newAngle = parseFloat(newValue);
+        hole.holeAngle = newAngle;
         const radAngle = newAngle * (Math.PI / 180);
         const cosAngle = Math.cos(radAngle);
         const sinAngle = Math.sin(radAngle);
-        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
-
-        hole.holeAngle = newAngle;
 
         if (Math.abs(cosAngle) > 1e-9) {
-            const benchDrillLength = benchHeight / cosAngle;
-            const subdrillLength = subdrillAmount / cosAngle;
-            hole.holeLengthCalculated = benchDrillLength + subdrillLength;
-            hole.subdrillLength = subdrillLength;
-        }
+            hole.holeLengthCalculated = (benchHeight + subdrillAmount) / cosAngle;
+        } // For horizontal holes, length is independent
 
-        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
-        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
-        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
-        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
+        hole.gradeZLocation = startZ - benchHeight;
+        const benchDrillLength = Math.abs(cosAngle) > 1e-9 ? benchHeight / cosAngle : 0; // No bench drop for horizontal
+        const horizontalProjectionToGrade = benchDrillLength * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionToGrade * Math.cos(radBearing);
+        hole.gradeYLocation = startY + horizontalProjectionToGrade * Math.sin(radBearing);
 
         const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
         hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(radBearing);
@@ -9596,29 +10000,28 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
     } else if (modeLAB === 3) {
         // Bearing
         const newBearing = parseFloat(newValue);
+        hole.holeBearing = newBearing;
+        const newRadBearing = ((450 - newBearing) % 360) * (Math.PI / 180);
         const radAngle = holeAngle * (Math.PI / 180);
         const cosAngle = Math.cos(radAngle);
         const sinAngle = Math.sin(radAngle);
-        const radBearing = ((450 - newBearing) % 360) * (Math.PI / 180);
 
-        hole.holeBearing = newBearing;
-
-        const benchDrillLengthForCalc = hole.benchHeight / (Math.abs(cosAngle) < 1e-9 ? 1 : cosAngle);
-        const horizontalProjectionOfBenchDrillLength = benchDrillLengthForCalc * sinAngle;
-        hole.gradeXLocation = startX + horizontalProjectionOfBenchDrillLength * Math.cos(radBearing);
-        hole.gradeYLocation = startY + horizontalProjectionOfBenchDrillLength * Math.sin(radBearing);
+        const benchDrillLength = Math.abs(cosAngle) > 1e-9 ? benchHeight / cosAngle : 0;
+        const horizontalProjectionToGrade = benchDrillLength * sinAngle;
+        hole.gradeXLocation = startX + horizontalProjectionToGrade * Math.cos(newRadBearing);
+        hole.gradeYLocation = startY + horizontalProjectionToGrade * Math.sin(newRadBearing);
 
         const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
-        hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(radBearing);
-        hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(radBearing);
+        hole.endXLocation = startX + horizontalProjectionOfHoleLength * Math.cos(newRadBearing);
+        hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(newRadBearing);
     } else if (modeLAB === 4) {
-        // Easting (X) - Simple delta shift with debug
+        // Easting (X) - Simple delta shift
         const deltaX = newValue - hole.startXLocation;
         hole.startXLocation = newValue;
         hole.gradeXLocation += deltaX;
         hole.endXLocation += deltaX;
     } else if (modeLAB === 5) {
-        // Northing (Y) - Simple delta shift with debug
+        // Northing (Y) - Simple delta shift
         const deltaY = newValue - hole.startYLocation;
         hole.startYLocation = newValue;
         hole.gradeYLocation += deltaY;
@@ -9636,26 +10039,18 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
         // Subdrill Amount
         const newSubdrillAmount = parseFloat(newValue);
 
-        // Add validation for NaN values
         if (isNaN(newSubdrillAmount)) {
             console.warn("Invalid subdrill amount:", newValue);
             return;
         }
+        hole.subdrillAmount = newSubdrillAmount;
 
         const radAngle = holeAngle * (Math.PI / 180);
         const cosAngle = Math.cos(radAngle);
         const sinAngle = Math.sin(radAngle);
-        const radBearing = ((450 - holeBearing) % 360) * (Math.PI / 180);
-
-        hole.subdrillAmount = newSubdrillAmount;
 
         if (Math.abs(cosAngle) > 1e-9) {
-            const benchDrillLength = benchHeight / cosAngle;
-            hole.subdrillLength = newSubdrillAmount / cosAngle;
-            hole.holeLengthCalculated = benchDrillLength + hole.subdrillLength;
-        } else {
-            // Handle horizontal holes case
-            hole.subdrillLength = newSubdrillAmount;
+            hole.holeLengthCalculated = (benchHeight + newSubdrillAmount) / cosAngle;
         }
 
         const horizontalProjectionOfHoleLength = hole.holeLengthCalculated * sinAngle;
@@ -9665,7 +10060,6 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
     }
 
     // No need to reassign points[index] since we're working on the original object
-    // This preserves the selectedHole reference
 }
 
 function timeChart() {
@@ -10428,42 +10822,6 @@ function drawData(points, selectedHole) {
             }
         }
 
-        // Holes Displayed Count
-        ctx.fillStyle = "red";
-        ctx.font = "12px Arial";
-        if (!points || !Array.isArray(points) || points.length < 1) {
-            ctx.fillText("Holes Displayed: 0", 10, canvas.height - 65);
-        } else {
-            ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 65);
-        }
-        // Use lastMouseX and lastMouseY if available, otherwise default to 0
-        const mouseX = typeof lastMouseX !== "undefined" ? lastMouseX : 0;
-        const mouseY = typeof lastMouseY !== "undefined" ? lastMouseY : 0;
-        // Convert canvas (mouse) coordinates to world coordinates
-        const worldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
-        const worldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
-        ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY + " [scale] 1:" + currentScale.toFixed(4), 10, canvas.height - 55);
-        ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 45);
-        ctx.fillStyle = "blue";
-        ctx.fillText("Version: Build: " + buildVersion, 10, canvas.height - 35);
-
-        if (drawMouseLines) {
-            //draw a vertical lin the height of the canvas at the mouse x location and draw a line the width of the canvas at the y location of the mouse. it should be colour grey at 50% opacity
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(mouseX, 0);
-            ctx.lineTo(mouseX, canvas.height);
-            ctx.strokeStyle = "rgba(128, 128, 128, 0.5)";
-            ctx.stroke();
-            ctx.closePath();
-            ctx.beginPath();
-            ctx.moveTo(0, mouseY);
-            ctx.lineTo(canvas.width, mouseY);
-            ctx.strokeStyle = "rgba(128, 128, 128, 0.5)";
-            ctx.stroke();
-            ctx.closePath();
-        }
-
         // Main hole loop
         ctx.lineWidth = 1;
         ctx.strokeStyle = strokeColour;
@@ -10530,6 +10888,74 @@ function drawData(points, selectedHole) {
         if (isPolygonSelectionActive) {
             drawPolygonSelection(ctx);
         }
+
+        // Holes Displayed Count
+        ctx.fillStyle = "red";
+        ctx.font = "12px Arial";
+        if (!points || !Array.isArray(points) || points.length < 1) {
+            ctx.fillText("Holes Displayed: 0", 10, canvas.height - 65);
+        } else {
+            ctx.fillText("Holes Displayed: " + points.length, 10, canvas.height - 65);
+        }
+        // Use lastMouseX and lastMouseY if available, otherwise default to 0
+        const mouseX = typeof lastMouseX !== "undefined" ? lastMouseX : 0;
+        const mouseY = typeof lastMouseY !== "undefined" ? lastMouseY : 0;
+        // Convert canvas (mouse) coordinates to world coordinates
+        const worldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
+        const worldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+        ctx.fillText("Mouse Location: [x] " + mouseX + " [y] " + mouseY + " [scale] 1:" + currentScale.toFixed(4), 10, canvas.height - 55);
+        ctx.fillText("World Location: [x] " + worldX.toFixed(2) + " [y] " + worldY.toFixed(2), 10, canvas.height - 45);
+        ctx.fillStyle = "blue";
+        ctx.fillText("Version: Build: " + buildVersion, 10, canvas.height - 35);
+
+        if (drawMouseLines) {
+            //draw a vertical lin the height of the canvas at the mouse x location and draw a line the width of the canvas at the y location of the mouse. it should be colour grey at 50% opacity
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(mouseX, 0);
+            ctx.lineTo(mouseX, canvas.height);
+            ctx.strokeStyle = "rgba(128, 128, 128, 0.5)";
+            ctx.stroke();
+            ctx.closePath();
+            ctx.beginPath();
+            ctx.moveTo(0, mouseY);
+            ctx.lineTo(canvas.width, mouseY);
+            ctx.strokeStyle = "rgba(128, 128, 128, 0.5)";
+            ctx.stroke();
+            ctx.closePath();
+        }
+        // Draw active rulers (completed measurements)
+        if (isRulerActive && rulerStartPoint && rulerEndPoint) {
+            drawRuler(rulerStartPoint.x, rulerStartPoint.y, rulerEndPoint.x, rulerEndPoint.y);
+        }
+        // Draw live ruler while measuring (full ruler that follows mouse)
+        if (isRulerActive && rulerStartPoint && !rulerEndPoint) {
+            // Convert canvas mouse coordinates to world coordinates
+            const worldMouseX = (mouseX - canvas.width / 2) / currentScale + centroidX;
+            const worldMouseY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+
+            // Draw the full ruler from start point to mouse position
+            drawRuler(rulerStartPoint.x, rulerStartPoint.y, worldMouseX, worldMouseY);
+        }
+        // Draw completed bearing measurement
+        if (isRulerProtractorActive && rulerProtractorPoints.length === 3) {
+            drawProtractor(rulerProtractorPoints[0].x, rulerProtractorPoints[0].y, rulerProtractorPoints[1].x, rulerProtractorPoints[1].y, rulerProtractorPoints[2].x, rulerProtractorPoints[2].y);
+        }
+
+        // Draw live bearing measurement preview
+        if (isRulerProtractorActive && rulerProtractorPoints.length > 0 && rulerProtractorPoints.length < 3) {
+            const worldMouseX = (mouseX - canvas.width / 2) / currentScale + centroidX;
+            const worldMouseY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+
+            if (rulerProtractorPoints.length === 1) {
+                // After first click - show line from center to mouse
+                drawProtractor(rulerProtractorPoints[0].x, rulerProtractorPoints[0].y, worldMouseX, worldMouseY, rulerProtractorPoints[0].x, rulerProtractorPoints[0].y); // Same point for p3
+            } else if (rulerProtractorPoints.length === 2) {
+                // After second click - show both legs with live second leg
+                drawProtractor(rulerProtractorPoints[0].x, rulerProtractorPoints[0].y, rulerProtractorPoints[1].x, rulerProtractorPoints[1].y, worldMouseX, worldMouseY);
+            }
+        }
+
         // Update font slider and label after loop (once)
         fontSlider.value = currentFontSize;
         fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
@@ -10711,7 +11137,7 @@ function drawHoleMainShape(point, x, y, selectedHole) {
         highlightType = "selected";
         highlightColor1 = "rgba(255, 0, 150, 0.2)";
         highlightColor2 = "rgba(255, 0, 150, .8)";
-        highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode";
+        highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \nEscape key to clear Selection";
     }
     // Multiple selection highlighting
     else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
@@ -10719,7 +11145,7 @@ function drawHoleMainShape(point, x, y, selectedHole) {
         highlightColor1 = "rgba(255, 0, 150, 0.2)";
         highlightColor2 = "rgba(255, 0, 150, .8)";
         if (point === selectedMultipleHoles[0]) {
-            highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "}";
+            highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \nEscape key to clear Selection";
         } else {
             highlightText = "";
         }
@@ -10730,7 +11156,7 @@ function drawHoleMainShape(point, x, y, selectedHole) {
         drawHiHole(x, y, 10 + parseInt((point.holeDiameter / 900) * holeScale * currentScale), highlightColor1, highlightColor2);
         ctx.fillStyle = highlightColor2;
         ctx.font = "12px Arial";
-        ctx.fillText(highlightText, 2, 20);
+        drawMultilineText(ctx, highlightText, 2, 20);
     }
 
     // Draw main hole/track shape (dummy, missing, or real)
@@ -11148,9 +11574,6 @@ window.addEventListener("load", () => {
         if (event.key === "Escape") {
             console.log("Escape pressed - resetting all");
             resetAllSelectedStores();
-            //setAllBoolsToFalse();
-            //resetAllSwitchesAndToggles();
-            //resetFloatingToolbarButtons();
 
             // Reset polygon selection if active
             if (isPolygonSelectionActive) {
@@ -11361,6 +11784,9 @@ const selectPointerTool = document.getElementById("selectPointer");
 const selectByPolygonTool = document.getElementById("selectByPolygon");
 const resetViewTool = document.getElementById("resetViewTool");
 const moveToTool = document.getElementById("moveToTool");
+const bearingTool = document.getElementById("bearingTool");
+const rulerTool = document.getElementById("rulerTool");
+const rulerProtractorTool = document.getElementById("rulerProtractorTool");
 
 //---------------MOVE TOOL---------------//
 // --- Move Tool State ---
@@ -11372,41 +11798,95 @@ let dragStartWorldX = 0,
     dragStartWorldY = 0;
 let dragInitialPositions = [];
 
+// Store the previous tool state to restore it when move tool is deactivated
+let previousToolState = {
+    isSelectionPointerActive: false,
+    isPolygonSelectionActive: false,
+    selectionMode: false
+};
+// Helper function to remove all canvas listeners
+function removeAllCanvasListenersKeepDefault() {
+    // Default canvas handlers not required to be removed fixed with a flag in function for dragging
+    //canvas.removeEventListener("mousedown", handleMouseDown);
+    //canvas.removeEventListener("mousemove", handleMouseMove);
+    //canvas.removeEventListener("mouseup", handleMouseUp);
+    // canvas.removeEventListener("touchstart", handleTouchStart);
+    // canvas.removeEventListener("touchmove", handleTouchMove);
+    // canvas.removeEventListener("touchend", handleTouchEnd);
+
+    // Selection tool handlers
+    canvas.removeEventListener("click", handleSelection);
+    canvas.removeEventListener("touchstart", handleSelection);
+    canvas.removeEventListener("click", selectInsidePolygon);
+    canvas.removeEventListener("touchstart", selectInsidePolygonTouch);
+    canvas.removeEventListener("mousemove", handlePolygonMouseMove);
+
+    // Move tool handlers
+    canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+    canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+    canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+    canvas.removeEventListener("touchstart", handleMoveToolMouseDown);
+    canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+    canvas.removeEventListener("touchend", handleMoveToolMouseUp);
+
+    // Bearing tool handlers
+    canvas.removeEventListener("mousedown", handleBearingToolMouseDown);
+    canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
+    canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
+    canvas.removeEventListener("touchstart", handleBearingToolMouseDown);
+    canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
+    canvas.removeEventListener("touchend", handleBearingToolMouseUp);
+}
+
+//------------------------- MOVE TO TOOL START------------//
 // --- Move Tool Activation ---
 moveToTool.addEventListener("change", function () {
     if (this.checked) {
-        isMoveToolActive = false;
-        isSelectionPointerActive = true;
+        // Store current selection BEFORE clearing anything
+        const preservedMultipleSelection = [...selectedMultipleHoles];
+        const preservedSingleSelection = selectedHole;
+
+        resetFloatingToolbarButtons("moveToTool");
+        // DON'T remove all canvas listeners - keep the main mouse tracking
+        removeAllCanvasListenersKeepDefault();
+
+        // Store current state to restore later
+        previousToolState = {
+            isSelectionPointerActive: isSelectionPointerActive,
+            isPolygonSelectionActive: isPolygonSelectionActive,
+            selectionMode: selectionMode
+        };
+
+        // Disable other tools
+        isSelectionPointerActive = false;
         isPolygonSelectionActive = false;
-        selectPointerTool.checked = false;
-        selectByPolygonTool.checked = false;
 
-        // Suspend default canvas-panning handlers
-        canvas.removeEventListener("mousedown", handleMouseDown);
-        canvas.removeEventListener("mousemove", handleMouseMove);
-        canvas.removeEventListener("mouseup", handleMouseUp);
-        canvas.removeEventListener("touchstart", handleTouchStart);
-        canvas.removeEventListener("touchmove", handleTouchMove);
-        canvas.removeEventListener("touchend", handleTouchEnd);
+        // Restore preserved selections AFTER reset
+        selectedMultipleHoles = preservedMultipleSelection;
+        selectedHole = preservedSingleSelection;
 
-        // Activate Move-tool handlers
+        isMoveToolActive = true;
+        moveToolSelectedHole = null;
+        isDraggingHole = false;
         canvas.addEventListener("mousedown", handleMoveToolMouseDown);
-        canvas.addEventListener("mousemove", handleMoveToolMouseMove);
-        canvas.addEventListener("mouseup", handleMoveToolMouseUp);
-        canvas.addEventListener("touchmove", handleMoveToolMouseMove);
-
-        drawData(points, selectedHole);
+        canvas.addEventListener("touchstart", handleMoveToolMouseDown);
     } else {
+        resetFloatingToolbarButtons("none");
+
+        // Remove move tool listeners
+        canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+        canvas.removeEventListener("touchstart", handleMoveToolMouseDown);
+        canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+        canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.removeEventListener("touchend", handleMoveToolMouseUp);
+
+        // Clear move tool state
         isMoveToolActive = false;
         isDraggingHole = false;
+        moveToolSelectedHole = null;
 
-        // De-register Move-tool handlers
-        canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
-        canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
-        canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
-        canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
-
-        // Restore default canvas-panning handlers
+        // Restore default canvas handlers for all tools to work properly
         canvas.addEventListener("mousedown", handleMouseDown);
         canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseup", handleMouseUp);
@@ -11414,105 +11894,441 @@ moveToTool.addEventListener("change", function () {
         canvas.addEventListener("touchmove", handleTouchMove);
         canvas.addEventListener("touchend", handleTouchEnd);
 
+        // Restore selection tool listeners if they were active
+        if (previousToolState.isSelectionPointerActive) {
+            isSelectionPointerActive = true;
+            canvas.addEventListener("click", handleSelection);
+            canvas.addEventListener("touchstart", handleSelection);
+        }
+        if (previousToolState.isPolygonSelectionActive) {
+            isPolygonSelectionActive = true;
+            canvas.addEventListener("click", selectInsidePolygon);
+            canvas.addEventListener("touchstart", selectInsidePolygonTouch);
+            canvas.addEventListener("mousemove", handlePolygonMouseMove);
+        }
+
+        // Restore ruler tools if they were active
+        if (isRulerActive) {
+            canvas.addEventListener("click", handleRulerClick);
+        }
+        if (isRulerProtractorActive) {
+            canvas.addEventListener("click", handleRulerProtractorClick);
+        }
+
+        // Restore previous tool state
+        selectionMode = previousToolState.selectionMode;
+
         drawData(points, selectedHole);
     }
 });
 
-// --- Move Tool Handlers ---
+// Handle move tool mouse down - start dragging if holes are selected
 function handleMoveToolMouseDown(event) {
-    // If a multi-hole selection already exists, prioritize dragging it.
-    if (selectedMultipleHoles.length > 0) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = clientX - rect.left;
+    const clickY = clientY - rect.top;
+
+    // First priority: Use existing selections without checking for clicked holes
+    if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+        // Use multiple selected holes - start dragging immediately
+        moveToolSelectedHole = selectedMultipleHoles;
         isDraggingHole = true;
-        dragStartX = event.clientX;
-        dragStartY = event.clientY;
+        dragStartX = clientX;
+        dragStartY = clientY;
         dragInitialPositions = selectedMultipleHoles.map((hole) => ({
             hole: hole,
             x: hole.startXLocation,
             y: hole.startYLocation
         }));
-
-        // Suspend canvas panning during the drag.
-        canvas.removeEventListener("mousemove", handleMouseMove);
-        canvas.removeEventListener("touchmove", handleTouchMove);
-        return;
-    }
-
-    // If there's no selection, try to start a new drag on a single hole.
-    const rect = canvas.getBoundingClientRect();
-    const clickX = event.clientX - rect.left;
-    const clickY = event.clientY - rect.top;
-    const clickedHole = getClickedHole(clickX, clickY);
-
-    if (clickedHole) {
-        // A single hole was clicked, so select it and start the drag.
-        selectedMultipleHoles = [clickedHole];
-        selectedHole = clickedHole;
-        updateSelectionAveragesAndSliders(selectedMultipleHoles);
-        drawData(points, selectedHole);
-
+        canvas.addEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.addEventListener("touchmove", handleMoveToolMouseMove);
+        canvas.addEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.addEventListener("touchend", handleMoveToolMouseUp);
+    } else if (selectedHole) {
+        // Use single selected hole - start dragging immediately
+        moveToolSelectedHole = [selectedHole];
         isDraggingHole = true;
-        dragStartX = event.clientX;
-        dragStartY = event.clientY;
-        dragInitialPositions = [{ hole: clickedHole, x: clickedHole.startXLocation, y: clickedHole.startYLocation }];
+        dragStartX = clientX;
+        dragStartY = clientY;
+        dragInitialPositions = [{ hole: selectedHole, x: selectedHole.startXLocation, y: selectedHole.startYLocation }];
+        canvas.addEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.addEventListener("touchmove", handleMoveToolMouseMove);
+        canvas.addEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.addEventListener("touchend", handleMoveToolMouseUp);
+    } else {
+        // No existing selections - check if we clicked on a hole to select it
+        const clickedHole = getClickedHole(clickX, clickY);
 
-        // Suspend canvas panning during the drag.
-        canvas.removeEventListener("mousemove", handleMouseMove);
-        canvas.removeEventListener("touchmove", handleTouchMove);
-        return;
+        if (clickedHole) {
+            // No holes selected but clicked on a hole - select it and start dragging
+            selectedHole = clickedHole;
+            moveToolSelectedHole = [clickedHole];
+            isDraggingHole = true;
+            dragStartX = clientX;
+            dragStartY = clientY;
+            dragInitialPositions = [{ hole: clickedHole, x: clickedHole.startXLocation, y: clickedHole.startYLocation }];
+            canvas.addEventListener("mousemove", handleMoveToolMouseMove);
+            canvas.addEventListener("touchmove", handleMoveToolMouseMove);
+            canvas.addEventListener("mouseup", handleMoveToolMouseUp);
+            canvas.addEventListener("touchend", handleMoveToolMouseUp);
+            drawData(points, selectedHole);
+        } else {
+            // Clicked empty space with no holes selected - clear selection
+            selectedHole = null;
+            selectedMultipleHoles = [];
+            moveToolSelectedHole = null;
+            drawData(points, selectedHole);
+        }
     }
-
-    // If the click was on an empty space with no prior selection, do nothing.
-    isDraggingHole = false;
 }
 
+// Handle move tool mouse move - move holes
 function handleMoveToolMouseMove(event) {
-    //remove the default mouse move
-    // canvas.removeEventListener("mousemove", handleMouseMove);
-    // canvas.removeEventListener("touchmove", handleTouchMove);
+    if (!isDraggingHole || !moveToolSelectedHole) return;
 
-    if (!isDraggingHole) return;
+    event.preventDefault();
+    event.stopPropagation();
 
-    const deltaX = (event.clientX - dragStartX) / currentScale;
-    const deltaY = -(event.clientY - dragStartY) / currentScale; // Y axis is flipped
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
 
+    // Calculate movement delta
+    const deltaX = (clientX - dragStartX) / currentScale;
+    const deltaY = -(clientY - dragStartY) / currentScale;
+
+    // Move all selected holes
     dragInitialPositions.forEach(({ hole, x, y }) => {
-        calculateHoleGeometry(hole, x + deltaX, 4); // Easting
-        calculateHoleGeometry(hole, y + deltaY, 5); // Northing
+        calculateHoleGeometry(hole, parseFloat(x) + deltaX, 4); // Parameter 4 for X position
+        calculateHoleGeometry(hole, parseFloat(y) + deltaY, 5); // Parameter 5 for Y position
     });
+
+    // Throttle contour recalculation for better performance
+    if (!contourUpdatePending) {
+        contourUpdatePending = true;
+        requestAnimationFrame(() => {
+            if (points.length > 0) {
+                holeTimes = calculateTimes(points);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
+            }
+            contourUpdatePending = false;
+        });
+    }
 
     drawData(points, selectedHole);
 }
 
+// Handle move tool mouse up - stop dragging
 function handleMoveToolMouseUp(event) {
     if (isDraggingHole) {
         isDraggingHole = false;
-        saveHolesToLocalStorage(points);
+        canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+        canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.removeEventListener("touchend", handleMoveToolMouseUp);
 
-        // Re-enable panning after dragging has finished
-        canvas.addEventListener("mousemove", handleMouseMove);
-        canvas.addEventListener("touchmove", handleTouchMove);
+        // Save changes and recalculate everything
+        if (moveToolSelectedHole) {
+            saveHolesToLocalStorage(points);
+
+            // Recalculate everything after holes are moved
+            if (points.length > 0) {
+                // Recalculate triangulation
+                const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+
+                // Recalculate hole times
+                holeTimes = calculateTimes(points);
+
+                // Recalculate contours
+                const result = recalculateContours(points, 0, 0);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
+            }
+        }
+
+        drawData(points, selectedHole);
     }
 }
+//---------------END OF MOVE TOOL---------------//
+
+//---------------BEARING TOOL---------------//
+// Add event listener for the bearing tool
+bearingTool.addEventListener("change", function () {
+    if (this.checked) {
+        // Store current selection BEFORE clearing anything
+        const preservedMultipleSelection = [...selectedMultipleHoles];
+        const preservedSingleSelection = selectedHole;
+
+        resetFloatingToolbarButtons("bearingTool");
+        removeAllCanvasListenersKeepDefault();
+
+        // Disable other tools
+        isSelectionPointerActive = false;
+        isPolygonSelectionActive = false;
+
+        // Restore preserved selections AFTER reset
+        selectedMultipleHoles = preservedMultipleSelection;
+        selectedHole = preservedSingleSelection;
+
+        isBearingToolActive = true;
+        bearingToolSelectedHole = null;
+        isDraggingBearing = false;
+        canvas.addEventListener("mousedown", handleBearingToolMouseDown);
+        canvas.addEventListener("touchstart", handleBearingToolMouseDown);
+
+        // Add keydown listener for F key
+        document.addEventListener("keydown", handleBearingToolKeyDown);
+        document.addEventListener("keyup", handleBearingToolKeyUp);
+    } else {
+        // REPLACE THIS ENTIRE ELSE BLOCK WITH THE NEW CODE:
+        resetFloatingToolbarButtons("none");
+
+        // Remove bearing tool listeners
+        canvas.removeEventListener("mousedown", handleBearingToolMouseDown);
+        canvas.removeEventListener("touchstart", handleBearingToolMouseDown);
+        canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
+        canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
+        canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
+        canvas.removeEventListener("touchend", handleBearingToolMouseUp);
+
+        // Remove key listeners
+        document.removeEventListener("keydown", handleBearingToolKeyDown);
+        document.removeEventListener("keyup", handleBearingToolKeyUp);
+
+        // Restore default canvas handlers for all tools to work properly
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchmove", handleTouchMove);
+        canvas.addEventListener("touchend", handleTouchEnd);
+
+        // Restore ruler protractor click handler if it was active
+        if (isRulerProtractorActive) {
+            canvas.addEventListener("click", handleRulerProtractorClick);
+        }
+
+        drawData(points, selectedHole);
+    }
+});
+
+// Track F key state
+let isFocusModeActive = false;
+
+// Handle F key press for focus mode
+function handleBearingToolKeyDown(event) {
+    if (event.key === "f" || event.key === "F") {
+        isFocusModeActive = true;
+    }
+}
+
+function handleBearingToolKeyUp(event) {
+    if (event.key === "f" || event.key === "F") {
+        isFocusModeActive = false;
+    }
+}
+
+// Handle bearing tool mouse down - start dragging if holes are selected
+function handleBearingToolMouseDown(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = clientX - rect.left;
+    const clickY = clientY - rect.top;
+
+    // First priority: Use existing selections without checking for clicked holes
+    if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+        // Use multiple selected holes - start dragging immediately
+        bearingToolSelectedHole = selectedMultipleHoles;
+        isDraggingBearing = true;
+        canvas.addEventListener("mousemove", handleBearingToolMouseMove);
+        canvas.addEventListener("touchmove", handleBearingToolMouseMove);
+        canvas.addEventListener("mouseup", handleBearingToolMouseUp);
+        canvas.addEventListener("touchend", handleBearingToolMouseUp);
+    } else if (selectedHole) {
+        // Use single selected hole - start dragging immediately
+        bearingToolSelectedHole = [selectedHole];
+        isDraggingBearing = true;
+        canvas.addEventListener("mousemove", handleBearingToolMouseMove);
+        canvas.addEventListener("touchmove", handleBearingToolMouseMove);
+        canvas.addEventListener("mouseup", handleBearingToolMouseUp);
+        canvas.addEventListener("touchend", handleBearingToolMouseUp);
+    } else {
+        // No existing selections - check if we clicked on a hole to select it
+        const clickedHole = getClickedHole(clickX, clickY);
+
+        if (clickedHole) {
+            // No holes selected but clicked on a hole - select it and start dragging
+            selectedHole = clickedHole;
+            bearingToolSelectedHole = [clickedHole];
+            isDraggingBearing = true;
+            canvas.addEventListener("mousemove", handleBearingToolMouseMove);
+            canvas.addEventListener("touchmove", handleBearingToolMouseMove);
+            canvas.addEventListener("mouseup", handleBearingToolMouseUp);
+            canvas.addEventListener("touchend", handleBearingToolMouseUp);
+            drawData(points, selectedHole);
+        } else {
+            // Clicked empty space with no holes selected - clear selection
+            selectedHole = null;
+            selectedMultipleHoles = [];
+            bearingToolSelectedHole = null;
+            drawData(points, selectedHole);
+        }
+    }
+}
+// Handle bearing tool mouse move - rotate bearing
+function handleBearingToolMouseMove(event) {
+    if (!isDraggingBearing || !bearingToolSelectedHole) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const clientX = event.clientX || (event.touches && event.touches[0].clientX);
+    const clientY = event.clientY || (event.touches && event.touches[0].clientY);
+
+    const rect = canvas.getBoundingClientRect();
+    const clickX = clientX - rect.left;
+    const clickY = clientY - rect.top;
+    const worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+
+    if (isFocusModeActive) {
+        // Focus mode: Each hole points to mouse location (original behavior)
+        bearingToolSelectedHole.forEach((hole) => {
+            const eastingDiff = worldX - parseFloat(hole.startXLocation);
+            const northingDiff = worldY - parseFloat(hole.startYLocation);
+
+            let newBearing = Math.atan2(eastingDiff, northingDiff) * (180 / Math.PI);
+            if (newBearing < 0) newBearing += 360;
+
+            calculateHoleGeometry(hole, newBearing, 3);
+        });
+    } else {
+        // Default mode: All holes get same bearing based on first hole
+        const firstHole = bearingToolSelectedHole[0];
+        const eastingDiff = worldX - parseFloat(firstHole.startXLocation);
+        const northingDiff = worldY - parseFloat(firstHole.startYLocation);
+
+        let newBearing = Math.atan2(eastingDiff, northingDiff) * (180 / Math.PI);
+        if (newBearing < 0) newBearing += 360;
+
+        // Apply the same bearing to all selected holes
+        bearingToolSelectedHole.forEach((hole) => {
+            calculateHoleGeometry(hole, newBearing, 3);
+        });
+    }
+
+    drawData(points, selectedHole);
+}
+
+// Handle bearing tool mouse up - stop dragging
+function handleBearingToolMouseUp(event) {
+    if (isDraggingBearing) {
+        isDraggingBearing = false;
+        canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
+        canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
+        canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
+        canvas.removeEventListener("touchend", handleBearingToolMouseUp);
+
+        // Save changes
+        if (bearingToolSelectedHole) {
+            saveHolesToLocalStorage(points);
+        }
+
+        drawData(points, selectedHole);
+    }
+}
+
+//---------------END OF BEARING TOOL---------------//
 
 //---------------SELECTION TOOLS---------------//
 selectPointerTool.addEventListener("change", function () {
     if (this.checked) {
         isSelectionPointerActive = true;
         isPolygonSelectionActive = false;
-        // Uncheck the other button
-        selectByPolygonTool.checked = false;
-        moveToTool.checked = false;
+        // Uncheck the other buttons
+        resetFloatingToolbarButtons("selectPointerTool");
+
+        // Remove conflicting listeners
+        removeAllCanvasListenersKeepDefault();
+
+        // Restore default canvas handlers
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchmove", handleTouchMove);
+        canvas.addEventListener("touchend", handleTouchEnd);
 
         // Enable point selection mode
         canvas.addEventListener("click", handleSelection);
-        console.log("Point selection mode enabled");
         canvas.addEventListener("touchstart", handleSelection);
+        console.log("Point selection mode enabled");
         drawData(points, selectedHole);
     } else {
         isSelectionPointerActive = false;
         // Disable point selection mode
         canvas.removeEventListener("click", handleSelection);
         canvas.removeEventListener("touchstart", handleSelection);
+        drawData(points, selectedHole);
+    }
+});
+
+// Update the polygon tool event listener to properly handle conflicts
+selectByPolygonTool.addEventListener("change", function () {
+    if (this.checked) {
+        // Uncheck the other buttons
+        resetFloatingToolbarButtons("selectByPolygonTool");
+        isPolygonSelectionActive = true;
+        selectedHole = null;
+        isDraggingHole = false;
+
+        // Remove conflicting listeners
+        removeAllCanvasListenersKeepDefault();
+
+        // Restore default canvas handlers
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mousemove", handleMouseMove);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchmove", handleTouchMove);
+        canvas.addEventListener("touchend", handleTouchEnd);
+
+        // Add polygon selection listeners
+        canvas.addEventListener("click", selectInsidePolygon);
+        canvas.addEventListener("touchstart", selectInsidePolygonTouch);
+        canvas.addEventListener("mousemove", handlePolygonMouseMove);
+        canvas.addEventListener("contextmenu", function (e) {
+            e.preventDefault(); // Prevent context menu
+            selectInsidePolygon(e); // Handle right-click as completion
+        });
+
+        // Clear any existing selection
+        polyPointsX = [];
+        polyPointsY = [];
+        selectedMultipleHoles = [];
+    } else {
+        isPolygonSelectionActive = false;
+
+        // Remove polygon listeners
+        canvas.removeEventListener("click", selectInsidePolygon);
+        canvas.removeEventListener("touchstart", selectInsidePolygonTouch);
+        canvas.removeEventListener("mousemove", handlePolygonMouseMove);
+
+        // Clear polygon points
+        polyPointsX = [];
+        polyPointsY = [];
         drawData(points, selectedHole);
     }
 });
@@ -11668,46 +12484,6 @@ function selectInsidePolygonTouch(event) {
     drawData(points, selectedHole);
 }
 
-// Update the polygon tool event listener to include touch support
-selectByPolygonTool.addEventListener("change", function () {
-    if (this.checked) {
-        // Uncheck the other button
-        selectPointerTool.checked = false;
-        moveToTool.checked = false;
-        isPolygonSelectionActive = true;
-        selectedHole = null;
-        // Remove other listeners
-        canvas.removeEventListener("click", handleSelection);
-        canvas.removeEventListener("touchstart", handleSelection);
-
-        // Add polygon selection listeners
-        canvas.addEventListener("click", selectInsidePolygon);
-        canvas.addEventListener("touchstart", selectInsidePolygonTouch); // ADD THIS LINE
-        canvas.addEventListener("mousemove", handlePolygonMouseMove);
-        canvas.addEventListener("contextmenu", function (e) {
-            e.preventDefault(); // Prevent context menu
-            selectInsidePolygon(e); // Handle right-click as completion
-        });
-
-        // Clear any existing selection
-        polyPointsX = [];
-        polyPointsY = [];
-        selectedMultipleHoles = [];
-    } else {
-        isPolygonSelectionActive = false;
-
-        // Remove all listeners
-        canvas.removeEventListener("click", selectInsidePolygon);
-        canvas.removeEventListener("touchstart", selectInsidePolygonTouch); // ADD THIS LINE
-        canvas.removeEventListener("mousemove", handlePolygonMouseMove);
-
-        // Clear polygon points
-        polyPointsX = [];
-        polyPointsY = [];
-        drawData(points, selectedHole);
-    }
-});
-
 // Add mouse move handler for live polygon preview
 function handlePolygonMouseMove(event) {
     if (!isPolygonSelectionActive || polyPointsX.length === 0) return;
@@ -11736,6 +12512,1095 @@ resetViewTool.addEventListener("change", function () {
         resetViewTool.checked = false;
     }
 });
+
+//---------------- CUSTOM STRUCTURED CSV IMPORTER ----------------//
+fileInputCustomCSV.addEventListener("change", function () {
+    const file = this.files[0];
+    if (file && file.name.toLowerCase().endsWith(".csv")) {
+        Papa.parse(file, {
+            skipEmptyLines: true,
+            complete: (results) => showCsvImportModal(results.data, file.name),
+            error: (error) => Swal.fire("Error", "Could not parse the CSV file: " + error.message, "error")
+        });
+    } else if (file) {
+        Swal.fire("Invalid File", "Please select a valid .csv file.", "warning");
+        this.value = ""; // Reset the file input
+    }
+});
+
+/**
+ * Displays a SweetAlert2 modal to configure the CSV import, with a layout that matches the AQM exporter.
+ * @param {Array<Array<string>>} csvData - The parsed data from PapaParse.
+ * @param {string} fileName - The name of the imported file.
+ *  STRUCTURE OF THE POINTS ARRAY
+        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colourHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+*/
+
+function showCsvImportModal(csvData, fileName) {
+    if (!csvData || csvData.length === 0) {
+        Swal.fire("Empty File", "The selected CSV file is empty or could not be read.", "warning");
+        return;
+    }
+
+    const headerRowForPreview = csvData[0];
+    const columnOptions = headerRowForPreview.map((header, index) => '<option value="' + (index + 1) + '">Col ' + (index + 1) + ": " + header + "</option>").join("");
+    const ignoreOption = '<option value="0">-- calculate --</option>';
+
+    const modalFields = [
+        { name: "entityName", label: "Blast Name" },
+        { name: "holeID", label: "Hole ID*" },
+        { name: "startXLocation", label: "Start X(mE)*" },
+        { name: "startYLocation", label: "Start Y(mN)*" },
+        { name: "startZLocation", label: "Start Z(mRL)*" },
+        { name: "endXLocation", label: "End X(mE)" },
+        { name: "endYLocation", label: "End Y(mN)" },
+        { name: "endZLocation", label: "End Z(mRL)" },
+        { name: "gradeXLocation", label: "Grade X(mE)" },
+        { name: "gradeYLocation", label: "Grade Y(mN)" },
+        { name: "gradeZLocation", label: "Grade Z(mRL)" },
+        { name: "holeDiameter", label: "Diameter" },
+        { name: "subdrillAmount", label: "Subdrill(m)" },
+        { name: "benchHeight", label: "Bench Height(m)" },
+        { name: "holeType", label: "Hole Type" },
+        { name: "holeLengthCalculated", label: "Hole Length" },
+        { name: "holeBearing", label: "Hole Bearing" },
+        { name: "holeAngle", label: "Hole Angle/Dip" },
+        { name: "initiationTime", label: "Initiation Time" },
+        { name: "fromHoleID", label: "From Hole ID" },
+        { name: "timingDelayMilliseconds", label: "Timing Delay" },
+        { name: "colourHexDecimal", label: "Tie Colour" },
+        { name: "measuredLength", label: "Measured Length" },
+        { name: "measuredMass", label: "Measured Mass" },
+        { name: "measuredComment", label: "Measured Comment" }
+    ];
+
+    const mappingHtml = modalFields
+        .map(
+            (field) =>
+                '<label class="labelWhite12" for="swal-col-' +
+                field.name +
+                '">' +
+                field.label +
+                '</label><select id="swal-col-' +
+                field.name +
+                '" style="font-size: 12px; height: 26px; padding: 3px 6px; width: 120px; border-radius: 4px; background-color: #fff; color: #000; border: 1px solid #999; appearance: none; box-sizing: border-box;">' +
+                ignoreOption +
+                columnOptions +
+                "</select>"
+        )
+        .join("");
+
+    Swal.fire({
+        title: "Import CSV: Map Columns",
+        html: `
+		<label class = "labelWhite12">Header rows to skip</label>
+		<input type="number" id="swal-header-rows" class="swal2-input" value="1" min="0" style="max-width: 80px; height: 30px; border-radius: 5px;"><br><br>
+		
+		<label class="labelWhite12">Column Detection:</label><br>
+		<div style="text-align: left; margin: 10px 0;">
+			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
+				<input type="radio" name="column-detection" value="auto" id="radio-auto" checked style="margin-right: 5px;">
+				Auto detect columns
+			</label>
+			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
+				<input type="radio" name="column-detection" value="last" id="radio-last" style="margin-right: 5px;">
+				Use last used column order
+			</label>
+			<label style="color: #fff; font-size: 12px;">
+				<input type="radio" name="column-detection" value="manual" id="radio-manual" style="margin-right: 5px;">
+				Manual - don't detect columns
+			</label>
+		</div><hr>
+		
+		<label class="labelWhite12">Duplicate Handling:</label><br>
+		<div style="text-align: left; margin: 10px 0;">
+			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
+				<input type="radio" name="duplicate-handling" value="update-blast-hole" id="radio-update-blast-hole" checked style="margin-right: 5px;">
+				Update existing holes (by Blast Name + Hole ID)
+			</label>
+			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
+				<input type="radio" name="duplicate-handling" value="update-location" id="radio-update-location" style="margin-right: 5px;">
+				Update existing holes (by X,Y location)
+			</label>
+			<label style="color: #fff; font-size: 12px;">
+				<input type="radio" name="duplicate-handling" value="skip" id="radio-skip" style="margin-right: 5px;">
+				Skip duplicates - do not update
+			</label>
+		</div><hr>
+		
+		<label class="labelWhite12">Select the column order below:</label><hr>
+		<div class="button-container-6col">
+			${mappingHtml}
+		</div><hr>
+		<label class="labelWhite12">Angle convention:</label>
+		<select id="swal-col-angle_convention" class="swal2-select">
+			<option value="angle" selected>Angle (0° = vertical)</option>
+			<option value="dip">Dip (90° = vertical)</option>
+		</select>
+        <br>
+		<label class="labelWhite12">Diameter is in:</label>
+		<select id="swal-col-diameter_unit" class="swal2-select">
+			<option value="mm" selected>mm</option>
+			<option value="m">m</option>
+			<option value="in">in</option>
+			<option value="ft">ft</option>
+		</select>
+        <br>
+		<label class="labelWhite12">Data Preview</label>
+		<div id="csv-preview" style="text-align: left; width: 750px; height: 200px; font-family: monospace; font-size: 12px; overflow: auto; background-color: #333; border: 1px solid #555; border-radius: 4px; color: #ddd; margin-top: 5px;">
+			<table id="preview-table" style="width: 100%; border-collapse: collapse;">
+				<thead>
+					<tr id="preview-headers" style="background-color: #444; position: sticky; top: 0;">
+					</tr>
+				</thead>
+				<tbody id="preview-body">
+				</tbody>
+			</table>
+		</div>
+		`,
+        customClass: {
+            container: "custom-popup-container",
+            title: "swal2-title",
+            confirmButton: "confirm",
+            cancelButton: "cancel",
+            htmlContainer: "swal2-html-container"
+        },
+        width: "800px",
+        showCancelButton: true,
+        confirmButtonText: "Import",
+        didOpen: () => {
+            // Get saved column order from localStorage (with error handling)
+            let savedColumnOrder = {};
+            try {
+                savedColumnOrder = JSON.parse(localStorage.getItem("csvColumnOrder") || "{}");
+            } catch (e) {
+                console.warn("Error parsing saved column order:", e);
+                savedColumnOrder = {};
+            }
+
+            // Auto-mapping keywords
+            const mappingKeywords = {
+                entityName: ["blast", "pattern", "blastname", "patternname"],
+                holeID: ["id", "holeid", "holeno", "name", "holename", "pointid", "no"],
+                startXLocation: ["x", "cx", "easting", "startx", "start easting", "start east", "start x"],
+                startYLocation: ["y", "cy", "northing", "starty", "start northing", "start north", "start y"],
+                startZLocation: ["z", "cz", "rl", "collar", "elevation", "zcoord", "startz", "start elevation", "start z"],
+                endXLocation: ["endx", "toex", "end easting", "end east", "tx", "end x"],
+                endYLocation: ["endy", "toey", "end northing", "end north", "ty", "end y"],
+                endZLocation: ["endz", "toerl", "end elevation", "tz", "end z"],
+                holeDiameter: ["diameter", "dia", "diam", "holediameter", "hole diameter"],
+                subdrillAmount: ["subdrill", "subdrill amount", "sub drill amount", "sub drill"],
+                benchHeight: ["bench", "benchheight", "bench height"],
+                holeType: ["type", "holetype", "hole type", "material type", "materialtype"],
+                holeLengthCalculated: ["length", "holelength", "hole length"],
+                holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
+                holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
+                initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"]
+            };
+
+            const headerRow = headerRowForPreview.map((h) =>
+                String(h || "")
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]/g, "")
+            );
+
+            // Function to update the data preview
+            const updatePreview = () => {
+                const headerCount = parseInt(document.getElementById("swal-header-rows").value, 10) || 0;
+                const previewHeaders = document.getElementById("preview-headers");
+                const previewBody = document.getElementById("preview-body");
+
+                if (!previewHeaders || !previewBody) return;
+
+                // Clear existing content
+                previewHeaders.innerHTML = "";
+                previewBody.innerHTML = "";
+
+                // Add headers
+                if (csvData.length > 0) {
+                    csvData[0].forEach((header, index) => {
+                        const th = document.createElement("th");
+                        th.textContent = "Col " + (index + 1) + ": " + header;
+                        th.style.cssText = "padding: 4px 8px; border: 1px solid rgb(80,80,80); background-color: rgb(50,50,50); color: #ffffff; font-size: 11px;";
+                        previewHeaders.appendChild(th);
+                    });
+                }
+
+                // Add preview rows
+                csvData.slice(headerCount, headerCount + 5).forEach((row) => {
+                    const tr = document.createElement("tr");
+                    row.forEach((cell) => {
+                        const td = document.createElement("td");
+                        td.textContent = cell || "";
+                        td.style.cssText = "padding: 2px 8px; border: 1px solid rgb(80,80,80); font-size: 11px; color: #ffffff; background-color: rgb(40,40,40);";
+                        tr.appendChild(td);
+                    });
+                    previewBody.appendChild(tr);
+                });
+            };
+
+            // Function to apply auto-detection
+            const applyAutoDetection = () => {
+                modalFields.forEach((field) => {
+                    const selectEl = document.getElementById("swal-col-" + field.name);
+                    if (!selectEl) return;
+
+                    const keywords = mappingKeywords[field.name] || [];
+                    const colIndex = headerRow.findIndex((header) => keywords.some((kw) => header.includes(kw)));
+                    if (colIndex !== -1) {
+                        selectEl.value = colIndex + 1;
+                    } else {
+                        selectEl.value = "0"; // Reset to "-- calculate --"
+                    }
+                });
+            };
+
+            // Function to apply last used settings
+            const applyLastUsed = () => {
+                if (Object.keys(savedColumnOrder).length > 0) {
+                    modalFields.forEach((field) => {
+                        const selectEl = document.getElementById("swal-col-" + field.name);
+                        if (!selectEl) return;
+
+                        if (savedColumnOrder[field.name]) {
+                            // Check if the saved column index is valid for current CSV
+                            const savedIndex = parseInt(savedColumnOrder[field.name], 10);
+                            if (savedIndex > 0 && savedIndex <= headerRowForPreview.length) {
+                                selectEl.value = savedColumnOrder[field.name];
+                            } else {
+                                selectEl.value = "0";
+                            }
+                        } else {
+                            selectEl.value = "0";
+                        }
+                    });
+
+                    // Apply saved settings
+                    const angleConventionEl = document.getElementById("swal-col-angle_convention");
+                    const diameterUnitEl = document.getElementById("swal-col-diameter_unit");
+                    const headerRowsEl = document.getElementById("swal-header-rows");
+
+                    if (savedColumnOrder.angle_convention && angleConventionEl) {
+                        angleConventionEl.value = savedColumnOrder.angle_convention;
+                    }
+                    if (savedColumnOrder.diameter_unit && diameterUnitEl) {
+                        diameterUnitEl.value = savedColumnOrder.diameter_unit;
+                    }
+                    if (savedColumnOrder.headerRows && headerRowsEl) {
+                        headerRowsEl.value = savedColumnOrder.headerRows;
+                        updatePreview(); // Update preview with new header count
+                    }
+                } else {
+                    // No saved settings, fall back to auto-detection
+                    applyAutoDetection();
+                }
+            };
+
+            // Function to reset all to manual (no detection)
+            const applyManual = () => {
+                modalFields.forEach((field) => {
+                    const selectEl = document.getElementById("swal-col-" + field.name);
+                    if (selectEl) {
+                        selectEl.value = "0"; // Reset to "-- calculate --"
+                    }
+                });
+            };
+
+            // Set up radio button event listeners
+            const radioAuto = document.getElementById("radio-auto");
+            const radioLast = document.getElementById("radio-last");
+            const radioManual = document.getElementById("radio-manual");
+
+            if (radioAuto) {
+                radioAuto.addEventListener("change", function () {
+                    if (this.checked) {
+                        applyAutoDetection();
+                    }
+                });
+            }
+
+            if (radioLast) {
+                radioLast.addEventListener("change", function () {
+                    if (this.checked) {
+                        applyLastUsed();
+                    }
+                });
+            }
+
+            if (radioManual) {
+                radioManual.addEventListener("change", function () {
+                    if (this.checked) {
+                        applyManual();
+                    }
+                });
+            }
+
+            // Check if we have saved settings to enable "last used" option
+            if (Object.keys(savedColumnOrder).length === 0) {
+                if (radioLast) {
+                    radioLast.disabled = true;
+                    const labelLast = document.querySelector('label[for="radio-last"]');
+                    if (labelLast) {
+                        labelLast.style.opacity = "0.5";
+                        labelLast.title = "No previous column mapping found";
+                    }
+                }
+            }
+
+            // Set up header rows input listener
+            const headerRowsEl = document.getElementById("swal-header-rows");
+            if (headerRowsEl) {
+                headerRowsEl.addEventListener("input", updatePreview);
+            }
+
+            // Initialize preview and apply initial detection
+            updatePreview();
+            applyAutoDetection();
+        },
+        preConfirm: () => {
+            const order = {};
+            const headerRowsEl = document.getElementById("swal-header-rows");
+            const angleConventionEl = document.getElementById("swal-col-angle_convention");
+            const diameterUnitEl = document.getElementById("swal-col-diameter_unit");
+
+            order.headerRows = headerRowsEl ? headerRowsEl.value : "1";
+            order.angle_convention = angleConventionEl ? angleConventionEl.value : "angle";
+            order.diameter_unit = diameterUnitEl ? diameterUnitEl.value : "mm";
+
+            // Get duplicate handling option
+            const duplicateHandling = document.querySelector('input[name="duplicate-handling"]:checked');
+            order.duplicate_handling = duplicateHandling ? duplicateHandling.value : "update-blast-hole";
+
+            modalFields.forEach((field) => {
+                const selectEl = document.getElementById("swal-col-" + field.name);
+                order[field.name] = selectEl ? selectEl.value : "0";
+            });
+
+            // Save the column order to localStorage for future use
+            try {
+                localStorage.setItem("csvColumnOrder", JSON.stringify(order));
+            } catch (e) {
+                console.warn("Error saving column order to localStorage:", e);
+            }
+
+            return order;
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            try {
+                const importedPoints = processCsvData(csvData, result.value, fileName);
+                if (importedPoints && importedPoints.length > 0) {
+                    // Recalculate everything after import
+                    let sumX = 0,
+                        sumY = 0;
+                    points.forEach((p) => {
+                        sumX += p.startXLocation;
+                        sumY += p.startYLocation;
+                    });
+                    centroidX = sumX / points.length;
+                    centroidY = sumY / points.length;
+
+                    // Recalculate hole times and update the chart
+                    holeTimes = calculateTimes(points);
+                    timeChart();
+
+                    drawData(points, null);
+                    Swal.fire({
+                        title: "Successful Import",
+                        text: "Imported " + importedPoints.length + " holes",
+                        icon: "success",
+                        customClass: {
+                            container: "custom-popup-container",
+                            confirmButton: "confirm",
+                            confirmButtonText: "OK"
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Failed Import",
+                        text: "No valid holes could be imported. Please check your column mapping and file format.",
+                        icon: "error",
+                        customClass: {
+                            container: "custom-popup-container",
+                            showCancelButton: true,
+                            showConfirmButton: false,
+                            cancelButton: "cancel"
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error("Import error:", error);
+                Swal.fire({
+                    title: "Import Error",
+                    text: "An error occurred during import: " + error.message,
+                    icon: "error",
+                    customClass: {
+                        container: "custom-popup-container",
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                        cancelButton: "cancel"
+                    }
+                });
+            }
+        }
+        document.getElementById("fileInputCustomCSV").value = "";
+    });
+}
+
+function processCsvData(data, columnOrder, fileName) {
+    const entityName = fileName.split(".")[0] || "Imported_Blast_" + Math.floor(Math.random() * 16777215).toString(16);
+    const headerRows = parseInt(columnOrder.headerRows, 10) || 0;
+    const angleConvention = columnOrder.angle_convention || "angle";
+    const diameterUnit = columnOrder.diameter_unit || "mm";
+    const duplicateHandling = columnOrder.duplicate_handling || "update-blast-hole";
+
+    const addedHoles = [];
+    const updatedHoles = [];
+    const duplicateWarnings = [];
+    const locationTolerance = 0.01; // 1cm tolerance for location matching
+
+    // Skip header rows and process data
+    data.slice(headerRows).forEach((row, index) => {
+        const getValue = (colName) => {
+            const colIndex = columnOrder[colName];
+            if (colIndex !== undefined && colIndex !== null && colIndex !== "" && colIndex !== "0") {
+                const val = row[parseInt(colIndex, 10) - 1]; // Convert to 0-based index
+                return val !== undefined && val !== null ? String(val).trim() : undefined;
+            }
+            return undefined;
+        };
+
+        // Check mandatory fields first
+        const holeID = getValue("holeID");
+        const startX = parseFloat(getValue("startXLocation"));
+        const startY = parseFloat(getValue("startYLocation"));
+        const startZ = parseFloat(getValue("startZLocation"));
+
+        // Validate mandatory fields (HoleID, Start X, Start Y, Start Z)
+        if (!holeID || isNaN(startX) || isNaN(startY) || isNaN(startZ)) {
+            console.warn("Skipping row " + (index + headerRows + 1) + ": Missing mandatory fields (HoleID, Start X, Start Y, Start Z)");
+            return;
+        }
+
+        // Get entity name for this hole
+        const holeEntityName = getValue("entityName") || entityName;
+
+        // Check for duplicates in existing points array
+        let existingHoleIndex = -1;
+        let duplicateType = "";
+
+        if (duplicateHandling === "update-blast-hole") {
+            // Check for duplicate by blast name + hole ID
+            existingHoleIndex = points.findIndex((p) => p.entityName === holeEntityName && p.holeID === holeID);
+            if (existingHoleIndex !== -1) {
+                duplicateType = "Blast Name + Hole ID";
+            }
+        } else if (duplicateHandling === "update-location") {
+            // Check for duplicate by location (within tolerance)
+            existingHoleIndex = points.findIndex((p) => Math.abs(p.startXLocation - startX) < locationTolerance && Math.abs(p.startYLocation - startY) < locationTolerance);
+            if (existingHoleIndex !== -1) {
+                duplicateType = "Location (X,Y)";
+            }
+        } else if (duplicateHandling === "skip") {
+            // Check for any type of duplicate to skip
+            const blastHoleDupe = points.findIndex((p) => p.entityName === holeEntityName && p.holeID === holeID);
+            const locationDupe = points.findIndex((p) => Math.abs(p.startXLocation - startX) < locationTolerance && Math.abs(p.startYLocation - startY) < locationTolerance);
+
+            if (blastHoleDupe !== -1 || locationDupe !== -1) {
+                duplicateWarnings.push({
+                    row: index + headerRows + 1,
+                    holeID: holeID,
+                    entityName: holeEntityName,
+                    type: blastHoleDupe !== -1 ? "Blast Name + Hole ID" : "Location",
+                    action: "Skipped"
+                });
+                return; // Skip this hole
+            }
+        }
+
+        // Handle fromHoleID - default to entityName:::holeID format
+        let fromHoleID = getValue("fromHoleID");
+        if (!fromHoleID) {
+            fromHoleID = holeEntityName + ":::" + holeID;
+        } else if (!fromHoleID.includes(":::")) {
+            // If fromHoleID provided but doesn't have entity prefix, add it
+            fromHoleID = holeEntityName + ":::" + fromHoleID;
+        }
+
+        // Handle initiation time vs timing delay
+        const initiationTimeValue = parseFloat(getValue("initiationTime"));
+        const timingDelayValue = parseFloat(getValue("timingDelayMilliseconds"));
+        let finalTimingDelay = 0;
+        let finalFromHoleID = fromHoleID;
+
+        if (!isNaN(initiationTimeValue)) {
+            // If initiation time is provided
+            if (isNaN(timingDelayValue) && !getValue("fromHoleID")) {
+                // No connection details provided, set hole to connect to itself
+                finalFromHoleID = holeEntityName + ":::" + holeID;
+                finalTimingDelay = initiationTimeValue;
+            } else {
+                // Use timing delay if provided, otherwise use initiation time
+                finalTimingDelay = !isNaN(timingDelayValue) ? timingDelayValue : initiationTimeValue;
+            }
+        } else if (!isNaN(timingDelayValue)) {
+            finalTimingDelay = timingDelayValue;
+        }
+
+        // Create or update point object
+        let point;
+        let isUpdate = false;
+
+        if (existingHoleIndex !== -1 && duplicateHandling !== "skip") {
+            // Update existing hole
+            point = points[existingHoleIndex];
+            isUpdate = true;
+            duplicateWarnings.push({
+                row: index + headerRows + 1,
+                holeID: holeID,
+                entityName: holeEntityName,
+                type: duplicateType,
+                action: "Updated"
+            });
+        } else {
+            // Create new hole
+            point = {
+                entityName: holeEntityName,
+                entityType: "hole",
+                holeID: holeID,
+                startXLocation: startX,
+                startYLocation: startY,
+                startZLocation: startZ,
+                endXLocation: startX, // Default to start location for dummy holes
+                endYLocation: startY,
+                endZLocation: startZ,
+                gradeXLocation: startX,
+                gradeYLocation: startY,
+                gradeZLocation: startZ,
+                subdrillAmount: 0,
+                subdrillLength: 0,
+                benchHeight: 10, // Default bench height
+                holeDiameter: 0, // Default to 0 (will determine hole type)
+                holeType: getValue("holeType") || "Production",
+                fromHoleID: finalFromHoleID,
+                timingDelayMilliseconds: finalTimingDelay,
+                colourHexDecimal: getValue("colourHexDecimal") || "red",
+                holeLengthCalculated: 0,
+                holeAngle: 0, // Default to vertical
+                holeBearing: 0, // Default to North
+                initiationTime: !isNaN(initiationTimeValue) ? initiationTimeValue : 0,
+                measuredLength: parseFloat(getValue("measuredLength")) || 0,
+                measuredLengthTimeStamp: "09/05/1975 00:00:00",
+                measuredMass: parseFloat(getValue("measuredMass")) || 0,
+                measuredMassTimeStamp: "09/05/1975 00:00:00",
+                measuredComment: getValue("measuredComment") || "None",
+                measuredCommentTimeStamp: "09/05/1975 00:00:00"
+            };
+        }
+
+        // Update point properties (for both new and existing holes)
+        if (!isUpdate) {
+            point.startXLocation = startX;
+            point.startYLocation = startY;
+            point.startZLocation = startZ;
+        }
+
+        // Handle diameter with unit conversion
+        const diameterValue = parseFloat(getValue("holeDiameter"));
+        if (!isNaN(diameterValue) && diameterValue > 0) {
+            switch (diameterUnit) {
+                case "m":
+                    point.holeDiameter = diameterValue * 1000; // Convert to mm
+                    break;
+                case "in":
+                    point.holeDiameter = diameterValue * 25.4; // Convert to mm
+                    break;
+                case "ft":
+                    point.holeDiameter = diameterValue * 304.8; // Convert to mm
+                    break;
+                default: // mm
+                    point.holeDiameter = diameterValue;
+            }
+        }
+
+        // Handle subdrill amount
+        const subdrillValue = parseFloat(getValue("subdrillAmount"));
+        if (!isNaN(subdrillValue)) {
+            point.subdrillAmount = subdrillValue;
+        }
+
+        // Handle bench height
+        const benchHeightValue = parseFloat(getValue("benchHeight"));
+        if (!isNaN(benchHeightValue)) {
+            point.benchHeight = benchHeightValue;
+        }
+
+        // Determine hole geometry based on available data
+        const providedEndX = getValue("endXLocation");
+        const providedEndY = getValue("endYLocation");
+        const providedEndZ = getValue("endZLocation");
+        const providedLength = getValue("holeLengthCalculated");
+        const providedAngle = getValue("holeAngle");
+        const providedBearing = getValue("holeBearing");
+
+        // Check what data we have to determine hole type and calculations
+        const hasEndCoords = providedEndX !== undefined && providedEndY !== undefined && providedEndZ !== undefined;
+        const hasLengthAngleBearing = providedLength !== undefined && providedAngle !== undefined && providedBearing !== undefined;
+        const hasLength = providedLength !== undefined;
+        const hasDiameter = point.holeDiameter > 0;
+
+        if (hasEndCoords) {
+            // CASE: End coordinates provided - calculate everything from coordinates
+            point.endXLocation = parseFloat(providedEndX);
+            point.endYLocation = parseFloat(providedEndY);
+            point.endZLocation = parseFloat(providedEndZ);
+
+            const dx = point.endXLocation - point.startXLocation;
+            const dy = point.endYLocation - point.startYLocation;
+            const dz = point.endZLocation - point.startZLocation;
+            const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+            point.holeLengthCalculated = magnitude;
+
+            if (magnitude > 1e-10) {
+                // Calculate angle (0° = vertical down)
+                point.holeAngle = Math.acos(-dz / magnitude) * (180 / Math.PI);
+                // Calculate bearing (0° = North, clockwise)
+                point.holeBearing = (450 - Math.atan2(dy, dx) * (180 / Math.PI)) % 360;
+            }
+
+            // Calculate bench height (vertical distance minus subdrill)
+            point.benchHeight = Math.abs(dz) - point.subdrillAmount;
+        } else if (hasLengthAngleBearing) {
+            // CASE: Length, Angle, and Bearing provided
+            const length = parseFloat(providedLength);
+            let angle = parseFloat(providedAngle);
+            const bearing = parseFloat(providedBearing);
+
+            // Handle angle convention conversion
+            if (angleConvention === "dip") {
+                // Convert dip (90° = vertical) to angle (0° = vertical)
+                angle = 90 - angle;
+            }
+
+            point.holeLengthCalculated = length;
+            point.holeAngle = angle;
+            point.holeBearing = bearing;
+
+            // Calculate bench height if not provided
+            if (isNaN(benchHeightValue)) {
+                const radAngle = angle * (Math.PI / 180);
+                const cosAngle = Math.cos(radAngle);
+                point.benchHeight = length * Math.abs(cosAngle) - point.subdrillAmount;
+            }
+        } else if (hasLength) {
+            // CASE: Only length provided (angle defaults to vertical, bearing to North)
+            const length = parseFloat(providedLength);
+            let angle = parseFloat(providedAngle) || 0; // Default to vertical
+            const bearing = parseFloat(providedBearing) || 0; // Default to North
+
+            // Handle angle convention conversion
+            if (angleConvention === "dip" && !isNaN(parseFloat(providedAngle))) {
+                angle = 90 - angle;
+            }
+
+            point.holeLengthCalculated = length;
+            point.holeAngle = angle;
+            point.holeBearing = bearing;
+
+            // Calculate bench height if not provided
+            if (isNaN(benchHeightValue)) {
+                const radAngle = angle * (Math.PI / 180);
+                const cosAngle = Math.cos(radAngle);
+                point.benchHeight = length * Math.abs(cosAngle) - point.subdrillAmount;
+            }
+        } else {
+            // CASE: Only mandatory fields (4 columns) - DUMMY HOLE
+            // Keep defaults: length = 0, angle = 0, bearing = 0
+            // End coordinates same as start coordinates
+            point.holeLengthCalculated = 0;
+            point.holeAngle = 0;
+            point.holeBearing = 0;
+            point.benchHeight = 0;
+        }
+
+        // Calculate subdrillLength based on angle
+        // subdrillLength = subdrillAmount for vertical holes
+        // subdrillLength = subdrillAmount / cos(angle) for angled holes
+        if (point.subdrillAmount > 0) {
+            const radAngle = point.holeAngle * (Math.PI / 180);
+            const cosAngle = Math.cos(radAngle);
+            if (Math.abs(cosAngle) > 1e-9) {
+                point.subdrillLength = point.subdrillAmount / cosAngle;
+            } else {
+                // Horizontal hole case
+                point.subdrillLength = point.subdrillAmount;
+            }
+        }
+
+        // Determine hole drawing style based on available data:
+        // - If only 4 columns (ID, X, Y, Z): Dummy hole
+        // - If no diameter: No Diameter Hole
+        // - If has diameter: Regular Hole
+        let holeDrawStyle = "Dummy"; // Default for 4-column files
+
+        if (point.holeLengthCalculated > 0) {
+            if (hasDiameter) {
+                holeDrawStyle = "Hole"; // Regular hole with diameter
+            } else {
+                holeDrawStyle = "NoDiameterHole"; // Hole without diameter
+            }
+        }
+
+        // Store the draw style for reference (not part of standard structure but useful)
+        point.drawStyle = holeDrawStyle;
+
+        if (isUpdate) {
+            updatedHoles.push(point);
+        } else {
+            addedHoles.push(point);
+            points.push(point);
+        }
+    });
+
+    // Calculate geometry for holes that have length/angle/bearing data
+    const allHolesToProcess = duplicateHandling !== "skip" ? points : addedHoles;
+    allHolesToProcess.forEach((point) => {
+        if (point.holeLengthCalculated > 0 && !isNaN(point.holeAngle) && !isNaN(point.holeBearing)) {
+            // Use calculateHoleGeometry to ensure consistent calculations
+            calculateHoleGeometry(point, point.holeLengthCalculated, 1); // Mode 1 = Length
+        }
+    });
+
+    // Show duplicate warnings if any
+    if (duplicateWarnings.length > 0) {
+        const warningMessage = duplicateWarnings.map((w) => "Row " + w.row + ": " + w.entityName + ":::" + w.holeID + " (" + w.type + ") - " + w.action).join("\n");
+
+        console.warn("Duplicate holes found:\n" + warningMessage);
+
+        // Show warning to user
+        Swal.fire({
+            title: "Duplicate Holes Detected",
+            text: "Found " + duplicateWarnings.length + " duplicate holes. Check console for details.",
+            icon: "warning",
+            customClass: {
+                container: "custom-popup-container"
+            }
+        });
+    }
+
+    // Calculate total processed holes (new + updated)
+    const totalProcessedHoles = addedHoles.length + updatedHoles.length;
+
+    console.log("Imported " + totalProcessedHoles + " holes:");
+    console.log("- Dummy holes: " + addedHoles.filter((h) => h.drawStyle === "Dummy").length);
+    console.log("- No Diameter holes: " + addedHoles.filter((h) => h.drawStyle === "NoDiameterHole").length);
+    console.log("- Regular holes: " + addedHoles.filter((h) => h.drawStyle === "Hole").length);
+    console.log("- Updated existing holes: " + updatedHoles.length);
+    console.log("- Skipped duplicates: " + duplicateWarnings.filter((w) => w.action === "Skipped").length);
+
+    // Return all processed holes (new + updated) so the success message shows correct count
+    return [...addedHoles, ...updatedHoles];
+}
+//---------------- END CUSTOM STRUCTURED CSV IMPORTER ----------------//
+
+//---------------- START RULER TOOL ----------------//
+// Add these global variables for ruler functionality (around line 80)
+
+// Helper function to format numbers to 2 decimal places
+function formatTo2Decimals(num) {
+    return parseFloat(num).toFixed(2);
+}
+
+// Helper function to format numbers to 1 decimal place
+function formatTo1Decimal(num) {
+    return parseFloat(num).toFixed(1);
+}
+
+// Convert the Java paintRuler function
+function drawRuler(startX, startY, endX, endY) {
+    const xl = startX - endX;
+    const yl = startY - endY;
+    const d = Math.sqrt(Math.pow(xl, 2) + Math.pow(yl, 2));
+
+    // Calculate the angle of the line (bearing from start to end)
+    const lineAngle = (Math.atan2(endY - startY, endX - startX) * 180) / Math.PI;
+
+    // Convert world coordinates to canvas coordinates
+    const canvasStartX = (startX - centroidX) * currentScale + canvas.width / 2;
+    const canvasStartY = -(startY - centroidY) * currentScale + canvas.height / 2;
+    const canvasEndX = (endX - centroidX) * currentScale + canvas.width / 2;
+    const canvasEndY = -(endY - centroidY) * currentScale + canvas.height / 2;
+
+    // Draw main ruler line
+    ctx.beginPath();
+    ctx.moveTo(canvasStartX, canvasStartY);
+    ctx.lineTo(canvasEndX, canvasEndY);
+    ctx.strokeStyle = "#008B8B";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Draw distance text
+    ctx.fillStyle = "#008B8B";
+    ctx.font = "12px Arial";
+    ctx.fillText("   " + formatTo2Decimals(d) + "m", canvasEndX, canvasEndY - 5);
+
+    // Draw meter increments (perpendicular tick marks)
+    for (let i = 0; i <= d; i++) {
+        // Calculate position along the line
+        const ratio = i / d;
+        const tickX = startX + ratio * (endX - startX);
+        const tickY = startY + ratio * (endY - startY);
+
+        // Calculate perpendicular offset (0.2m each side)
+        const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
+        const tick1X = tickX + 0.2 * Math.cos(perpAngle);
+        const tick1Y = tickY + 0.2 * Math.sin(perpAngle);
+        const tick2X = tickX - 0.2 * Math.cos(perpAngle);
+        const tick2Y = tickY - 0.2 * Math.sin(perpAngle);
+
+        // Convert to canvas coordinates
+        const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
+        const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
+        const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
+        const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(canvasTick1X, canvasTick1Y);
+        ctx.lineTo(canvasTick2X, canvasTick2Y);
+        ctx.strokeStyle = "#008B8B";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    // Draw half-meter increments (shorter tick marks)
+    for (let i = 0.5; i < d; i += 1) {
+        // Calculate position along the line
+        const ratio = i / d;
+        const tickX = startX + ratio * (endX - startX);
+        const tickY = startY + ratio * (endY - startY);
+
+        // Calculate perpendicular offset (0.1m each side)
+        const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
+        const tick1X = tickX + 0.1 * Math.cos(perpAngle);
+        const tick1Y = tickY + 0.1 * Math.sin(perpAngle);
+        const tick2X = tickX - 0.1 * Math.cos(perpAngle);
+        const tick2Y = tickY - 0.1 * Math.sin(perpAngle);
+
+        // Convert to canvas coordinates
+        const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
+        const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
+        const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
+        const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+
+        ctx.beginPath();
+        ctx.moveTo(canvasTick1X, canvasTick1Y);
+        ctx.lineTo(canvasTick2X, canvasTick2Y);
+        ctx.strokeStyle = "#008B8B";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+}
+// Convert the Java paintAngleMeasure function
+function drawProtractor(p1X, p1Y, p2X, p2Y, p3X, p3Y) {
+    // Don't draw anything if p2 and p3 are the same as p1 (first click only)
+    if (p2X === p1X && p2Y === p1Y && p3X === p1X && p3Y === p1Y) {
+        return;
+    }
+
+    // Calculate distances
+    const d1 = Math.sqrt(Math.pow(p2X - p1X, 2) + Math.pow(p2Y - p1Y, 2));
+    const d2 = Math.sqrt(Math.pow(p3X - p1X, 2) + Math.pow(p3Y - p1Y, 2));
+
+    // Calculate bearings (North = 0°, East = 90°)
+    const bearing1 = (90 - (Math.atan2(p2Y - p1Y, p2X - p1X) * 180) / Math.PI + 360) % 360;
+    const bearing2 = (90 - (Math.atan2(p3Y - p1Y, p3X - p1X) * 180) / Math.PI + 360) % 360;
+
+    // Calculate angle between the two lines
+    let angle = Math.abs(bearing1 - bearing2);
+    if (angle > 180) angle = 360 - angle;
+
+    // Convert to canvas coordinates
+    const canvasP1X = (p1X - centroidX) * currentScale + canvas.width / 2;
+    const canvasP1Y = -(p1Y - centroidY) * currentScale + canvas.height / 2;
+    const canvasP2X = (p2X - centroidX) * currentScale + canvas.width / 2;
+    const canvasP2Y = -(p2Y - centroidY) * currentScale + canvas.height / 2;
+    const canvasP3X = (p3X - centroidX) * currentScale + canvas.width / 2;
+    const canvasP3Y = -(p3Y - centroidY) * currentScale + canvas.height / 2;
+
+    // Draw lines
+    ctx.strokeStyle = "#008B8B";
+    ctx.lineWidth = 1;
+
+    // First line (center to p2)
+    if (d1 > 0) {
+        ctx.beginPath();
+        ctx.moveTo(canvasP1X, canvasP1Y);
+        ctx.lineTo(canvasP2X, canvasP2Y);
+        ctx.stroke();
+
+        // Text for first line
+        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.font = "12px Arial";
+        const text1 = formatTo2Decimals(d1) + "m " + formatTo1Decimal(bearing1) + "°";
+        const textWidth1 = ctx.measureText(text1).width;
+        ctx.fillRect(canvasP2X + 5, canvasP2Y - 20, textWidth1 + 4, 16);
+        ctx.strokeStyle = "#008B8B";
+        ctx.strokeRect(canvasP2X + 5, canvasP2Y - 20, textWidth1 + 4, 16);
+        ctx.fillStyle = "#008B8B";
+        ctx.fillText(text1, canvasP2X + 7, canvasP2Y - 8);
+    }
+
+    // Second line (center to p3) - only if p3 is different from p1
+    if (d2 > 0 && !(p3X === p1X && p3Y === p1Y)) {
+        ctx.strokeStyle = "#008B8B";
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(canvasP1X, canvasP1Y);
+        ctx.lineTo(canvasP3X, canvasP3Y);
+        ctx.stroke();
+
+        // Text for second line
+        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.font = "12px Arial";
+        const text2 = formatTo2Decimals(d2) + "m " + formatTo1Decimal(bearing2) + "°";
+        const textWidth2 = ctx.measureText(text2).width;
+        ctx.fillRect(canvasP3X + 5, canvasP3Y - 20, textWidth2 + 4, 16);
+        ctx.strokeStyle = "#008B8B";
+        ctx.strokeRect(canvasP3X + 5, canvasP3Y - 20, textWidth2 + 4, 16);
+        ctx.fillStyle = "#008B8B";
+        ctx.fillText(text2, canvasP3X + 7, canvasP3Y - 8);
+
+        // Angle text at center point (only when we have both lines)
+        const text3 = formatTo1Decimal(angle) + "° / " + formatTo1Decimal(360 - angle) + "°";
+        const textWidth3 = ctx.measureText(text3).width;
+        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.fillRect(canvasP1X + 5, canvasP1Y - 40, textWidth3 + 4, 16);
+        ctx.strokeStyle = "#008B8B";
+        ctx.strokeRect(canvasP1X + 5, canvasP1Y - 40, textWidth3 + 4, 16);
+        ctx.fillStyle = "#008B8B";
+        ctx.fillText(text3, canvasP1X + 7, canvasP1Y - 28);
+
+        // Draw arc between the lines
+        const arcRadius = (Math.min(d1, d2) / 3) * currentScale;
+        if (arcRadius > 5) {
+            // Calculate the actual angles of the lines in canvas coordinates
+            const angle1 = Math.atan2(canvasP2Y - canvasP1Y, canvasP2X - canvasP1X);
+            const angle2 = Math.atan2(canvasP3Y - canvasP1Y, canvasP3X - canvasP1X);
+
+            // Calculate the difference between angles
+            let angleDiff = angle2 - angle1;
+
+            // Normalize to [-π, π]
+            while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
+            while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
+
+            // Always draw the smaller arc (interior angle)
+            let startAngle, endAngle, counterClockwise;
+
+            if (Math.abs(angleDiff) <= Math.PI) {
+                // The direct path is the smaller arc
+                startAngle = angle1;
+                endAngle = angle2;
+                counterClockwise = angleDiff > 0;
+            } else {
+                // The direct path is the larger arc, so we need to go the other way
+                startAngle = angle2;
+                endAngle = angle1;
+                counterClockwise = angleDiff < 0;
+            }
+
+            ctx.beginPath();
+            ctx.arc(canvasP1X, canvasP1Y, arcRadius, startAngle, endAngle, counterClockwise);
+            ctx.strokeStyle = "#FF0000"; // Red for arc
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+    }
+}
+// Add event listeners for the ruler tools
+rulerTool.addEventListener("change", function () {
+    resetFloatingToolbarButtons("rulerTool");
+    if (this.checked) {
+        // Disable other tools
+        switches.forEach((switchElement) => {
+            if (switchElement && switchElement !== this) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        isRulerActive = true;
+        rulerStartPoint = null;
+        rulerEndPoint = null;
+        canvas.addEventListener("click", handleRulerClick);
+    } else {
+        isRulerActive = false;
+        rulerStartPoint = null;
+        rulerEndPoint = null;
+        canvas.removeEventListener("click", handleRulerClick);
+        drawData(points, selectedHole);
+    }
+});
+
+rulerProtractorTool.addEventListener("change", function () {
+    resetFloatingToolbarButtons("rulerProtractorTool");
+    if (this.checked) {
+        // Disable other tools
+        switches.forEach((switchElement) => {
+            if (switchElement && switchElement !== this) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        isRulerProtractorActive = true;
+        rulerProtractorPoints = [];
+        canvas.addEventListener("click", handleRulerProtractorClick);
+    } else {
+        isRulerProtractorActive = false;
+        rulerProtractorPoints = [];
+        canvas.removeEventListener("click", handleRulerProtractorClick);
+        drawData(points, selectedHole);
+    }
+});
+
+// Handle ruler clicks
+function handleRulerClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    const worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+
+    if (!rulerStartPoint) {
+        // First click - set start point, ruler will now follow mouse
+        rulerStartPoint = { x: worldX, y: worldY };
+        rulerEndPoint = null;
+    } else if (!rulerEndPoint) {
+        // Second click - lock in the end point, measurement is complete
+        rulerEndPoint = { x: worldX, y: worldY };
+    } else {
+        // Third click - start new measurement
+        rulerStartPoint = { x: worldX, y: worldY };
+        rulerEndPoint = null;
+    }
+    drawData(points, selectedHole);
+}
+// Handle ruler bearing clicks (3 points)
+function handleRulerProtractorClick(event) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = event.clientX - rect.left;
+    const clickY = event.clientY - rect.top;
+    const worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
+    const worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
+
+    rulerProtractorPoints.push({ x: worldX, y: worldY });
+
+    if (rulerProtractorPoints.length > 3) {
+        // Start new measurement after 3 points
+        rulerProtractorPoints = [{ x: worldX, y: worldY }];
+    }
+
+    drawData(points, selectedHole);
+}
+
+//----------------- END RULER TOOLS --------------------//
 
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -11784,15 +13649,14 @@ function updatePopup() {
 		<path d="M65.76,119.94c0,0-0.8-2.02-2.61-2.63c-1.81-0.61-4.99-0.91-6.88-0.92s-3.11,0.63-4.16,0c-1.05-0.63-1.66-1.39-1.66-1.39" />
 		</svg>
 			<br>
-				<label class="labelWhite18">Update - NEW FEATURES:</label>
-				<br><label class="labelWhite18">UI rebuild, Icons, Floating Toolbar shuffled </label>
-				<br><label class="labelWhite18">Subdrill Function and display, Voronoi PF on Bench Height</label>
-				<br><label class="labelWhite18">Selection by Pointer and Polygon</label>
-				<br><label class="labelWhite18">tie in and move tools on toolbar</label>
-                <br><label class="labelWhite18">Escape keylistener added to null all selection variables</label>
-                <br><label class="labelWhite18">IREDES output hopefully fixed</label>
-				<br><label class="labelWhite18"></label>
-				<br><label class="labelWhite12c">NEW BUGS - Performance lag, Voronoi Display with large blasts.</label>
+				    <label class="labelWhite18">Update - NEW FEATURES:                   </label>
+				<br><label class="labelWhite18">Custom CSV Importer                      </label>
+				<br><label class="labelWhite18">Move Hole Interactively                  </label>
+				<br><label class="labelWhite18">Alter Bearing Interactively              </label>
+				<br><label class="labelWhite18">Ruler Tool Added (Bearing and Protractor)</label>
+                <br><label class="labelWhite18">Font Size Slider Limited to 100px        </label>
+				<br><label class="labelWhite18">New & Existing Issues                     </label>
+				<br><label class="labelWhite12c">Voronoi Display Lag with large blasts</label>
 				<br><label class="labelWhite12c">Is it worth a donation? Or a reshare?</label>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">

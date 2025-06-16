@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250611.2220AWST"
+    Last Modified: "20250616.2230AWST"
 */
 
 :root {
@@ -35,9 +35,12 @@
     /* Default Font */
     --default-font-size: 14px;
     /* Default Font Size */
-    --menubar-size: 50px; /* height of the menubar */
-    --canvas-border: 1px; /* border width of the canvas */
-    --canvas-container-margin: 0px; /* margin of the canvas container */
+    --menubar-size: 50px;
+    /* height of the menubar */
+    --canvas-border: 1px;
+    /* border width of the canvas */
+    --canvas-container-margin: 0px;
+    /* margin of the canvas container */
 }
 
 body {
@@ -94,19 +97,29 @@ canvas {
 }
 
 canvas#canvas {
-    position: absolute; /* Changed from 'block' for positioning within .canvas-container */
-    top: 0; /* Position at the top of .canvas-container */
-    left: 0; /* Position at the left of .canvas-container */
-    width: 100%; /* Fill 100% width of .canvas-container */
-    height: 100%; /* keep for desktop */
-    max-height: calc(var(--vh, 1vh) * 100); /* mobile-safe */
+    position: absolute;
+    /* Changed from 'block' for positioning within .canvas-container */
+    top: 0;
+    /* Position at the top of .canvas-container */
+    left: 0;
+    /* Position at the left of .canvas-container */
+    width: 100%;
+    /* Fill 100% width of .canvas-container */
+    height: 100%;
+    /* keep for desktop */
+    max-height: calc(var(--vh, 1vh) * 100);
+    /* mobile-safe */
     display: block;
     margin: 0;
     padding: 0;
-    background-color: var(--light-mode-canvas); /* Changed from 'background' shorthand */
-    border: var(--canvas-border) solid var(--light-mode-border); /* Default border for light mode */
-    transition: background-color 2s, border 2s; /* Adjusted transition */
-    z-index: 1; /* z-index relative to .canvas-container */
+    background-color: var(--light-mode-canvas);
+    /* Changed from 'background' shorthand */
+    border: var(--canvas-border) solid var(--light-mode-border);
+    /* Default border for light mode */
+    transition: background-color 2s, border 2s;
+    /* Adjusted transition */
+    z-index: 1;
+    /* z-index relative to .canvas-container */
     pointer-events: auto;
     /* Removed properties: top: var(--menubar-size); width: 100vw !important; height: 100% !important; min-height; min-width; max-width; max-height; border: 10px solid red; border: none; */
 }
@@ -214,7 +227,8 @@ body.dark-mode #dark-mode-toggle::after {
     position: absolute;
     top: 100px;
     left: 15px;
-    padding: 3px 3px 3px 3px; /* Consider adjusting padding if buttons seem too close to edge */
+    padding: 3px 3px 3px 3px;
+    /* Consider adjusting padding if buttons seem too close to edge */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -223,13 +237,15 @@ body.dark-mode #dark-mode-toggle::after {
     border-radius: 6px;
     box-shadow: 0 4px 4px rgba(50, 50, 50, 0.5);
     z-index: 1000;
-    cursor: move; /* For dragging the toolbar itself, if implemented */
+    cursor: move;
+    /* For dragging the toolbar itself, if implemented */
     transition: left 0.5s ease;
 }
 
 /* Styles for the labels which act as buttons */
 #floating-toolbar label.icon-button {
-    display: flex; /* Change from inline-flex to flex */
+    display: flex;
+    /* Change from inline-flex to flex */
     align-items: center;
     justify-content: center;
     width: 26px;
@@ -239,8 +255,10 @@ body.dark-mode #dark-mode-toggle::after {
     border-radius: 4px;
     margin-top: 2px;
     margin-bottom: 2px;
-    font-size: 0; /* Add this to eliminate any text spacing */
-    line-height: 0; /* Add this to eliminate line-height spacing */
+    font-size: 0;
+    /* Add this to eliminate any text spacing */
+    line-height: 0;
+    /* Add this to eliminate line-height spacing */
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
 }
@@ -249,19 +267,23 @@ body.dark-mode #dark-mode-toggle::after {
     width: 26px;
     height: 26px;
     object-fit: contain;
-    display: block; /* Add this */
+    display: block;
+    /* Add this */
 }
 
 /* Hover state for the icon buttons within the toolbar */
 #floating-toolbar label.icon-button:hover {
-    background-color: var(--mouseover-color); /* Your desired hover color */
+    background-color: var(--mouseover-color);
+    /* Your desired hover color */
     border-color: var(--mouseover-color);
 }
 
 /* Checked/Selected state for the icon buttons within the toolbar */
 #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
-    background-color: red; /* Your desired selected color */
-    border-color: darkred; /* Or a darker shade of red */
+    background-color: red;
+    /* Your desired selected color */
+    border-color: darkred;
+    /* Or a darker shade of red */
 }
 
 /* Dark mode adjustments for toolbar buttons */
@@ -271,21 +293,25 @@ body.dark-mode #floating-toolbar {
 }
 
 body.dark-mode #floating-toolbar label.icon-button {
-    background-color: var(--primary-color); /* Default dark mode background */
+    background-color: var(--primary-color);
+    /* Default dark mode background */
     border: 1px solid var(--dark-mode-border);
     /* If icons need inversion for dark mode, you might need: */
     /* filter: invert(1) opacity(0.95); */
 }
 
 body.dark-mode #floating-toolbar label.icon-button:hover {
-    background-color: var(--mouseover-color); /* Or a dark mode specific hover */
+    background-color: var(--mouseover-color);
+    /* Or a dark mode specific hover */
     /* Consider if text/icon color needs to change on hover in dark mode */
 }
 
 body.dark-mode #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
-    background-color: red; /* Selected color can be the same */
+    background-color: red;
+    /* Selected color can be the same */
     border-color: darkred;
-    /* filter: none; */ /* Reset filter if icons were inverted for default dark mode state */
+    /* filter: none; */
+    /* Reset filter if icons were inverted for default dark mode state */
 }
 
 /* Remove or comment out these as they are not directly used by the current HTML structure for labels */
@@ -1451,6 +1477,65 @@ input[type="color"] {
     color: #fff;
 }
 
+/* Scope to SweetAlert only to avoid affecting main UI */
+.swal2-popup .button-container-2col {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    column-gap: 10px;
+    row-gap: 6px;
+    align-items: center;
+    width: 100%;
+    margin-top: 6px;
+}
+
+/* 4-column layout: label + dropdown x2 per row */
+.swal2-popup .button-container-4col {
+    display: grid;
+    grid-template-columns: 100px 1fr 100px 1fr;
+    column-gap: 2px;
+    row-gap: 2px;
+    align-items: right;
+    width: 100%;
+    margin-top: 2px;
+}
+
+/* 4-column layout: label + dropdown x2 per row */
+.swal2-popup .button-container-6col {
+    display: grid;
+    grid-template-columns: 100px 1fr 100px 1fr 100px 1fr;
+    column-gap: 2px;
+    row-gap: 2px;
+    align-items: right;
+    width: 100%;
+    margin-top: 2px;
+}
+
+/* Label adjustments */
+.swal2-popup .labelWhite12,
+.swal2-popup .labelWhite15 {
+    font-size: 12px;
+    font-family: sans-serif;
+    color: white;
+    line-height: 1.3;
+    margin: 2px 0;
+    white-space: nowrap;
+}
+
+/* Standardize dropdowns & inputs */
+.swal2-popup .swal2-select,
+.swal2-popup .swal2-input {
+    font-size: 12px;
+    height: 28px;
+    padding: 3px 6px;
+    width: 150px;
+    border-radius: 4px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #999;
+    appearance: none;
+    box-sizing: border-box;
+}
+
 .confirm[type="button"] {
     width: 80px;
     height: 40px;
@@ -1795,11 +1880,13 @@ label {
     }
 
     :root {
-        --vh: 1vh; /* fallback */
+        --vh: 1vh;
+        /* fallback */
     }
 
     .menubar {
-        height: 60px; /* force height */
+        height: 60px;
+        /* force height */
         font-size: 10px;
         flex-wrap: wrap;
         align-items: center;
@@ -1809,10 +1896,12 @@ label {
 
     .main-content {
         position: absolute;
-        top: 60px; /* match menubar */
+        top: 60px;
+        /* match menubar */
         left: 0;
         right: 0;
-        height: calc((var(--vh, 1vh) * 100) - 60px); /* dynamic height minus menu */
+        height: calc((var(--vh, 1vh) * 100) - 60px);
+        /* dynamic height minus menu */
         overflow: hidden;
     }
 
@@ -1851,12 +1940,14 @@ label {
         overflow-y: auto;
         padding: 4px;
     }
+
     .menu-title,
     .labelbig {
         font-size: 20px;
         padding: 2px 4px;
     }
 }
+
 @media (min-width: 1024px) {
     #floating-toolbar.sidebar-open {
         left: 315px;

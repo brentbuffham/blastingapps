@@ -3,7 +3,7 @@
 <!--
     Description: This file contains the main UI for the Kirra App
 	Author: Brent Buffham
-	Last Modified: "20250611.2220AWST"
+	Last Modified: "20250616.2230AWST"
 -->
 
 <head>
@@ -48,6 +48,8 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
 	<!-- Include Plotly.js -->
 	<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
 	<!-- CryptoJS Core -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/crypto-js.js"></script>
@@ -1199,6 +1201,9 @@
 				<div class="label12" id="fileInputLabel">File Holes and KAD Input</div>
 				<input type="file" id="fileInput" accept=".csv,.kad,.txt" placeholder="CSV TXT KAD">
 				<br>
+				<div class="label12" id="fileCustomCSVLabel">Custom CSV Import</div>
+				<input type="file" id="fileInputCustomCSV" accept=".csv,.txt" placeholder="Custom CSV">
+				<br>
 				<div class="label12" id="fileInputDXFLabel">File DXF Input</div>
 				<input type="file" id="fileInputDXF" accept=".dxf" placeholder="DXF">
 				<br>
@@ -1812,6 +1817,10 @@
 		<label for="moveToTool" class="toggle-buttons-custom icon-button" title="Move To">
 			<img src="icons/arrows-move.png" alt="Move">
 		</label>
+		<input type="checkbox" id="bearingTool" name="bearingTool" value="bearingTool">
+		<label for="bearingTool" class="toggle-buttons-custom icon-button" title="Hole Bearing">
+			<img src="icons/rotate-dot.png" alt="Hole Bearing">
+		</label>
 		<input type="checkbox" id="tieConnectTool" name="tieConnectTool" value="tieConnectTool">
 		<label for="tieConnectTool" class="toggle-buttons-custom icon-button" title="Tie Connect">
 			<img src="icons/tieconnect.png" alt="Tie Connect">
@@ -1819,6 +1828,15 @@
 		<input type="checkbox" id="tieConnectMultiTool" name="tieConnectMultiTool" value="tieConnectMultiTool">
 		<label for="tieConnectMultiTool" class="toggle-buttons-custom icon-button" title="Tie Connect Multi">
 			<img src="icons/tieconnectmulti.png" alt="Tie Connect Multi">
+		</label>
+		<hr>
+		<input type="checkbox" id="rulerTool" name="rulerTool" value="rulerTool">
+		<label for="rulerTool" class="toggle-buttons-custom icon-button" title="Ruler">
+			<img src="icons/ruler-measure.png" alt="Ruler">
+		</label>
+		<input type="checkbox" id="rulerProtractorTool" name="rulerProtractorTool" value="rulerProtractorTool">
+		<label for="rulerProtractorTool" class="toggle-buttons-custom icon-button" title="Ruler Protractor">
+			<img src="icons/ruler-bearing.png" alt="Ruler Protractor">
 		</label>
 		<input type="checkbox" id="resetViewTool" name="resetViewTool" value="resetViewTool">
 		<label for="resetViewTool" class="toggle-buttons-custom icon-button" title="Reset View">
