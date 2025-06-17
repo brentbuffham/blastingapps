@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250616.2230AWST"
+    Last Modified: "20250617.1920AWST"
 */
 
 :root {
@@ -260,7 +260,7 @@ body.dark-mode #dark-mode-toggle::after {
     line-height: 0;
     /* Add this to eliminate line-height spacing */
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    /* transition: background-color 0.2s, border-color 0.2s; */
 }
 
 #floating-toolbar label.icon-button img {
@@ -268,6 +268,9 @@ body.dark-mode #dark-mode-toggle::after {
     height: 26px;
     object-fit: contain;
     display: block;
+    border-radius: 4px;
+    border: 1px solid var(--dark-mode-border);
+
     /* Add this */
 }
 
@@ -275,14 +278,14 @@ body.dark-mode #dark-mode-toggle::after {
 #floating-toolbar label.icon-button:hover {
     background-color: var(--mouseover-color);
     /* Your desired hover color */
-    border-color: var(--mouseover-color);
+    border-color: #ffff00;
 }
 
 /* Checked/Selected state for the icon buttons within the toolbar */
 #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
     background-color: red;
     /* Your desired selected color */
-    border-color: darkred;
+    border-color: #440000;
     /* Or a darker shade of red */
 }
 
@@ -295,7 +298,7 @@ body.dark-mode #floating-toolbar {
 body.dark-mode #floating-toolbar label.icon-button {
     background-color: var(--primary-color);
     /* Default dark mode background */
-    border: 1px solid var(--dark-mode-border);
+    border: 2px solid var(--dark-mode-border);
     /* If icons need inversion for dark mode, you might need: */
     /* filter: invert(1) opacity(0.95); */
 }

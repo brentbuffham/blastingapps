@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250616.2230AWST"
-const buildVersion = "20250616.2230AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250617.1920AWST"
+const buildVersion = "20250617.1920AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -355,22 +355,22 @@ function resetFloatingToolbarButtons(excluding) {
     isRulerProtractorActive = false;
 
     // Set all tool checkboxes to false except the excluded one
-    selectPointerTool.checked = excluding === "selectPointerTool" ? true : false;
-    selectByPolygonTool.checked = excluding === "selectByPolygonTool" ? true : false;
-    moveToTool.checked = excluding === "moveToTool" ? true : false;
-    tieConnectTool.checked = excluding === "tieConnectTool" ? true : false;
-    tieConnectMultiTool.checked = excluding === "tieConnectMultiTool" ? true : false;
-    bearingTool.checked = excluding === "bearingTool" ? true : false;
-    rulerTool.checked = excluding === "rulerTool" ? true : false;
-    rulerProtractorTool.checked = excluding === "rulerProtractorTool" ? true : false;
+    selectPointerTool.checked = excluding === "selectPointerTool";
+    selectByPolygonTool.checked = excluding === "selectByPolygonTool";
+    moveToTool.checked = excluding === "moveToTool";
+    tieConnectTool.checked = excluding === "tieConnectTool";
+    tieConnectMultiTool.checked = excluding === "tieConnectMultiTool";
+    bearingTool.checked = excluding === "bearingTool";
+    rulerTool.checked = excluding === "rulerTool";
+    rulerProtractorTool.checked = excluding === "rulerProtractorTool";
 
     // Set only the excluded tool's active state to true
-    isSelectionPointerActive = excluding === "selectPointerTool" ? true : false;
-    isPolygonSelectionActive = excluding === "selectByPolygonTool" ? true : false;
-    isMoveToolActive = excluding === "moveToTool" ? true : false;
-    isBearingToolActive = excluding === "bearingTool" ? true : false;
-    isRulerActive = excluding === "rulerTool" ? true : false;
-    isRulerProtractorActive = excluding === "rulerProtractorTool" ? true : false;
+    isSelectionPointerActive = excluding === "selectPointerTool";
+    isPolygonSelectionActive = excluding === "selectByPolygonTool";
+    isMoveToolActive = excluding === "moveToTool";
+    isBearingToolActive = excluding === "bearingTool";
+    isRulerActive = excluding === "rulerTool";
+    isRulerProtractorActive = excluding === "rulerProtractorTool";
 
     // Reset floating toolbar tool-specific state variables
     rulerStartPoint = null;
@@ -383,6 +383,9 @@ function resetFloatingToolbarButtons(excluding) {
     // Reset selection-related variables for floating toolbar tools
     firstSelectedHole = null;
     secondSelectedHole = null;
+
+    // Force redraw to update button states
+    drawData(points, selectedHole);
 }
 
 // Master function to reset everything
@@ -647,34 +650,36 @@ const drawingElevation = document.getElementById("drawingElevation");
 // Tie Connect Tool event listener
 const tieConnectTool = document.getElementById("tieConnectTool");
 tieConnectTool.addEventListener("change", function () {
-    resetFloatingToolbarButtons("tieConnectTool");
-    // Activate the right side nav "tie in one by one" switch
-
-    addConnectorButton.checked = tieConnectTool.checked;
-    selectByPolygonTool.checked = false;
-    selectPointerTool.checked = false;
-    moveToTool.checked = false;
-    resetViewTool.checked = false;
-    tieConnectMultiTool.checked = false;
-    addMultiConnectorButton.checked = false;
-    // Trigger the change event to activate the functionality
-    addConnectorButton.dispatchEvent(new Event("change"));
+    if (this.checked) {
+        resetFloatingToolbarButtons("tieConnectTool");
+        // Activate the right side nav "tie in one by one" switch
+        addConnectorButton.checked = true;
+        // Trigger the change event to activate the functionality
+        addConnectorButton.dispatchEvent(new Event("change"));
+    } else {
+        // Important: Handle unchecked state
+        resetFloatingToolbarButtons("none");
+        addConnectorButton.checked = false;
+        // Make sure we redraw the data
+        drawData(points, selectedHole);
+    }
 });
 
 // Tie Connect Multi Tool event listener
-const tieConnectMultiTool = document.getElementById("tieConnectMultiTool");
 tieConnectMultiTool.addEventListener("change", function () {
-    resetFloatingToolbarButtons("tieConnectMultiTool");
-    // Activate the right side nav "tie in in a line" switch
-    addMultiConnectorButton.checked = tieConnectMultiTool.checked;
-    selectByPolygonTool.checked = false;
-    selectPointerTool.checked = false;
-    moveToTool.checked = false;
-    resetViewTool.checked = false;
-    tieConnectTool.checked = false;
-    addConnectorButton.checked = false;
-    // Trigger the change event to activate the functionality
-    addMultiConnectorButton.dispatchEvent(new Event("change"));
+    if (this.checked) {
+        resetFloatingToolbarButtons("tieConnectMultiTool");
+        // Activate the right side nav "tie in in a line" switch
+        addMultiConnectorButton.checked = true;
+        // Trigger the change event to activate the functionality
+        addMultiConnectorButton.dispatchEvent(new Event("change"));
+    } else {
+        // Important: Handle unchecked state
+        resetFloatingToolbarButtons("none");
+        addMultiConnectorButton.checked = false;
+        // Make sure we redraw the data
+        drawData(points, selectedHole);
+    }
 });
 
 //Selection Mode
@@ -4789,9 +4794,9 @@ function updateSurfaceTimes(combinedHoleID, time, surfaces, holeTimes, visited =
 
 function delaunayContours(contourData, contourLevel, maxEdgeLength) {
     // Only do the expensive calculation if contours or direction arrows are being displayed
-    if (!displayContours.checked && !displayFirstMovements.checked) {
-        return { contourLines: [], directionArrows: [] };
-    }
+    // if (!displayContours.checked && !displayFirstMovements.checked) {
+    //     return { contourLines: [], directionArrows: [] };
+    // }
 
     if (!points || !Array.isArray(points) || points.length === 0) return;
 
@@ -4965,91 +4970,6 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
     // Return both contour lines and the newly created arrows
     return { contourLines, directionArrows };
 }
-
-//Old VERSION of CONTOURS AND ARROWS.
-// function delaunayContours(contourData, contourLevel, maxEdgeLength) {
-// 	if (!points || !Array.isArray(points) || points.length === 0) return;
-// 	// Filter out points where holeTime is null
-// 	const filteredContourData = contourData.filter((point) => point.holeTime !== null);
-
-// 	// Compute Delaunay triangulation
-// 	const delaunay = d3.Delaunay.from(filteredContourData.map((point) => [point.x, point.y]));
-// 	const triangles = delaunay.triangles; // Access the triangles property directly
-
-// 	if (!triangles || triangles.length === 0) return;
-
-// 	const contourLines = [];
-// 	directionArrows = []; // Initialize an array to store the arrows
-
-// 	for (let i = 0; i < triangles.length; i += 3) {
-// 		const contourLine = [];
-
-// 		const p1 = contourData[triangles[i]];
-// 		const p2 = contourData[triangles[i + 1]];
-// 		const p3 = contourData[triangles[i + 2]];
-
-// 		// Calculate the centroid of the triangle (average of x, y coordinates)
-// 		const centroidX = (p1.x + p2.x + p3.x) / 3;
-// 		const centroidY = (p1.y + p2.y + p3.y) / 3;
-
-// 		// Calculate the vector representing the slope (using Z differences)
-// 		// We'll calculate two vectors: p1->p2 and p1->p3 to get a slope direction
-// 		const v1X = p2.x - p1.x;
-// 		const v1Y = p2.y - p1.y;
-// 		const v1Z = p2.z - p1.z; // Time difference between p1 and p2
-
-// 		const v2X = p3.x - p1.x;
-// 		const v2Y = p3.y - p1.y;
-// 		const v2Z = p3.z - p1.z; // Time difference between p1 and p3
-
-// 		// Now we calculate the cross product of these two vectors to get the slope normal
-// 		const slopeX = v1Y * v2Z - v1Z * v2Y;
-// 		const slopeY = v1Z * v2X - v1X * v2Z;
-// 		const slopeZ = v1X * v2Y - v1Y * v2X;
-
-// 		// Normalize the slope vector (we don't care about the Z component for 2D projection)
-// 		const slopeLength = Math.sqrt(slopeX * slopeX + slopeY * slopeY);
-// 		const normSlopeX = slopeX / slopeLength;
-// 		const normSlopeY = slopeY / slopeLength;
-
-// 		// Calculate the end point for the arrow based on the normalized slope
-// 		const arrowLength = 2; // Arrow length
-// 		const arrowEndX = centroidX - normSlopeX * firstMovementSize;
-// 		const arrowEndY = centroidY - normSlopeY * firstMovementSize;
-
-// 		// Get the triangle's surface area
-// 		const surfaceArea = Math.abs((p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y)) / 2);
-
-// 		if (surfaceArea > 0.2) {
-// 			// Store the arrow (start at the centroid, end at the calculated slope direction)
-// 			directionArrows.push([centroidX, centroidY, arrowEndX, arrowEndY, "goldenrod", firstMovementSize]);
-// 		}
-// 		// Process the contour lines (unchanged logic)
-// 		for (let j = 0; j < 3; j++) {
-// 			const p1 = contourData[triangles[i + j]];
-// 			const p2 = contourData[triangles[i + ((j + 1) % 3)]];
-
-// 			// Calculate distance between p1 and p2
-// 			const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-
-// 			// If the distance is larger than maxEdgeLength or contourLevel logic doesn't apply, skip
-// 			if (distance <= maxEdgeLength && ((p1.z < contourLevel && p2.z >= contourLevel) || (p1.z >= contourLevel && p2.z < contourLevel))) {
-// 				const point = interpolate(p1, p2, contourLevel);
-// 				contourLine.push(point);
-// 			}
-// 		}
-
-// 		if (contourLine.length === 2) {
-// 			contourLines.push(contourLine);
-// 		}
-// 	}
-
-// 	const interval = 1; // Keep every arrow
-// 	directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
-
-// 	// Return both contour lines and the newly created arrows
-// 	return { contourLines, directionArrows };
-// }
 
 function interpolate(p1, p2, contourLevel) {
     const t = (contourLevel - p1.z) / (p2.z - p1.z);
@@ -8567,6 +8487,7 @@ function addHolePopup() {
         diameter: savedAddHolePopupSettings.diameter || 115,
         type: savedAddHolePopupSettings.type || "Production",
         length: savedAddHolePopupSettings.length || 0,
+        subdrill: savedAddHolePopupSettings.subdrill || 0,
         angle: savedAddHolePopupSettings.angle || 0,
         bearing: savedAddHolePopupSettings.bearing || 0
     };
@@ -8592,6 +8513,8 @@ function addHolePopup() {
 			<input type="text3" id="type" name="type" placeholder="Type" value="${lastValues.type}"/>
 		  	<label class="labelWhite18" for="length">Length</label>
 		  	<input type="number3" id="length" placeholder="Length" value="${lastValues.length}" inputmode="decimal" pattern="[0-9]*"/>
+            <label class="labelWhite18" for="subdrill">Subdrill</label>
+		  	<input type="number3" id="subdrill" placeholder="Subdrill" value="${lastValues.subdrill}" inputmode="decimal" pattern="[0-9]*"/>
 		  	<label class="labelWhite18" for="angle">Angle</label>
 		  	<input type="number3" id="angle" placeholder="Angle" value="${lastValues.angle}" min="0" max="60" inputmode="decimal" pattern="[0-9]*"/>
 		  	<label class="labelWhite18" for="bearing">Bearing</label>
@@ -8679,6 +8602,19 @@ function addHolePopup() {
                 });
                 return; // Exit the function
             }
+
+            const subdrillInput = document.getElementById("subdrill");
+            const subdrillValue = parseFloat(subdrillInput.value);
+            if (isNaN(subdrillValue) || subdrillValue < 0 || subdrillValue > 100) {
+                // Show an alert to the user
+                Swal.fire({
+                    title: "Invalid subdrill",
+                    text: "Please enter an subdrill between 0 and 100 meters.",
+                    icon: "error"
+                });
+                return; // Exit the function
+            }
+
             const angleInput = document.getElementById("angle");
             const angleValue = parseFloat(angleInput.value);
 
@@ -8712,13 +8648,14 @@ function addHolePopup() {
                 diameter: diameterValue,
                 type: typeValue,
                 length: lengthValue,
+                subdrill: subdrillValue,
                 angle: angleValue,
                 bearing: bearingValue
             };
             localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
             //create a new hole
-            addHole(useCustomHoleID, blastNameValue, customHoleID, worldX, worldY, elevationValue, diameterValue, typeValue, lengthValue, angleValue, bearingValue);
+            addHole(useCustomHoleID, blastNameValue, customHoleID, worldX, worldY, elevationValue, diameterValue, typeValue, lengthValue, subdrillValue, angleValue, bearingValue);
         } else {
             worldX = null;
             worldY = null;
@@ -8770,6 +8707,7 @@ function addPatternPopup(worldX, worldY) {
         angle: savedAddPatternPopupSettings.angle || 0,
         bearing: savedAddPatternPopupSettings.bearing || 180,
         length: savedAddPatternPopupSettings.length || 6.2,
+        subdrill: savedAddPatternPopupSettings.subdrill || 0,
         spacingOffset: savedAddPatternPopupSettings.spacingOffset || 0.5,
         burden: savedAddPatternPopupSettings.burden || 3.0,
         spacing: savedAddPatternPopupSettings.spacing || 3.3,
@@ -8811,6 +8749,8 @@ function addPatternPopup(worldX, worldY) {
 		  <input type="number3" id="bearing" name="bearing" placeholder="Bearing" value="${lastValues.bearing}" value="0.0" step=0.1 min="0" max="359.999" inputmode="decimal" pattern="[0-9]*"/>
 		  <label class="labelWhite18" for="length">Length</label>
 		  <input type="number3" id="length" name="length" placeholder="Length" value="${lastValues.length}" step="0.1" min="0.0" max="200" inputmode="decimal" pattern="[0-9]*"/>
+		  <label class="labelWhite18" for="subdrill">Subdrill</label>
+		  <input type="number3" id="subdrill" name="subdrill" placeholder="Subdrill" value="${lastValues.subdrill}" step="0.1" min="0.0" max="100" inputmode="decimal" pattern="[0-9]*"/>
 		  <label class="labelWhite18" for="spacingOffset">Offset</label>
 		  <input type="number3" id="spacingOffset" name="spacingOffset" placeholder="SpacingOffset" value="${lastValues.spacingOffset}" step="0.1" min="-1.0" max="1.0" inputmode="decimal" pattern="[0-9]*"/>
 		  <div class="labelWhite12"  id="infolabel1" name="infolabel1">Offset Information: </div> 
@@ -8851,6 +8791,7 @@ function addPatternPopup(worldX, worldY) {
                 const angle = parseFloat(document.getElementById("angle").value);
                 const bearing = parseFloat(document.getElementById("bearing").value);
                 const length = parseFloat(document.getElementById("length").value);
+                const subdrill = parseFloat(document.getElementById("subdrill").value);
                 const burden = parseFloat(document.getElementById("burden").value);
                 const spacing = parseFloat(document.getElementById("spacing").value);
                 const rows = parseInt(document.getElementById("rows").value);
@@ -8976,6 +8917,16 @@ function addPatternPopup(worldX, worldY) {
                     });
                     return; // Exit the function
                 }
+                //subdrill checks
+                if (isNaN(subdrill) || subdrill < -50 || subdrill > 50) {
+                    // Show an alert to the user
+                    Swal.fire({
+                        title: "Invalid Subdrill",
+                        text: "Please enter an subdrill between -50 and 50 meters.",
+                        icon: "error"
+                    });
+                    return; // Exit the function
+                }
                 //burden checks
                 if (isNaN(burden) || burden < 0.1 || burden > 50) {
                     // Show an alert to the user
@@ -9030,6 +8981,7 @@ function addPatternPopup(worldX, worldY) {
                     angle: angle,
                     bearing: bearing,
                     length: length,
+                    subdrill: subdrill,
                     burden: burden,
                     spacing: spacing,
                     rows: rows,
@@ -9038,7 +8990,7 @@ function addPatternPopup(worldX, worldY) {
                 localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
                 // Use the obtained values to add the pattern
-                addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, burden, spacing, rows, holesPerRow);
+                addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, subdrill, burden, spacing, rows, holesPerRow);
             } else {
                 // Handle cancel action if needed
             }
@@ -9049,7 +9001,7 @@ function addPatternPopup(worldX, worldY) {
         });
 }
 
-function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, burden, spacing, rows, holesPerRow) {
+function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, y, z, diameter, type, angle, bearing, length, subdrill, burden, spacing, rows, holesPerRow) {
     let entityType = "hole";
     let startXLocation = parseFloat(x);
     let startYLocation = parseFloat(y);
@@ -9059,6 +9011,7 @@ function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, 
     let holeType = type;
     let holeAngle = parseFloat(angle);
     let holeBearing = parseFloat(bearing);
+    let subdrillAmount = parseFloat(subdrill);
     let patternburden = parseFloat(burden);
     let patternspacing = parseFloat(spacing);
     let patternrows = parseInt(rows);
@@ -9092,10 +9045,10 @@ function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, 
 
             if (patternnameTypeIsNumerical) {
                 holeID = currentLetter + currentRow; // Generate the hole ID
-                addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing), holeID);
+                addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing), holeID);
             } else {
                 holeID = currentLetter + (j + 1); // Generate the hole ID
-                addHole(true, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(holeAngle), parseFloat(holeBearing));
+                addHole(true, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing));
             }
             startXLocation = startXLocation + patternspacing;
         }
@@ -9521,7 +9474,7 @@ function editHoleTypePopup() {
 
 //Add hole to the points array popup using sweetalert and then draw the points
 //Add hole to the points array popup using sweetalert and then draw the points
-function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLocation, startZLocation, diameter, type, length, angle, bearing) {
+function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLocation, startZLocation, diameter, type, length, subdrill, angle, bearing) {
     if (typeof entityName === "string" && entityName.trim() !== "") {
         entityName = entityName.trim();
     } else {
@@ -9567,6 +9520,7 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     let holeDiameter = parseFloat(diameter);
     let holeType = type;
     let holeLengthCalculated = parseFloat(length);
+    let subdrillAmount = parseFloat(subdrill);
     let holeAngle = parseFloat(angle);
     let holeBearing = parseFloat(bearing);
     if (isNaN(holeLengthCalculated)) {
@@ -9587,8 +9541,7 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     let measuredMassTimeStamp = "09/05/1975 00:00:00";
     let measuredComment = "None";
     let measuredCommentTimeStamp = "09/05/1975 00:00:00";
-    let subdrillAmount = 0;
-    let subdrillLength = 0;
+    let subdrillLength = holeAngle > 0 ? subdrillAmount / Math.sin((90 - holeAngle) * (Math.PI / 180)) : subdrillAmount;
     let benchHeight = holeLengthCalculated * Math.cos(holeAngle * (Math.PI / 180));
     let gradeXLocation = endXLocation;
     let gradeYLocation = endYLocation;
@@ -13521,8 +13474,8 @@ function drawProtractor(p1X, p1Y, p2X, p2Y, p3X, p3Y) {
 }
 // Add event listeners for the ruler tools
 rulerTool.addEventListener("change", function () {
-    resetFloatingToolbarButtons("rulerTool");
     if (this.checked) {
+        resetFloatingToolbarButtons("rulerTool");
         // Disable other tools
         switches.forEach((switchElement) => {
             if (switchElement && switchElement !== this) switchElement.checked = false;
@@ -13540,10 +13493,10 @@ rulerTool.addEventListener("change", function () {
         drawData(points, selectedHole);
     }
 });
-
+//Protractor Tool addlistener
 rulerProtractorTool.addEventListener("change", function () {
-    resetFloatingToolbarButtons("rulerProtractorTool");
     if (this.checked) {
+        resetFloatingToolbarButtons("rulerProtractorTool");
         // Disable other tools
         switches.forEach((switchElement) => {
             if (switchElement && switchElement !== this) switchElement.checked = false;
