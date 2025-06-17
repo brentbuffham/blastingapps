@@ -1092,7 +1092,9 @@ deleteHoleSwitch.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
         drawData(points, selectedHole);
     } else {
@@ -1107,7 +1109,9 @@ deleteHoleSwitch.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
         drawData(points, selectedHole);
     }
@@ -1127,7 +1131,9 @@ addHoleSwitch.addEventListener("change", function () {
         canvas.addEventListener("touchstart", handleHoleAddingClick);
         const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
         calculateTimes(points);
-        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        const result = recalculateContours(points, deltaX, deltaY);
+        contourLinesArray = result.contourLinesArray;
+        directionArrows = result.directionArrows;
         drawData(points, selectedHole);
     } else {
         isAddingHole = false;
@@ -1142,7 +1148,9 @@ addHoleSwitch.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
         drawData(points, selectedHole);
     }
@@ -1166,7 +1174,9 @@ addPatternSwitch.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
         drawData(points, selectedHole);
     } else {
@@ -1185,7 +1195,9 @@ addPatternSwitch.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
         drawData(points, selectedHole);
     }
@@ -1309,7 +1321,9 @@ editHolesToggle.addEventListener("change", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
 
             // directionArrows now contains the arrow data for later drawing
         }
@@ -1349,7 +1363,9 @@ holeEastingSlider.addEventListener("input", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
     }
 });
@@ -1386,7 +1402,9 @@ holeNorthingSlider.addEventListener("input", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
         }
     }
 });
@@ -1445,7 +1463,9 @@ holeElevationSlider.addEventListener("input", function () {
         if (points.length > 0) {
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
 
             // directionArrows now contains the arrow data for later drawing
         }
@@ -1993,7 +2013,9 @@ const intervalSlider = document.getElementById("intervalSlider");
 intervalSlider.addEventListener("input", function () {
     intervalAmount = document.getElementById("intervalSlider").value;
     intervalLabel.textContent = "Interval : " + intervalAmount + "ms";
-    const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    const result = recalculateContours(points, deltaX, deltaY);
+    contourLinesArray = result.contourLinesArray;
+    directionArrows = result.directionArrows;
 
     // directionArrows now contains the arrow data for later drawing
 
@@ -2004,7 +2026,9 @@ const firstMovementSlider = document.getElementById("firstMovementSlider");
 firstMovementSlider.addEventListener("input", function () {
     firstMovementSize = document.getElementById("firstMovementSlider").value;
     firstMovementLabel.textContent = "First Movement Size : " + firstMovementSize;
-    const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+    const result = recalculateContours(points, deltaX, deltaY);
+    contourLinesArray = result.contourLinesArray;
+    directionArrows = result.directionArrows;
 
     // directionArrows now contains the arrow data for later drawing
 
@@ -2077,6 +2101,14 @@ optionConfigs.forEach((config) => {
             if (config.flag) {
                 window[config.flag] = true;
             }
+
+            // Calculate contours when contours display is turned on
+            if (config.option === displayContours && displayContours.checked) {
+                const result = recalculateContours(points, 0, 0);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
+            }
+
             drawData(points, selectedHole);
         });
     }
@@ -2332,7 +2364,9 @@ async function handleFileUpload(event) {
                 centroidY = sumY / points.length;
 
                 // Recalculate contours and triangles
-                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
                 const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
                 drawData(points, selectedHole);
                 countPoints = points.length;
@@ -2558,627 +2592,6 @@ function parseCSV(data) {
     drawData(points, selectedHole);
     return points;
 }
-//OLDER VERSION
-// function parseCSV(data, blastNameValue) {
-//     if (!points || !Array.isArray(points)) points = [];
-//     sessionLoadCount += 1;
-//     const lines = data.split("\n");
-//     let minX = Infinity;
-//     let minY = Infinity;
-//     const entityName = blastNameValue;
-//     const entityType = "hole";
-
-//     for (let i = 0; i < lines.length; i++) {
-//         const values = lines[i].split(",");
-
-//         if (values.length > 25) {
-//             continue;
-//         }
-
-//         if (values.length === 25) {
-//             const entityName = values[0];
-//             const entityType = "hole";
-//             const holeID = values[2]; //Id of the blast hole
-//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-//             const gradeXLocation = parseFloat(values[9]); //grade of the blast hole X value
-//             const gradeYLocation = parseFloat(values[10]); //grade of the blast hole Y value
-//             const gradeZLocation = parseFloat(values[11]); //grade of the blast hole Z value
-//             const subdrillAmount = parseFloat(values[12]); //subdrill of the blast hole
-//             const subdrillLength = parseFloat(values[13]); //subdrill length of the blast hole
-//             const benchHeight = parseFloat(values[14]); //bench height of the blast hole
-//             const holeDiameter = parseFloat(values[15]); //diameter of the blast hole
-//             const holeType = values[16]; //type of the blast hole
-//             const fromHoleID = values[17]; //from hole where the connector tail will be
-//             const timingDelayMilliseconds = parseInt(values[18]); //delay from hole to Id of the blast
-//             const colourHexDecimal = values[19].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-//             const measuredLength = values.length > 20 ? parseFloat(values[20]) : 0;
-//             const measuredLengthTimeStamp = values.length > 21 ? values[21] : "09/05/1975 00:00:00";
-//             const measuredMass = values.length > 22 ? parseFloat(values[22]) : 0;
-//             const measuredMassTimeStamp = values.length > 23 ? values[23] : "09/05/1975 00:00:00";
-//             const measuredComment = values.length > 24 ? values[24] : "None";
-//             const measuredCommentTimeStamp = values.length > 25 ? values[25] : "09/05/1975 00:00:00";
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("X",deltaXAmount);
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Y",deltaYAmount);
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Z",deltaZAmount);
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-//             const epsilon = 1e-10; // A small value to prevent division by zero
-//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//         }
-//         if (values.length === 20) {
-//             // check if it has the correct number of values
-//             const entityName = values[0];
-//             const entityType = "hole";
-//             const holeID = values[2]; //Id of the blast hole
-//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-//             const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-//             const holeType = values[10]; //type of the blast hole
-//             const fromHoleID = values[11]; //from hole where the connector tail will be
-//             const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-//             const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-//             // Parse optional fields
-//             const measuredLength = values.length > 14 ? parseFloat(values[14]) : 0;
-//             const measuredLengthTimeStamp = values.length > 15 ? values[15] : "09/05/1975 00:00:00";
-//             const measuredMass = values.length > 16 ? parseFloat(values[16]) : 0;
-//             const measuredMassTimeStamp = values.length > 17 ? values[17] : "09/05/1975 00:00:00";
-//             const measuredComment = values.length > 18 ? values[18] : "None";
-//             const measuredCommentTimeStamp = values.length > 19 ? values[19] : "09/05/1975 00:00:00";
-
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("X",deltaXAmount);
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Y",deltaYAmount);
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Z",deltaZAmount);
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-//             const epsilon = 1e-10; // A small value to prevent division by zero
-//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//         } else if (values.length === 14) {
-//             // check if it has the correct number of values
-//             const entityName = values[0];
-//             const entityType = "hole";
-//             const holeID = values[2]; //Id of the blast hole
-//             const startXLocation = parseFloat(values[3]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[4]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[5]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[6]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[7]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[8]); //end of the blast hole Z value
-//             const holeDiameter = parseFloat(values[9]); //diameter of the blast hole
-//             const holeType = values[10]; //type of the blast hole
-//             const fromHoleID = values[11]; //from hole where the connector tail will be
-//             const timingDelayMilliseconds = parseInt(values[12]); //delay from hole to Id of the blast
-//             const colourHexDecimal = values[13].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-//             const measuredLength = 0;
-//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-//             const measuredMass = 0;
-//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
-//             const measuredComment = "None";
-//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("X",deltaXAmount);
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Y",deltaYAmount);
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Z",deltaZAmount);
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-//             const epsilon = 1e-10; // A small value to prevent division by zero
-//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//         } else if (values.length === 12) {
-//             // Skip empty lines and lines with fewer than 12 values
-//             if (values.length < 12) {
-//                 continue;
-//             }
-//             //files with id, x, y, z, x, y, z, diameter, type, fromHoleID, delay, colour
-//             // check if it has the correct number of values
-//             const entityName = blastNameValue;
-//             const holeID = values[0]; //Id of the blast hole
-//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-//             const holeDiameter = parseFloat(values[7]); //diameter of the blast hole
-//             const holeType = values[8]; //type of the blast hole
-//             const fromHoleID = values[9].includes(":::") ? values[9] : `${blastNameValue}:::${values[9]}`;
-//             //from hole where the connector tail will be
-//             const timingDelayMilliseconds = parseInt(values[10]); //delay from hole to Id of the blast
-//             const colourHexDecimal = values[11].replace(/\r$/, ""); //colour of the delay in HEXDECIMALS
-//             const measuredLength = 0;
-//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-//             const measuredMass = 0;
-//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
-//             const measuredComment = "None";
-//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("X",deltaXAmount);
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Y",deltaYAmount);
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             //console.log("Z",deltaZAmount);
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z;
-//             const magnitude = Math.sqrt(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount);
-
-//             const epsilon = 1e-10; // A small value to prevent division by zero
-//             const normalizedDotProduct = Math.abs(magnitude) < epsilon ? 0 : dotProduct / magnitude;
-//             const holeAngle = 180 - Math.acos(normalizedDotProduct) * (180 / Math.PI);
-
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation) && !isNaN(timingDelayMilliseconds)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//             ////console.log(points);
-//         } else if (values.length === 9) {
-//             // Skip empty lines and lines with fewer than 9 values
-//             if (values.length < 9) {
-//                 continue;
-//             }
-//             //files with id, x, y, z, x, y, z, diameter, type
-//             // check if it has the correct number of values
-//             const entityName = blastNameValue;
-//             const holeID = values[0];
-//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-//             const holeDiameter = parseFloat(values[7]);
-//             const holeType = values[8];
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-//             const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-//             const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-
-//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
-//             const timingDelayMilliseconds = 0;
-//             const colourHexDecimal = "red";
-//             const measuredLength = 0;
-//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-//             const measuredMass = 0;
-//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
-//             const measuredComment = "None";
-//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//         } else if (values.length === 7) {
-//             //files with id, x, y, z, x, y, z
-//             // check if it has the correct number of values
-//             const entityName = blastNameValue;
-//             const holeID = values[0];
-//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[4]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[5]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[6]); //end of the blast hole Z value
-//             const holeDiameter = 0;
-//             const holeType = "Undefined";
-//             const holeLengthCalculated = Math.pow(Math.pow(startXLocation - endXLocation, 2) + Math.pow(startYLocation - endYLocation, 2) + Math.pow(startZLocation - endZLocation, 2), 0.5); //calc the distance between sx,sy,sz and ex,ey,ez
-//             const deltaXAmount = endXLocation - startXLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const deltaYAmount = endYLocation - startYLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const deltaZAmount = endZLocation - startZLocation; // Calculate the differences between the longitude and latitude of the two points
-//             const verticalObject = {
-//                 x: 0,
-//                 y: 0,
-//                 z: 1
-//             };
-//             const dotProduct = deltaXAmount * verticalObject.x + deltaYAmount * verticalObject.y + deltaZAmount * verticalObject.z; // Calculate the dot product
-//             const magnitude = Math.pow(deltaXAmount * deltaXAmount + deltaYAmount * deltaYAmount + deltaZAmount * deltaZAmount, 0.5); // Calculate the magnitudes of the two vectors
-//             const holeAngle = 180 - Math.acos(dotProduct / magnitude) * (180 / Math.PI); //angle in degrees;
-//             const holeBearing = (450 - Math.atan2(deltaYAmount, deltaXAmount) * (180 / Math.PI)) % 360; //bearing in degrees
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
-//             console.log("blastNameValue:", blastNameValue);
-//             console.log("values[0]:", values[0]);
-//             console.log("fromHoleID:", fromHoleID);
-//             const timingDelayMilliseconds = 0;
-//             const colourHexDecimal = "red";
-//             const measuredLength = 0;
-//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-//             const measuredMass = 0;
-//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
-//             const measuredComment = "None";
-//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation) && !isNaN(endXLocation) && !isNaN(endYLocation) && !isNaN(endZLocation)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//         }
-//         if (values.length === 4) {
-//             //files with id, x, y, z
-//             // check if it has the correct number of values
-//             const entityName = blastNameValue;
-//             const holeID = values[0];
-//             const startXLocation = parseFloat(values[1]); //start of the blast hole X value
-//             const startYLocation = parseFloat(values[2]); //start of the blast hole Y value
-//             const startZLocation = parseFloat(values[3]); //start of the blast hole Z value
-//             const endXLocation = parseFloat(values[1]); //end of the blast hole X value
-//             const endYLocation = parseFloat(values[2]); //end of the blast hole Y value
-//             const endZLocation = parseFloat(values[3]); //end of the blast hole Z value
-//             const holeDiameter = 0;
-//             const holeType = "Undefined";
-//             const holeLengthCalculated = 0;
-//             const holeAngle = 0;
-//             const holeBearing = 0;
-//             // Need to calculate the XY and Z values for the grade based on the posistion along the hole length. 1st calculte the subdrilllength use the subdrill amount and an the angle of the hole to calculate the length of the subdrill.
-//             const subdrillAmount = 0;
-//             const subdrillLength = subdrillAmount * Math.cos(holeAngle * (Math.PI / 180));
-//             //then use the calcualted hole length minus the subdrill length to calculate the grade x y z position
-//             const gradeXLocation = endXLocation - subdrillLength * Math.cos(holeBearing * (Math.PI / 180));
-//             const gradeYLocation = endYLocation - subdrillLength * Math.sin(holeBearing * (Math.PI / 180));
-//             const gradeZLocation = endZLocation - subdrillAmount;
-//             //then use the the start z location - grade z loacation to calculate the bench height
-//             const benchHeight = startZLocation - gradeZLocation;
-//             const fromHoleID = `${blastNameValue}:::${values[0]}`;
-//             const timingDelayMilliseconds = 0;
-//             const colourHexDecimal = "red";
-//             const measuredLength = 0;
-//             const measuredLengthTimeStamp = "09/05/1975 00:00:00";
-//             const measuredMass = 0;
-//             const measuredMassTimeStamp = "09/05/1975 00:00:00";
-//             const measuredComment = "None";
-//             const measuredCommentTimeStamp = "09/05/1975 00:00:00";
-//             if (!isNaN(startXLocation) && !isNaN(startYLocation) && !isNaN(startZLocation)) {
-//                 // check if they are valid numbers
-//                 points.push({
-//                     entityName,
-//                     entityType,
-//                     holeID,
-//                     startXLocation,
-//                     startYLocation,
-//                     startZLocation,
-//                     endXLocation,
-//                     endYLocation,
-//                     endZLocation,
-//                     gradeXLocation,
-//                     gradeYLocation,
-//                     gradeZLocation,
-//                     subdrillAmount,
-//                     subdrillLength,
-//                     benchHeight,
-//                     holeDiameter,
-//                     holeType,
-//                     fromHoleID,
-//                     timingDelayMilliseconds,
-//                     colourHexDecimal,
-//                     holeLengthCalculated,
-//                     holeAngle,
-//                     holeBearing,
-//                     measuredLength,
-//                     measuredLengthTimeStamp,
-//                     measuredMass,
-//                     measuredMassTimeStamp,
-//                     measuredComment,
-//                     measuredCommentTimeStamp
-//                 });
-//                 minX = Math.min(minX, startXLocation);
-//                 minY = Math.min(minY, startYLocation);
-//             }
-//             //} else if (localStorage.getItem("kirraDataPoints") !== null) {
-//             //return points;
-//         }
-//     }
-
-//     calculateTimes(points);
-//     drawData(points, selectedHole);
-//     return points;
-// }
 
 async function handleDXFUpload(event) {
     const file = event.target.files[0];
@@ -4962,10 +4375,10 @@ function delaunayContours(contourData, contourLevel, maxEdgeLength) {
     directionArrows = directionArrows.filter((arrow, index) => index % interval === 0);
 
     // Optional: Log some statistics for debugging
-    console.log("Contour generation completed:");
-    console.log("- Total contour lines:", contourLines.length);
-    console.log("- Direction arrows:", directionArrows.length);
-    console.log("- Cache size:", localAverageCache.size);
+    // console.log("Contour generation completed:");
+    // console.log("- Total contour lines:", contourLines.length);
+    // console.log("- Direction arrows:", directionArrows.length);
+    // console.log("- Cache size:", localAverageCache.size);
 
     // Return both contour lines and the newly created arrows
     return { contourLines, directionArrows };
@@ -5164,10 +4577,10 @@ function delaunayTriangles(points, maxEdgeLength) {
             }
         }
 
-        // Optional: Log some statistics for debugging
-        console.log("Triangulation completed:");
-        console.log("- Total triangles generated:", resultTriangles.length);
-        console.log("- Cache size:", localAverageCache.size);
+        // // Optional: Log some statistics for debugging
+        // console.log("Triangulation completed:");
+        // console.log("- Total triangles generated:", resultTriangles.length);
+        // console.log("- Cache size:", localAverageCache.size);
 
         return { resultTriangles, reliefTriangles };
     } catch (err) {
@@ -5175,7 +4588,7 @@ function delaunayTriangles(points, maxEdgeLength) {
         return { resultTriangles: [], reliefTriangles: [] };
     }
 }
-//OLD VERSION OF DELTAUNAY TRIANGULATION
+
 // function delaunayTriangles(points, maxEdgeLength) {
 // 	if (!points || !Array.isArray(points) || points.length < 3) {
 // 		return { resultTriangles: [], reliefTriangles: [] };
@@ -6136,10 +5549,12 @@ function drawHoleToe(x, y, fillColour, strokeColour, radius) {
 
 function drawHole(x, y, radius, fillColour, strokeColour) {
     ctx.strokeStyle = strokeColour;
-    ctx.fillStyle = fillColour;
-    ctx.lineWidth = 2;
+    ctx.fillStyle = strokeColour;
+    ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    const minRadius = 1.5;
+    const drawRadius = radius > minRadius ? radius : minRadius;
+    ctx.arc(x, y, drawRadius, 0, 2 * Math.PI);
     ctx.fill(); // fill the circle with the fill colour
     ctx.stroke(); // draw the circle border with the stroke colour
 }
@@ -6934,7 +6349,9 @@ function getClickedHole(clickX, clickY) {
         }
         if (isDisplayingContours) {
             try {
-                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
             } catch (error) {
                 console.warn("Error calculating contour lines:", error);
             }
@@ -6957,7 +6374,9 @@ function getClickedHole(clickX, clickY) {
         }
         if (isDisplayingDirectionArrows) {
             try {
-                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
             } catch (error) {
                 console.warn("Error calculating contour lines:", error);
             }
@@ -7186,7 +6605,9 @@ function handleConnectorClick(event) {
                     points[clickedHoleIndex].colourHexDecimal = getJSColourHex();
                 }
                 fromHoleStore = null;
-                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
 
                 // directionArrows now contains the arrow data for later drawing
 
@@ -7210,7 +6631,9 @@ function handleConnectorClick(event) {
                 // Reset the fromHole and exit add connector mode
                 fromHoleStore = null;
 
-                const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+                const result = recalculateContours(points, deltaX, deltaY);
+                contourLinesArray = result.contourLinesArray;
+                directionArrows = result.directionArrows;
 
                 // directionArrows now contains the arrow data for later drawing
 
@@ -7543,7 +6966,7 @@ function deleteSelectedHoles() {
 
             points = points.filter((point) => {
                 if (holesToDeleteReferences.has(point)) {
-                    console.log("Deleting Hole ID:", point.holeID, "in:", point.entityName);
+                    //console.log("Deleting Hole ID:", point.holeID, "in:", point.entityName);
                     if (isRenumberingHoles) {
                         entitiesToRenumber.add(point.entityName);
                     }
@@ -7560,7 +6983,7 @@ function deleteSelectedHoles() {
             selectedMultipleHoles = [];
             selectedHole = null; // Ensure single selection is also cleared
         } else if (selectedHole !== null) {
-            console.log("Processing deletion for single Hole ID:", selectedHole.holeID, "in:", selectedHole.entityName);
+            //console.log("Processing deletion for single Hole ID:", selectedHole.holeID, "in:", selectedHole.entityName);
             const holeToRemove = selectedHole; // Cache before selectedHole is nulled
             const originalPointsLength = points.length;
 
@@ -7581,7 +7004,7 @@ function deleteSelectedHoles() {
             if (isRenumberingHoles) {
                 entitiesToRenumber.forEach((entityName) => {
                     // deleteRenumberStart is expected to be globally available and set appropriately
-                    console.log("Renumbering for Entity:", entityName, "starting at:", deleteRenumberStart);
+                    //console.log("Renumbering for Entity:", entityName, "starting at:", deleteRenumberStart);
                     renumberHolesFunction(deleteRenumberStart, entityName);
                 });
             }
@@ -7621,7 +7044,9 @@ function deleteSelectedPattern() {
             // Recalculate contour lines
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
 
             // directionArrows now contains the arrow data for later drawing
 
@@ -7650,7 +7075,9 @@ function deleteSelectedAllPatterns() {
             // Recalculate contour lines
             const { resultTriangles, reliefTriangles } = delaunayTriangles(points, maxEdgeLength); // Recalculate triangles
             calculateTimes(points);
-            const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+            const result = recalculateContours(points, deltaX, deltaY);
+            contourLinesArray = result.contourLinesArray;
+            directionArrows = result.directionArrows;
 
             // directionArrows now contains the arrow data for later drawing
 
@@ -7691,7 +7118,7 @@ function handleHoleDeletingClick(event) {
 }
 
 function renumberHolesFunction(startNumber, selectedEntityName) {
-    console.log("Renumbering holes for Entity:", selectedEntityName);
+    //console.log("Renumbering holes for Entity:", selectedEntityName);
 
     const oldToNewHoleIDMap = new Map();
 
@@ -7865,7 +7292,7 @@ function addKADLine() {
         kadLinesMap.get(entityName).data.push(lineObject);
     }
     drawData(points, selectedHole);
-    console.log("kadLinesMap: ", kadLinesMap);
+    //console.log("kadLinesMap: ", kadLinesMap);
 }
 
 function handleKADPolyClick(event) {
@@ -9045,7 +8472,7 @@ function addPattern(offset, entityName, nameTypeIsNumerical, rowOrientation, x, 
 
             if (patternnameTypeIsNumerical) {
                 holeID = currentLetter + currentRow; // Generate the hole ID
-                addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing), holeID);
+                addHole(true, entityName, points.length + 1, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing));
             } else {
                 holeID = currentLetter + (j + 1); // Generate the hole ID
                 addHole(true, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing));
@@ -9499,30 +8926,19 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     } else {
         newHoleID = 9999;
     }
+
+    // Parse values first
     startXLocation = parseFloat(startXLocation);
     startYLocation = parseFloat(startYLocation);
     startZLocation = parseFloat(startZLocation);
-    let endXLocation = parseFloat(startXLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
-    let endYLocation = parseFloat(startYLocation + length * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
-    let endZLocation = parseFloat(startZLocation - length * Math.cos(angle * (Math.PI / 180)));
-    // Check if endXLocation, endYLocation, or endZLocation is NaN
-    if (isNaN(endXLocation)) {
-        endXLocation = startXLocation;
-    }
-
-    if (isNaN(endYLocation)) {
-        endYLocation = startYLocation;
-    }
-
-    if (isNaN(endZLocation)) {
-        endZLocation = startZLocation;
-    }
     let holeDiameter = parseFloat(diameter);
     let holeType = type;
     let holeLengthCalculated = parseFloat(length);
     let subdrillAmount = parseFloat(subdrill);
     let holeAngle = parseFloat(angle);
     let holeBearing = parseFloat(bearing);
+
+    // Handle NaN values
     if (isNaN(holeLengthCalculated)) {
         holeLengthCalculated = 0;
     }
@@ -9532,6 +8948,45 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     if (isNaN(holeBearing)) {
         holeBearing = 0;
     }
+
+    // Calculate subdrill length
+    let subdrillLength = holeAngle > 0 ? subdrillAmount / Math.sin((90 - holeAngle) * (Math.PI / 180)) : subdrillAmount;
+
+    // Calculate total length including subdrill
+    let totalLength = holeLengthCalculated + subdrillLength;
+
+    // Calculate end locations using the total length (includes subdrill)
+    let endXLocation = parseFloat(startXLocation + totalLength * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
+    let endYLocation = parseFloat(startYLocation + totalLength * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
+    let endZLocation = parseFloat(startZLocation - totalLength * Math.cos(angle * (Math.PI / 180)));
+
+    // Calculate grade locations using only hole length (no subdrill)
+    let gradeXLocation = parseFloat(startXLocation + holeLengthCalculated * Math.cos((90 - angle) * (Math.PI / 180)) * Math.cos(((450 - bearing) % 360) * (Math.PI / 180)));
+    let gradeYLocation = parseFloat(startYLocation + holeLengthCalculated * Math.cos((90 - angle) * (Math.PI / 180)) * Math.sin(((450 - bearing) % 360) * (Math.PI / 180)));
+    let gradeZLocation = parseFloat(startZLocation - holeLengthCalculated * Math.cos(angle * (Math.PI / 180)));
+
+    // Check if endXLocation, endYLocation, or endZLocation is NaN
+    if (isNaN(endXLocation)) {
+        endXLocation = startXLocation;
+    }
+    if (isNaN(endYLocation)) {
+        endYLocation = startYLocation;
+    }
+    if (isNaN(endZLocation)) {
+        endZLocation = startZLocation;
+    }
+
+    // Check if gradeXLocation, gradeYLocation, or gradeZLocation is NaN
+    if (isNaN(gradeXLocation)) {
+        gradeXLocation = startXLocation;
+    }
+    if (isNaN(gradeYLocation)) {
+        gradeYLocation = startYLocation;
+    }
+    if (isNaN(gradeZLocation)) {
+        gradeZLocation = startZLocation;
+    }
+
     let toHoleCombinedID = entityName.toString() + ":::" + newHoleID.toString();
     let timingDelayMilliseconds = 0;
     let colourHexDecimal = "red";
@@ -9541,11 +8996,8 @@ function addHole(useCustomHoleID, entityName, holeID, startXLocation, startYLoca
     let measuredMassTimeStamp = "09/05/1975 00:00:00";
     let measuredComment = "None";
     let measuredCommentTimeStamp = "09/05/1975 00:00:00";
-    let subdrillLength = holeAngle > 0 ? subdrillAmount / Math.sin((90 - holeAngle) * (Math.PI / 180)) : subdrillAmount;
+
     let benchHeight = holeLengthCalculated * Math.cos(holeAngle * (Math.PI / 180));
-    let gradeXLocation = endXLocation;
-    let gradeYLocation = endYLocation;
-    let gradeZLocation = endZLocation;
 
     points.push({
         entityName: entityName,
@@ -11215,7 +10667,9 @@ function refreshPoints() {
         points = parseCSV(csvString);
         //updateCentroids();
         calculateTimes(points);
-        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        const result = recalculateContours(points, deltaX, deltaY);
+        contourLinesArray = result.contourLinesArray;
+        directionArrows = result.directionArrows;
 
         // directionArrows now contains the arrow data for later drawing
 
@@ -11260,7 +10714,9 @@ function loadHolesFromLocalStorage() {
         //console.log(points);
         updateCentroids();
         calculateTimes(points);
-        const { contourLinesArray, directionArrows } = recalculateContours(points, deltaX, deltaY);
+        const result = recalculateContours(points, deltaX, deltaY);
+        contourLinesArray = result.contourLinesArray;
+        directionArrows = result.directionArrows;
 
         // directionArrows now contains the arrow data for later drawing
 
@@ -11961,18 +11417,37 @@ function handleMoveToolMouseMove(event) {
         calculateHoleGeometry(hole, parseFloat(y) + deltaY, 5); // Parameter 5 for Y position
     });
 
+    // Add this near the top with other flags (around line 77):
+    let disableContourThrottling = false; // Temporary flag to disable throttling
+
+    // Then modify the throttling section (around lines 11420-11434):
     // Throttle contour recalculation for better performance
-    if (!contourUpdatePending) {
-        contourUpdatePending = true;
-        requestAnimationFrame(() => {
+    if (disableContourThrottling || !contourUpdatePending) {
+        if (!disableContourThrottling) {
+            contourUpdatePending = true;
+        }
+
+        const updateContours = () => {
             if (points.length > 0) {
                 holeTimes = calculateTimes(points);
-                const result = recalculateContours(points, deltaX, deltaY);
+
+                // Initialize contours on data load
+                const result = recalculateContours(points, 0, 0);
                 contourLinesArray = result.contourLinesArray;
                 directionArrows = result.directionArrows;
+
+                timeChart();
             }
-            contourUpdatePending = false;
-        });
+            if (!disableContourThrottling) {
+                contourUpdatePending = false;
+            }
+        };
+
+        if (disableContourThrottling) {
+            updateContours();
+        } else {
+            requestAnimationFrame(updateContours);
+        }
     }
 
     drawData(points, selectedHole);
@@ -12397,11 +11872,11 @@ function selectInsidePolygonTouch(event) {
                 const holeX = point.startXLocation;
                 const holeY = point.startYLocation;
 
-                console.log("Checking hole:", point.holeID, "at:", holeX, holeY, "against polygon with points:", polyPointsX.length);
+                // console.log("Checking hole:", point.holeID, "at:", holeX, holeY, "against polygon with points:", polyPointsX.length);
 
                 if (isPointInPolygon(holeX, holeY, polyPointsX, polyPointsY)) {
                     selectedMultipleHoles.push(point);
-                    console.log("Selected hole:", point.holeID);
+                    // console.log("Selected hole:", point.holeID);
                 }
             });
 
