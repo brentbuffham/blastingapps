@@ -1326,7 +1326,7 @@
 					<input type="range" step="0.1" min="0.0" max="100" id="holeLengthSlider" name="holeLength"
 						value="10" placeholder="Hole Length">
 					<div class="label2" id="holeAngleLabel">Angle :</div>
-					<input type="range" step="1" min="0" max="60" id="holeAngleSlider" name="holeAngle" value="0"
+					<input type="range" step="1" min="0" max="90" id="holeAngleSlider" name="holeAngle" value="0"
 						placeholder="Hole Angle">
 					<div class="label2" id="holeBearingLabel">Bearing :</div>
 					<input type="range" step="0.5" min="0" max="360" id="holeBearingSlider" name="holeBearing" value="0"
@@ -1539,10 +1539,10 @@
 			<button class="accordion" id="animateAcc">
 				<span>Animate Firing</span></button>
 			<div class="panel">
-				<button class="button-norm" id="play">PLAY............</button>
+				<button class="button-norm" id="play">PLAY @ 1.0x</button>
 				<button class="button-norm" id="stop">STOP</button>
 				<br>
-				<input type="range" step="0.1" min="0.1" max="50" value="1" id="playSpeed"
+				<input type="range" step="0.05" min="0.01" max="5" value="1.0" id="playSpeed"
 					placeholder="Select play speed">
 			</div>
 			<button class="accordion" id="timeWindowAcc">

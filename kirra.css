@@ -781,7 +781,9 @@ input[type="range"] {
     margin-left: 10%;
     margin-right: 10%;
     width: 80%;
+    height: 8;
     color: #333;
+    accent-color: red;
 }
 
 input[type="file"] {
