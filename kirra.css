@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250617.1920AWST"
+    Last Modified: "20250621.1500AWST"
 */
 
 :root {
@@ -223,14 +223,37 @@ body.dark-mode #dark-mode-toggle::after {
     display: none;
 }
 
+#floating-toolbar input[type="button"].single {
+    grid-column: 1 / -1;
+    width: 90%;
+    height: 20px;
+    border: 1px solid var(--light-mode-border);
+    border-radius: 3px;
+    margin: 1px 2px;
+    justify-self: center;
+}
+
+#floating-toolbar input[type="number2"].single {
+    grid-column: 1 / -1;
+    width: calc(80%);
+    margin: 1px 2px;
+    text-align: center;
+    border: 1px solid var(--light-mode-border);
+    border-radius: 3px;
+    color: var(--light-mode-text);
+    background-color: var(--default-background-color);
+    justify-self: center;
+}
+
 #floating-toolbar {
     position: absolute;
     top: 100px;
     left: 15px;
     padding: 3px 3px 3px 3px;
-    /* Consider adjusting padding if buttons seem too close to edge */
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    width: 70px;
     align-items: center;
     background-color: var(--default-background-color);
     border: 1px solid var(--light-mode-border);
@@ -238,8 +261,19 @@ body.dark-mode #dark-mode-toggle::after {
     box-shadow: 0 4px 4px rgba(50, 50, 50, 0.5);
     z-index: 1000;
     cursor: move;
-    /* For dragging the toolbar itself, if implemented */
     transition: left 0.5s ease;
+}
+
+/* Make labels span both columns */
+#floating-toolbar .label2 {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+/* Center any icon with the 'single' class */
+#floating-toolbar .icon-button.single {
+    grid-column: 1 / -1;
+    justify-self: center;
 }
 
 /* Styles for the labels which act as buttons */
@@ -270,6 +304,7 @@ body.dark-mode #dark-mode-toggle::after {
     display: block;
     border-radius: 4px;
     border: 1px solid var(--dark-mode-border);
+    /* border: 2px solid var(--dark-mode-border); */
 
     /* Add this */
 }
@@ -282,7 +317,7 @@ body.dark-mode #dark-mode-toggle::after {
 }
 
 /* Checked/Selected state for the icon buttons within the toolbar */
-#floating-toolbar input[type="checkbox"]:checked + label.icon-button {
+#floating-toolbar input[type="checkbox"]:checked+label.icon-button {
     background-color: red;
     /* Your desired selected color */
     border-color: #440000;
@@ -295,10 +330,15 @@ body.dark-mode #floating-toolbar {
     border: 1px solid var(--dark-mode-border);
 }
 
+body.dark-mode #floating-toolbar input[type="number2"].single {
+    color: var(--dark-mode-text);
+    background-color: var(--dark-mode-color);
+}
+
 body.dark-mode #floating-toolbar label.icon-button {
     background-color: var(--primary-color);
     /* Default dark mode background */
-    border: 2px solid var(--dark-mode-border);
+    border: 1px solid var(--dark-mode-border);
     /* If icons need inversion for dark mode, you might need: */
     /* filter: invert(1) opacity(0.95); */
 }
@@ -309,7 +349,7 @@ body.dark-mode #floating-toolbar label.icon-button:hover {
     /* Consider if text/icon color needs to change on hover in dark mode */
 }
 
-body.dark-mode #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
+body.dark-mode #floating-toolbar input[type="checkbox"]:checked+label.icon-button {
     background-color: red;
     /* Selected color can be the same */
     border-color: darkred;
@@ -643,11 +683,11 @@ body.dark-mode .menu-content a:hover {
     margin-left: 2px;
 }
 
-.dark-mode-toggle input:checked + label {
+.dark-mode-toggle input:checked+label {
     background-color: #666;
 }
 
-.dark-mode-toggle input:checked + label:after {
+.dark-mode-toggle input:checked+label:after {
     transform: translateX(24px);
 }
 
@@ -860,11 +900,11 @@ input[type="file"] {
     transition: 0.4s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
     background-color: #00a91c;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
@@ -1309,13 +1349,13 @@ input[type="color"] {
 }
 
 /* Style the selected (checked) button */
-.radio-buttons-custom input[type="radio"]:checked + .icon-button {
+.radio-buttons-custom input[type="radio"]:checked+.icon-button {
     background-color: red;
     /* Set the selected color */
 }
 
 /* Style the selected (checked) button */
-.toggle-buttons-custom input[type="checkbox"]:checked + .icon-button {
+.toggle-buttons-custom input[type="checkbox"]:checked+.icon-button {
     /* display: none; */
     background-color: red;
     border-color: red;
@@ -1874,6 +1914,7 @@ label {
 /* STRICT MOBILE CONSTRAINTS */
 /* Universal mobile support */
 @media (max-width: 1024px) {
+
     html,
     body {
         margin: 0;
