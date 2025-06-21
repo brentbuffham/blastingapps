@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250621.1500AWST"
-const buildVersion = "20250621.1500AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250622.0024AWST"
+const buildVersion = "20250622.0024AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -51,17 +51,19 @@ function updatePopup() {
 		</svg>
 			<br>
 				    <label class="labelWhite18">Update - NEW FEATURES:                   </label>
-				<br><label class="labelWhite18">Toolbar Redesign and additional tools    </label>
-				<br><label class="labelWhite18">Pattern in Poly, on ployline, arbitary   </label>
-				<br><label class="labelWhite18">Snap to hole collar, grade, toe, vertex   </label>
-				<br><label class="labelWhite18">Surface Visualisation and 5 legends      </label>
-				<br><label class="labelWhite18">Assign holes to grade/collar surface     </label>
-				<br><label class="labelWhite18">Status mesaging and instructions         </label>
-                <br><label class="labelWhite18">UX/UI, EventListener Clean up            </label>
-				<br><label class="labelWhite18">    </label>
+					<hr>
+				<label class="labelWhite18">✅ Toolbar Redesign and additional tools    </label>
+				<br><label class="labelWhite18">✅ ⭐ Pattern in Poly, on ployline, arbitary   </label>
+				<br><label class="labelWhite18">✅ Snap to hole collar, grade, toe, vertex   </label>
+				<br><label class="labelWhite18">✅ ⭐ Surface Visualisation and 5 legends      </label>
+				<br><label class="labelWhite18">✅ Assign holes to grade/collar surface     </label>
+				<br><label class="labelWhite18">✅ Status messaging and instructions         </label>
+                <br><label class="labelWhite18">✅ UX/UI, EventListener Clean up            </label>
+				<br><label class="labelWhite18">✅ ⭐ Duplicate hole check and resolve         </label>
+				<hr>
 				<br><label class="labelWhite18">New & Existing Issues                     </label>
-				<br><label class="labelWhite12c">Voronoi Display Lag with large blasts</label>
-				<br><label class="labelWhite12c">Surface Display Lag with large blasts</label>
+				<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts</label>
+				<br><label class="labelWhite12c">🐞 Surface Display Lag with large blasts</label>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">
 	          <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
@@ -159,6 +161,12 @@ let createNewEntity = true; // Flag to create a new entity
 // Variables to store the initial mouse position during canvas movement
 let initialMouseX = 0;
 let initialMouseY = 0;
+// Add current mouse tracking for interactive previews
+let currentMouseCanvasX = 0;
+let currentMouseCanvasY = 0;
+let currentMouseWorldX = 0;
+let currentMouseWorldY = 0;
+
 let intervalAmount = document.getElementById("intervalSlider").value;
 let firstMovementSize = document.getElementById("firstMovementSlider").value;
 let connectAmount = document.getElementById("connectSlider").value;
@@ -429,11 +437,27 @@ function resetAllSelectedStores() {
 	clickedHole = null;
 	timingWindowHolesSelected = [];
 
+	// Reset pattern tool variables
+	selectedPolygon = null;
+	selectedPolyline = null;
+	patternStartPoint = null;
+	patternEndPoint = null;
+	patternReferencePoint = null;
+
+	// Reset line tool variables
+	lineStartPoint = null;
+	lineEndPoint = null;
+
+	// Reset polyline tool variables
+	polylineStartPoint = null;
+	polylineEndPoint = null;
+
 	// Reset any other state variables
 	blastNameValue = "";
 	currentEntityName = "";
-}
 
+	console.log("🧹 All selected stores and pattern states reset");
+}
 // Update resetFloatingToolbarButtons to only clear floating toolbar related bools
 function resetFloatingToolbarButtons(excluding) {
 	// Clear only floating toolbar tool states
@@ -2250,6 +2274,13 @@ function handleMouseMove(event) {
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
 
+	// Update global mouse tracking for interactive previews
+	currentMouseCanvasX = mouseX;
+	currentMouseCanvasY = mouseY;
+	// Convert to world coordinates
+	currentMouseWorldX = (mouseX - canvas.width / 2) / currentScale + centroidX;
+	currentMouseWorldY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+
 	if (isDragging && !isDraggingBearing && !isDraggingHole) {
 		deltaX = mouseX - lastMouseX;
 		deltaY = mouseY - lastMouseY;
@@ -2487,6 +2518,333 @@ async function handleFileUpload(event) {
 
 let randomHex = Math.floor(Math.random() * 16777215).toString(16);
 
+// DUPLICATE ID DETECTION AND RESOLUTION SYSTEM
+// Enhanced duplicate checking that handles all ID formats
+function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
+	const duplicateReport = {
+		hasDuplicates: false,
+		duplicates: [],
+		resolved: [],
+		errors: []
+	};
+
+	// Group holes by entity name
+	const entitiesMap = new Map();
+
+	points.forEach((hole, index) => {
+		if (!entitiesMap.has(hole.entityName)) {
+			entitiesMap.set(hole.entityName, []);
+		}
+		entitiesMap.get(hole.entityName).push({ hole, originalIndex: index });
+	});
+
+	// Check each entity for duplicate IDs
+	entitiesMap.forEach((holes, entityName) => {
+		const idMap = new Map();
+
+		holes.forEach(({ hole, originalIndex }) => {
+			const holeID = hole.holeID.toString(); // Convert to string for comparison
+
+			if (idMap.has(holeID)) {
+				// Duplicate found!
+				duplicateReport.hasDuplicates = true;
+
+				const existingHole = idMap.get(holeID);
+				const duplicateInfo = {
+					entityName,
+					holeID,
+					existing: { hole: existingHole.hole, index: existingHole.originalIndex },
+					duplicate: { hole, index: originalIndex }
+				};
+
+				duplicateReport.duplicates.push(duplicateInfo);
+			} else {
+				idMap.set(holeID, { hole, originalIndex });
+			}
+		});
+	});
+
+	// If duplicates found, resolve them
+	if (duplicateReport.hasDuplicates) {
+		console.warn("🚨 DUPLICATE HOLE IDs DETECTED:", duplicateReport.duplicates.length, "conflicts found");
+
+		// Show user dialog for resolution strategy
+		const resolution = showDuplicateResolutionDialog(duplicateReport, actionType);
+
+		switch (resolution.strategy) {
+			case "auto-renumber":
+				resolveDuplicatesAutoRenumber(points, duplicateReport);
+				break;
+			case "keep-first":
+				resolveDuplicatesKeepFirst(points, duplicateReport);
+				break;
+			case "keep-last":
+				resolveDuplicatesKeepLast(points, duplicateReport);
+				break;
+			case "manual":
+				// Let user manually resolve - return for manual handling
+				return duplicateReport;
+			case "abort":
+				throw new Error("Import aborted due to duplicate hole IDs");
+		}
+	}
+
+	return duplicateReport;
+}
+
+//Keep this function as it is, it is used to show the duplicate resolution dialog
+function showDuplicateResolutionDialog(duplicateReport, actionType) {
+	const duplicateCount = duplicateReport.duplicates.length;
+	const entitiesAffected = [...new Set(duplicateReport.duplicates.map((d) => d.entityName))];
+
+	let message = "🚨 CRITICAL: Duplicate Hole IDs Detected!\n\n";
+	message += "Found " + duplicateCount + " duplicate hole ID conflicts\n";
+	message += "Affected blasts: " + entitiesAffected.join(", ") + "\n\n";
+	message += "Duplicate holes can cause data corruption and calculation errors.\n\n";
+	message += "Resolution options:\n";
+	message += "1. AUTO-RENUMBER: Auto-assign new unique IDs\n";
+	message += "2. KEEP FIRST: Remove duplicate holes, keep original\n";
+	message += "3. KEEP LAST: Remove original holes, keep duplicates\n";
+	message += "4. ABORT: Cancel " + actionType + " operation\n\n";
+	message += "Choose resolution (1-4):";
+
+	const choice = prompt(message);
+
+	switch (choice) {
+		case "1":
+			return { strategy: "auto-renumber" };
+		case "2":
+			return { strategy: "keep-first" };
+		case "3":
+			return { strategy: "keep-last" };
+		case "4":
+		case null:
+			return { strategy: "abort" };
+		default:
+			alert("Invalid choice. Aborting operation.");
+			return { strategy: "abort" };
+	}
+}
+
+// Enhanced auto-renumbering that handles all ID formats
+function resolveDuplicatesAutoRenumber(points, duplicateReport) {
+	// For each entity, analyze existing ID patterns and generate appropriate new IDs
+	const entitiesMap = new Map();
+
+	// Group points by entity and analyze ID patterns
+	points.forEach((hole) => {
+		if (!entitiesMap.has(hole.entityName)) {
+			entitiesMap.set(hole.entityName, {
+				holes: [],
+				numericIDs: [],
+				alphaIDs: [],
+				maxNumeric: 0,
+				maxAlphaRow: "A",
+				maxAlphaNum: 0
+			});
+		}
+		const entity = entitiesMap.get(hole.entityName);
+		entity.holes.push(hole);
+
+		const holeID = hole.holeID.toString();
+
+		// Check if it's purely numeric
+		const numericMatch = holeID.match(/^(\d+)$/);
+		if (numericMatch) {
+			const num = parseInt(numericMatch[1]);
+			entity.numericIDs.push(num);
+			entity.maxNumeric = Math.max(entity.maxNumeric, num);
+		}
+		// Check if it's alphanumeric (like A1, B2, AA1, etc.)
+		else {
+			const alphaMatch = holeID.match(/^([A-Z]+)(\d+)$/);
+			if (alphaMatch) {
+				const letters = alphaMatch[1];
+				const number = parseInt(alphaMatch[2]);
+				entity.alphaIDs.push({ letters, number, full: holeID });
+
+				// Track highest letter combination and number
+				if (letters.localeCompare(entity.maxAlphaRow) > 0) {
+					entity.maxAlphaRow = letters;
+					entity.maxAlphaNum = number;
+				} else if (letters === entity.maxAlphaRow) {
+					entity.maxAlphaNum = Math.max(entity.maxAlphaNum, number);
+				}
+			}
+		}
+	});
+
+	// Renumber duplicates using appropriate format
+	duplicateReport.duplicates.forEach((duplicate) => {
+		const entity = entitiesMap.get(duplicate.entityName);
+		const oldID = duplicate.duplicate.hole.holeID.toString();
+		let newID;
+
+		// Determine what format to use for the new ID
+		const numericMatch = oldID.match(/^(\d+)$/);
+		const alphaMatch = oldID.match(/^([A-Z]+)(\d+)$/);
+
+		if (numericMatch) {
+			// Generate new numeric ID
+			newID = (++entity.maxNumeric).toString();
+		} else if (alphaMatch) {
+			// Generate new alphanumeric ID
+			entity.maxAlphaNum++;
+			newID = entity.maxAlphaRow + entity.maxAlphaNum;
+		} else {
+			// Fallback: use numeric
+			newID = (++entity.maxNumeric).toString();
+		}
+
+		// Update the hole ID
+		duplicate.duplicate.hole.holeID = newID;
+
+		// Update fromHoleID references if they point to this hole
+		points.forEach((hole) => {
+			if (hole.fromHoleID === duplicate.entityName + ":::" + oldID) {
+				hole.fromHoleID = duplicate.entityName + ":::" + newID;
+			}
+		});
+
+		duplicateReport.resolved.push({
+			entityName: duplicate.entityName,
+			oldID: oldID,
+			newID: newID,
+			action: "renumbered"
+		});
+
+		console.log("🔧 Renumbered duplicate hole:", duplicate.entityName + ":" + oldID, "→", newID);
+	});
+}
+
+function resolveDuplicatesKeepFirst(points, duplicateReport) {
+	// Remove duplicate holes (keep the first occurrence)
+	const indicesToRemove = [];
+
+	duplicateReport.duplicates.forEach((duplicate) => {
+		indicesToRemove.push(duplicate.duplicate.index);
+
+		duplicateReport.resolved.push({
+			entityName: duplicate.entityName,
+			holeID: duplicate.holeID,
+			action: "removed-duplicate"
+		});
+
+		console.log("🗑️ Removed duplicate hole:", duplicate.entityName + ":" + duplicate.holeID);
+	});
+
+	// Remove holes in reverse order to maintain indices
+	indicesToRemove
+		.sort((a, b) => b - a)
+		.forEach((index) => {
+			points.splice(index, 1);
+		});
+}
+
+function resolveDuplicatesKeepLast(points, duplicateReport) {
+	// Remove original holes (keep the duplicate/last occurrence)
+	const indicesToRemove = [];
+
+	duplicateReport.duplicates.forEach((duplicate) => {
+		indicesToRemove.push(duplicate.existing.index);
+
+		duplicateReport.resolved.push({
+			entityName: duplicate.entityName,
+			holeID: duplicate.holeID,
+			action: "removed-original"
+		});
+
+		console.log("🗑️ Removed original hole:", duplicate.entityName + ":" + duplicate.holeID);
+	});
+
+	// Remove holes in reverse order to maintain indices
+	indicesToRemove
+		.sort((a, b) => b - a)
+		.forEach((index) => {
+			points.splice(index, 1);
+		});
+}
+
+// Enhanced unique ID validation for any format
+function validateUniqueHoleID(entityName, holeID, excludeHole = null) {
+	const holeIDStr = holeID.toString();
+
+	const existing = points.find((hole) => hole.entityName === entityName && hole.holeID.toString() === holeIDStr && hole !== excludeHole);
+
+	if (existing) {
+		const newID = generateUniqueHoleID(entityName, holeIDStr);
+		console.warn("🚨 Duplicate hole ID detected:", entityName + ":" + holeIDStr, "→ Auto-assigned:", newID);
+		return newID;
+	}
+
+	return holeIDStr;
+}
+// Enhanced unique ID generation for any format
+function generateUniqueHoleID(entityName, baseID) {
+	const baseIDStr = baseID.toString();
+
+	// Analyze existing IDs in this entity
+	const existingIDs = new Set();
+	let maxNumeric = 0;
+	let maxAlphaRow = "A";
+	let maxAlphaNum = 0;
+
+	points.forEach((hole) => {
+		if (hole.entityName === entityName) {
+			const holeID = hole.holeID.toString();
+			existingIDs.add(holeID);
+
+			// Track numeric IDs
+			const numericMatch = holeID.match(/^(\d+)$/);
+			if (numericMatch) {
+				maxNumeric = Math.max(maxNumeric, parseInt(numericMatch[1]));
+			}
+
+			// Track alphanumeric IDs
+			const alphaMatch = holeID.match(/^([A-Z]+)(\d+)$/);
+			if (alphaMatch) {
+				const letters = alphaMatch[1];
+				const number = parseInt(alphaMatch[2]);
+
+				if (letters.localeCompare(maxAlphaRow) > 0) {
+					maxAlphaRow = letters;
+					maxAlphaNum = number;
+				} else if (letters === maxAlphaRow) {
+					maxAlphaNum = Math.max(maxAlphaNum, number);
+				}
+			}
+		}
+	});
+
+	// Determine format of base ID and generate appropriate new ID
+	const numericMatch = baseIDStr.match(/^(\d+)$/);
+	const alphaMatch = baseIDStr.match(/^([A-Z]+)(\d+)$/);
+
+	if (numericMatch) {
+		// Generate next numeric ID
+		return (maxNumeric + 1).toString();
+	} else if (alphaMatch) {
+		// Generate next alphanumeric ID in same pattern
+		const letters = alphaMatch[1];
+		let newID;
+
+		// Try incrementing the number first
+		for (let num = 1; num <= maxAlphaNum + 10; num++) {
+			newID = letters + num;
+			if (!existingIDs.has(newID)) {
+				return newID;
+			}
+		}
+
+		// If that fails, increment the letter
+		const nextLetter = incrementLetter(letters);
+		return nextLetter + "1";
+	} else {
+		// Fallback: generate numeric ID
+		return (maxNumeric + 1).toString();
+	}
+}
+
 function parseCSV(data) {
 	if (!points || !Array.isArray(points)) points = [];
 	randomHex = Math.floor(Math.random() * 16777215).toString(16);
@@ -2692,7 +3050,24 @@ function parseCSV(data) {
 	if (warnings.length > 0) {
 		console.warn("parseCSV warnings:\n" + warnings.join("\n"));
 	}
+	// CRITICAL: Check for duplicate hole IDs after parsing
+	const duplicateCheck = checkAndResolveDuplicateHoleIDs(points, "CSV import");
 
+	if (duplicateCheck.hasDuplicates) {
+		console.log("Resolved", duplicateCheck.resolved.length, "duplicate hole ID conflicts");
+
+		// Show summary to user
+		let summary = "Duplicate hole IDs resolved:\n\n";
+		duplicateCheck.resolved.forEach((resolution) => {
+			if (resolution.action === "renumbered") {
+				summary += "• " + resolution.entityName + ":" + resolution.oldID + " → " + resolution.newID + "\n";
+			} else {
+				summary += "• " + resolution.entityName + ":" + resolution.holeID + " (" + resolution.action + ")\n";
+			}
+		});
+
+		alert(summary);
+	}
 	holeTimes = calculateTimes(points);
 	drawData(points, selectedHole);
 	return points;
@@ -9245,7 +9620,13 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 
 	let newHoleID = null;
 	if (useCustomHoleID === true) {
-		newHoleID = holeID;
+		// CRITICAL: Check for duplicate hole ID before using the custom ID
+		const originalHoleID = holeID.toString();
+		newHoleID = validateUniqueHoleID(entityName, originalHoleID);
+
+		if (newHoleID !== originalHoleID) {
+			console.warn("🚨 Duplicate hole ID detected during addHole:", entityName + ":" + originalHoleID, "→ Auto-assigned:", newHoleID);
+		}
 	} else if (useCustomHoleID === false) {
 		if (points !== null) {
 			newHoleID = points.length + 1;
@@ -11109,6 +11490,15 @@ function refreshPoints() {
 	const csvString = localStorage.getItem("kirraDataPoints");
 	if (csvString) {
 		points = parseCSV(csvString);
+
+		// CRITICAL: Validate data integrity after reload
+		const duplicateCheck = checkAndResolveDuplicateHoleIDs(points, "data reload");
+		if (duplicateCheck.hasDuplicates) {
+			console.warn("🚨 Data corruption detected during reload - duplicates resolved automatically");
+			// Save the corrected data back to localStorage
+			saveHolesToLocalStorage(points);
+		}
+
 		//updateCentroids();
 		holeTimes = calculateTimes(points);
 		const result = recalculateContours(points, deltaX, deltaY);
@@ -11422,9 +11812,10 @@ window.addEventListener("load", () => {
 	resetAppToDefaults();
 
 	//----------------- KEY LISTENERS ----------------//
-	//add keylistener to escape key to reset everything
+	//add keylistener to escape key to reset current tool selection/progress
 	document.addEventListener("keydown", (event) => {
 		if (event.key === "Escape") {
+			console.log("Escape pressed - resetting current tool progress");
 			console.log("Escape pressed - resetting all");
 			resetAllSelectedStores();
 
@@ -11435,7 +11826,69 @@ window.addEventListener("load", () => {
 				isPolygonSelectionActive = false;
 			}
 
-			// Refresh display
+			// Reset pattern tool states but keep tool active
+			if (isPatternInPolygonActive) {
+				selectedPolygon = null;
+				patternStartPoint = null;
+				patternEndPoint = null;
+				patternReferencePoint = null;
+				patternPolygonStep = 0; // ← This should be patternPolygonStep, not patternInPolygonStep
+				updateStatusMessage("Pattern tool reset - select polygon to start");
+				console.log("✅ Pattern in polygon tool reset");
+			}
+
+			// Reset line tool states but keep tool active
+			else if (isHolesAlongLineActive) {
+				lineStartPoint = null;
+				lineEndPoint = null;
+				holesLineStep = 0;
+				updateStatusMessage("Holes along line tool reset\nClick to set start point");
+				console.log("✅ Holes along line tool reset");
+			}
+
+			// Reset polyline tool states but keep tool active
+			else if (isHolesAlongPolyLineActive) {
+				selectedPolyline = null;
+				polylineStartPoint = null;
+				polylineEndPoint = null;
+				polylineStep = 0;
+				updateStatusMessage("Step 1: Click on an existing line,\npolyline, or polygon edge to select it.");
+				console.log("✅ Holes along polyline tool reset");
+			}
+
+			// Reset polygon selection but keep tool active
+			else if (isPolygonSelectionActive) {
+				polyPointsX = [];
+				polyPointsY = [];
+				updateStatusMessage("Polygon pattern selection reset\nStart new selection");
+				console.log("✅ Polygon selection reset");
+			}
+
+			// Reset ruler tool but keep active
+			else if (isRulerActive) {
+				rulerStartPoint = null;
+				rulerEndPoint = null;
+				updateStatusMessage("Ruler tool reset\nClick to set start point");
+				console.log("✅ Ruler tool reset");
+			}
+
+			// Reset protractor tool but keep active
+			else if (isRulerProtractorActive) {
+				rulerProtractorPoints = [];
+				updateStatusMessage("Protractor tool reset\nClick to set center point");
+				console.log("✅ Protractor tool reset");
+			}
+
+			// For other tools, just reset general selection states
+			else {
+				selectedPolygon = null;
+				selectedPolyline = null;
+				firstSelectedHole = null;
+				secondSelectedHole = null;
+				console.log("✅ General selection states reset");
+			}
+
+			// Refresh display to show reset state
 			drawData(points, selectedHole);
 		}
 	});
@@ -13705,8 +14158,17 @@ patternInPolygonTool.addEventListener("change", function () {
 		isPatternInPolygonActive = false;
 		patternPolygonStep = 0;
 
+		// CRITICAL: Clear all selection state to prevent old selections from appearing
+		selectedPolygon = null;
+		patternStartPoint = null;
+		patternEndPoint = null;
+		patternReferencePoint = null;
+
 		canvas.removeEventListener("click", handlePatternInPolygonClick);
 		canvas.removeEventListener("touchstart", handlePatternInPolygonClick);
+
+		// Reset cursor
+		canvas.style.cursor = "default";
 
 		// Restore default canvas handlers
 		canvas.addEventListener("mousedown", handleMouseDown);
@@ -13781,8 +14243,9 @@ function handlePatternInPolygonClick(event) {
 			updateStatusMessage("Reference point selected" + snappedMessage);
 			console.log("Pattern reference point set to:", worldX.toFixed(2), worldY.toFixed(2));
 			showPatternInPolygonPopup();
-			patternInPolygonTool.checked = false;
-			patternInPolygonTool.dispatchEvent(new Event("change"));
+			// Dont deactivate the tool here - let the popup handle it
+			// patternInPolygonTool.checked = false;
+			// patternInPolygonTool.dispatchEvent(new Event("change")); // ← THIS IS THE PROBLEM!
 			break;
 	}
 
@@ -13811,6 +14274,11 @@ holesAlongPolyLineTool.addEventListener("change", function () {
 		resetFloatingToolbarButtons("none");
 		isHolesAlongPolyLineActive = false;
 		polylineStep = 0;
+
+		// CRITICAL: Clear all selection state to prevent old selections from appearing
+		selectedPolyline = null;
+		polylineStartPoint = null;
+		polylineEndPoint = null;
 
 		canvas.removeEventListener("click", handleHolesAlongPolyLineClick);
 		canvas.removeEventListener("touchstart", handleHolesAlongPolyLineClick);
@@ -13915,9 +14383,9 @@ function handleHolesAlongPolyLineClick(event) {
 					polylineEndPoint = null;
 				}
 
-				// Reset tool
-				holesAlongPolyLineTool.checked = false;
-				holesAlongPolyLineTool.dispatchEvent(new Event("change"));
+				// DON'T deactivate the tool here - let the popup handle it
+				// holesAlongPolyLineTool.checked = false;
+				// holesAlongPolyLineTool.dispatchEvent(new Event("change"));
 			} else {
 				updateStatusMessage("Click closer to a vertex on the selected line/polygon.");
 			}
@@ -14730,59 +15198,255 @@ function generateHolesAlongLine(params) {
 		});
 	}
 }
-// Replace the getClickedPolygon function with this enhanced version:
+// Enhanced polygon selection by clicking directly on vertices or segments
 function getClickedPolygon(worldX, worldY) {
 	if (kadPolygonsMap.size === 0) return null;
 
-	const snapTolerance = 1.0; // Distance in world units to snap to vertices
+	const tolerance = 2.0; // Distance in world units to detect clicks on vertices/segments
+	const candidatePolygons = [];
 
 	// Check each polygon entity
 	for (const entity of kadPolygonsMap.values()) {
 		const polygonPoints = entity.data;
 		if (polygonPoints.length < 3) continue; // Need at least 3 points for a polygon
 
-		// Create arrays for X and Y coordinates
-		const polyX = polygonPoints.map((point) => point.pointXLocation);
-		const polyY = polygonPoints.map((point) => point.pointYLocation);
+		let minDistance = Infinity;
+		let clickedVertex = null;
+		let clickedSegment = null;
 
-		// Use your existing isPointInPolygon function to check if click is inside
-		if (isPointInPolygon(worldX, worldY, polyX, polyY)) {
-			console.log("Found polygon:", entity);
+		// Check vertices first (higher priority)
+		for (let i = 0; i < polygonPoints.length; i++) {
+			const point = polygonPoints[i];
+			const distance = Math.sqrt(Math.pow(worldX - point.pointXLocation, 2) + Math.pow(worldY - point.pointYLocation, 2));
 
-			// Check if click is near any vertex for snapping
-			let snappedX = worldX;
-			let snappedY = worldY;
-			let snappedToVertex = false;
+			if (distance <= tolerance && distance < minDistance) {
+				minDistance = distance;
+				clickedVertex = {
+					index: i,
+					x: point.pointXLocation,
+					y: point.pointYLocation,
+					distance: distance
+				};
+			}
+		}
 
-			for (const point of polygonPoints) {
-				const distance = Math.sqrt(Math.pow(worldX - point.pointXLocation, 2) + Math.pow(worldY - point.pointYLocation, 2));
+		// If no vertex found, check polygon segments
+		if (!clickedVertex) {
+			for (let i = 0; i < polygonPoints.length; i++) {
+				const p1 = polygonPoints[i];
+				const p2 = polygonPoints[(i + 1) % polygonPoints.length]; // Close the polygon
 
-				if (distance <= snapTolerance) {
-					// Snap to this vertex
-					snappedX = point.pointXLocation;
-					snappedY = point.pointYLocation;
-					snappedToVertex = true;
-					console.log("Snapped to vertex at:", snappedX, snappedY);
-					break;
+				const distance = pointToLineSegmentDistance(worldX, worldY, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
+
+				if (distance <= tolerance && distance < minDistance) {
+					minDistance = distance;
+					clickedSegment = {
+						startIndex: i,
+						endIndex: (i + 1) % polygonPoints.length,
+						startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
+						endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
+						distance: distance
+					};
 				}
 			}
+		}
 
-			if (!snappedToVertex) {
-				console.log("Using mouse location:", worldX, worldY);
-			}
-
-			return {
+		// If we found a vertex or segment, add this polygon as a candidate
+		if (clickedVertex || clickedSegment) {
+			candidatePolygons.push({
 				entity: entity,
 				points: polygonPoints,
 				vertices: polygonPoints.map((p) => ({ x: p.pointXLocation, y: p.pointYLocation })),
-				clickedX: snappedX,
-				clickedY: snappedY,
-				snappedToVertex: snappedToVertex
-			};
+				clickedVertex: clickedVertex,
+				clickedSegment: clickedSegment,
+				minDistance: minDistance,
+				selectionType: clickedVertex ? "vertex" : "segment"
+			});
 		}
 	}
 
-	return null;
+	// If no polygons found, return null
+	if (candidatePolygons.length === 0) {
+		console.log("No polygons found near click location");
+		return null;
+	}
+
+	// Sort by distance (closest first)
+	candidatePolygons.sort((a, b) => a.minDistance - b.minDistance);
+	const selectedPoly = candidatePolygons[0];
+
+	console.log("Found", candidatePolygons.length, "polygons near click");
+	console.log("Selected polygon:", selectedPoly.entity.name, "by", selectedPoly.selectionType, "at distance:", selectedPoly.minDistance.toFixed(3));
+
+	// Determine the snap point
+	let snappedX = worldX;
+	let snappedY = worldY;
+	let snappedToVertex = false;
+
+	if (selectedPoly.clickedVertex) {
+		// Snap to the clicked vertex
+		snappedX = selectedPoly.clickedVertex.x;
+		snappedY = selectedPoly.clickedVertex.y;
+		snappedToVertex = true;
+		console.log("Snapped to vertex", selectedPoly.clickedVertex.index, "at:", snappedX.toFixed(2), snappedY.toFixed(2));
+	} else if (selectedPoly.clickedSegment) {
+		// Find the closest point on the clicked segment
+		const seg = selectedPoly.clickedSegment;
+		const closestPoint = getClosestPointOnLineSegment(worldX, worldY, seg.startPoint.x, seg.startPoint.y, seg.endPoint.x, seg.endPoint.y);
+		snappedX = closestPoint.x;
+		snappedY = closestPoint.y;
+		console.log("Snapped to segment", seg.startIndex + "-" + seg.endIndex, "at:", snappedX.toFixed(2), snappedY.toFixed(2));
+	}
+
+	return {
+		entity: selectedPoly.entity,
+		points: selectedPoly.points,
+		vertices: selectedPoly.vertices,
+		clickedX: snappedX,
+		clickedY: snappedY,
+		snappedToVertex: snappedToVertex,
+		selectionType: selectedPoly.selectionType,
+		clickedVertex: selectedPoly.clickedVertex,
+		clickedSegment: selectedPoly.clickedSegment
+	};
+}
+// Enhanced polyline selection by clicking directly on vertices or segments
+function getClickedPolyline(worldX, worldY) {
+	if (kadLinesMap.size === 0) return null;
+
+	const tolerance = 2.0; // Distance in world units to detect clicks on vertices/segments
+	const candidatePolylines = [];
+
+	// Check each polyline entity
+	for (const entity of kadLinesMap.values()) {
+		const linePoints = entity.data;
+		if (linePoints.length < 2) continue; // Need at least 2 points for a line
+
+		let minDistance = Infinity;
+		let clickedVertex = null;
+		let clickedSegment = null;
+
+		// Check vertices first (higher priority)
+		for (let i = 0; i < linePoints.length; i++) {
+			const point = linePoints[i];
+			const distance = Math.sqrt(Math.pow(worldX - point.pointXLocation, 2) + Math.pow(worldY - point.pointYLocation, 2));
+
+			if (distance <= tolerance && distance < minDistance) {
+				minDistance = distance;
+				clickedVertex = {
+					index: i,
+					x: point.pointXLocation,
+					y: point.pointYLocation,
+					distance: distance
+				};
+			}
+		}
+
+		// If no vertex found, check line segments
+		if (!clickedVertex) {
+			for (let i = 0; i < linePoints.length - 1; i++) {
+				const p1 = linePoints[i];
+				const p2 = linePoints[i + 1];
+
+				const distance = pointToLineSegmentDistance(worldX, worldY, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
+
+				if (distance <= tolerance && distance < minDistance) {
+					minDistance = distance;
+					clickedSegment = {
+						startIndex: i,
+						endIndex: i + 1,
+						startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
+						endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
+						distance: distance
+					};
+				}
+			}
+		}
+
+		// If we found a vertex or segment, add this polyline as a candidate
+		if (clickedVertex || clickedSegment) {
+			candidatePolylines.push({
+				entity: entity,
+				points: linePoints,
+				vertices: linePoints.map((p) => ({ x: p.pointXLocation, y: p.pointYLocation })),
+				clickedVertex: clickedVertex,
+				clickedSegment: clickedSegment,
+				minDistance: minDistance,
+				selectionType: clickedVertex ? "vertex" : "segment"
+			});
+		}
+	}
+
+	// If no polylines found, return null
+	if (candidatePolylines.length === 0) {
+		console.log("No polylines found near click location");
+		return null;
+	}
+
+	// Sort by distance (closest first)
+	candidatePolylines.sort((a, b) => a.minDistance - b.minDistance);
+	const selectedPolyline = candidatePolylines[0];
+
+	console.log("Found", candidatePolylines.length, "polylines near click");
+	console.log("Selected polyline:", selectedPolyline.entity.name, "by", selectedPolyline.selectionType, "at distance:", selectedPolyline.minDistance.toFixed(3));
+
+	// Determine the snap point (MISSING FROM YOUR VERSION)
+	let snappedX = worldX;
+	let snappedY = worldY;
+	let snappedToVertex = false;
+
+	if (selectedPolyline.clickedVertex) {
+		// Snap to the clicked vertex
+		snappedX = selectedPolyline.clickedVertex.x;
+		snappedY = selectedPolyline.clickedVertex.y;
+		snappedToVertex = true;
+		console.log("Snapped to vertex", selectedPolyline.clickedVertex.index, "at:", snappedX.toFixed(2), snappedY.toFixed(2));
+	} else if (selectedPolyline.clickedSegment) {
+		// Find the closest point on the clicked segment
+		const seg = selectedPolyline.clickedSegment;
+		const closestPoint = getClosestPointOnLineSegment(worldX, worldY, seg.startPoint.x, seg.startPoint.y, seg.endPoint.x, seg.endPoint.y);
+		snappedX = closestPoint.x;
+		snappedY = closestPoint.y;
+		console.log("Snapped to segment", seg.startIndex + "-" + seg.endIndex, "at:", snappedX.toFixed(2), snappedY.toFixed(2));
+	}
+
+	return {
+		entity: selectedPolyline.entity,
+		points: selectedPolyline.points,
+		vertices: selectedPolyline.vertices,
+		clickedX: snappedX, // MISSING - NEEDED FOR COMPATIBILITY
+		clickedY: snappedY, // MISSING - NEEDED FOR COMPATIBILITY
+		snappedToVertex: snappedToVertex, // MISSING - NEEDED FOR COMPATIBILITY
+		selectionType: selectedPolyline.selectionType,
+		clickedVertex: selectedPolyline.clickedVertex,
+		clickedSegment: selectedPolyline.clickedSegment
+	};
+}
+// Helper function to get closest point on a line segment
+function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2) {
+	const A = px - x1;
+	const B = py - y1;
+	const C = x2 - x1;
+	const D = y2 - y1;
+
+	const dot = A * C + B * D;
+	const lenSq = C * C + D * D;
+
+	if (lenSq === 0) {
+		// Line segment is actually a point
+		return { x: x1, y: y1 };
+	}
+
+	let param = dot / lenSq;
+
+	// Clamp parameter to line segment
+	if (param < 0) param = 0;
+	if (param > 1) param = 1;
+
+	return {
+		x: x1 + param * C,
+		y: y1 + param * D
+	};
 }
 
 // Add this helper function for point-in-polygon detection
@@ -14863,6 +15527,7 @@ function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
 	const dy = py - yy;
 	return Math.sqrt(dx * dx + dy * dy);
 }
+
 // Add this new function for the pattern in polygon popup
 function showPatternInPolygonPopup() {
 	// Retrieve the last entered values from local storage
@@ -15109,92 +15774,6 @@ function showPatternInPolygonPopup() {
 			patternInPolygonTool.dispatchEvent(new Event("change"));
 		});
 }
-// Add this function to draw pattern selection visuals
-// function drawPatternSelectionVisuals() {
-// 	if (!isPatternInPolygonActive) return;
-
-// 	// Draw selected polygon outline in bright color
-// 	if (selectedPolygon) {
-// 		ctx.strokeStyle = "#00FF00"; // Bright green
-// 		ctx.lineWidth = 3;
-// 		ctx.setLineDash([]);
-
-// 		const polygonPoints = selectedPolygon.points || selectedPolygon.data;
-// 		if (polygonPoints && polygonPoints.length > 0) {
-// 			ctx.beginPath();
-// 			polygonPoints.forEach((point, index) => {
-// 				const x = point.pointXLocation || point.x;
-// 				const y = point.pointYLocation || point.y;
-// 				const [canvasX, canvasY] = worldToCanvas(x, y);
-
-// 				if (index === 0) {
-// 					ctx.moveTo(canvasX, canvasY);
-// 				} else {
-// 					ctx.lineTo(canvasX, canvasY);
-// 				}
-// 			});
-// 			ctx.closePath();
-// 			ctx.stroke();
-// 		}
-// 	}
-
-// 	// Draw start point (bright blue)
-// 	if (patternStartPoint) {
-// 		const [startX, startY] = worldToCanvas(patternStartPoint.x, patternStartPoint.y);
-// 		ctx.fillStyle = "rgba(0, 255, 255, 0.6)";
-// 		ctx.beginPath();
-// 		ctx.arc(startX, startY, 3, 0, 2 * Math.PI);
-// 		ctx.fill();
-
-// 		// Add label
-// 		ctx.fillStyle = "rgba(0, 255, 0, 0.6)";
-// 		ctx.font = "10px Arial";
-// 		ctx.fillText("START", startX + 12, startY - 8);
-// 	}
-
-// 	// Draw end point (bright red)
-// 	if (patternEndPoint) {
-// 		const [endX, endY] = worldToCanvas(patternEndPoint.x, patternEndPoint.y);
-// 		ctx.fillStyle = "rgba(255, 155, 0, 0.6)";
-// 		ctx.beginPath();
-// 		ctx.arc(endX, endY, 4, 0, 2 * Math.PI);
-// 		ctx.fill();
-
-// 		// Add label
-// 		ctx.fillStyle = "rgba(255, 0, 0, 0.6)";
-// 		ctx.font = "10px Arial";
-// 		ctx.fillText("END", endX + 12, endY - 8);
-// 	}
-
-// 	// Draw reference point (bright yellow)
-// 	if (patternReferencePoint) {
-// 		const [refX, refY] = worldToCanvas(patternReferencePoint.x, patternReferencePoint.y);
-// 		ctx.fillStyle = "rgba(255, 0, 255, 0.8)";
-// 		ctx.beginPath();
-// 		ctx.arc(refX, refY, 4, 0, 2 * Math.PI);
-// 		ctx.fill();
-
-// 		// Add label
-// 		ctx.fillStyle = "rgba(255, 0, 255, 0.6)";
-// 		ctx.font = "10px Arial";
-// 		ctx.fillText("REF", refX + 12, refY - 8);
-// 	}
-
-// 	// Draw line from start to end to show spacing direction
-// 	if (patternStartPoint && patternEndPoint) {
-// 		const [startX, startY] = worldToCanvas(patternStartPoint.x, patternStartPoint.y);
-// 		const [endX, endY] = worldToCanvas(patternEndPoint.x, patternEndPoint.y);
-
-// 		ctx.strokeStyle = "rgba(0, 0255, 0.6)";
-// 		ctx.lineWidth = 1;
-// 		ctx.setLineDash([5, 5]);
-// 		ctx.beginPath();
-// 		ctx.moveTo(startX, startY);
-// 		ctx.lineTo(endX, endY);
-// 		ctx.stroke();
-// 		ctx.setLineDash([]);
-// 	}
-// }
 
 function drawPatternSelectionVisuals() {
 	if (!isPatternInPolygonActive) return;
@@ -15248,6 +15827,38 @@ function drawPatternSelectionVisuals() {
 		ctx.font = "12px Roboto";
 		ctx.fontWeight = "bold";
 		ctx.fillText("START", startX + 12, startY - 8);
+		// Draw interactive preview line to mouse cursor when start point is set but end point isn't
+		if (!patternEndPoint) {
+			ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
+			ctx.lineWidth = 1;
+			ctx.setLineDash([5, 5]);
+			ctx.beginPath();
+			ctx.moveTo(startX, startY);
+			ctx.lineTo(currentMouseCanvasX, currentMouseCanvasY);
+			ctx.stroke();
+			ctx.setLineDash([]);
+
+			// Show preview distance
+			const dx = currentMouseWorldX - patternStartPoint.x;
+			const dy = currentMouseWorldY - patternStartPoint.y;
+			const previewLength = Math.sqrt(dx * dx + dy * dy);
+
+			const midX = (startX + currentMouseCanvasX) / 2;
+			const midY = (startY + currentMouseCanvasY) / 2;
+
+			ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
+			ctx.fillRect(midX - 30, midY - 15, 60, 20);
+			ctx.strokeStyle = strokeColour;
+			ctx.lineWidth = 1;
+			ctx.strokeRect(midX - 30, midY - 15, 60, 20);
+
+			ctx.fillStyle = strokeColour;
+			ctx.font = "12px Roboto";
+			ctx.fontWeight = "bold";
+			ctx.textAlign = "center";
+			ctx.fillText(previewLength.toFixed(2) + "m", midX, midY);
+			ctx.textAlign = "left";
+		}
 	}
 
 	// Draw end point (bright red)
@@ -15306,12 +15917,12 @@ function drawPatternSelectionVisuals() {
 
 		ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
 		ctx.fillRect(midX - 30, midY - 15, 60, 20);
-		ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.strokeStyle = strokeColour;
 		ctx.lineWidth = 1;
 		ctx.strokeRect(midX - 30, midY - 15, 60, 20);
 
-		ctx.fillStyle = "rgba(0, 0, 0, 1)";
-		ctx.font = "10px Roboto";
+		ctx.fillStyle = strokeColour;
+		ctx.font = "12px Roboto";
 		ctx.fontWeight = "bold";
 		ctx.textAlign = "center";
 		ctx.fillText(lineLength.toFixed(2) + "m", midX, midY);
@@ -15406,6 +16017,39 @@ function drawHolesAlongLineVisuals() {
 		ctx.font = "12px Roboto";
 		ctx.fontWeight = "bold";
 		ctx.fillText("START", startX + 10, startY - 10);
+
+		// Draw interactive preview line to mouse cursor when start point is set but end point isn't
+		if (!lineEndPoint && holesLineStep === 1) {
+			ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
+			ctx.lineWidth = 1;
+			ctx.setLineDash([5, 5]);
+			ctx.beginPath();
+			ctx.moveTo(startX, startY);
+			ctx.lineTo(currentMouseCanvasX, currentMouseCanvasY);
+			ctx.stroke();
+			ctx.setLineDash([]);
+
+			// Show preview distance
+			const dx = currentMouseWorldX - lineStartPoint.x;
+			const dy = currentMouseWorldY - lineStartPoint.y;
+			const previewLength = Math.sqrt(dx * dx + dy * dy);
+
+			const midX = (startX + currentMouseCanvasX) / 2;
+			const midY = (startY + currentMouseCanvasY) / 2;
+
+			ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
+			ctx.fillRect(midX - 30, midY - 15, 60, 20);
+			ctx.strokeStyle = strokeColour;
+			ctx.lineWidth = 1;
+			ctx.strokeRect(midX - 30, midY - 15, 60, 20);
+
+			ctx.fillStyle = strokeColour;
+			ctx.font = "12px Roboto";
+			ctx.fontWeight = "bold";
+			ctx.textAlign = "center";
+			ctx.fillText(previewLength.toFixed(2) + "m", midX, midY);
+			ctx.textAlign = "left";
+		}
 	}
 
 	// Draw end point (bright red/orange) when selected
@@ -15418,7 +16062,7 @@ function drawHolesAlongLineVisuals() {
 
 		// Add label
 		ctx.fillStyle = "rgba(255, 0, 0, 1)";
-		ctx.font = "12px Arial";
+		ctx.font = "12px Roboto";
 		ctx.fontWeight = "bold";
 		ctx.fillText("END", endX + 10, endY - 10);
 	}
@@ -15449,12 +16093,12 @@ function drawHolesAlongLineVisuals() {
 
 		ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
 		ctx.fillRect(midX - 30, midY - 15, 60, 20);
-		ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+		ctx.strokeStyle = strokeColour;
 		ctx.lineWidth = 1;
 		ctx.strokeRect(midX - 30, midY - 15, 60, 20);
 
-		ctx.fillStyle = "rgba(0, 0, 0, 1)";
-		ctx.font = "10px Roboto";
+		ctx.fillStyle = strokeColour;
+		ctx.font = "12px Roboto";
 		ctx.fontWeight = "bold";
 		ctx.textAlign = "center";
 		ctx.fillText(lineLength.toFixed(2) + "m", midX, midY);
@@ -15648,7 +16292,7 @@ function showHolesAlongPolylinePopup(vertices) {
 	Swal.fire({
 		title: "Generate Holes Along Polyline",
 		showCancelButton: true,
-		confirmButtonText: "Generate Holes",
+		confirmButtonText: "OK",
 		cancelButtonText: "Cancel",
 		html: `
         <div class="button-container-2col">
@@ -15788,6 +16432,9 @@ function showHolesAlongPolylinePopup(vertices) {
 		// Clear selection
 		selectedVertices = [];
 		drawData(points, selectedHole);
+		// Add tool deactivation here if it's missing:
+		holesAlongPolyLineTool.checked = false;
+		holesAlongPolyLineTool.dispatchEvent(new Event("change"));
 	});
 }
 
