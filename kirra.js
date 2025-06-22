@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250622.0024AWST"
-const buildVersion = "20250622.0024AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250622.1940AWST"
+const buildVersion = "20250622.1940AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -56,6 +56,9 @@ function updatePopup() {
 				<br><label class="labelWhite18">✅ ⭐ Pattern in Poly, on ployline, arbitary   </label>
 				<br><label class="labelWhite18">✅ Snap to hole collar, grade, toe, vertex   </label>
 				<br><label class="labelWhite18">✅ ⭐ Surface Visualisation and 5 legends      </label>
+				<br><label class="labelWhite12"> •• Support for:       </label>
+				<br><label class="labelWhite12"> •••• {obj, csv, xyz, asc, ply, pts, txt clouds}       </label>
+				
 				<br><label class="labelWhite18">✅ Assign holes to grade/collar surface     </label>
 				<br><label class="labelWhite18">✅ Status messaging and instructions         </label>
                 <br><label class="labelWhite18">✅ UX/UI, EventListener Clean up            </label>
@@ -12099,8 +12102,19 @@ function updateCentroids() {
 			}
 		}
 	}
-	centroidX = sumX / records;
-	centroidY = sumY / records;
+	// Include surface points in centroid calculation
+	if (surfacePoints && surfacePoints.length > 0) {
+		for (const point of surfacePoints) {
+			sumX += point.x;
+			sumY += point.y;
+			records++;
+		}
+	}
+
+	if (records > 0) {
+		centroidX = sumX / records;
+		centroidY = sumY / records;
+	}
 }
 
 const darkModeToggle = document.getElementById("dark-mode-toggle");
@@ -12159,6 +12173,51 @@ window.addEventListener("load", () => {
 	}
 	resetAppToDefaults();
 
+	function endKadTools() {
+		// Check if any KAD drawing tool is active
+		const anyKADToolActive = addPointDraw.checked || addLineDraw.checked || addCircleDraw.checked || addPolyDraw.checked || addTextDraw.checked;
+
+		if (anyKADToolActive) {
+			// Cancel current tool entirely
+			addPointDraw.checked = false;
+			addLineDraw.checked = false;
+			addCircleDraw.checked = false;
+			addPolyDraw.checked = false;
+			addTextDraw.checked = false;
+
+			// Reset states
+			createNewEntity = true;
+			lastKADDrawPoint = null;
+
+			// Update drawing flags
+			isDrawingPoint = false;
+			isDrawingLine = false;
+			isDrawingCircle = false;
+			isDrawingPoly = false;
+			isDrawingText = false;
+
+			updateStatusMessage("Drawing tools cancelled");
+			setTimeout(() => {
+				updateStatusMessage("");
+			}, 1500);
+
+			// Redraw to clear any preview lines/indicators
+			drawData(points, selectedHole);
+		}
+
+		// Also handle polygon selection escape
+		if (isPolygonSelectionActive) {
+			isPolygonSelectionActive = false;
+			polyPointsX = [];
+			polyPointsY = [];
+			updateStatusMessage("Polygon selection cancelled");
+			setTimeout(() => {
+				updateStatusMessage("");
+			}, 1500);
+			drawData(points, selectedHole);
+		}
+	}
+
 	//----------------- KEY LISTENERS ----------------//
 	//add keylistener to escape key to reset current tool selection/progress
 	document.addEventListener("keydown", (event) => {
@@ -12166,6 +12225,8 @@ window.addEventListener("load", () => {
 			console.log("Escape pressed - resetting current tool progress");
 			console.log("Escape pressed - resetting all");
 			resetAllSelectedStores();
+
+			endKadTools();
 
 			// Reset polygon selection if active
 			if (isPolygonSelectionActive) {
@@ -12959,16 +13020,50 @@ selectPointerTool.addEventListener("change", function () {
 		updateStatusMessage("");
 	}
 });
+
+// Update the function to properly check and handle KAD tools
+function kadContextMenu(e) {
+	e.preventDefault(); // Prevent context menu
+
+	// Check if any KAD drawing tool is active
+	const anyKADToolActive = addPointDraw.checked || addLineDraw.checked || addCircleDraw.checked || addPolyDraw.checked || addTextDraw.checked;
+
+	if (anyKADToolActive) {
+		// Start a new object within the same tool
+		createNewEntity = true; // This will create a new entity name on next click
+		lastKADDrawPoint = null; // Reset preview line
+
+		// Show status message
+		updateStatusMessage("Starting new object - continue drawing");
+
+		// Brief visual feedback
+		setTimeout(() => {
+			updateStatusMessage("");
+		}, 1500);
+
+		// Redraw to clear any preview lines
+		drawData(points, selectedHole);
+	}
+}
+
+// Update the main contextmenu event listener to fix the condition
 canvas.addEventListener("contextmenu", function (e) {
 	e.preventDefault(); // Prevent context menu
+
+	// Check if any KAD drawing tool is active (fix the condition)
+	const anyKADToolActive = addPointDraw.checked || addLineDraw.checked || addCircleDraw.checked || addPolyDraw.checked || addTextDraw.checked;
 
 	// If polygon selection is active, handle polygon completion
 	if (isPolygonSelectionActive) {
 		selectInsidePolygon(e); // Handle right-click as completion
 	}
 	// If surface is loaded and polygon selection is not active, show surface menu
-	else if (surfaceTriangles.length > 0) {
+	else if (surfaceTriangles.length > 0 && !anyKADToolActive) {
 		showSurfaceContextMenu(e.clientX, e.clientY);
+	}
+	// If any KAD tool is active, handle KAD context menu
+	else if (anyKADToolActive) {
+		kadContextMenu(e);
 	}
 });
 
@@ -13171,10 +13266,7 @@ selectByPolygonTool.addEventListener("change", function () {
 		canvas.addEventListener("click", selectInsidePolygon);
 		canvas.addEventListener("touchstart", selectInsidePolygonTouch);
 		canvas.addEventListener("mousemove", handlePolygonMouseMove);
-		// canvas.addEventListener("contextmenu", function (e) {
-		// 	e.preventDefault(); // Prevent context menu
-		// 	selectInsidePolygon(e); // Handle right-click as completion
-		// });
+
 		// Clear any existing selection
 		polyPointsX = [];
 		polyPointsY = [];
@@ -16838,26 +16930,118 @@ function interpolateZFromSurface(x, y) {
 	}
 	return null; // Point not on surface
 }
+// Enhanced loadPointCloudFile with comprehensive format support
 function loadPointCloudFile(file) {
 	const reader = new FileReader();
+
+	// Show loading progress
+	updateStatusMessage("Loading surface file: " + file.name + "...");
+
 	reader.onload = function (e) {
 		const content = e.target.result;
-		const points = parsePointCloudData(content);
-		createSurfaceFromPoints(points);
+		const fileExtension = file.name.split(".").pop().toLowerCase();
+
+		let points;
+
+		try {
+			switch (fileExtension) {
+				case "obj":
+					points = parseOBJFile(content);
+					break;
+				case "xyz":
+					points = parseXYZFile(content);
+					break;
+				case "asc":
+					points = parseASCFile(content);
+					break;
+				case "txt":
+					points = parseTXTFile(content);
+					break;
+				case "csv":
+					points = parseCSVPointCloud(content);
+					break;
+				case "ply":
+					points = parsePLYFile(content);
+					break;
+				case "pts":
+					points = parsePTSFile(content);
+					break;
+				default:
+					// Default to the existing parser for backward compatibility
+					points = parsePointCloudData(content);
+			}
+
+			if (points && points.length > 0) {
+				// Check if decimation is needed for performance
+				if (points.length > 10000) {
+					showDecimationWarning(points, file.name);
+				} else {
+					processSurfacePoints(points, file.name);
+				}
+			} else {
+				updateStatusMessage("No valid points found in: " + file.name);
+			}
+		} catch (error) {
+			console.error("Error parsing surface file:", error);
+			updateStatusMessage("Error loading surface file: " + error.message);
+		}
 	};
 	reader.readAsText(file);
 }
 
-function parsePointCloudData(content) {
+// Process surface points with progress indication
+function processSurfacePoints(points, fileName) {
+	updateStatusMessage("Creating surface from " + points.length.toLocaleString() + " points...");
+
+	// Use setTimeout to allow UI update before processing
+	setTimeout(() => {
+		try {
+			createSurfaceFromPoints(points);
+			updateStatusMessage("Surface loaded: " + fileName + " (" + points.length.toLocaleString() + " points)");
+		} catch (error) {
+			console.error("Error creating surface:", error);
+			updateStatusMessage("Error creating surface: " + error.message);
+		}
+	}, 100);
+}
+
+// Enhanced OBJ parser
+function parseOBJFile(content) {
 	const lines = content.split("\n");
 	const points = [];
 
 	lines.forEach((line) => {
-		const parts = line.trim().split(/\s+|,/); // Handle space or comma delimited
+		const trimmedLine = line.trim();
+		if (trimmedLine.startsWith("v ")) {
+			// Only vertex lines
+			const parts = trimmedLine.split(/\s+/);
+			if (parts.length >= 4) {
+				const x = parseFloat(parts[1]);
+				const y = parseFloat(parts[2]);
+				const z = parseFloat(parts[3]);
+
+				if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+					points.push({ x, y, z });
+				}
+			}
+		}
+	});
+
+	return points;
+}
+
+// XYZ parser (space-delimited X Y Z format)
+function parseXYZFile(content) {
+	const lines = content.split("\n");
+	const points = [];
+
+	lines.forEach((line) => {
+		const parts = line.trim().split(/\s+/);
 		if (parts.length >= 3) {
 			const x = parseFloat(parts[0]);
 			const y = parseFloat(parts[1]);
 			const z = parseFloat(parts[2]);
+
 			if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
 				points.push({ x, y, z });
 			}
@@ -16867,10 +17051,188 @@ function parsePointCloudData(content) {
 	return points;
 }
 
+// ASC parser (ASCII grid format, commonly used in GIS)
+function parseASCFile(content) {
+	const lines = content.split("\n");
+	const points = [];
+
+	// Parse header information
+	let ncols, nrows, xllcorner, yllcorner, cellsize, nodata_value;
+	let headerLines = 0;
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim().toLowerCase();
+		if (line.startsWith("ncols")) {
+			ncols = parseInt(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.startsWith("nrows")) {
+			nrows = parseInt(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.startsWith("xllcorner") || line.startsWith("xllcenter")) {
+			xllcorner = parseFloat(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.startsWith("yllcorner") || line.startsWith("yllcenter")) {
+			yllcorner = parseFloat(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.startsWith("cellsize")) {
+			cellsize = parseFloat(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.startsWith("nodata_value")) {
+			nodata_value = parseFloat(line.split(/\s+/)[1]);
+			headerLines++;
+		} else if (line.length > 0 && !isNaN(parseFloat(line.split(/\s+/)[0]))) {
+			break; // End of header, start of data
+		}
+	}
+
+	// Parse elevation data
+	for (let row = 0; row < nrows; row++) {
+		const lineIndex = headerLines + row;
+		if (lineIndex < lines.length) {
+			const values = lines[lineIndex].trim().split(/\s+/);
+			for (let col = 0; col < ncols && col < values.length; col++) {
+				const z = parseFloat(values[col]);
+				if (!isNaN(z) && z !== nodata_value) {
+					const x = xllcorner + col * cellsize;
+					const y = yllcorner + (nrows - 1 - row) * cellsize; // Flip Y coordinate
+					points.push({ x, y, z });
+				}
+			}
+		}
+	}
+
+	return points;
+}
+// PLY parser (ASCII format)
+function parsePLYFile(content) {
+	const lines = content.split("\n");
+	const points = [];
+	let inHeader = true;
+	let vertexCount = 0;
+
+	for (let i = 0; i < lines.length; i++) {
+		const line = lines[i].trim();
+
+		if (inHeader) {
+			if (line.startsWith("element vertex")) {
+				vertexCount = parseInt(line.split(" ")[2]);
+			} else if (line === "end_header") {
+				inHeader = false;
+			}
+		} else if (vertexCount > 0) {
+			const parts = line.split(/\s+/);
+			if (parts.length >= 3) {
+				const x = parseFloat(parts[0]);
+				const y = parseFloat(parts[1]);
+				const z = parseFloat(parts[2]);
+
+				if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+					points.push({ x, y, z });
+					vertexCount--;
+				}
+			}
+		}
+	}
+
+	return points;
+}
+
+// PTS parser (point count + XYZ + intensity)
+function parsePTSFile(content) {
+	const lines = content.split("\n");
+	const points = [];
+
+	// First line might be point count
+	let startIndex = 0;
+	if (lines[0] && !isNaN(parseInt(lines[0].trim()))) {
+		startIndex = 1;
+	}
+
+	for (let i = startIndex; i < lines.length; i++) {
+		const parts = lines[i].trim().split(/\s+/);
+		if (parts.length >= 3) {
+			const x = parseFloat(parts[0]);
+			const y = parseFloat(parts[1]);
+			const z = parseFloat(parts[2]);
+
+			if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+				points.push({ x, y, z });
+			}
+		}
+	}
+
+	return points;
+}
+// TXT parser (flexible text format)
+function parseTXTFile(content) {
+	const lines = content.split("\n");
+	const points = [];
+
+	lines.forEach((line) => {
+		// Skip comment lines and empty lines
+		const trimmedLine = line.trim();
+		if (trimmedLine.length === 0 || trimmedLine.startsWith("#") || trimmedLine.startsWith("//")) {
+			return;
+		}
+
+		// Try different delimiters: space, tab, comma
+		let parts = trimmedLine.split(/\s+/);
+		if (parts.length < 3) {
+			parts = trimmedLine.split("\t");
+		}
+		if (parts.length < 3) {
+			parts = trimmedLine.split(",");
+		}
+
+		if (parts.length >= 3) {
+			const x = parseFloat(parts[0]);
+			const y = parseFloat(parts[1]);
+			const z = parseFloat(parts[2]);
+
+			if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+				points.push({ x, y, z });
+			}
+		}
+	});
+
+	return points;
+}
+
+// CSV parser specifically for point clouds
+function parseCSVPointCloud(content) {
+	const lines = content.split("\n");
+	const points = [];
+	let hasHeader = false;
+
+	// Check if first line looks like a header
+	const firstLine = lines[0].trim();
+	if (firstLine.toLowerCase().includes("x") || firstLine.toLowerCase().includes("y") || firstLine.toLowerCase().includes("z")) {
+		hasHeader = true;
+	}
+
+	const startIndex = hasHeader ? 1 : 0;
+
+	for (let i = startIndex; i < lines.length; i++) {
+		const parts = lines[i].trim().split(",");
+		if (parts.length >= 3) {
+			const x = parseFloat(parts[0]);
+			const y = parseFloat(parts[1]);
+			const z = parseFloat(parts[2]);
+
+			if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+				points.push({ x, y, z });
+			}
+		}
+	}
+
+	return points;
+}
+
+// CRITICAL: Enhanced createSurfaceFromPoints with centroid calculation
 function createSurfaceFromPoints(points) {
 	surfacePoints = points;
 
-	// Use existing Delaunay triangulation (you already have this!)
+	// Use existing Delaunay triangulation
 	const coords = points.flatMap((p) => [p.x, p.y]);
 	const delaunay = new Delaunator(coords);
 
@@ -16888,7 +17250,59 @@ function createSurfaceFromPoints(points) {
 		});
 	}
 
+	// CRITICAL: Update centroids to include surface points for coordinate system
+	updateCentroids();
+
 	drawData(points, selectedHole); // Redraw with surface
+}
+// Keep the decimation warning (optional enhancement)
+function showDecimationWarning(points, fileName) {
+	const pointCount = points.length;
+
+	Swal.fire({
+		title: "Large Point Cloud Detected",
+		showCancelButton: true,
+		confirmButtonText: "Load All Points",
+		cancelButtonText: "Decimate Points",
+		icon: "warning",
+		html: `
+			<div style="text-align: center;">
+				<label class="labelWhite16"><strong>${fileName}</strong></label><br>
+				<label class="labelWhite14">Contains ${pointCount.toLocaleString()} points</label><br><br>
+				<label class="labelWhite12">⚠️ Large point clouds may cause performance issues</label><br>
+				<label class="labelWhite12">Recommended: Decimate to ~5,000 points for better performance</label>
+			</div>
+		`,
+		customClass: {
+			container: "custom-popup-container",
+			title: "swal2-title",
+			confirmButton: "confirm",
+			cancelButton: "cancel",
+			content: "swal2-content",
+			htmlContainer: "swal2-html-container",
+			icon: "swal2-icon"
+		}
+	}).then((result) => {
+		if (result.isConfirmed) {
+			createSurfaceFromPoints(points);
+		} else if (result.dismiss === Swal.DismissReason.cancel) {
+			const decimatedPoints = decimatePointCloud(points, 5000);
+			createSurfaceFromPoints(decimatedPoints);
+		}
+	});
+}
+
+function decimatePointCloud(points, targetCount) {
+	if (points.length <= targetCount) return points;
+
+	const step = Math.floor(points.length / targetCount);
+	const decimatedPoints = [];
+
+	for (let i = 0; i < points.length; i += step) {
+		decimatedPoints.push(points[i]);
+	}
+
+	return decimatedPoints;
 }
 
 function drawSurface() {
@@ -17164,7 +17578,6 @@ function drawTriangleWithGradient(triangle, globalMinZ, globalMaxZ) {
 	}
 }
 
-//NEW STUFF//
 // Helper function to assign holes to surface elevation (with proper geometry calculation)
 function assignHoleToSurfaceElevation(hole, targetElevation, type) {
 	if (type === "collar") {
