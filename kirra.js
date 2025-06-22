@@ -191,6 +191,10 @@ let isSelectionPointerActive = false;
 let polyPointsX = [];
 let polyPointsY = [];
 let isPolygonSelectionActive = false;
+// Add these variables near the top (around line 190)
+let lastKADDrawPoint = null; // Store the last drawn point from any KAD tool
+let isAnyKADDrawingActive = false; // Track if any KAD drawing tool is active
+
 let isBearingToolActive = false;
 // Add this declaration around line 99 (after bearingToolSelectedHole declaration)
 let bearingToolSelectedHole = null;
@@ -6112,6 +6116,162 @@ function drawPolygonSelection(ctx) {
 	}
 }
 
+// Enhanced KAD preview function - FIXED VERSION
+function drawKADPreviewLine(ctx) {
+	// Check which tools are active
+	const isPointActive = addPointDraw.checked;
+	const isLineActive = addLineDraw.checked;
+	const isCircleActive = addCircleDraw.checked;
+	const isPolyActive = addPolyDraw.checked;
+	const isTextActive = addTextDraw.checked;
+	const isPolygonSelectionActive_local = isPolygonSelectionActive;
+
+	const anyToolActive = isPointActive || isLineActive || isCircleActive || isPolyActive || isTextActive || isPolygonSelectionActive_local;
+
+	if (!anyToolActive) return;
+
+	// Skip if mouse is at origin (not moved yet)
+	if (currentMouseWorldX === 0 && currentMouseWorldY === 0) return;
+
+	let previewStartX = null;
+	let previewStartY = null;
+	let previewColor = "rgba(255, 255, 255, 0.7)"; // Default white
+	let previewStyle = [5, 5]; // Default dash pattern
+	let shouldDraw = false;
+
+	// Handle polygon selection first (it has its own tracking)
+	if (isPolygonSelectionActive_local && polyPointsX.length > 0) {
+		previewStartX = polyPointsX[polyPointsX.length - 1];
+		previewStartY = polyPointsY[polyPointsY.length - 1];
+		previewColor = "rgba(255, 0, 255, 0.7)"; // Magenta for polygon selection
+		previewStyle = [5, 5];
+		shouldDraw = true;
+	}
+	// For other tools, use lastKADDrawPoint if available
+	else if (lastKADDrawPoint) {
+		previewStartX = lastKADDrawPoint.x;
+		previewStartY = lastKADDrawPoint.y;
+		shouldDraw = true;
+
+		// Set colors and styles for different tools
+		if (isLineActive) {
+			previewColor = "rgba(0, 255, 255, 0.7)"; // Cyan for lines
+			previewStyle = [8, 4];
+		} else if (isCircleActive) {
+			previewColor = "rgba(255, 165, 0, 0.7)"; // Orange for circles
+			previewStyle = [6, 3];
+		} else if (isPointActive) {
+			previewColor = "rgba(255, 255, 0, 0.7)"; // Yellow for points
+			previewStyle = [4, 2];
+		} else if (isTextActive) {
+			previewColor = "rgba(0, 255, 0, 0.7)"; // Green for text
+			previewStyle = [10, 5];
+		} else if (isPolyActive) {
+			previewColor = "rgba(255, 100, 255, 0.7)"; // Purple for polygons
+			previewStyle = [7, 3];
+		}
+	}
+
+	// Show tool indicators for ALL active tools (even if no previous point)
+	const [mouseCanvasX, mouseCanvasY] = worldToCanvas(currentMouseWorldX, currentMouseWorldY);
+
+	if (isPointActive) {
+		ctx.beginPath();
+		ctx.arc(mouseCanvasX, mouseCanvasY, 4, 0, Math.PI * 2);
+		ctx.fillStyle = "rgba(255, 255, 0, 0.6)"; // Yellow for points
+		ctx.fill();
+	} else if (isCircleActive) {
+		ctx.beginPath();
+		ctx.arc(mouseCanvasX, mouseCanvasY, 4, 0, Math.PI * 2);
+		ctx.fillStyle = "rgba(255, 165, 0, 0.6)"; // Orange for circles
+		ctx.fill();
+	} else if (isTextActive) {
+		ctx.beginPath();
+		ctx.arc(mouseCanvasX, mouseCanvasY, 4, 0, Math.PI * 2);
+		ctx.fillStyle = "rgba(0, 255, 0, 0.6)"; // Green for text
+		ctx.fill();
+	} else if (isLineActive) {
+		// Show crosshair for line tool
+		ctx.beginPath();
+		ctx.setLineDash([2, 2]);
+		ctx.strokeStyle = "rgba(0, 255, 255, 0.8)"; // Cyan for lines
+		ctx.lineWidth = 1;
+		// Draw crosshair
+		ctx.moveTo(mouseCanvasX - 6, mouseCanvasY);
+		ctx.lineTo(mouseCanvasX + 6, mouseCanvasY);
+		ctx.moveTo(mouseCanvasX, mouseCanvasY - 6);
+		ctx.lineTo(mouseCanvasX, mouseCanvasY + 6);
+		ctx.stroke();
+		ctx.setLineDash([]);
+	} else if (isPolyActive) {
+		// Show square for polygon tool
+		ctx.beginPath();
+		ctx.rect(mouseCanvasX - 3, mouseCanvasY - 3, 6, 6);
+		ctx.strokeStyle = "rgba(255, 100, 255, 0.8)"; // Purple for polygons
+		ctx.lineWidth = 1;
+		ctx.stroke();
+	}
+
+	// Draw preview line if we have a start point
+	if (shouldDraw) {
+		const [startCanvasX, startCanvasY] = worldToCanvas(previewStartX, previewStartY);
+
+		// Draw the preview line
+		ctx.beginPath();
+		ctx.setLineDash(previewStyle);
+		ctx.strokeStyle = previewColor;
+		ctx.lineWidth = 2;
+		ctx.moveTo(startCanvasX, startCanvasY);
+		ctx.lineTo(mouseCanvasX, mouseCanvasY);
+		ctx.stroke();
+		ctx.setLineDash([]);
+
+		// Draw a small indicator at the start point
+		ctx.beginPath();
+		ctx.arc(startCanvasX, startCanvasY, 3, 0, Math.PI * 2);
+		ctx.fillStyle = previewColor;
+		ctx.fill();
+	}
+}
+// Function to update the last KAD draw point when user draws something
+function updateLastKADDrawPoint(x, y) {
+	lastKADDrawPoint = { x: x, y: y };
+}
+// Simplified test version of the KAD preview function
+function drawKADTESTPreviewLine(ctx) {
+	// Simple test: just check if any tool is active and draw a line
+	const anyToolActive = addPointDraw.checked || addLineDraw.checked || addCircleDraw.checked || addPolyDraw.checked || addTextDraw.checked || isPolygonSelectionActive;
+
+	if (!anyToolActive) return;
+
+	// Use mouse coordinates (they're 0 by default, not null)
+	if (currentMouseWorldX === 0 && currentMouseWorldY === 0) return;
+
+	// For testing, let's always use the center of the canvas as start point
+	const testStartX = centroidX;
+	const testStartY = centroidY;
+
+	// Convert to canvas coordinates
+	const [startCanvasX, startCanvasY] = worldToCanvas(testStartX, testStartY);
+	const [mouseCanvasX, mouseCanvasY] = worldToCanvas(currentMouseWorldX, currentMouseWorldY);
+
+	// Draw a bright red test line
+	ctx.beginPath();
+	ctx.setLineDash([10, 10]);
+	ctx.strokeStyle = "rgba(255, 0, 0, 1.0)"; // Bright red
+	ctx.lineWidth = 3;
+	ctx.moveTo(startCanvasX, startCanvasY);
+	ctx.lineTo(mouseCanvasX, mouseCanvasY);
+	ctx.stroke();
+	ctx.setLineDash([]);
+
+	// Draw a circle at mouse position for debugging
+	ctx.beginPath();
+	ctx.arc(mouseCanvasX, mouseCanvasY, 5, 0, Math.PI * 2);
+	ctx.fillStyle = "rgba(255, 0, 0, 1.0)";
+	ctx.fill();
+}
+
 //Draws a circle from the kadCirclesArray
 function drawKADCircles(x, y, z, radius, lineWidth, strokeColour) {
 	ctx.strokeStyle = strokeColour;
@@ -7924,6 +8084,7 @@ function handleKADPointClick(event) {
 	} else {
 		worldX = null;
 		worldY = null;
+		lastKADDrawPoint = null; // Reset when switching tools
 	}
 }
 
@@ -7962,6 +8123,8 @@ function addKADPoint() {
 			});
 		}
 		kadPointsMap.get(entityName).data.push(pointObject);
+		// Add this line to update the last draw point
+		updateLastKADDrawPoint(pointXLocation, pointYLocation);
 	}
 	drawData(points, selectedHole);
 }
@@ -7987,6 +8150,7 @@ function handleKADLineClick(event) {
 	} else {
 		worldX = null;
 		worldY = null;
+		lastKADDrawPoint = null; // Reset when switching tools
 	}
 }
 // Function to add a point to the kadPointsMap
@@ -8026,6 +8190,8 @@ function addKADLine() {
 			});
 		}
 		kadLinesMap.get(entityName).data.push(lineObject);
+		// Add this line to update the last draw point
+		updateLastKADDrawPoint(pointXLocation, pointYLocation);
 	}
 	drawData(points, selectedHole);
 	//console.log("kadLinesMap: ", kadLinesMap);
@@ -8052,6 +8218,7 @@ function handleKADPolyClick(event) {
 	} else {
 		worldX = null;
 		worldY = null;
+		lastKADDrawPoint = null; // Reset when switching tools
 	}
 }
 // Function to add a point to the kadPointsMap
@@ -8093,6 +8260,8 @@ function addKADPoly() {
 			});
 		}
 		kadPolygonsMap.get(entityName).data.push(polyObject);
+		// Add this line to update the last draw point
+		updateLastKADDrawPoint(pointXLocation, pointYLocation);
 	}
 	drawData(points, selectedHole);
 	console.log("kadPolygonsMap: ", kadPolygonsMap);
@@ -8119,6 +8288,7 @@ function handleKADCircleClick(event) {
 	} else {
 		worldX = null;
 		worldY = null;
+		lastKADDrawPoint = null; // Reset when switching tools
 	}
 }
 // Function to add a point to the kadPointsMap
@@ -8161,6 +8331,8 @@ function addKADCircle() {
 			});
 		}
 		kadCirclesMap.get(entityName).data.push(circleObject);
+		// Add this line to update the last draw point
+		updateLastKADDrawPoint(pointXLocation, pointYLocation);
 	}
 	drawData(points, selectedHole);
 	console.log("kadCirclesMap: ", kadCirclesMap);
@@ -8187,6 +8359,7 @@ function handleKADTextClick(event) {
 	} else {
 		worldX = null;
 		worldY = null;
+		lastKADDrawPoint = null; // Reset when switching tools
 	}
 }
 
@@ -8231,6 +8404,8 @@ function addKADText() {
 			});
 		}
 		kadTextsMap.get(entityName).data.push(textObject);
+		// Add this line to update the last draw point
+		updateLastKADDrawPoint(pointXLocation, pointYLocation);
 	}
 	drawData(points, selectedHole);
 	console.log("kadTextsMap: ", kadTextsMap);
@@ -11284,6 +11459,8 @@ function drawData(points, selectedHole) {
 		if (isPolygonSelectionActive) {
 			drawPolygonSelection(ctx);
 		}
+		// Add preview lines right after polygon selection
+		drawKADPreviewLine(ctx);
 
 		// Holes Displayed Count
 		ctx.fillStyle = "red";
