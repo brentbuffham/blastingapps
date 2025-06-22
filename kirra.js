@@ -3853,6 +3853,7 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 	const steps = parseInt(document.getElementById("radiiSteps").value);
 	const union = true;
 	const addToMaps = true;
+
 	// Check if the radius is a valid number
 	if (isNaN(radius) || radius <= 0) {
 		alert("Please enter a valid radius.");
@@ -3863,9 +3864,179 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 		alert("Please enter a valid line width.");
 		return;
 	}
-	const polygon = getRadiiPolygons(points, steps, radius, union, addToMaps, colour, lineWidth, useToeLocation);
-	drawData(points, selectedHole); // Redraw to reflect updated values
+
+	// Determine which holes to process
+	let targetHoles = points;
+	let datasetDescription = "all holes";
+
+	if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+		targetHoles = selectedMultipleHoles;
+		datasetDescription = "selected holes";
+	} else if (selectedHole) {
+		targetHoles = [selectedHole];
+		datasetDescription = "selected hole";
+	}
+
+	// Add performance warning for large number of holes
+	if (targetHoles.length > 1000) {
+		Swal.fire({
+			title: "Performance Warning",
+			html: `
+				<div style="text-align: center;">
+					<p><strong>⚠️ Large Dataset Detected</strong></p>
+					<hr style="border-color: #555; margin: 15px 0;">
+					
+					<p><strong>Processing:</strong> ${targetHoles.length} ${datasetDescription}</p>
+					<p><strong>Steps:</strong> ${steps}</p>
+					
+					<hr style="border-color: #555; margin: 15px 0;">
+					
+					<p style="color: #f39c12;"><strong>Warning:</strong><br>
+					This may take significant time and could cause<br>
+					the browser to become unresponsive.</p>
+					
+					<hr style="border-color: #555; margin: 15px 0;">
+					
+					<p><strong>Recommendations:</strong></p>
+					<p style="text-align: left; margin: 0 auto; display: inline-block;">
+						• Reduce steps (current: ${steps})<br>
+						• Process smaller sections<br>
+						• Save work before continuing
+					</p>
+				</div>
+			`,
+			icon: "warning",
+			showCancelButton: true,
+			confirmButtonText: "Ok",
+			cancelButtonText: "Cancel",
+			customClass: {
+				container: "custom-popup-container",
+				title: "swal2-title",
+				confirmButton: "confirm",
+				cancelButton: "cancel",
+				content: "swal2-content",
+				htmlContainer: "swal2-html-container"
+			}
+		}).then((result) => {
+			if (result.isConfirmed) {
+				// Show progress message
+				updateStatusMessage("Processing radii polygons for " + targetHoles.length + " " + datasetDescription + "... This may take a while.");
+
+				// Use setTimeout to allow UI to update before processing
+				setTimeout(() => {
+					try {
+						const polygon = getRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colour, lineWidth, useToeLocation);
+						drawData(points, selectedHole);
+						updateStatusMessage("Radii polygons created successfully for " + targetHoles.length + " " + datasetDescription + ".");
+					} catch (error) {
+						console.error("Error creating radii polygons:", error);
+						updateStatusMessage("Error creating radii polygons. Please try with fewer holes or reduced steps.");
+						Swal.fire({
+							title: "Error",
+							html: `
+								<div style="text-align: center;">
+									<p><strong>Failed to create radii polygons.</strong></p>
+									<hr style="border-color: #555; margin: 15px 0;">
+									<p><strong>Try:</strong></p>
+									<p style="text-align: left; margin: 0 auto; display: inline-block;">
+										• Reducing steps<br>
+										• Processing fewer holes<br>
+										• Refreshing browser
+									</p>
+								</div>
+							`,
+							icon: "error",
+							customClass: {
+								container: "custom-popup-container",
+								confirmButton: "confirm"
+							}
+						});
+					}
+				}, 100);
+			}
+		});
+	} else if (targetHoles.length > 500) {
+		// Medium warning for 500-1000 holes
+		Swal.fire({
+			title: "Performance Notice",
+			html: `
+				<div style="text-align: center;">
+					<p><strong>Medium Dataset</strong></p>
+					<hr style="border-color: #555; margin: 15px 0;">
+					
+					<p><strong>Processing:</strong> ${targetHoles.length} ${datasetDescription}</p>
+					<p><strong>Steps:</strong> ${steps}</p>
+					
+					<hr style="border-color: #555; margin: 15px 0;">
+					
+					<p><strong>Note:</strong><br>Processing may take a few moments.</p>
+				</div>
+			`,
+			icon: "info",
+			showCancelButton: true,
+			confirmButtonText: "Ok",
+			cancelButtonText: "Cancel",
+			customClass: {
+				container: "custom-popup-container",
+				title: "swal2-title",
+				confirmButton: "confirm",
+				cancelButton: "cancel",
+				content: "swal2-content",
+				htmlContainer: "swal2-html-container"
+			}
+		}).then((result) => {
+			if (result.isConfirmed) {
+				processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colour, lineWidth, datasetDescription);
+			}
+		});
+	} else {
+		// Process normally for smaller datasets
+		processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colour, lineWidth, datasetDescription);
+	}
 });
+
+// Helper function to process radii polygons
+function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colour, lineWidth, datasetDescription) {
+	try {
+		updateStatusMessage("Creating radii polygons for " + targetHoles.length + " " + datasetDescription + "...");
+		const polygon = getRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colour, lineWidth, useToeLocation);
+		drawData(points, selectedHole);
+		updateStatusMessage("Radii polygons created successfully for " + targetHoles.length + " " + datasetDescription + ".");
+		Swal.fire({
+			title: "Success",
+			html: `
+				<div style="text-align: center;">
+					<p><strong>Radii polygons created successfully for ${targetHoles.length} ${datasetDescription}.</strong></p>
+					<p><strong>Zoom or Scroll to see the results.</strong></p>
+					<p><strong>The radii is at ${radius}m from the hole(s).</strong></p>
+				</div>
+			`,
+			icon: "success",
+			customClass: {
+				container: "custom-popup-container",
+				confirmButton: "confirm"
+			}
+		});
+	} catch (error) {
+		console.error("Error creating radii polygons:", error);
+		updateStatusMessage("Error creating radii polygons.");
+		Swal.fire({
+			title: "Error",
+			html: `
+				<div style="text-align: center;">
+					<p><strong>Failed to create radii polygons.</strong></p>
+					<hr style="border-color: #555; margin: 15px 0;">
+					<p><strong>Error:</strong><br>${error.message || "Unknown error occurred"}</p>
+				</div>
+			`,
+			icon: "error",
+			customClass: {
+				container: "custom-popup-container",
+				confirmButton: "confirm"
+			}
+		});
+	}
+}
 
 // Convert hex color (e.g., #FF0000) to a DXF color index (1-255, never 0 or 256)
 function getColorInteger(hex) {
@@ -7595,7 +7766,7 @@ function deleteSelectedPattern() {
 			// Remove holes with the same entityName from kadHolesMap
 			for (const [entityName, entity] of kadHolesMap) {
 				if (entityName === entityNameToDelete) {
-					delete kadHolesMap.delete(entityName);
+					kadHolesMap.delete(entityName);
 				}
 			}
 
