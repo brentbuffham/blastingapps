@@ -50,23 +50,23 @@ function updatePopup() {
 		<path d="M65.76,119.94c0,0-0.8-2.02-2.61-2.63c-1.81-0.61-4.99-0.91-6.88-0.92s-3.11,0.63-4.16,0c-1.05-0.63-1.66-1.39-1.66-1.39" />
 		</svg>
 			<br>
-				    <label class="labelWhite18">Update - NEW FEATURES:                   </label>
+				    <label class="labelWhite18">Update - NEW FEATURES:                           </label>
 					<hr>
-				<label class="labelWhite18">✅ Toolbar Redesign and additional tools    </label>
-				<br><label class="labelWhite18">✅ ⭐ Pattern in Poly, on ployline, arbitary   </label>
-				<br><label class="labelWhite18">✅ Snap to hole collar, grade, toe, vertex   </label>
-				<br><label class="labelWhite18">✅ ⭐ Surface Visualisation and 5 legends      </label>
-				<br><label class="labelWhite12"> •• Support for:       </label>
+				<label class="labelWhite18">    ✅ Toolbar Redesign and additional tools        </label>
+				<br><label class="labelWhite18">✅ ⭐ Pattern in Poly, on polyline, arbitrary       </label>
+				<br><label class="labelWhite18">✅ Snap to hole collar, grade, toe, vertex       </label>
+				<br><label class="labelWhite18">✅ ⭐ Surface Visualisation and 5 legends          </label>
+				<br><label class="labelWhite12"> •• Support for:                                   </label>
 				<br><label class="labelWhite12"> •••• {obj, csv, xyz, asc, ply, pts, txt clouds}       </label>
 				
-				<br><label class="labelWhite18">✅ Assign holes to grade/collar surface     </label>
-				<br><label class="labelWhite18">✅ Status messaging and instructions         </label>
-                <br><label class="labelWhite18">✅ UX/UI, EventListener Clean up            </label>
-				<br><label class="labelWhite18">✅ ⭐ Duplicate hole check and resolve         </label>
+				<br><label class="labelWhite18">✅ Assign holes to the grade/collar surface            </label>
+				<br><label class="labelWhite18">✅ Status messaging and instructions                </label>
+                <br><label class="labelWhite18">✅ UX/UI, EventListener Clean up                    </label>
+				<br><label class="labelWhite18">✅ ⭐ Duplicate hole check and resolve             </label>
 				<hr>
-				<br><label class="labelWhite18">New & Existing Issues                     </label>
-				<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts</label>
-				<br><label class="labelWhite12c">🐞 Surface Display Lag with large blasts</label>
+				<br><label class="labelWhite18">New & Existing Issues                              </label>
+				<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts          </label>
+				<br><label class="labelWhite12c">🐞 Surface Display Lag with large blasts          v</label>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">
 	          <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
