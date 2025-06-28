@@ -3,7 +3,7 @@
 	<!--
     Description: This file contains the main UI for the Kirra App
 	Author: Brent Buffham
-	Last Modified: "20250621.1500AWST"
+	Last Modified: "20250629.0300AWST"
 -->
 
 	<head>
@@ -69,6 +69,10 @@
 
 		<script src="https://cdn.jsdelivr.net/npm/clipper-lib@1.0.0/clipper.js"></script>
 
+		<script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.js"></script>
+
+		<script src="https://unpkg.com/proj4@2.9.1/dist/proj4.js"></script>
+
 		<!-- Load all the scripts before the stylesheet -->
 		<link rel="stylesheet" href="kirra.css">
 
@@ -107,121 +111,20 @@
 			const translations = {
 				"en": {
 					"translation": {
+						// Page title
 						"title": "Kirra",
+
+						// Menu bar buttons
 						"help_button": "Help",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "R",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "Open or Import Files",
-						"fileInput": "CSV And KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
-						"plus_minus_holes": "+ or - Holes",
-						"add_pattern_label": "Add Pattern:",
-						"add_hole_label": "Adding Hole:",
-						"delete_label": "Delete :",
-						"delete_hole_button": "Hole",
-						"delete_pattern_button": "Pattern",
-						"delete_all_patterns_button": "All",
-						"renumber_holes_label": "Renumber when deleting:",
-						"delete_renumber_start_label": "Start at:",
-						"edit_holes": "Edit Holes",
-						"edit_blast_name_label": "Edit Blast Name",
-						"edit_length_popup_label": "Edit Length with dialog",
-						"edit_hole_type_popup_label": "Edit Hole Type with dialog",
-						"selection_mode_label": "Multiple select with slider edits",
-						"edit_easting_label": "Edit(X)",
-						"hole_easting_label": "X :",
-						"edit_northing_label": "Edit(Y)",
-						"hole_northing_label": "Y :",
-						"edit_elevation_label": "Edit(Z)",
-						"hole_elevation_label": "Z :",
-						"edit_diameter_label": "Edit Diameter",
-						"hole_diameter_label": "Diameter :",
-						"edit_length_label": "Edit Length",
-						"hole_length_label": "Length :",
-						"edit_angle_label": "Edit Angle",
-						"hole_angle_label": "Angle :",
-						"edit_bearing_label": "Edit Bearing",
-						"hole_bearing_label": "Bearing :",
-						"record_actuals": "Record Actuals",
-						"record_length_popup_label": "Record Length with dialog",
-						"record_mass_popup_label": "Record Mass with dialog",
-						"record_comment_popup_label": "Record Comment with dialog",
-						"view_controls": "View Controls",
-						"font_size_label": "Font Size :",
-						"tie_size_label": "Tie Size :",
-						"toe_size_label": "Toe Size :",
-						"hole_adjust_label": "Hole Adjust :",
-						"interval_label": "Interval :",
-						"first_movement_label": "First Movement Size :",
-						"output_files": "Output Files",
-						"save_holes_label": "Save Holes to a File (importable)",
-						"save_holes_button": "KIRRA - This outputs a 14 column *.csv file that can be used to save blasts with names.",
-						"save_kad_label": "Save Drawing to a File (importable)",
-						"save_kad_button": "KAD - This outputs a Kirra App Drawing *.kad file that can be used to save drawings.",
-						"save_all_label": "Save All Hole aspects to a File (shareable)",
-						"save_all_button": "EXTRA - This outputs additional columns like Length, Dip, Angle, bearing and Initiation time.",
-						"save_measures_label": "Save Actual Values to a File (shareable)",
-						"save_measures_button": "EXTRA - This outputs actual recordings like measured depth and charge kilograms.",
-						"export_holes_to_dxf_label": "Export Holes to DXF",
-						"export_holes_to_dxf_button": "Export Holes to DXF, Collar, Track and Hole Id as Text Object",
-						"export_drawing_to_dxf_label": "Export Drawing to DXF",
-						"export_drawing_to_dxf_button": "Export Drawing to DXF, Collar, Track and Hole Id as Text Object",
-						"save_iredes_button": "EPIROC - XML - This outputs IREDES XML Drill file for Surface Manager Epiroc Rigs.(XML file format, inclusive of hole diameter and hole type. www.IREDES.org)",
-						"save_aqm_button": "MINESTAR - AQM - Outputs upto 11 columns (Angle, Azimuth, Blast, Diameter, Easting, Elevation, Ignore, Instruction, Material Type, Name, Northing or Pattern)",
-						"example_helper_files": "Example and Helper Files",
-						"download_test_tiein ": "Download test tie in file 1",
-						"download_test_tie_2": "Download test tie in file 2",
-						"download_test_tie_3": "Download test tie in file 3",
-						"download_kad_pitshell": "Download KAD PITSHELL drawing file",
-						"download_kad_pitshell_ios": "Download mobile iOS PITSHELL version",
-						"download_kad_blastmaster": "Download KAD BLASTMASTER drawing file",
-						"download_kad_blastmaster_ios": "Download mobile iOS BLASTMASTER version",
-						"download_conversion_tool": "Download the conversion excel tool",
-						"about_title": "About",
-						"about_content": "Created by Brent Buffham © 2023.\nImporting a CSV files: NO HEADERS\n4 column (ID, X, Y, Z) = Dummy Holes or\n7 column (ID, X, Y, Z, toeX, toeY, toeZ) = Blast Holes or\n9 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type) or\n12 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type, FromHole, Delay, Colour)",
-						"connectors": "Connectors",
-						"single_tie_label": "Tie-in one by one:",
-						"multi_tie_label": "Tie-in all in a line:",
-						"delay_label": "Delay:",
-						"colour_label": "Colour",
-						"connect_distance_label": "Connect Distance :",
-						"animate_firing": "Animate Firing",
-						"play_button": "PLAY............",
-						"stop_button": "STOP",
-						"time_window": "Time Window",
-						"time_range_label": "Time window : 8ms",
-						"time_offset_label": "Time Offset : 0ms",
-						"hole_count_label": "Hole Count",
-						"measured_mass_label": "Measured Mass",
-						"drawing_tools": "Drawing Tools",
-						"elevation_label": "Elevation (z):",
-						"drawing_colour_label": "Colour:",
-						"line_width_label": "Line Width:",
-						"point_draw_label": "Point Drawing:",
-						"line_draw_label": "Line Drawing:",
-						"poly_draw_label": "Polygon Drawing:",
-						"circle_draw_label": "Circle Drawing:",
-						"drawing_radius_label": "Radius(m):",
-						"text_draw_label": "Text Drawing:",
-						"text_label": "Text:",
-						"common_math_label": "Use \"=\" at the front of the text to use JS Math or do calculations.",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nThe mass of a charge length can be calculated ie.\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
-						"drawing_removal": "Drawing Removal",
-						"point_delete_label": "Point Delete:",
-						"line_delete_label": "Line Delete:",
-						"poly_delete_label": "Polygon Delete:",
-						"circle_delete_label": "Circle Delete:",
-						"text_delete_label": "Text Delete:",
-						"delete_point_button": "Point",
-						"delete_object_button": "Object",
-						"delete_all_button": "All",
-						"buy_coffee_alt": "Show support with a cash donation",
-						"report_bug_button": "Report Bug / Request Feature",
+						"zoom_in_button": "Zoom In",
+						"zoom_out_button": "Zoom Out",
+						"go_back_button": "Go Back",
+						"select_language": "Select Language",
+
+						// Dark mode toggle
+						"dark_mode": "Toggle mode",
+
+						// Display option tooltips
 						"display_hole_id_title": "Hole ID",
 						"display_hole_length_title": "Hole Length",
 						"display_hole_diameter_title": "Hole Diameter",
@@ -243,246 +146,560 @@
 						"display_measure_title": "Measured Length",
 						"display_mass_title": "Measured Mass",
 						"display_comment_title": "Comment",
-						"display_voronoi_pf_title": "Voronoi Powder Factor"
-					}
-				},
-				"mn": {
-					"translation": {
-						"title": "Кирра",
-						"help_button": "Тусламж",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "Р",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "Нээх эсвэл Импортлох Файлууд",
-						"fileInput": "CSV ба KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
-						"plus_minus_holes": "+ эсвэл - Нүхнүүд",
-						"add_pattern_label": "Загвар нэмэх:",
-						"add_hole_label": "Нүх нэмэх:",
-						"delete_label": "Устгах :",
-						"delete_hole_button": "Нүх",
-						"delete_pattern_button": "Загвар",
-						"delete_all_patterns_button": "Бүгд",
-						"renumber_holes_label": "Устгахдаа дахин дугаарлах:",
-						"delete_renumber_start_label": "Эндээс эхлэх:",
-						"edit_holes": "Нүхнүүдийг засах",
-						"edit_blast_name_label": "Тэсэлгээний нэрийг засах",
-						"edit_length_popup_label": "Уртыг харилцах цонхоор засах",
-						"edit_hole_type_popup_label": "Нүхний төрлийг харилцах цонхоор засах",
-						"selection_mode_label": "Олон сонголтыг гулсагчаар засах",
-						"edit_easting_label": "Зүүн (X) засах",
+						"display_voronoi_title": "Voronoi",
+
+						// Left panel sections
+						"open_import": "Open or Import files",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "File Holes and KAD Input",
+						"custom_csv_title": "Custom CSV Import",
+						"file_dxf_title": "File DXF Input",
+						"measured_values_title": "Measured Values Input",
+						"file_surface_title": "File Surface Input (3 columns {X,Y,Z})",
+						"file_geotiff_title": "File Geotiff Input",
+
+						// File input alt text
+						"load_holes_kad_alt": "Load Holes & KAD",
+						"load_csv_alt": "Load CSV",
+						"load_dxf_alt": "Load DXF",
+						"load_measured_alt": "Load Measured Values",
+						"load_surface_alt": "Load Surface",
+						"load_geotiff_alt": "Load Geotiff",
+
+						// Plus/Minus Holes section
+						"plus_minus_holes": "+ or - Holes",
+						"add_pattern_label": "Add Pattern:",
+						"add_hole_label": "Adding Hole:",
+						"delete_label": "Delete :",
+						"delete_hole_button": "Hole",
+						"delete_pattern_button": "Pattern",
+						"delete_all_patterns_button": "All",
+						"renumber_holes_label": "Renumber when deleting:",
+						"delete_renumber_start_label": "Start at:",
+
+						// Edit Holes section
+						"edit_holes": "Edit Holes",
+						"dialog_edit": "Dialog Edit",
+						"edit_blast_name_label": "Edit Blast Name",
+						"edit_length_popup_label": "Edit Length with dialog",
+						"edit_hole_type_popup_label": "Edit Hole Type with dialog",
+						"slider_edit": "Slider Edit",
+						"allow_holes_edited": "Allow holes to be edited",
+						"selection_mode_label": "Multiple select with slider edits",
 						"hole_easting_label": "X :",
-						"edit_northing_label": "Хойд (Y) засах",
 						"hole_northing_label": "Y :",
-						"edit_elevation_label": "Өндөр (Z) засах",
 						"hole_elevation_label": "Z :",
-						"edit_diameter_label": "Диаметрийг засах",
-						"hole_diameter_label": "Диаметр :",
-						"edit_length_label": "Уртыг засах",
-						"hole_length_label": "Урт :",
-						"edit_angle_label": "Өнцгийг засах",
-						"hole_angle_label": "Өнцөг :",
-						"edit_bearing_label": "Чиглэлийг засах",
-						"hole_bearing_label": "Чиглэл :",
-						"record_actuals": "Бодит утгыг бүртгэх",
-						"record_length_popup_label": "Уртыг харилцах цонхоор бүртгэх",
-						"record_mass_popup_label": "Массыг харилцах цонхоор бүртгэх",
-						"record_comment_popup_label": "Сэтгэгдлийг харилцах цонхоор бүртгэх",
-						"view_controls": "Харахын удирдлага",
-						"font_size_label": "Фонтын хэмжээ :",
-						"tie_size_label": "Холбоосын хэмжээ :",
-						"toe_size_label": "Хөлийн хэмжээ :",
-						"hole_adjust_label": "Нүхний тохируулга :",
-						"interval_label": "Завсарлага :",
-						"first_movement_label": "Эхний хөдөлгөөний хэмжээ :",
-						"output_files": "Гаралтын файлууд",
-						"save_holes_label": "Нүхнүүдийг файлд хадгалах (импортлох боломжтой)",
-						"save_holes_button": "KIRRA - Энэ нь нэртэй тэсэлгээ хадгалахад ашиглагддаг 14 баганын *.csv файл гаргадаг.",
-						"save_kad_label": "Зургийг файлд хадгалах (импортлох боломжтой)",
-						"save_kad_button": "KAD - Энэ нь зургийг хадгалахад ашиглагддаг Kirra App-ийн *.kad файлыг гаргадаг.",
-						"save_all_label": "Бүх нүхний талуудыг файлд хадгалах (хуваалцах боломжтой)",
-						"save_all_button": "EXTRA - Энэ нь Урт, Налуу, Өнцөг, Чиглэл, Эхлэх хугацаа зэрэг нэмэлт багануудыг гаргадаг.",
-						"save_measures_label": "Бодит утгуудыг файлд хадгалах (хуваалцах боломжтой)",
-						"save_measures_button": "EXTRA - Энэ нь хэмжсэн гүн, цэнэгийн килограмм зэрэг бодит бичлэгүүдийг гаргадаг.",
-						"export_holes_to_dxf_label": "Нүхнүүдийг DXF формат руу экспортлох",
-						"export_holes_to_dxf_button": "Нүхнүүдийг DXF формат руу экспортлох, хүзүүвч, зам болон нүхний ID-г текст объект хэлбэрээр экспортлох",
-						"export_drawing_to_dxf_label": "Зургийг DXF формат руу экспортлох",
-						"export_drawing_to_dxf_button": "Зургийг DXF формат руу экспортлох, хүзүүвч, зам болон нүхний ID-г текст объект хэлбэрээр экспортлох",
-						"save_iredes_button": "EPIROC - XML - Энэ нь Surface Manager Epiroc Rigs-д зориулсан IREDES XML өрмийн файлыг гаргадаг. (XML файлын формат, нүхний диаметр, нүхний төрлийг багтаасан. www.IREDES.org)",
-						"save_aqm_button": "MINESTAR - AQM - 11 хүртэл багана гаргадаг (Өнцөг, Азимут, Тэсэлгээ, Диаметр, Зүүн, Өндөр, Үл тоомсорлох, Заавар, Материалын төрөл, Нэр, Хойд эсвэл Загвар)",
-						"example_helper_files": "Жишээ болон туслах файлууд",
-						"download_test_tie_1": "Туршилтын холбоосын файл 1-ийг татаж авах",
-						"download_test_tie_2": "Туршилтын холбоосын файл 2-ийг татаж авах",
-						"download_test_tie_3": "Туршилтын холбоосын файл 3-ийг татаж авах",
-						"download_kad_pitshell": "KAD PITSHELL зургийн файлыг татаж авах",
-						"download_kad_pitshell_ios": "Мобайл iOS PITSHELL хувилбарыг татаж авах",
-						"download_kad_blastmaster": "KAD BLASTMASTER зургийн файлыг татаж авах",
-						"download_kad_blastmaster_ios": "Мобайл iOS BLASTMASTER хувилбарыг татаж авах",
-						"download_conversion_tool": "Хөрвүүлэлтийн excel хэрэгслийг татаж авах",
-						"about_title": "Тухай",
-						"about_content": "Брент Баффхамын бүтээсэн © 2023.\nCSV файлуудыг импортлох: ТОЛГОЙ БАЙХГҮЙ\n4 багана (ID, X, Y, Z) = Хуурамч Нүхнүүд эсвэл\n7 багана (ID, X, Y, Z, toeX, toeY, toeZ) = Тэсэлгээний Нүхнүүд эсвэл\n9 багана (ID, X, Y, Z, toeX, ToeY, ToeZ, Нүхний Диаметр, Нүхний Төрөл) эсвэл\n12 багана (ID, X, Y, Z, toeX, ToeY, ToeZ, Нүхний Диаметр, Нүхний Төрөл, FromHole, Саатал, Өнгө)",
-						"connectors": "Холбогчууд",
-						"single_tie_label": "Нэг нэгээр холбох:",
-						"multi_tie_label": "Бүгдийг нэг шугамд холбох:",
-						"delay_label": "Саатал:",
-						"colour_label": "Өнгө:",
-						"connect_distance_label": "Холболтын зай :",
-						"animate_firing": "Галлахыг хөдөлгөөнт болгох",
-						"play_button": "Тоглуулах............",
-						"stop_button": "Зогсоох",
-						"time_window": "Цагийн хүрээ",
-						"time_range_label": "Цагийн хүрээ : 8 мс",
-						"time_offset_label": "Цагийн зөрүү : 0 мс",
-						"hole_count_label": "Нүхний тоо",
-						"measured_mass_label": "Хэмжсэн масс",
-						"drawing_tools": "Зургийн хэрэгслүүд",
-						"elevation_label": "Өндөр (z):",
-						"drawing_colour_label": "Өнгө:",
-						"line_width_label": "Шугамын өргөн:",
-						"point_draw_label": "Цэгийн зураг:",
-						"line_draw_label": "Шугамын зураг:",
-						"poly_draw_label": "Олон өнцөгтийн зураг:",
-						"circle_draw_label": "Дугуйн зураг:",
-						"drawing_radius_label": "Радиус(м):",
-						"text_draw_label": "Текстийн зураг:",
-						"text_label": "Текст:",
-						"common_math_label": "JS Math эсвэл тооцоолол хийхийн тулд текстийн эхэнд \"=\"-г ашиглана уу.",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nЦэнэгийн уртын массыг тооцоолж болно жишээ нь:\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
-						"drawing_removal": "Зургийг устгах",
-						"point_delete_label": "Цэгийг устгах:",
-						"line_delete_label": "Шугамыг устгах:",
-						"poly_delete_label": "Олон өнцөгтийг устгах:",
-						"circle_delete_label": "Дугуйг устгах:",
-						"text_delete_label": "Текстийг устгах:",
-						"delete_point_button": "Цэг",
-						"delete_object_button": "Объект",
-						"delete_all_button": "Бүгд",
-						"buy_coffee_alt": "Мөнгөөр дэмжлэг үзүүлэх",
-						"report_bug_button": "Алдаа мэдээлэх / Онцлог хүсэх",
-						"display_hole_id_title": "Нүхний ID",
-						"display_hole_length_title": "Нүхний урт",
-						"display_hole_diameter_title": "Нүхний диаметр",
-						"display_angle_title": "Нүхний өнцөг",
-						"display_dip_title": "Нүхний налуу",
-						"display_bearing_title": "Нүхний чиглэл",
-						"display_subdrill_title": "Нүхний саатал",
-						"display_ties_title": "Холбоосууд",
-						"display_connectors_title": "Саатлын утга",
-						"display_times_only_title": "Нүхний цаг",
-						"display_contours_title": "Контурууд",
-						"display_slope_title": "Налуу",
-						"display_relief_title": "Тусламж",
-						"display_direction_title": "Эхний хөдөлгөөн",
-						"display_xlocation_title": "Нүхний X байршил",
-						"display_ylocation_title": "Нүхний Y байршил",
-						"display_zlocation_title": "Нүхний Z байршил",
-						"display_hole_type_title": "Нүхний төрөл",
-						"display_measure_title": "Хэмжсэн урт",
-						"display_mass_title": "Хэмжсэн масс",
-						"display_comment_title": "Сэтгэгдэл",
-						"display_voronoi_pf_title": "Воронойн нунтаг хүчин зүйл"
+						"hole_diameter_label": "Diameter :",
+						"hole_length_label": "Length :",
+						"hole_angle_label": "Angle :",
+						"hole_bearing_label": "Bearing :",
+						"hole_subdrill_label": "Subdrill :",
+
+						// Record Actuals section
+						"record_actuals": "Record Actuals",
+						"dialog_record": "Dialog Record",
+						"record_length_popup_label": "Record Length with dialog",
+						"record_mass_popup_label": "Record Mass with dialog",
+						"record_comment_popup_label": "Record Comment with dialog",
+
+						// View Controls section
+						"view_controls": "View Controls & Snap",
+						"font_size_label": "Font Size (pt): 10pt",
+						"tie_size_label": "Tie Size (units): 3.0",
+						"toe_size_label": "Toe Size (m): 0.5m",
+						"hole_adjust_label": "Hole Adjust (units): 2.0",
+						"interval_label": "Interval (ms): 100ms",
+						"first_movement_label": "First Movement Size (units): 2.0",
+						"snap_tolerance_label": "Snap Tolerance (px): 15px",
+
+						// Output Files section
+						"output_files": "Output Files",
+						"save_holes_label": "Save Holes to a File (importable)",
+						"save_holes_button": "KIRRA - Outputs a 14-column *.csv file for saving blasts with names",
+						"save_kad_label": "Save Drawing to a File (importable)",
+						"save_kad_button": "KAD - Outputs a Kirra App Drawing *.kad file for saving drawings",
+						"save_all_label": "Save All Hole Aspects to a File (shareable)",
+						"save_all_button": "EXTRA - Includes Length, Dip, Angle, Bearing, and Initiation Time",
+						"save_measures_label": "Save Actual Values to a File (shareable)",
+						"save_measures_button": "EXTRA - Outputs measured depth and charge kilograms",
+						"export_holes_dxf_label": "Export Holes to DXF",
+						"export_holes_dxf_button": "Export Holes to DXF, Collar, Track and Hole Id as Text Object",
+						"export_drawing_dxf_label": "Export Drawing to DXF",
+						"export_drawing_dxf_button": "Export Drawing to DXF, points, lines, poly, circles, text",
+						"export_epiroc_label": "Export for Epiroc Surface Manager",
+						"export_epiroc_button": "EPIROC - XML - IREDES XML including diameter and hole type",
+						"export_minestar_label": "Export for MineStar AQM",
+						"export_minestar_button": "MINESTAR - AQM - Outputs up to 11 columns (Angle, Azimuth, Diameter, etc.)",
+
+						// About section
+						"about_title": "About",
+						"developer_mode": "Developer Mode",
+						"about_content": "Created by Brent Buffham © 2023.",
+
+						// Right panel sections
+						"connectors": "Connectors",
+						"single_tie_label": "Tie-in one by one:",
+						"multi_tie_label": "Tie-in all in a line:",
+						"delay_label": "Delay:",
+						"color_label": "Color",
+						"connect_distance_label": "Connect Distance :",
+
+						// Animate section
+						"animate_firing": "Animate Firing",
+						"play_button": "PLAY @ 1.0x",
+						"stop_button": "STOP",
+
+						// Time Window section
+						"time_window": "Time Window",
+						"time_range_label": "Time window : 8 ms",
+						"time_offset_label": "Time Offset : 0 ms",
+						"hole_count_label": "Hole Count",
+						"measured_mass_label": "Measured Charge",
+
+						// Drawing Tools section
+						"drawing_tools": "Drawing Tools",
+						"elevation_label": "Elevation (z):",
+						"drawing_color_label": "Color:",
+						"line_width_label": "Line Width:",
+						"point_draw_label": "Point Drawing:",
+						"line_draw_label": "Line Drawing:",
+						"poly_draw_label": "Polygon Drawing:",
+						"circle_draw_label": "Circle Drawing:",
+						"drawing_radius_label": "Radius(m):",
+						"text_draw_label": "Text Drawing:",
+						"text_label": "Text:",
+						"common_math_label": "Use \"=\" at the front of the text to use JS Math or do calculations.",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nThe mass of a charge length can be calculated ie.\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "Create Radii from Holes",
+						"radii_steps_label": "Radii Steps:",
+						"drawing_polygon_radius_label": "Radius(m):",
+
+						// Drawing Removal section
+						"drawing_removal": "Drawing Removal",
+						"drawing_delete_label": "Drawing Delete:",
+						"delete_point_button": "Point",
+						"delete_object_button": "Object",
+						"delete_all_button": "All",
+
+						// Voronoi section
+						"voronoi_options": "Voronoi Display Options and Settings",
+						"voronoi_display_label": "Voronoi Display Options:",
+						"voronoi_legend_label": "Voronoi Legend:",
+						"voronoi_boundary_label": "Use Toe Radii Boundary:",
+						"powder_factor": "Powder Factor (mass/volume)",
+						"mass": "Mass",
+						"volume": "Volume",
+						"area": "Area",
+						"measured_length": "Measured Length",
+						"designed_length": "Designed Length",
+						"hole_firing_time": "Hole Firing Time",
+						"heelan_vibration": "Heelan Vibration",
+						"unknown": "unknown",
+						"min_max": "Min-Max",
+						"fixed": "Fixed",
+
+						// Support section
+						"buy_coffee_alt": "Show support with a cash donation",
+						"buy_coffee_text": "Buy Brent a coffee",
+						"report_bug_button": "Report Bug / Request Feature",
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "Select",
+						"select_pointer": "selectPointer",
+						"select_by_polygon": "selectByPolygon",
+						"create_label": "Create",
+						"pattern_in_polygon": "Pattern in Polygon",
+						"holes_along_line": "Holes Along Line",
+						"holes_along_polyline": "Holes Along PolyLine",
+						"modify_label": "Modify",
+						"move_to": "Move To",
+						"hole_bearing": "Hole Bearing",
+						"assign_surface": "Assign Surface",
+						"assign_grade": "Assign Grade",
+						"connect_label": "Connect",
+						"tie_connect": "Tie Connect",
+						"tie_connect_multi": "Tie Connect Multi",
+						"connector_color": "Connector Color",
+						"measure_label": "Measure",
+						"ruler": "Ruler",
+						"ruler_protractor": "Ruler Protractor",
+						"view_label": "View",
+						"reset_view": "Reset View"
+					}
+				}, "zh_CN": {
+					"translation": {
+						// Page title
+						"title": "Kirra",
+
+						// Menu bar buttons
+						"help_button": "帮助",
+						"zoom_in_button": "放大",
+						"zoom_out_button": "缩小",
+						"go_back_button": "返回",
+						"select_language": "选择语言",
+
+						// Dark mode toggle
+						"dark_mode": "切换模式",
+
+						// Display option tooltips
+						"display_hole_id_title": "炮孔编号",
+						"display_hole_length_title": "炮孔长度",
+						"display_hole_diameter_title": "炮孔直径",
+						"display_angle_title": "炮孔角度",
+						"display_dip_title": "炮孔倾角",
+						"display_bearing_title": "炮孔方位角",
+						"display_subdrill_title": "超钻",
+						"display_ties_title": "连接",
+						"display_connectors_title": "延时值",
+						"display_times_only_title": "炮孔时间",
+						"display_contours_title": "等高线",
+						"display_slope_title": "坡度",
+						"display_relief_title": "地形",
+						"display_direction_title": "首次移动",
+						"display_xlocation_title": "炮孔X坐标",
+						"display_ylocation_title": "炮孔Y坐标",
+						"display_zlocation_title": "炮孔Z坐标",
+						"display_hole_type_title": "炮孔类型",
+						"display_measure_title": "实测长度",
+						"display_mass_title": "实测装药量",
+						"display_comment_title": "注释",
+						"display_voronoi_title": "泰森多边形",
+
+						// Left panel sections
+						"open_import": "打开或导入文件",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "炮孔和KAD文件输入",
+						"custom_csv_title": "自定义CSV导入",
+						"file_dxf_title": "DXF文件输入",
+						"measured_values_title": "实测值输入",
+						"file_surface_title": "地表文件输入（3列{X,Y,Z}）",
+						"file_geotiff_title": "地理栅格文件输入",
+
+						// File input alt text
+						"load_holes_kad_alt": "加载炮孔和KAD",
+						"load_csv_alt": "加载CSV",
+						"load_dxf_alt": "加载DXF",
+						"load_measured_alt": "加载实测值",
+						"load_surface_alt": "加载地表",
+						"load_geotiff_alt": "加载地理栅格",
+
+						// Plus/Minus Holes section
+						"plus_minus_holes": "增减炮孔",
+						"add_pattern_label": "添加模式:",
+						"add_hole_label": "添加炮孔:",
+						"delete_label": "删除:",
+						"delete_hole_button": "炮孔",
+						"delete_pattern_button": "模式",
+						"delete_all_patterns_button": "全部",
+						"renumber_holes_label": "删除时重新编号:",
+						"delete_renumber_start_label": "起始编号:",
+
+						// Edit Holes section
+						"edit_holes": "编辑炮孔",
+						"dialog_edit": "对话框编辑",
+						"edit_blast_name_label": "编辑爆破名称",
+						"edit_length_popup_label": "用对话框编辑长度",
+						"edit_hole_type_popup_label": "用对话框编辑炮孔类型",
+						"slider_edit": "滑块编辑",
+						"allow_holes_edited": "允许编辑炮孔",
+						"selection_mode_label": "多选滑块编辑模式",
+						"hole_easting_label": "X:",
+						"hole_northing_label": "Y:",
+						"hole_elevation_label": "Z:",
+						"hole_diameter_label": "直径:",
+						"hole_length_label": "长度:",
+						"hole_angle_label": "角度:",
+						"hole_bearing_label": "方位角:",
+						"hole_subdrill_label": "超钻:",
+
+						// Record Actuals section
+						"record_actuals": "记录实际值",
+						"dialog_record": "对话框记录",
+						"record_length_popup_label": "用对话框记录长度",
+						"record_mass_popup_label": "用对话框记录装药量",
+						"record_comment_popup_label": "用对话框记录注释",
+
+						// View Controls section
+						"view_controls": "视图控制和捕捉",
+						"font_size_label": "字体大小(pt): 10pt",
+						"tie_size_label": "连接大小(单位): 3.0",
+						"toe_size_label": "孔底大小(m): 0.5m",
+						"hole_adjust_label": "炮孔调整(单位): 2.0",
+						"interval_label": "间隔(ms): 100ms",
+						"first_movement_label": "首次移动大小(单位): 2.0",
+						"snap_tolerance_label": "捕捉容差(px): 15px",
+
+						// Output Files section
+						"output_files": "输出文件",
+						"save_holes_label": "保存炮孔到文件（可导入）",
+						"save_holes_button": "KIRRA - 输出14列*.csv文件，用于保存爆破设计",
+						"save_kad_label": "保存图形到文件（可导入）",
+						"save_kad_button": "KAD - 输出Kirra应用图形*.kad文件",
+						"save_all_label": "保存所有炮孔信息到文件（可共享）",
+						"save_all_button": "扩展 - 包含长度、倾角、角度、方位角和起爆时间",
+						"save_measures_label": "保存实际值到文件（可共享）",
+						"save_measures_button": "扩展 - 输出实测深度和装药公斤数",
+						"export_holes_dxf_label": "导出炮孔到DXF",
+						"export_holes_dxf_button": "导出炮孔到DXF，包含孔口、轨迹和炮孔编号文本",
+						"export_drawing_dxf_label": "导出图形到DXF",
+						"export_drawing_dxf_button": "导出图形到DXF，包含点、线、多边形、圆、文本",
+						"export_epiroc_label": "导出到Epiroc地表管理器",
+						"export_epiroc_button": "EPIROC - XML - IREDES XML包含直径和炮孔类型",
+						"export_minestar_label": "导出到MineStar AQM",
+						"export_minestar_button": "MINESTAR - AQM - 输出最多11列（角度、方位角、直径等）",
+
+						// About section
+						"about_title": "关于",
+						"developer_mode": "开发者模式",
+						"about_content": "由Brent Buffham创建 © 2023。",
+
+						// Right panel sections
+						"connectors": "连接器",
+						"single_tie_label": "逐个连接:",
+						"multi_tie_label": "线性连接:",
+						"delay_label": "延时:",
+						"color_label": "颜色",
+						"connect_distance_label": "连接距离:",
+
+						// Animate section
+						"animate_firing": "动画播放",
+						"play_button": "播放 @ 1.0x",
+						"stop_button": "停止",
+
+						// Time Window section
+						"time_window": "时间窗口",
+						"time_range_label": "时间窗口: 8 ms",
+						"time_offset_label": "时间偏移: 0 ms",
+						"hole_count_label": "炮孔数量",
+						"measured_mass_label": "实测装药量",
+
+						// Drawing Tools section
+						"drawing_tools": "绘图工具",
+						"elevation_label": "标高(z):",
+						"drawing_color_label": "颜色:",
+						"line_width_label": "线宽:",
+						"point_draw_label": "点绘制:",
+						"line_draw_label": "线绘制:",
+						"poly_draw_label": "多边形绘制:",
+						"circle_draw_label": "圆绘制:",
+						"drawing_radius_label": "半径(m):",
+						"text_draw_label": "文本绘制:",
+						"text_label": "文本:",
+						"common_math_label": "在文本前使用\"=\"来使用JS数学运算或计算。",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\\n\\n装药长度质量计算示例:\\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "从炮孔创建半径",
+						"radii_steps_label": "半径步数:",
+						"drawing_polygon_radius_label": "半径(m):",
+
+						// Drawing Removal section
+						"drawing_removal": "删除绘图",
+						"drawing_delete_label": "绘图删除:",
+						"delete_point_button": "点",
+						"delete_object_button": "对象",
+						"delete_all_button": "全部",
+
+						// Voronoi section
+						"voronoi_options": "泰森多边形显示选项和设置",
+						"voronoi_display_label": "泰森多边形显示选项:",
+						"voronoi_legend_label": "泰森多边形图例:",
+						"voronoi_boundary_label": "使用孔底半径边界:",
+						"powder_factor": "炸药单耗（质量/体积）",
+						"mass": "质量",
+						"volume": "体积",
+						"area": "面积",
+						"measured_length": "实测长度",
+						"designed_length": "设计长度",
+						"hole_firing_time": "炮孔起爆时间",
+						"heelan_vibration": "Heelan振动",
+						"unknown": "未知",
+						"min_max": "最小-最大",
+						"fixed": "固定",
+
+						// Support section
+						"buy_coffee_alt": "通过现金捐赠表示支持",
+						"buy_coffee_text": "给Brent买杯咖啡",
+						"report_bug_button": "报告错误/请求功能",
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "选择",
+						"select_pointer": "选择指针",
+						"select_by_polygon": "多边形选择",
+						"create_label": "创建",
+						"pattern_in_polygon": "多边形内模式",
+						"holes_along_line": "沿线炮孔",
+						"holes_along_polyline": "沿多线炮孔",
+						"modify_label": "修改",
+						"move_to": "移动到",
+						"hole_bearing": "炮孔方位角",
+						"assign_surface": "分配地表",
+						"assign_grade": "分配坡度",
+						"connect_label": "连接",
+						"tie_connect": "连接",
+						"tie_connect_multi": "多重连接",
+						"connector_color": "连接器颜色",
+						"measure_label": "测量",
+						"ruler": "尺子",
+						"ruler_protractor": "量角器",
+						"view_label": "视图",
+						"reset_view": "重置视图"
 					}
 				},
 				"fr": {
 					"translation": {
+						// Page title
 						"title": "Kirra",
+
+						// Menu bar buttons
 						"help_button": "Aide",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "R",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "Ouvrir ou Importer des Fichiers",
-						"fileInput": "CSV et KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
+						"zoom_in_button": "Zoom avant",
+						"zoom_out_button": "Zoom arrière",
+						"go_back_button": "Retour",
+						"select_language": "Sélectionner la langue",
+
+						// Dark mode toggle
+						"dark_mode": "Basculer le mode",
+
+						// Display option tooltips
+						"display_hole_id_title": "ID du trou",
+						"display_hole_length_title": "Longueur du trou",
+						"display_hole_diameter_title": "Diamètre du trou",
+						"display_angle_title": "Angle du trou",
+						"display_dip_title": "Inclinaison du trou",
+						"display_bearing_title": "Azimut du trou",
+						"display_subdrill_title": "Sous-forage",
+						"display_ties_title": "Liaisons",
+						"display_connectors_title": "Valeur de retard",
+						"display_times_only_title": "Temps du trou",
+						"display_contours_title": "Contours",
+						"display_slope_title": "Pente",
+						"display_relief_title": "Relief",
+						"display_direction_title": "Premier mouvement",
+						"display_xlocation_title": "Position X du trou",
+						"display_ylocation_title": "Position Y du trou",
+						"display_zlocation_title": "Position Z du trou",
+						"display_hole_type_title": "Type de trou",
+						"display_measure_title": "Longueur mesurée",
+						"display_mass_title": "Masse mesurée",
+						"display_comment_title": "Commentaire",
+						"display_voronoi_title": "Voronoï",
+
+						// Left panel sections
+						"open_import": "Ouvrir ou importer des fichiers",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "Entrée de fichiers trous et KAD",
+						"custom_csv_title": "Import CSV personnalisé",
+						"file_dxf_title": "Entrée de fichier DXF",
+						"measured_values_title": "Entrée de valeurs mesurées",
+						"file_surface_title": "Entrée de fichier surface (3 colonnes {X,Y,Z})",
+						"file_geotiff_title": "Entrée de fichier Géotiff",
+
+						// File input alt text
+						"load_holes_kad_alt": "Charger trous et KAD",
+						"load_csv_alt": "Charger CSV",
+						"load_dxf_alt": "Charger DXF",
+						"load_measured_alt": "Charger valeurs mesurées",
+						"load_surface_alt": "Charger surface",
+						"load_geotiff_alt": "Charger Géotiff",
+
+						// Plus/Minus Holes section
 						"plus_minus_holes": "+ ou - Trous",
-						"add_pattern_label": "Ajouter un motif :",
-						"add_hole_label": "Ajouter un trou :",
+						"add_pattern_label": "Ajouter motif :",
+						"add_hole_label": "Ajout de trou :",
 						"delete_label": "Supprimer :",
 						"delete_hole_button": "Trou",
 						"delete_pattern_button": "Motif",
 						"delete_all_patterns_button": "Tout",
 						"renumber_holes_label": "Renuméroter lors de la suppression :",
 						"delete_renumber_start_label": "Commencer à :",
-						"edit_holes": "Modifier les trous",
-						"edit_blast_name_label": "Modifier le nom de l'explosion",
-						"edit_length_popup_label": "Modifier la longueur avec une boîte de dialogue",
-						"edit_hole_type_popup_label": "Modifier le type de trou avec une boîte de dialogue",
-						"selection_mode_label": "Sélection multiple avec modifications par curseur",
-						"edit_easting_label": "Modifier (X)",
+
+						// Edit Holes section
+						"edit_holes": "Éditer les trous",
+						"dialog_edit": "Édition par dialogue",
+						"edit_blast_name_label": "Éditer le nom du tir",
+						"edit_length_popup_label": "Éditer la longueur avec dialogue",
+						"edit_hole_type_popup_label": "Éditer le type de trou avec dialogue",
+						"slider_edit": "Édition par curseur",
+						"allow_holes_edited": "Permettre l'édition des trous",
+						"selection_mode_label": "Sélection multiple avec édition par curseur",
 						"hole_easting_label": "X :",
-						"edit_northing_label": "Modifier (Y)",
 						"hole_northing_label": "Y :",
-						"edit_elevation_label": "Modifier (Z)",
 						"hole_elevation_label": "Z :",
-						"edit_diameter_label": "Modifier le diamètre",
 						"hole_diameter_label": "Diamètre :",
-						"edit_length_label": "Modifier la longueur",
 						"hole_length_label": "Longueur :",
-						"edit_angle_label": "Modifier l'angle",
 						"hole_angle_label": "Angle :",
-						"edit_bearing_label": "Modifier le relèvement",
-						"hole_bearing_label": "Relèvement :",
+						"hole_bearing_label": "Azimut :",
+						"hole_subdrill_label": "Sous-forage :",
+
+						// Record Actuals section
 						"record_actuals": "Enregistrer les valeurs réelles",
-						"record_length_popup_label": "Enregistrer la longueur avec une boîte de dialogue",
-						"record_mass_popup_label": "Enregistrer la masse avec une boîte de dialogue",
-						"record_comment_popup_label": "Enregistrer un commentaire avec une boîte de dialogue",
-						"view_controls": "Contrôles de visualisation",
-						"font_size_label": "Taille de la police :",
-						"tie_size_label": "Taille des liens :",
-						"toe_size_label": "Taille du pied :",
-						"hole_adjust_label": "Ajustement du trou :",
-						"interval_label": "Intervalle :",
-						"first_movement_label": "Taille du premier mouvement :",
+						"dialog_record": "Enregistrement par dialogue",
+						"record_length_popup_label": "Enregistrer la longueur avec dialogue",
+						"record_mass_popup_label": "Enregistrer la masse avec dialogue",
+						"record_comment_popup_label": "Enregistrer le commentaire avec dialogue",
+
+						// View Controls section
+						"view_controls": "Contrôles de vue et accrochage",
+						"font_size_label": "Taille de police (pt) : 10pt",
+						"tie_size_label": "Taille de liaison (unités) : 3.0",
+						"toe_size_label": "Taille de pied (m) : 0.5m",
+						"hole_adjust_label": "Ajustement de trou (unités) : 2.0",
+						"interval_label": "Intervalle (ms) : 100ms",
+						"first_movement_label": "Taille du premier mouvement (unités) : 2.0",
+						"snap_tolerance_label": "Tolérance d'accrochage (px) : 15px",
+
+						// Output Files section
 						"output_files": "Fichiers de sortie",
-						"save_holes_label": "Enregistrer les trous dans un fichier (importable)",
-						"save_holes_button": "KIRRA - Cela génère un fichier *.csv de 14 colonnes qui peut être utilisé pour enregistrer des explosions avec des noms.",
-						"save_kad_label": "Enregistrer le dessin dans un fichier (importable)",
-						"save_kad_button": "KAD - Cela génère un fichier *.kad de l'application Kirra qui peut être utilisé pour enregistrer des dessins.",
-						"save_all_label": "Enregistrer tous les aspects des trous dans un fichier (partageable)",
-						"save_all_button": "EXTRA - Cela génère des colonnes supplémentaires comme la longueur, l'inclinaison, l'angle, le relèvement et le temps d'initiation.",
-						"save_measures_label": "Enregistrer les valeurs réelles dans un fichier (partageable)",
-						"save_measures_button": "EXTRA - Cela génère des enregistrements réels comme la profondeur mesurée et les kilogrammes de charge.",
-						"export_holes_to_dxf_label": "Exporter les trous vers DXF",
-						"export_holes_to_dxf_button": "Exporter les trous vers DXF, Collier, Piste et ID du trou en tant qu'objet texte",
-						"export_drawing_to_dxf_label": "Exporter le dessin vers DXF",
-						"export_drawing_to_dxf_button": "Exporter le dessin vers DXF, Collier, Piste et ID du trou en tant qu'objet texte",
-						"save_iredes_button": "EPIROC - XML - Cela génère un fichier de forage XML IREDES pour les rigs Surface Manager Epiroc. (Format de fichier XML, incluant le diamètre et le type de trou. www.IREDES.org)",
-						"save_aqm_button": "MINESTAR - AQM - Génère jusqu'à 11 colonnes (Angle, Azimut, Explosion, Diamètre, Est, Élévation, Ignorer, Instruction, Type de matériau, Nom, Nord ou Motif)",
-						"example_helper_files": "Fichiers d'exemple et d'aide",
-						"download_test_tie_1": "Télécharger le fichier de liaison de test 1",
-						"download_test_tie_2": "Télécharger le fichier de liaison de test 2",
-						"download_test_tie_3": "Télécharger le fichier de liaison de test 3",
-						"download_kad_pitshell": "Télécharger le fichier de dessin KAD PITSHELL",
-						"download_kad_pitshell_ios": "Télécharger la version iOS mobile PITSHELL",
-						"download_kad_blastmaster": "Télécharger le fichier de dessin KAD BLASTMASTER",
-						"download_kad_blastmaster_ios": "Télécharger la version iOS mobile BLASTMASTER",
-						"download_conversion_tool": "Télécharger l'outil Excel de conversion",
+						"save_holes_label": "Sauvegarder les trous dans un fichier (importable)",
+						"save_holes_button": "KIRRA - Génère un fichier *.csv de 14 colonnes pour sauvegarder les tirs",
+						"save_kad_label": "Sauvegarder le dessin dans un fichier (importable)",
+						"save_kad_button": "KAD - Génère un fichier de dessin Kirra App *.kad",
+						"save_all_label": "Sauvegarder tous les aspects des trous (partageable)",
+						"save_all_button": "EXTRA - Inclut longueur, inclinaison, angle, azimut et temps d'amorçage",
+						"save_measures_label": "Sauvegarder les valeurs réelles (partageable)",
+						"save_measures_button": "EXTRA - Génère la profondeur mesurée et les kilogrammes de charge",
+						"export_holes_dxf_label": "Exporter les trous vers DXF",
+						"export_holes_dxf_button": "Exporter les trous vers DXF, col, trajectoire et ID de trou comme objet texte",
+						"export_drawing_dxf_label": "Exporter le dessin vers DXF",
+						"export_drawing_dxf_button": "Exporter le dessin vers DXF, points, lignes, polygones, cercles, texte",
+						"export_epiroc_label": "Exporter pour Epiroc Surface Manager",
+						"export_epiroc_button": "EPIROC - XML - IREDES XML incluant diamètre et type de trou",
+						"export_minestar_label": "Exporter pour MineStar AQM",
+						"export_minestar_button": "MINESTAR - AQM - Génère jusqu'à 11 colonnes (Angle, Azimut, Diamètre, etc.)",
+
+						// About section
 						"about_title": "À propos",
-						"about_content": "Créé par Brent Buffham © 2023.\nImportation de fichiers CSV : SANS EN-TÊTES\n4 colonnes (ID, X, Y, Z) = Trous factices ou\n7 colonnes (ID, X, Y, Z, toeX, toeY, toeZ) = Trous d'explosion ou\n9 colonnes (ID, X, Y, Z, toeX, ToeY, ToeZ, Diamètre du trou, Type de trou) ou\n12 colonnes (ID, X, Y, Z, toeX, ToeY, ToeZ, Diamètre du trou, Type de trou, FromHole, Délai, Couleur)",
+						"developer_mode": "Mode développeur",
+						"about_content": "Créé par Brent Buffham © 2023.",
+
+						// Right panel sections
 						"connectors": "Connecteurs",
-						"single_tie_label": "Lier un par un :",
-						"multi_tie_label": "Lier tous en ligne :",
-						"delay_label": "Délai :",
-						"colour_label": "Couleur :",
+						"single_tie_label": "Liaison un par un :",
+						"multi_tie_label": "Liaison en ligne :",
+						"delay_label": "Retard :",
+						"color_label": "Couleur",
 						"connect_distance_label": "Distance de connexion :",
-						"animate_firing": "Animer le tir",
-						"play_button": "JOUER............",
-						"stop_button": "ARRÊTER",
+
+						// Animate section
+						"animate_firing": "Animation de tir",
+						"play_button": "LIRE @ 1.0x",
+						"stop_button": "ARRÊT",
+
+						// Time Window section
 						"time_window": "Fenêtre temporelle",
 						"time_range_label": "Fenêtre temporelle : 8 ms",
 						"time_offset_label": "Décalage temporel : 0 ms",
 						"hole_count_label": "Nombre de trous",
-						"measured_mass_label": "Masse mesurée",
+						"measured_mass_label": "Charge mesurée",
+
+						// Drawing Tools section
 						"drawing_tools": "Outils de dessin",
 						"elevation_label": "Élévation (z) :",
-						"drawing_colour_label": "Couleur :",
+						"drawing_color_label": "Couleur :",
 						"line_width_label": "Largeur de ligne :",
 						"point_draw_label": "Dessin de point :",
 						"line_draw_label": "Dessin de ligne :",
@@ -491,466 +708,723 @@
 						"drawing_radius_label": "Rayon (m) :",
 						"text_draw_label": "Dessin de texte :",
 						"text_label": "Texte :",
-						"common_math_label": "Utilisez \"=\" au début du texte pour utiliser JS Math ou effectuer des calculs.",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nLa masse d'une longueur de charge peut être calculée, par exemple :\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"common_math_label": "Utilisez \"=\" au début du texte pour utiliser JS Math ou faire des calculs.",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\\n\\nLa masse d'une longueur de charge peut être calculée ex.\\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "Créer des rayons à partir des trous",
+						"radii_steps_label": "Étapes de rayons :",
+						"drawing_polygon_radius_label": "Rayon (m) :",
+
+						// Drawing Removal section
 						"drawing_removal": "Suppression de dessin",
-						"point_delete_label": "Suppression de point :",
-						"line_delete_label": "Suppression de ligne :",
-						"poly_delete_label": "Suppression de polygone :",
-						"circle_delete_label": "Suppression de cercle :",
-						"text_delete_label": "Suppression de texte :",
+						"drawing_delete_label": "Suppression de dessin :",
 						"delete_point_button": "Point",
 						"delete_object_button": "Objet",
 						"delete_all_button": "Tout",
-						"buy_coffee_alt": "Montrez votre soutien avec un don en espèces",
+
+						// Voronoi section
+						"voronoi_options": "Options d'affichage et paramètres Voronoï",
+						"voronoi_display_label": "Options d'affichage Voronoï :",
+						"voronoi_legend_label": "Légende Voronoï :",
+						"voronoi_boundary_label": "Utiliser la limite des rayons de pied :",
+						"powder_factor": "Facteur de charge (masse/volume)",
+						"mass": "Masse",
+						"volume": "Volume",
+						"area": "Surface",
+						"measured_length": "Longueur mesurée",
+						"designed_length": "Longueur conçue",
+						"hole_firing_time": "Temps de tir du trou",
+						"heelan_vibration": "Vibration Heelan",
+						"unknown": "inconnu",
+						"min_max": "Min-Max",
+						"fixed": "Fixe",
+
+						// Support section
+						"buy_coffee_alt": "Montrez votre soutien avec un don",
+						"buy_coffee_text": "Offrir un café à Brent",
 						"report_bug_button": "Signaler un bug / Demander une fonctionnalité",
-						"display_hole_id_title": "ID du trou",
-						"display_hole_length_title": "Longueur du trou",
-						"display_hole_diameter_title": "Diamètre du trou",
-						"display_angle_title": "Angle du trou",
-						"display_dip_title": "Inclinaison du trou",
-						"display_bearing_title": "Relèvement du trou",
-						"display_subdrill_title": "Profondeur de forage",
-						"display_ties_title": "Liens",
-						"display_connectors_title": "Valeur de délai",
-						"display_times_only_title": "Temps du trou",
-						"display_contours_title": "Contours",
-						"display_slope_title": "Pente",
-						"display_relief_title": "Relief",
-						"display_direction_title": "Premier mouvement",
-						"display_xlocation_title": "Emplacement X du trou",
-						"display_ylocation_title": "Emplacement Y du trou",
-						"display_zlocation_title": "Emplacement Z du trou",
-						"display_hole_type_title": "Type de trou",
-						"display_measure_title": "Longueur mesurée",
-						"display_mass_title": "Masse mesurée",
-						"display_comment_title": "Commentaire",
-						"display_voronoi_pf_title": "Facteur de poudre de Voronoï"
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "Sélectionner",
+						"select_pointer": "Pointeur de sélection",
+						"select_by_polygon": "Sélection par polygone",
+						"create_label": "Créer",
+						"pattern_in_polygon": "Motif dans polygone",
+						"holes_along_line": "Trous le long d'une ligne",
+						"holes_along_polyline": "Trous le long d'une polyligne",
+						"modify_label": "Modifier",
+						"move_to": "Déplacer vers",
+						"hole_bearing": "Azimut du trou",
+						"assign_surface": "Assigner surface",
+						"assign_grade": "Assigner pente",
+						"connect_label": "Connecter",
+						"tie_connect": "Connexion de liaison",
+						"tie_connect_multi": "Connexion de liaison multiple",
+						"connector_color": "Couleur du connecteur",
+						"measure_label": "Mesurer",
+						"ruler": "Règle",
+						"ruler_protractor": "Rapporteur",
+						"view_label": "Vue",
+						"reset_view": "Réinitialiser la vue"
 					}
-				},
-				"ru": {
+				}, "mn": {
 					"translation": {
+						// Page title
 						"title": "Кирра",
+
+						// Menu bar buttons
+						"help_button": "Тусламж",
+						"zoom_in_button": "Томруулах",
+						"zoom_out_button": "Жижигрүүлэх",
+						"go_back_button": "Буцах",
+						"select_language": "Хэл сонгох",
+
+						// Dark mode toggle
+						"dark_mode": "Горим солих",
+
+						// Display option tooltips
+						"display_hole_id_title": "Цооногийн дугаар",
+						"display_hole_length_title": "Цооногийн урт",
+						"display_hole_diameter_title": "Цооногийн диаметр",
+						"display_angle_title": "Цооногийн өнцөг",
+						"display_dip_title": "Цооногийн налуу",
+						"display_bearing_title": "Цооногийн чиглэл",
+						"display_subdrill_title": "Нэмэлт өрөмдлөг",
+						"display_ties_title": "Холболт",
+						"display_connectors_title": "Саатлын утга",
+						"display_times_only_title": "Цооногийн цаг",
+						"display_contours_title": "Тэгш өндрийн шугам",
+						"display_slope_title": "Налуу",
+						"display_relief_title": "Рельеф",
+						"display_direction_title": "Анхны хөдөлгөөн",
+						"display_xlocation_title": "Цооногийн X байршил",
+						"display_ylocation_title": "Цооногийн Y байршил",
+						"display_zlocation_title": "Цооногийн Z байршил",
+						"display_hole_type_title": "Цооногийн төрөл",
+						"display_measure_title": "Хэмжсэн урт",
+						"display_mass_title": "Хэмжсэн масс",
+						"display_comment_title": "Тайлбар",
+						"display_voronoi_title": "Вороной",
+
+						// Left panel sections
+						"open_import": "Файл нээх эсвэл импортлох",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "Цооног болон KAD файл оруулах",
+						"custom_csv_title": "Захиалгат CSV импорт",
+						"file_dxf_title": "DXF файл оруулах",
+						"measured_values_title": "Хэмжсэн утга оруулах",
+						"file_surface_title": "Гадаргуугийн файл оруулах (3 багана {X,Y,Z})",
+						"file_geotiff_title": "Геотифф файл оруулах",
+
+						// File input alt text
+						"load_holes_kad_alt": "Цооног болон KAD ачаалах",
+						"load_csv_alt": "CSV ачаалах",
+						"load_dxf_alt": "DXF ачаалах",
+						"load_measured_alt": "Хэмжсэн утга ачаалах",
+						"load_surface_alt": "Гадаргуу ачаалах",
+						"load_geotiff_alt": "Геотифф ачаалах",
+
+						// Plus/Minus Holes section
+						"plus_minus_holes": "+ эсвэл - Цооног",
+						"add_pattern_label": "Загвар нэмэх:",
+						"add_hole_label": "Цооног нэмэх:",
+						"delete_label": "Устгах:",
+						"delete_hole_button": "Цооног",
+						"delete_pattern_button": "Загвар",
+						"delete_all_patterns_button": "Бүгд",
+						"renumber_holes_label": "Устгахад дахин дугаарлах:",
+						"delete_renumber_start_label": "Эхлэх дугаар:",
+
+						// Edit Holes section
+						"edit_holes": "Цооног засах",
+						"dialog_edit": "Диалог засварлалт",
+						"edit_blast_name_label": "Тэсрэлтийн нэр засах",
+						"edit_length_popup_label": "Диалогоор урт засах",
+						"edit_hole_type_popup_label": "Диалогоор цооногийн төрөл засах",
+						"slider_edit": "Гулсуур засварлалт",
+						"allow_holes_edited": "Цооног засахыг зөвшөөрөх",
+						"selection_mode_label": "Олон сонголт гулсуур засварлалт",
+						"hole_easting_label": "X:",
+						"hole_northing_label": "Y:",
+						"hole_elevation_label": "Z:",
+						"hole_diameter_label": "Диаметр:",
+						"hole_length_label": "Урт:",
+						"hole_angle_label": "Өнцөг:",
+						"hole_bearing_label": "Чиглэл:",
+						"hole_subdrill_label": "Нэмэлт өрөмдлөг:",
+
+						// Record Actuals section
+						"record_actuals": "Бодит утга бичих",
+						"dialog_record": "Диалог бичлэг",
+						"record_length_popup_label": "Диалогоор урт бичих",
+						"record_mass_popup_label": "Диалогоор масс бичих",
+						"record_comment_popup_label": "Диалогоор тайлбар бичих",
+
+						// View Controls section
+						"view_controls": "Харагдац удирдлага болон барих",
+						"font_size_label": "Фонтын хэмжээ (pt): 10pt",
+						"tie_size_label": "Холболтын хэмжээ (нэгж): 3.0",
+						"toe_size_label": "Ёроолын хэмжээ (м): 0.5м",
+						"hole_adjust_label": "Цооног тохируулга (нэгж): 2.0",
+						"interval_label": "Завсар (мс): 100мс",
+						"first_movement_label": "Анхны хөдөлгөөний хэмжээ (нэгж): 2.0",
+						"snap_tolerance_label": "Барих хүлцэл (px): 15px",
+
+						// Output Files section
+						"output_files": "Гаралтын файл",
+						"save_holes_label": "Цоонгийг файлд хадгалах (импортлох боломжтой)",
+						"save_holes_button": "КИРРА - Тэсрэлтийн нэртэй хадгалахад зориулсан 14 баганын *.csv файл гаргах",
+						"save_kad_label": "Зургийг файлд хадгалах (импортлох боломжтой)",
+						"save_kad_button": "KAD - Кирра апп зургийн *.kad файл гаргах",
+						"save_all_label": "Цооногийн бүх талыг файлд хадгалах (хуваалцах боломжтой)",
+						"save_all_button": "НЭМЭЛТ - Урт, налуу, өнцөг, чиглэл, дэлбэрэлтийн цаг багтана",
+						"save_measures_label": "Бодит утгыг файлд хадгалах (хуваалцах боломжтой)",
+						"save_measures_button": "НЭМЭЛТ - Хэмжсэн гүн болон тэсрэх бодисын килограмм гаргах",
+						"export_holes_dxf_label": "Цоонгийг DXF-д гаргах",
+						"export_holes_dxf_button": "Цоонгийг DXF-д гаргах, амны хэсэг, зам, цооногийн дугаарыг текст объект болгон",
+						"export_drawing_dxf_label": "Зургийг DXF-д гаргах",
+						"export_drawing_dxf_button": "Зургийг DXF-д гаргах, цэг, шугам, олон өнцөгт, тойрог, текст",
+						"export_epiroc_label": "Epiroc Surface Manager-д гаргах",
+						"export_epiroc_button": "EPIROC - XML - диаметр болон цооногийн төрөл багтсан IREDES XML",
+						"export_minestar_label": "MineStar AQM-д гаргах",
+						"export_minestar_button": "MINESTAR - AQM - 11 багана хүртэл гаргах (Өнцөг, Азимут, Диаметр гэх мэт)",
+
+						// About section
+						"about_title": "Тухай",
+						"developer_mode": "Хөгжүүлэгчийн горим",
+						"about_content": "Брент Буффхам бүтээсэн © 2023.",
+
+						// Right panel sections
+						"connectors": "Холбогч",
+						"single_tie_label": "Нэг нэгээр холбох:",
+						"multi_tie_label": "Шугамаар холбох:",
+						"delay_label": "Саатал:",
+						"color_label": "Өнгө",
+						"connect_distance_label": "Холболтын зай:",
+
+						// Animate section
+						"animate_firing": "Дэлбэрэлтийн хөдөлгөөн",
+						"play_button": "ТОГЛУУЛАХ @ 1.0x",
+						"stop_button": "ЗОГСООХ",
+
+						// Time Window section
+						"time_window": "Цагийн цонх",
+						"time_range_label": "Цагийн цонх: 8 мс",
+						"time_offset_label": "Цагийн шилжилт: 0 мс",
+						"hole_count_label": "Цооногийн тоо",
+						"measured_mass_label": "Хэмжсэн тэсрэх бодис",
+
+						// Drawing Tools section
+						"drawing_tools": "Зургийн хэрэгсэл",
+						"elevation_label": "Өндөр (z):",
+						"drawing_color_label": "Өнгө:",
+						"line_width_label": "Шугамын өргөн:",
+						"point_draw_label": "Цэг зурах:",
+						"line_draw_label": "Шугам зурах:",
+						"poly_draw_label": "Олон өнцөгт зурах:",
+						"circle_draw_label": "Тойрог зурах:",
+						"drawing_radius_label": "Радиус (м):",
+						"text_draw_label": "Текст зурах:",
+						"text_label": "Текст:",
+						"common_math_label": "JS Math эсвэл тооцоолол хийхээр текстийн өмнө \"=\" ашиглана уу.",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\\n\\nТэсрэх бодисын уртын массыг тооцоолж болно жишээ нь\\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "Цооногоос радиус үүсгэх",
+						"radii_steps_label": "Радиусын алхам:",
+						"drawing_polygon_radius_label": "Радиус (м):",
+
+						// Drawing Removal section
+						"drawing_removal": "Зураг устгах",
+						"drawing_delete_label": "Зураг устгах:",
+						"delete_point_button": "Цэг",
+						"delete_object_button": "Объект",
+						"delete_all_button": "Бүгд",
+
+						// Voronoi section
+						"voronoi_options": "Вороной харуулах сонголт болон тохиргоо",
+						"voronoi_display_label": "Вороной харуулах сонголт:",
+						"voronoi_legend_label": "Вороной тайлбар:",
+						"voronoi_boundary_label": "Ёроолын радиусын хил ашиглах:",
+						"powder_factor": "Тэсрэх бодисын хүчин зүйл (масс/эзэлхүүн)",
+						"mass": "Масс",
+						"volume": "Эзэлхүүн",
+						"area": "Талбай",
+						"measured_length": "Хэмжсэн урт",
+						"designed_length": "Төлөвлөсөн урт",
+						"hole_firing_time": "Цооногийн дэлбэрэх цаг",
+						"heelan_vibration": "Хилан чичиргээ",
+						"unknown": "үл мэдэгдэх",
+						"min_max": "Хамгийн бага-Хамгийн их",
+						"fixed": "Тогтмол",
+
+						// Support section
+						"buy_coffee_alt": "Мөнгөн хандиваар дэмжлэг үзүүлэх",
+						"buy_coffee_text": "Брентэд кофе худалдаж авах",
+						"report_bug_button": "Алдаа мэдээлэх / Функц хүсэх",
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "Сонгох",
+						"select_pointer": "Сонгох заагч",
+						"select_by_polygon": "Олон өнцөгтөөр сонгох",
+						"create_label": "Үүсгэх",
+						"pattern_in_polygon": "Олон өнцөгт доторх загвар",
+						"holes_along_line": "Шугамын дагуух цооног",
+						"holes_along_polyline": "Олон шугамын дагуух цооног",
+						"modify_label": "Өөрчлөх",
+						"move_to": "Шилжүүлэх",
+						"hole_bearing": "Цооногийн чиглэл",
+						"assign_surface": "Гадаргуу оноох",
+						"assign_grade": "Зэрэглэл оноох",
+						"connect_label": "Холбох",
+						"tie_connect": "Холболт холбох",
+						"tie_connect_multi": "Олон холболт холбох",
+						"connector_color": "Холбогчийн өнгө",
+						"measure_label": "Хэмжих",
+						"ruler": "Захирагч",
+						"ruler_protractor": "Өнцөг хэмжигч",
+						"view_label": "Харах",
+						"reset_view": "Харагдацыг дахин тохируулах"
+					}
+				}, "ru": {
+					"translation": {
+						// Page title
+						"title": "Кирра",
+
+						// Menu bar buttons
 						"help_button": "Помощь",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "Сброс",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "Открыть или Импортировать Файлы",
-						"fileInput": "CSV и KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
-						"plus_minus_holes": "+ или - Отверстия",
+						"zoom_in_button": "Увеличить",
+						"zoom_out_button": "Уменьшить",
+						"go_back_button": "Назад",
+						"select_language": "Выбрать язык",
+
+						// Dark mode toggle
+						"dark_mode": "Переключить режим",
+
+						// Display option tooltips
+						"display_hole_id_title": "ID скважины",
+						"display_hole_length_title": "Длина скважины",
+						"display_hole_diameter_title": "Диаметр скважины",
+						"display_angle_title": "Угол скважины",
+						"display_dip_title": "Наклон скважины",
+						"display_bearing_title": "Азимут скважины",
+						"display_subdrill_title": "Перебур",
+						"display_ties_title": "Связи",
+						"display_connectors_title": "Значение задержки",
+						"display_times_only_title": "Время скважины",
+						"display_contours_title": "Контуры",
+						"display_slope_title": "Уклон",
+						"display_relief_title": "Рельеф",
+						"display_direction_title": "Первое движение",
+						"display_xlocation_title": "X координата скважины",
+						"display_ylocation_title": "Y координата скважины",
+						"display_zlocation_title": "Z координата скважины",
+						"display_hole_type_title": "Тип скважины",
+						"display_measure_title": "Измеренная длина",
+						"display_mass_title": "Измеренная масса",
+						"display_comment_title": "Комментарий",
+						"display_voronoi_title": "Вороной",
+
+						// Left panel sections
+						"open_import": "Открыть или импортировать файлы",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "Ввод файлов скважин и KAD",
+						"custom_csv_title": "Пользовательский импорт CSV",
+						"file_dxf_title": "Ввод файла DXF",
+						"measured_values_title": "Ввод измеренных значений",
+						"file_surface_title": "Ввод файла поверхности (3 столбца {X,Y,Z})",
+						"file_geotiff_title": "Ввод файла Geotiff",
+
+						// File input alt text
+						"load_holes_kad_alt": "Загрузить скважины и KAD",
+						"load_csv_alt": "Загрузить CSV",
+						"load_dxf_alt": "Загрузить DXF",
+						"load_measured_alt": "Загрузить измеренные значения",
+						"load_surface_alt": "Загрузить поверхность",
+						"load_geotiff_alt": "Загрузить Geotiff",
+
+						// Plus/Minus Holes section
+						"plus_minus_holes": "+ или - Скважины",
 						"add_pattern_label": "Добавить шаблон:",
-						"add_hole_label": "Добавить отверстие:",
+						"add_hole_label": "Добавление скважины:",
 						"delete_label": "Удалить:",
-						"delete_hole_button": "Отверстие",
+						"delete_hole_button": "Скважина",
 						"delete_pattern_button": "Шаблон",
 						"delete_all_patterns_button": "Все",
 						"renumber_holes_label": "Перенумеровать при удалении:",
 						"delete_renumber_start_label": "Начать с:",
-						"edit_holes": "Редактировать отверстия",
-						"edit_blast_name_label": "Редактировать имя взрыва",
-						"edit_length_popup_label": "Редактировать длину через диалог",
-						"edit_hole_type_popup_label": "Редактировать тип отверстия через диалог",
-						"selection_mode_label": "Множественный выбор с помощью ползунка",
-						"edit_easting_label": "Редактировать (X)",
+
+						// Edit Holes section
+						"edit_holes": "Редактировать скважины",
+						"dialog_edit": "Редактирование диалогом",
+						"edit_blast_name_label": "Редактировать название взрыва",
+						"edit_length_popup_label": "Редактировать длину диалогом",
+						"edit_hole_type_popup_label": "Редактировать тип скважины диалогом",
+						"slider_edit": "Редактирование ползунком",
+						"allow_holes_edited": "Разрешить редактирование скважин",
+						"selection_mode_label": "Множественный выбор с редактированием ползунком",
 						"hole_easting_label": "X:",
-						"edit_northing_label": "Редактировать (Y)",
 						"hole_northing_label": "Y:",
-						"edit_elevation_label": "Редактировать (Z)",
 						"hole_elevation_label": "Z:",
-						"edit_diameter_label": "Редактировать диаметр",
 						"hole_diameter_label": "Диаметр:",
-						"edit_length_label": "Редактировать длину",
 						"hole_length_label": "Длина:",
-						"edit_angle_label": "Редактировать угол",
 						"hole_angle_label": "Угол:",
-						"edit_bearing_label": "Редактировать азимут",
 						"hole_bearing_label": "Азимут:",
-						"record_actuals": "Записать фактические данные",
-						"record_length_popup_label": "Записать длину через диалог",
-						"record_mass_popup_label": "Записать массу через диалог",
-						"record_comment_popup_label": "Записать комментарий через диалог",
-						"view_controls": "Элементы управления просмотром",
-						"font_size_label": "Размер шрифта:",
-						"tie_size_label": "Размер связи:",
-						"toe_size_label": "Размер основания:",
-						"hole_adjust_label": "Настройка отверстия:",
-						"interval_label": "Интервал:",
-						"first_movement_label": "Размер первого движения:",
+						"hole_subdrill_label": "Перебур:",
+
+						// Record Actuals section
+						"record_actuals": "Записать фактические значения",
+						"dialog_record": "Запись диалогом",
+						"record_length_popup_label": "Записать длину диалогом",
+						"record_mass_popup_label": "Записать массу диалогом",
+						"record_comment_popup_label": "Записать комментарий диалогом",
+
+						// View Controls section
+						"view_controls": "Управление видом и привязка",
+						"font_size_label": "Размер шрифта (pt): 10pt",
+						"tie_size_label": "Размер связи (единицы): 3.0",
+						"toe_size_label": "Размер забоя (м): 0.5м",
+						"hole_adjust_label": "Настройка скважины (единицы): 2.0",
+						"interval_label": "Интервал (мс): 100мс",
+						"first_movement_label": "Размер первого движения (единицы): 2.0",
+						"snap_tolerance_label": "Допуск привязки (px): 15px",
+
+						// Output Files section
 						"output_files": "Выходные файлы",
-						"save_holes_label": "Сохранить отверстия в файл (импортируемый)",
-						"save_holes_button": "KIRRA - Выводит 14-колоночный *.csv файл для сохранения взрывов с именами.",
+						"save_holes_label": "Сохранить скважины в файл (импортируемый)",
+						"save_holes_button": "КИРРА - Выводит 14-столбцовый *.csv файл для сохранения взрывов с именами",
 						"save_kad_label": "Сохранить чертеж в файл (импортируемый)",
-						"save_kad_button": "KAD - Выводит чертеж Kirra App в формате *.kad.",
-						"save_all_label": "Сохранить все аспекты отверстий в файл (для обмена)",
-						"save_all_button": "EXTRA - Выводит дополнительные столбцы, такие как длина, угол, азимут и время инициирования.",
-						"save_measures_label": "Сохранить фактические значения в файл (для обмена)",
-						"save_measures_button": "EXTRA - Выводит фактические записи, такие как измеренная глубина и масса заряда.",
-						"export_holes_to_dxf_label": "Экспорт отверстий в DXF",
-						"export_holes_to_dxf_button": "Экспорт отверстий в DXF, Collar, Track и Hole Id как текстовый объект",
-						"export_drawing_to_dxf_label": "Экспорт чертежа в DXF",
-						"export_drawing_to_dxf_button": "Экспорт чертежа в DXF, Collar, Track и Hole Id как текстовый объект",
-						"save_iredes_button": "EPIROC - XML - Выводит IREDES XML файл для Surface Manager Epiroc Rigs.",
-						"save_aqm_button": "MINESTAR - AQM - Выводит до 11 столбцов (угол, азимут, взрыв, диаметр и т.д.)",
-						"example_helper_files": "Примеры и вспомогательные файлы",
-						"download_test_tie_1": "Скачать тестовый файл связи 1",
-						"download_test_tie_2": "Скачать тестовый файл связи 2",
-						"download_test_tie_3": "Скачать тестовый файл связи 3",
-						"download_kad_pitshell": "Скачать чертеж KAD PITSHELL",
-						"download_kad_pitshell_ios": "Скачать мобильную версию iOS PITSHELL",
-						"download_kad_blastmaster": "Скачать чертеж KAD BLASTMASTER",
-						"download_kad_blastmaster_ios": "Скачать мобильную версию iOS BLASTMASTER",
-						"download_conversion_tool": "Скачать инструмент конверсии Excel",
+						"save_kad_button": "KAD - Выводит файл чертежа Kirra App *.kad для сохранения чертежей",
+						"save_all_label": "Сохранить все аспекты скважин в файл (общий доступ)",
+						"save_all_button": "ДОПОЛНИТЕЛЬНО - Включает длину, наклон, угол, азимут и время инициирования",
+						"save_measures_label": "Сохранить фактические значения в файл (общий доступ)",
+						"save_measures_button": "ДОПОЛНИТЕЛЬНО - Выводит измеренную глубину и килограммы заряда",
+						"export_holes_dxf_label": "Экспорт скважин в DXF",
+						"export_holes_dxf_button": "Экспорт скважин в DXF, устье, траектория и ID скважины как текстовый объект",
+						"export_drawing_dxf_label": "Экспорт чертежа в DXF",
+						"export_drawing_dxf_button": "Экспорт чертежа в DXF, точки, линии, полигоны, окружности, текст",
+						"export_epiroc_label": "Экспорт для Epiroc Surface Manager",
+						"export_epiroc_button": "EPIROC - XML - IREDES XML включая диаметр и тип скважины",
+						"export_minestar_label": "Экспорт для MineStar AQM",
+						"export_minestar_button": "MINESTAR - AQM - Выводит до 11 столбцов (Угол, Азимут, Диаметр и т.д.)",
+
+						// About section
 						"about_title": "О программе",
-						"about_content": "Создано Брентом Баффхамом © 2023.",
+						"developer_mode": "Режим разработчика",
+						"about_content": "Создано Брентом Буффхемом © 2023.",
+
+						// Right panel sections
 						"connectors": "Соединители",
 						"single_tie_label": "Связать по одному:",
 						"multi_tie_label": "Связать все в линию:",
 						"delay_label": "Задержка:",
-						"colour_label": "Цвет:",
+						"color_label": "Цвет",
 						"connect_distance_label": "Расстояние соединения:",
-						"animate_firing": "Анимация стрельбы",
-						"play_button": "Играть............",
-						"stop_button": "Стоп",
+
+						// Animate section
+						"animate_firing": "Анимация взрыва",
+						"play_button": "ВОСПРОИЗВЕСТИ @ 1.0x",
+						"stop_button": "СТОП",
+
+						// Time Window section
 						"time_window": "Временное окно",
 						"time_range_label": "Временное окно: 8 мс",
-						"time_offset_label": "Временной сдвиг: 0 мс",
-						"hole_count_label": "Тооцох нүх",
-						"measured_mass_label": "Хэмжсэн масс",
+						"time_offset_label": "Смещение времени: 0 мс",
+						"hole_count_label": "Количество скважин",
+						"measured_mass_label": "Измеренный заряд",
+
+						// Drawing Tools section
 						"drawing_tools": "Инструменты рисования",
 						"elevation_label": "Высота (z):",
-						"drawing_colour_label": "Цвет:",
+						"drawing_color_label": "Цвет:",
 						"line_width_label": "Ширина линии:",
-						"point_draw_label": "Рисование точек:",
-						"line_draw_label": "Рисование линий:",
-						"poly_draw_label": "Рисование полигонов:",
-						"circle_draw_label": "Рисование кругов:",
+						"point_draw_label": "Рисование точки:",
+						"line_draw_label": "Рисование линии:",
+						"poly_draw_label": "Рисование полигона:",
+						"circle_draw_label": "Рисование окружности:",
 						"drawing_radius_label": "Радиус (м):",
 						"text_draw_label": "Рисование текста:",
 						"text_label": "Текст:",
 						"common_math_label": "Используйте \"=\" в начале текста для использования JS Math или вычислений.",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nМасса заряда длины может быть рассчитана, например:\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
-						"drawing_removal": "Удаление рисунков",
-						"point_delete_label": "Удалить точку:",
-						"line_delete_label": "Удалить линию:",
-						"poly_delete_label": "Удалить полигон:",
-						"circle_delete_label": "Удалить круг:",
-						"text_delete_label": "Удалить текст:",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\\n\\nМасса длины заряда может быть вычислена например\\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "Создать радиусы из скважин",
+						"radii_steps_label": "Шаги радиусов:",
+						"drawing_polygon_radius_label": "Радиус (м):",
+
+						// Drawing Removal section
+						"drawing_removal": "Удаление рисунка",
+						"drawing_delete_label": "Удаление рисунка:",
 						"delete_point_button": "Точка",
 						"delete_object_button": "Объект",
 						"delete_all_button": "Все",
-						"buy_coffee_alt": "Покажите поддержку денежным пожертвованием",
+
+						// Voronoi section
+						"voronoi_options": "Параметры отображения и настройки Вороной",
+						"voronoi_display_label": "Параметры отображения Вороной:",
+						"voronoi_legend_label": "Легенда Вороной:",
+						"voronoi_boundary_label": "Использовать границу радиусов забоя:",
+						"powder_factor": "Удельный расход ВВ (масса/объем)",
+						"mass": "Масса",
+						"volume": "Объем",
+						"area": "Площадь",
+						"measured_length": "Измеренная длина",
+						"designed_length": "Проектная длина",
+						"hole_firing_time": "Время взрыва скважины",
+						"heelan_vibration": "Вибрация Хилана",
+						"unknown": "неизвестно",
+						"min_max": "Мин-Макс",
+						"fixed": "Фиксированный",
+
+						// Support section
+						"buy_coffee_alt": "Поддержите денежным пожертвованием",
+						"buy_coffee_text": "Купить Бренту кофе",
 						"report_bug_button": "Сообщить об ошибке / Запросить функцию",
-						"display_hole_id_title": "ID отверстия",
-						"display_hole_length_title": "Длина отверстия",
-						"display_hole_diameter_title": "Диаметр отверстия",
-						"display_angle_title": "Угол отверстия",
-						"display_dip_title": "Наклон отверстия",
-						"display_bearing_title": "Азимут отверстия",
-						"display_subdrill_title": "Глубина отверстия",
-						"display_ties_title": "Связи",
-						"display_connectors_title": "Значение задержки",
-						"display_times_only_title": "Время отверстия",
-						"display_contours_title": "Контуры",
-						"display_slope_title": "Склон",
-						"display_relief_title": "Рельеф",
-						"display_direction_title": "Первое движение",
-						"display_xlocation_title": "X-координата отверстия",
-						"display_ylocation_title": "Y-координата отверстия",
-						"display_zlocation_title": "Z-координата отверстия",
-						"display_hole_type_title": "Тип отверстия",
-						"display_measure_title": "Измеренная длина",
-						"display_mass_title": "Измеренная масса",
-						"display_comment_title": "Комментарий",
-						"display_voronoi_pf_title": "Вороной, удельный расход ВВ"
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "Выбрать",
+						"select_pointer": "Указатель выбора",
+						"select_by_polygon": "Выбор полигоном",
+						"create_label": "Создать",
+						"pattern_in_polygon": "Шаблон в полигоне",
+						"holes_along_line": "Скважины вдоль линии",
+						"holes_along_polyline": "Скважины вдоль полилинии",
+						"modify_label": "Изменить",
+						"move_to": "Переместить в",
+						"hole_bearing": "Азимут скважины",
+						"assign_surface": "Назначить поверхность",
+						"assign_grade": "Назначить уклон",
+						"connect_label": "Соединить",
+						"tie_connect": "Соединение связи",
+						"tie_connect_multi": "Множественное соединение связи",
+						"connector_color": "Цвет соединителя",
+						"measure_label": "Измерить",
+						"ruler": "Линейка",
+						"ruler_protractor": "Транспортир",
+						"view_label": "Вид",
+						"reset_view": "Сбросить вид"
 					}
-				},
-				"es": {
+				}, "es": {
 					"translation": {
+						// Page title
 						"title": "Kirra",
+
+						// Menu bar buttons
 						"help_button": "Ayuda",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "R",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "Abrir o Importar Archivos",
-						"fileInput": "CSV y KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
-						"plus_minus_holes": "+ o - Agujeros",
-						"add_pattern_label": "Agregar patrón:",
-						"add_hole_label": "Agregar agujero:",
-						"delete_label": "Eliminar:",
-						"delete_hole_button": "Agujero",
-						"delete_pattern_button": "Patrón",
-						"delete_all_patterns_button": "Todo",
-						"renumber_holes_label": "Renumerar al eliminar:",
-						"delete_renumber_start_label": "Comenzar en:",
-						"edit_holes": "Editar agujeros",
-						"edit_blast_name_label": "Editar nombre de explosión",
-						"edit_length_popup_label": "Editar longitud con diálogo",
-						"edit_hole_type_popup_label": "Editar tipo de agujero con diálogo",
-						"selection_mode_label": "Selección múltiple con control deslizante",
-						"edit_easting_label": "Editar (X)",
-						"hole_easting_label": "X:",
-						"edit_northing_label": "Editar (Y)",
-						"hole_northing_label": "Y:",
-						"edit_elevation_label": "Editar (Z)",
-						"hole_elevation_label": "Z:",
-						"edit_diameter_label": "Editar diámetro",
-						"hole_diameter_label": "Diámetro:",
-						"edit_length_label": "Editar longitud",
-						"hole_length_label": "Longitud:",
-						"edit_angle_label": "Editar ángulo",
-						"hole_angle_label": "Ángulo:",
-						"edit_bearing_label": "Editar rumbo",
-						"hole_bearing_label": "Rumbo:",
-						"record_actuals": "Registrar valores reales",
-						"record_length_popup_label": "Registrar longitud con diálogo",
-						"record_mass_popup_label": "Registrar masa con diálogo",
-						"record_comment_popup_label": "Registrar comentario con diálogo",
-						"view_controls": "Controles de vista",
-						"font_size_label": "Tamaño de fuente:",
-						"tie_size_label": "Tamaño de enlace:",
-						"toe_size_label": "Tamaño de pie:",
-						"hole_adjust_label": "Ajuste de agujero:",
-						"interval_label": "Intervalo:",
-						"first_movement_label": "Tamaño del primer movimiento:",
-						"output_files": "Archivos de salida",
-						"save_holes_label": "Guardar agujeros en un archivo (importable)",
-						"save_holes_button": "KIRRA - Esto genera un archivo *.csv de 14 columnas que se puede usar para guardar explosiones con nombres.",
-						"save_kad_label": "Guardar dibujo en un archivo (importable)",
-						"save_kad_button": "KAD - Esto genera un archivo *.kad de la aplicación Kirra que se puede usar para guardar dibujos.",
-						"save_all_label": "Guardar todos los aspectos de los agujeros en un archivo (compartible)",
-						"save_all_button": "EXTRA - Esto genera columnas adicionales como longitud, inclinación, ángulo, rumbo y tiempo de iniciación.",
-						"save_measures_label": "Guardar valores reales en un archivo (compartible)",
-						"save_measures_button": "EXTRA - Esto genera registros reales como profundidad medida y kilogramos de carga.",
-						"export_holes_to_dxf_label": "Exportar Agujeros a DXF",
-						"export_holes_to_dxf_button": "Exportar Agujeros a DXF, Collar, Trayectoria e ID del Agujero como Objeto de Texto",
-						"export_drawing_to_dxf_label": "Exportar Dibujo a DXF",
-						"export_drawing_to_dxf_button": "Exportar Dibujo a DXF, Collar, Trayectoria e ID del Agujero como Objeto de Texto",
-						"save_iredes_button": "EPIROC - XML - Esto genera un archivo XML IREDES para Surface Manager Epiroc Rigs.",
-						"save_aqm_button": "MINESTAR - AQM - Genera hasta 11 columnas (ángulo, azimut, explosión, diámetro, etc.)",
-						"example_helper_files": "Archivos de ejemplo y ayuda",
-						"download_test_tie_1": "Descargar archivo de prueba de enlace 1",
-						"download_test_tie_2": "Descargar archivo de prueba de enlace 2",
-						"download_test_tie_3": "Descargar archivo de prueba de enlace 3",
-						"download_kad_pitshell": "Descargar dibujo KAD PITSHELL",
-						"download_kad_pitshell_ios": "Descargar versión móvil iOS PITSHELL",
-						"download_kad_blastmaster": "Descargar dibujo KAD BLASTMASTER",
-						"download_kad_blastmaster_ios": "Descargar versión móvil iOS BLASTMASTER",
-						"download_conversion_tool": "Descargar herramienta de conversión Excel",
-						"about_title": "Acerca de",
-						"about_content": "Creado por Brent Buffham © 2023.",
-						"connectors": "Conectores",
-						"single_tie_label": "Conectar uno por uno:",
-						"multi_tie_label": "Conectar todos en línea:",
-						"delay_label": "Retraso:",
-						"colour_label": "Color:",
-						"connect_distance_label": "Distancia de conexión:",
-						"animate_firing": "Animar disparo",
-						"play_button": "Reproducir............",
-						"stop_button": "Detener",
-						"time_window": "Ventana de tiempo",
-						"time_range_label": "Ventana de tiempo: 8 ms",
-						"time_offset_label": "Desplazamiento de tiempo: 0 ms",
-						"hole_count_label": "Conteo de agujeros",
-						"measured_mass_label": "Masa medida",
-						"drawing_tools": "Herramientas de dibujo",
-						"elevation_label": "Elevación (z):",
-						"drawing_colour_label": "Color:",
-						"line_width_label": "Ancho de línea:",
-						"point_draw_label": "Dibujo de puntos:",
-						"line_draw_label": "Dibujo de líneas:",
-						"poly_draw_label": "Dibujo de polígonos:",
-						"circle_draw_label": "Dibujo de círculos:",
-						"drawing_radius_label": "Radio (m):",
-						"text_draw_label": "Dibujo de texto:",
-						"text_label": "Texto:",
-						"common_math_label": "Use \"=\" al principio del texto para usar JS Math o realizar cálculos.",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\nLa masa de una longitud de carga se puede calcular, por ejemplo:\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
-						"drawing_removal": "Eliminación de dibujos",
-						"point_delete_label": "Eliminar punto:",
-						"line_delete_label": "Eliminar línea:",
-						"poly_delete_label": "Eliminar polígono:",
-						"circle_delete_label": "Eliminar círculo:",
-						"text_delete_label": "Eliminar texto:",
-						"delete_point_button": "Punto",
-						"delete_object_button": "Objeto",
-						"delete_all_button": "Todo",
-						"buy_coffee_alt": "Muestra tu apoyo con una donación en efectivo",
-						"report_bug_button": "Informar un error / Solicitar una función",
-						"display_hole_id_title": "ID del agujero",
-						"display_hole_length_title": "Longitud del agujero",
-						"display_hole_diameter_title": "Diámetro del agujero",
-						"display_angle_title": "Ángulo del agujero",
-						"display_dip_title": "Inclinación del agujero",
-						"display_bearing_title": "Rumbo del agujero",
-						"display_subdrill_title": "Profundidad del agujero",
-						"display_ties_title": "Enlaces",
-						"display_connectors_title": "Valor de retraso",
-						"display_times_only_title": "Tiempo del agujero",
+						"zoom_in_button": "Acercar",
+						"zoom_out_button": "Alejar",
+						"go_back_button": "Volver",
+						"select_language": "Seleccionar idioma",
+
+						// Dark mode toggle
+						"dark_mode": "Cambiar modo",
+
+						// Display option tooltips
+						"display_hole_id_title": "ID del barreno",
+						"display_hole_length_title": "Longitud del barreno",
+						"display_hole_diameter_title": "Diámetro del barreno",
+						"display_angle_title": "Ángulo del barreno",
+						"display_dip_title": "Inclinación del barreno",
+						"display_bearing_title": "Azimut del barreno",
+						"display_subdrill_title": "Sobreperforación",
+						"display_ties_title": "Conexiones",
+						"display_connectors_title": "Valor de retardo",
+						"display_times_only_title": "Tiempo del barreno",
 						"display_contours_title": "Contornos",
 						"display_slope_title": "Pendiente",
 						"display_relief_title": "Relieve",
 						"display_direction_title": "Primer movimiento",
-						"display_xlocation_title": "Ubicación X del agujero",
-						"display_ylocation_title": "Ubicación Y del agujero",
-						"display_zlocation_title": "Ubicación Z del agujero",
-						"display_hole_type_title": "Tipo de agujero",
+						"display_xlocation_title": "Ubicación X del barreno",
+						"display_ylocation_title": "Ubicación Y del barreno",
+						"display_zlocation_title": "Ubicación Z del barreno",
+						"display_hole_type_title": "Tipo de barreno",
 						"display_measure_title": "Longitud medida",
 						"display_mass_title": "Masa medida",
 						"display_comment_title": "Comentario",
-						"display_voronoi_pf_title": "Factor de Polvo de Voronoi"
+						"display_voronoi_title": "Voronoi",
+
+						// Left panel sections
+						"open_import": "Abrir o importar archivos",
+
+						// File input titles and tooltips
+						"file_holes_kad_title": "Entrada de archivos de barrenos y KAD",
+						"custom_csv_title": "Importación CSV personalizada",
+						"file_dxf_title": "Entrada de archivo DXF",
+						"measured_values_title": "Entrada de valores medidos",
+						"file_surface_title": "Entrada de archivo de superficie (3 columnas {X,Y,Z})",
+						"file_geotiff_title": "Entrada de archivo Geotiff",
+
+						// File input alt text
+						"load_holes_kad_alt": "Cargar barrenos y KAD",
+						"load_csv_alt": "Cargar CSV",
+						"load_dxf_alt": "Cargar DXF",
+						"load_measured_alt": "Cargar valores medidos",
+						"load_surface_alt": "Cargar superficie",
+						"load_geotiff_alt": "Cargar Geotiff",
+
+						// Plus/Minus Holes section
+						"plus_minus_holes": "+ o - Barrenos",
+						"add_pattern_label": "Agregar patrón:",
+						"add_hole_label": "Agregando barreno:",
+						"delete_label": "Eliminar:",
+						"delete_hole_button": "Barreno",
+						"delete_pattern_button": "Patrón",
+						"delete_all_patterns_button": "Todo",
+						"renumber_holes_label": "Renumerar al eliminar:",
+						"delete_renumber_start_label": "Comenzar en:",
+
+						// Edit Holes section
+						"edit_holes": "Editar barrenos",
+						"dialog_edit": "Edición por diálogo",
+						"edit_blast_name_label": "Editar nombre de voladura",
+						"edit_length_popup_label": "Editar longitud con diálogo",
+						"edit_hole_type_popup_label": "Editar tipo de barreno con diálogo",
+						"slider_edit": "Edición por deslizador",
+						"allow_holes_edited": "Permitir edición de barrenos",
+						"selection_mode_label": "Selección múltiple con edición por deslizador",
+						"hole_easting_label": "X:",
+						"hole_northing_label": "Y:",
+						"hole_elevation_label": "Z:",
+						"hole_diameter_label": "Diámetro:",
+						"hole_length_label": "Longitud:",
+						"hole_angle_label": "Ángulo:",
+						"hole_bearing_label": "Azimut:",
+						"hole_subdrill_label": "Sobreperforación:",
+
+						// Record Actuals section
+						"record_actuals": "Registrar valores reales",
+						"dialog_record": "Registro por diálogo",
+						"record_length_popup_label": "Registrar longitud con diálogo",
+						"record_mass_popup_label": "Registrar masa con diálogo",
+						"record_comment_popup_label": "Registrar comentario con diálogo",
+
+						// View Controls section
+						"view_controls": "Controles de vista y ajuste",
+						"font_size_label": "Tamaño de fuente (pt): 10pt",
+						"tie_size_label": "Tamaño de conexión (unidades): 3.0",
+						"toe_size_label": "Tamaño de fondo (m): 0.5m",
+						"hole_adjust_label": "Ajuste de barreno (unidades): 2.0",
+						"interval_label": "Intervalo (ms): 100ms",
+						"first_movement_label": "Tamaño del primer movimiento (unidades): 2.0",
+						"snap_tolerance_label": "Tolerancia de ajuste (px): 15px",
+
+						// Output Files section
+						"output_files": "Archivos de salida",
+						"save_holes_label": "Guardar barrenos en archivo (importable)",
+						"save_holes_button": "KIRRA - Genera archivo *.csv de 14 columnas para guardar voladuras con nombres",
+						"save_kad_label": "Guardar dibujo en archivo (importable)",
+						"save_kad_button": "KAD - Genera archivo de dibujo Kirra App *.kad para guardar dibujos",
+						"save_all_label": "Guardar todos los aspectos de barrenos en archivo (compartible)",
+						"save_all_button": "EXTRA - Incluye longitud, inclinación, ángulo, azimut y tiempo de iniciación",
+						"save_measures_label": "Guardar valores reales en archivo (compartible)",
+						"save_measures_button": "EXTRA - Genera profundidad medida y kilogramos de carga",
+						"export_holes_dxf_label": "Exportar barrenos a DXF",
+						"export_holes_dxf_button": "Exportar barrenos a DXF, collar, trayectoria e ID de barreno como objeto de texto",
+						"export_drawing_dxf_label": "Exportar dibujo a DXF",
+						"export_drawing_dxf_button": "Exportar dibujo a DXF, puntos, líneas, polígonos, círculos, texto",
+						"export_epiroc_label": "Exportar para Epiroc Surface Manager",
+						"export_epiroc_button": "EPIROC - XML - IREDES XML incluyendo diámetro y tipo de barreno",
+						"export_minestar_label": "Exportar para MineStar AQM",
+						"export_minestar_button": "MINESTAR - AQM - Genera hasta 11 columnas (Ángulo, Azimut, Diámetro, etc.)",
+
+						// About section
+						"about_title": "Acerca de",
+						"developer_mode": "Modo desarrollador",
+						"about_content": "Creado por Brent Buffham © 2023.",
+
+						// Right panel sections
+						"connectors": "Conectores",
+						"single_tie_label": "Conectar uno por uno:",
+						"multi_tie_label": "Conectar todos en línea:",
+						"delay_label": "Retardo:",
+						"color_label": "Color",
+						"connect_distance_label": "Distancia de conexión:",
+
+						// Animate section
+						"animate_firing": "Animar voladura",
+						"play_button": "REPRODUCIR @ 1.0x",
+						"stop_button": "PARAR",
+
+						// Time Window section
+						"time_window": "Ventana de tiempo",
+						"time_range_label": "Ventana de tiempo: 8 ms",
+						"time_offset_label": "Desplazamiento de tiempo: 0 ms",
+						"hole_count_label": "Cantidad de barrenos",
+						"measured_mass_label": "Carga medida",
+
+						// Drawing Tools section
+						"drawing_tools": "Herramientas de dibujo",
+						"elevation_label": "Elevación (z):",
+						"drawing_color_label": "Color:",
+						"line_width_label": "Ancho de línea:",
+						"point_draw_label": "Dibujo de punto:",
+						"line_draw_label": "Dibujo de línea:",
+						"poly_draw_label": "Dibujo de polígono:",
+						"circle_draw_label": "Dibujo de círculo:",
+						"drawing_radius_label": "Radio (m):",
+						"text_draw_label": "Dibujo de texto:",
+						"text_label": "Texto:",
+						"common_math_label": "Use \"=\" al inicio del texto para usar JS Math o hacer cálculos.",
+						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\\n\\nLa masa de una longitud de carga puede calcularse ej.\\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
+						"create_radii_button": "Crear radios desde barrenos",
+						"radii_steps_label": "Pasos de radios:",
+						"drawing_polygon_radius_label": "Radio (m):",
+
+						// Drawing Removal section
+						"drawing_removal": "Eliminación de dibujo",
+						"drawing_delete_label": "Eliminar dibujo:",
+						"delete_point_button": "Punto",
+						"delete_object_button": "Objeto",
+						"delete_all_button": "Todo",
+
+						// Voronoi section
+						"voronoi_options": "Opciones de visualización y configuración de Voronoi",
+						"voronoi_display_label": "Opciones de visualización de Voronoi:",
+						"voronoi_legend_label": "Leyenda de Voronoi:",
+						"voronoi_boundary_label": "Usar límite de radios de fondo:",
+						"powder_factor": "Factor de carga (masa/volumen)",
+						"mass": "Masa",
+						"volume": "Volumen",
+						"area": "Área",
+						"measured_length": "Longitud medida",
+						"designed_length": "Longitud diseñada",
+						"hole_firing_time": "Tiempo de disparo del barreno",
+						"heelan_vibration": "Vibración Heelan",
+						"unknown": "desconocido",
+						"min_max": "Mín-Máx",
+						"fixed": "Fijo",
+
+						// Support section
+						"buy_coffee_alt": "Muestra apoyo con una donación",
+						"buy_coffee_text": "Comprar un café a Brent",
+						"report_bug_button": "Reportar error / Solicitar función",
+
+						// Floating toolbar
+						"drag_label": "═════",
+						"select_label": "Seleccionar",
+						"select_pointer": "Puntero de selección",
+						"select_by_polygon": "Selección por polígono",
+						"create_label": "Crear",
+						"pattern_in_polygon": "Patrón en polígono",
+						"holes_along_line": "Barrenos a lo largo de línea",
+						"holes_along_polyline": "Barrenos a lo largo de polilínea",
+						"modify_label": "Modificar",
+						"move_to": "Mover a",
+						"hole_bearing": "Azimut del barreno",
+						"assign_surface": "Asignar superficie",
+						"assign_grade": "Asignar pendiente",
+						"connect_label": "Conectar",
+						"tie_connect": "Conexión de enlace",
+						"tie_connect_multi": "Conexión de enlace múltiple",
+						"connector_color": "Color del conector",
+						"measure_label": "Medir",
+						"ruler": "Regla",
+						"ruler_protractor": "Transportador",
+						"view_label": "Vista",
+						"reset_view": "Restablecer vista"
 					}
-				},
-				"zh_CN": {
-					"translation": {
-						"title": "Kirra",
-						"help_button": "帮助",
-						"zoom_in_button": "+",
-						"zoom_out_button": "-",
-						"reset_zoom_button": "R",
-						"go_back_button": "←",
-						"dark_mode_sun": "☼",
-						"dark_mode_moon": "🌙",
-						"open_import": "打开或导入文件",
-						"fileInput": "CSV 和 KAD",
-						"fileInputDXF": "DXF",
-						"fileInputMeasured": "CSV",
-						"plus_minus_holes": "+ 或 - 孔",
-						"add_pattern_label": "添加模式:",
-						"add_hole_label": "添加孔:",
-						"delete_label": "删除:",
-						"delete_hole_button": "孔",
-						"delete_pattern_button": "模式",
-						"delete_all_patterns_button": "全部",
-						"renumber_holes_label": "删除时重新编号:",
-						"delete_renumber_start_label": "开始于:",
-						"edit_holes": "编辑孔",
-						"edit_blast_name_label": "编辑爆破名称",
-						"edit_length_popup_label": "使用对话框编辑长度",
-						"edit_hole_type_popup_label": "使用对话框编辑孔类型",
-						"selection_mode_label": "使用滑块编辑进行多项选择",
-						"edit_easting_label": "编辑(X)",
-						"hole_easting_label": "X :",
-						"edit_northing_label": "编辑(Y)",
-						"hole_northing_label": "Y :",
-						"edit_elevation_label": "编辑(Z)",
-						"hole_elevation_label": "Z :",
-						"edit_diameter_label": "编辑直径",
-						"hole_diameter_label": "直径 :",
-						"edit_length_label": "编辑长度",
-						"hole_length_label": "长度 :",
-						"edit_angle_label": "编辑角度",
-						"hole_angle_label": "角度 :",
-						"edit_bearing_label": "编辑方位",
-						"hole_bearing_label": "方位 :",
-						"record_actuals": "记录实际值",
-						"record_length_popup_label": "使用对话框记录长度",
-						"record_mass_popup_label": "使用对话框记录质量",
-						"record_comment_popup_label": "使用对话框记录评论",
-						"view_controls": "查看控制",
-						"font_size_label": "字体大小 :",
-						"tie_size_label": "连接尺寸 :",
-						"toe_size_label": "脚趾尺寸 :",
-						"hole_adjust_label": "孔调整 :",
-						"interval_label": "间隔 :",
-						"first_movement_label": "首次移动尺寸 :",
-						"output_files": "输出文件",
-						"save_holes_label": "将孔保存到文件(可导入)",
-						"save_holes_button": "KIRRA - 这将输出一个 14 列的 *.csv 文件，可用于保存带有名称的爆破。",
-						"save_kad_label": "将图形保存到文件(可导入)",
-						"save_kad_button": "KAD - 这将输出一个 Kirra App Drawing *.kad 文件，可用于保存图形。",
-						"save_all_label": "将所有孔方面保存到文件(可共享)",
-						"save_all_button": "EXTRA - 这将输出额外的列，如长度、倾角、角度、方位和启动时间。",
-						"save_measures_label": "将实际值保存到文件(可共享)",
-						"save_measures_button": "EXTRA - 这将输出实际记录，如测量深度和装药千克。",
-						"export_holes_to_dxf_label": "将孔导出到 DXF",
-						"export_holes_to_dxf_button": "将孔导出到 DXF，领口、轨迹和孔 ID 作为文本对象",
-						"export_drawing_to_dxf_label": "将图形导出到 DXF",
-						"export_drawing_to_dxf_button": "将图形导出到 DXF，领口、轨迹和孔 ID 作为文本对象",
-						"save_iredes_button": "EPIROC - XML - 这将为 Surface Manager Epiroc Rigs 输出 IREDES XML 钻孔文件。(XML 文件格式，包括孔直径和孔类型。www.IREDES.org)",
-						"save_aqm_button": "MINESTAR - AQM - 输出多达 11 列(角度、方位角、爆破、直径、东距、高程、忽略、指令、材料类型、名称、北距或模式)",
-						"example_helper_files": "示例和帮助文件",
-						"download_test_tiein ": "下载测试连接文件 1",
-						"download_test_tie_2": "下载测试连接文件 2",
-						"download_test_tie_3": "下载测试连接文件 3",
-						"download_kad_pitshell": "下载 KAD PITSHELL 图形文件",
-						"download_kad_pitshell_ios": "下载移动 iOS PITSHELL 版本",
-						"download_kad_blastmaster": "下载 KAD BLASTMASTER 图形文件",
-						"download_kad_blastmaster_ios": "下载移动 iOS BLASTMASTER 版本",
-						"download_conversion_tool": "下载转换 excel 工具",
-						"about_title": "关于",
-						"about_content": "由 Brent Buffham © 2023 创建。\n导入 CSV 文件：无标题\n4 列(ID、X、Y、Z) = 虚拟孔或\n7 列(ID、X、Y、Z、toeX、toeY、toeZ) = 爆破孔或\n9 列(ID、X、Y、Z、toeX、ToeY、ToeZ、孔直径、孔类型)或\n12 列(ID、X、Y、Z、toeX、ToeY、ToeZ、孔直径、孔类型、FromHole、延迟、颜色)",
-						"connectors": "连接器",
-						"single_tie_label": "逐个连接:",
-						"multi_tie_label": "将所有连接成一条线:",
-						"delay_label": "延迟:",
-						"colour_label": "颜色",
-						"connect_distance_label": "连接距离 :",
-						"animate_firing": "动画射击",
-						"play_button": "播放............",
-						"stop_button": "停止",
-						"time_window": "时间窗口",
-						"time_range_label": "时间窗口 : 8 毫秒",
-						"time_offset_label": "时间偏移 : 0 毫秒",
-						"hole_count_label": "孔数",
-						"measured_mass_label": "测量质量",
-						"drawing_tools": "绘图工具",
-						"elevation_label": "高程 (z):",
-						"drawing_colour_label": "颜色:",
-						"line_width_label": "线宽:",
-						"point_draw_label": "点画:",
-						"line_draw_label": "线画:",
-						"poly_draw_label": "多边形绘图:",
-						"circle_draw_label": "圆形绘图:",
-						"drawing_radius_label": "半径(米):",
-						"text_draw_label": "文本绘图:",
-						"text_label": "文本:",
-						"common_math_label": "在文本前面使用   来使用 JS Math 或进行计算。",
-						"common_math_examples": "Math.PI: Math.E: Math.max(): Math.min(): Math.round(): Math.floor(): Math.ceil(): Math.random(): Math.sqrt(): Math.pow(): Math.abs(): Math.sin(): Math.cos(): Math.tan(): Math.asin(): Math.acos(): Math.atan(): Math.log(): .toFixed()\n\n可以计算电荷长度的质量，即:\n=((Math.PI * Math.pow((229/2), 2)*10 * 1.18) / 1000).toFixed(2)",
-						"drawing_removal": "绘图移除",
-						"point_delete_label": "点删除:",
-						"line_delete_label": "线删除:",
-						"poly_delete_label": "多边形删除:",
-						"circle_delete_label": "圆形删除:",
-						"text_delete_label": "文本删除:",
-						"delete_point_button": "点",
-						"delete_object_button": "对象",
-						"delete_all_button": "全部",
-						"buy_coffee_alt": "通过现金捐款表示支持",
-						"report_bug_button": "报告错误/请求功能",
-						"display_hole_id_title": "孔 ID",
-						"display_hole_length_title": "孔长度",
-						"display_hole_diameter_title": "孔直径",
-						"display_angle_title": "孔角度",
-						"display_dip_title": "孔倾角",
-						"display_bearing_title": "孔方位",
-						"display_subdrill_title": "孔深度",
-						"display_ties_title": "连接",
-						"display_connectors_title": "延迟值",
-						"display_times_only_title": "孔时间",
-						"display_contours_title": "轮廓",
-						"display_slope_title": "坡度",
-						"display_relief_title": "救济",
-						"display_direction_title": "首次移动",
-						"display_xlocation_title": "孔 X 位置",
-						"display_ylocation_title": "孔 Y 位置",
-						"display_zlocation_title": "孔 Z 位置",
-						"display_hole_type_title": "孔类型",
-						"display_measure_title": "测量长度",
-						"display_mass_title": "测量质量",
-						"display_comment_title": "评论",
-						"display_voronoi_pf_title": "Voronoi 粉末系数"
-					}
-				},
+				}
 
 			}
 		</script>
@@ -1173,7 +1647,39 @@
 				<button class="accordion" id="openOrImportAcc">
 					<span>Open or Import files</span>
 				</button>
+
 				<div class="panel">
+					<!-- Hidden file inputs -->
+					<input type="file" name="fileInput" id="fileInput" accept=".csv,.kad,.txt" class="hidden-file-input" placeholder="fileInput" title="File Holes and KAD Input">
+					<input type="file" name="fileInputCustomCSV" id="fileInputCustomCSV" accept=".csv,.txt" class="hidden-file-input" placeholder="fileInputCustomCSV" title="Custom CSV Import">
+					<input type="file" name="fileInputDXF" id="fileInputDXF" accept=".dxf" class="hidden-file-input" placeholder="fileInputDXF" title="File DXF Input">
+					<input type="file" name="fileInputMeasured" id="fileInputMeasured" accept=".csv" class="hidden-file-input" placeholder="fileInputMeasured" title="Measured Values Input">
+					<input type="file" name="fileInputSurface" id="fileInputSurface" accept=".obj,.csv,.txt,.asc,.xyz" class="hidden-file-input" placeholder="fileInputSurface" title="File Surface Input (3 columns {X,Y,Z})">
+					<input type="file" name="fileInputGeotiff" id="fileInputGeotiff" accept=".tif,.tiff" class="hidden-file-input" placeholder="fileInputGeotiff" title="File Geotiff Input">
+
+					<!-- Icon buttons grid -->
+					<div class="file-import-grid">
+						<label class="icon-button file-import-btn" data-target="fileInput" title="File Holes and KAD Input">
+							<img src="icons/k2D-file-import.png" alt="Load Holes & KAD">
+						</label>
+						<label class="icon-button file-import-btn" data-target="fileInputCustomCSV" title="Custom CSV Import">
+							<img src="icons/load-holes-csv.png" alt="Load CSV">
+						</label>
+						<label class="icon-button file-import-btn" data-target="fileInputDXF" title="File DXF Input">
+							<img src="icons/load-dxf.png" alt="Load DXF">
+						</label>
+						<label class="icon-button file-import-btn" data-target="fileInputMeasured" title="Measured Values Input">
+							<img src="icons/measured-import.png" alt="Load Measured Values">
+						</label>
+						<label class="icon-button file-import-btn" data-target="fileInputSurface" title="File Surface Input (3 columns {X,Y,Z})">
+							<img src="icons/load-obj.png" alt="Load Surface">
+						</label>
+						<label class="icon-button file-import-btn" data-target="fileInputGeotiff" title="File Geotiff Input">
+							<img src="icons/TIF-image.png" alt="Load Geotiff">
+						</label>
+					</div>
+				</div>
+				<!-- <div class="panel">
 					<div class="label12" id="fileInputLabel">File Holes and KAD Input</div>
 					<input type="file" id="fileInput" accept=".csv,.kad,.txt" placeholder="CSV TXT KAD">
 					<br>
@@ -1188,7 +1694,10 @@
 					<br>
 					<div class="label12" id="fileInputSurfaceLabel">File Surface Input(3 columns {X,Y,Z})</div>
 					<input type="file" id="fileInputSurface" accept=".obj,.csv,.txt,.asc,.xyz" placeholder="Surface">
-				</div>
+					<br>
+					<div class="label12" id="fileInputGeotiffLabel">File Geotiff Input</div>
+					<input type="file" id="fileInputGeotiff" accept=".tif,.tiff" placeholder="Geotiff">
+				</div> -->
 
 				<button class="accordion" id="plusorminusHolesAcc">
 					<span>+ or - Holes</span>
@@ -1338,22 +1847,23 @@
 				</div>
 				<!-- View Conrols -->
 				<button class="accordion" id="viewControlsAcc">
-					<span>View Controls</span></button>
+					<span>View Controls & Snap</span></button>
 				<div class="panel">
 					<div class="button-container-1col">
-						<div class="label2" id="fontLabel">Font Size : </div>
+						<div class="label2" id="fontLabel">Font Size (pt): 10pt</div>
 						<input type="range" id="fontSlider" min="1" max="100" value="10" step="1" placeholder="Select font size">
-						<div class="label2" id="connLabel">Tie Size : </div>
+						<div class="label2" id="connLabel">Tie Size (units): 3.0</div>
 						<input type="range" id="connSlider" min="0.001" max="15" value="3" step="0.1" placeholder="Select connector size">
-						<div class="label2" id="toeLabel">Toe Size : </div>
+						<div class="label2" id="toeLabel">Toe Size (m): 0.5m</div>
 						<input type="range" id="toeSlider" min="0.001" max="30" value=".5" step="0.1" placeholder="Select toe circle size">
-						<div class="label2" id="holeLabel">Hole Adjust : </div>
+						<div class="label2" id="holeLabel">Hole Adjust (units): 2.0</div>
 						<input type="range" id="holeSlider" min="1" max="10" value="2" step="0.1" placeholder="Select hole circle size">
-						<div class="label2" id="intervalLabel">Interval : </div>
+						<div class="label2" id="intervalLabel">Interval (ms): 100ms</div>
 						<input type="range" id="intervalSlider" min="5" max="1000" value="100" step="5" placeholder="Adjust the Interval">
-						<div class="label2" id="firstMovementLabel">First Movement Size : </div>
-						<input type="range" id="firstMovementSlider" min="1" max="5" value="2" step="0.2" placeholder="Adjust the First Movement">
-
+						<div class="label2" id="firstMovementLabel">First Movement Size (units): 2.0</div>
+						<input type="range" id="firstMovementSlider" min="0" max="5" value="2" step="0.1" placeholder="Adjust the First Movement">
+						<div class="label2" id="snapToleranceLabel">Snap Tolerance (px): 15px </div>
+						<input type="range" id="snapToleranceSlider" min="0" max="100" value="15" step="1" placeholder="Adjust the Snap Tolerance">
 					</div>
 				</div>
 				<!-- OUTPUT FILES -->
@@ -1410,7 +1920,7 @@
 				</div>
 
 				<!--EXAMPLES FILE-->
-				<button class="accordion" id="exampleFilesAcc">
+				<!-- <button class="accordion" id="exampleFilesAcc">
 					<span>Example and Helper Files</span></button>
 				<div class="panel">
 					<br><a href="/tieintest1.csv" id="testfile1"> Download test tie in file 1</a>
@@ -1430,10 +1940,13 @@
 					<br><a href="/blastingapps-xyz-converter.xlsx" id="testfile8" font-size="12px"> Download the
 						conversion
 						excel tool</a><br><br>
-				</div>
+				</div> -->
 				<button class="accordion" id="aboutAcc">
 					<span>About</span></button>
 				<div class="panel" id="aboutPanel">
+					<!-- add a developer mode button-->
+					<input type="checkbox" id="developerMode"> <label for="developerMode">Developer Mode</label>
+					<br>
 					<font size="1"><i>Created by Brent Buffham &#169; 2023. <br>
 							<hr> <br>
 							Importing a CSV files: NO HEADERS
@@ -1441,14 +1954,14 @@
 							<br>4 column (ID, X, Y, Z) = Dummy Holes or
 							<br>7 column (ID, X, Y, Z, toeX, toeY, toeZ) = Blast Holes or
 							<br>9 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type) or
-							<br>12 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type, FromHole, Delay, Colour)
+							<br>12 column (ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type, FromHole, Delay, Color)
 							or
 							<br>14 column (entityName, entityType, ID, X, Y, Z, toeX, ToeY, ToeZ, Hole Diameter, Hole Type,
-							FromHole, Delay, Colour,
-							Colour) or
+							FromHole, Delay, Color,
+							Color) or
 							<br>30 column (entityName,entityType,ID ,X,Y,Z,toeX,toeY,gradeX,gradeY, gradeZ, subdrillAmount,
 							subdrillLength, benchHeight, holeDiameter, holeType, fromHoleID, timingDelayMilliseconds,
-							colourHexDecimal, holeLengthCalculated, holeAngle,holeBearing,initiationTime, measuredLength,
+							colorHexDecimal, holeLengthCalculated, holeAngle,holeBearing,initiationTime, measuredLength,
 							measuredLengthTimeStamp, measuredMass, measuredMassTimeStamp, measuredComment,
 							measuredCommentTimeStamp) full hole data
 							<br>
@@ -1488,8 +2001,7 @@
 							<label class="label2" id="delayLabel">Delay:</label>
 							<input type="number2" step="1" min="-1000" max="1000" id="delay" name="delay" value="25" placeholder="Delay Amount">
 						</div>
-						<div class="button-norm" id="connectorColour" name="connectorColour" data-jscolor="{value:'#FF0000'}">
-							Colour</div>
+						<div class="button-norm" id="connectorColor" name="connectorColor" data-jscolor="{value:'#FF0000'}">Color</div>
 					</div>
 					<br>
 					<div class="label2" id="connectLabel">Connect Distance : </div>
@@ -1533,15 +2045,15 @@
 					</div>
 					<br>
 					<div class="switch-container">
-						<div class="label2" id="colourLabel" for="drawingColourLabel">
-							Colour:&nbsp;&nbsp;&nbsp;&nbsp;</div>
-						<!-- Add a colour picker-->
-						<input type="jscolor" id="drawingColour" name="drawingColour" data-jscolor="{value:'#FF0000'}" title="Drawing Colour" placeholder="Drawing Colour">&nbsp;&nbsp;&nbsp;
+						<div class="label2" id="colorLabel" for="drawingColorLabel">
+							Color:&nbsp;&nbsp;&nbsp;&nbsp;</div>
+						<!-- Add a Color picker-->
+						<input type="jscolor" id="drawingColor" name="drawingColor" data-jscolor="{value:'#FF0000'}" title="Drawing Color" placeholder="Drawing Color">&nbsp;&nbsp;&nbsp;
 					</div>
 					<br>
 					<div class="switch-container">
 						<div class="label2" id="lineWidthLabel">Line Width:&nbsp;&nbsp;</div>
-						<!-- Add a colour picker-->
+						<!-- Add a Color picker-->
 						<input type="number2" id="drawingLineWidth" name="drawingLineWidth" value="1" placeholder="Object Width">
 					</div>
 					<br>
@@ -1637,46 +2149,10 @@
 					<span>Drawing Removal</span></button>
 				<div class="panel">
 					<div class="switch-container">
-						<div class="label2" id="pointDeleteLabel">Point Delete:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<div class="label2" id="pointDeleteLabel">Drawing Delete:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						</div>
 						<label class="switch">
-							<input type="checkbox" id="deletePointDraw" placeholder="deletPointSwitch">
-							<span class="slider round"></span>
-						</label>
-					</div>
-					<br>
-					<div class="switch-container">
-						<div class="label2" id="lineDeleteLabel">Line
-							Delete:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						</div>
-						<label class="switch">
-							<input type="checkbox" id="deleteLineDraw" placeholder="deleteLineSwitch">
-							<span class="slider round"></span>
-						</label>
-					</div>
-					<br>
-					<div class="switch-container">
-						<div class="label2" id="polyDeleteLabel">Polygon Delete:&nbsp;&nbsp;</div>
-						<label class="switch">
-							<input type="checkbox" id="deletePolyDraw" placeholder="deletePolySwitch">
-							<span class="slider round"></span>
-						</label>
-					</div>
-					<br>
-					<div class="switch-container">
-						<div class="label2" id="circleDeleteLabel">Circle
-							Delete:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-						<label class="switch">
-							<input type="checkbox" id="deleteCircleDraw" placeholder="deleteCircleSwitch">
-							<span class="slider round"></span>
-						</label>
-					</div>
-					<br>
-					<div class="switch-container">
-						<div class="label2" id="textDeleteLabel">Text
-							Delete:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-						<label class="switch">
-							<input type="checkbox" id="deleteTextDraw" placeholder="deleteTextSwitch">
+							<input type="checkbox" id="deleteKADDraw" placeholder="deletKADSwitch">
 							<span class="slider round"></span>
 						</label>
 					</div>
@@ -1807,7 +2283,7 @@
 			<!-- this is a single icon button that spans both columns -->
 			<input type="number2" step="1" min="-1000" max="1000" id="floatingDelay" name="floatingDelay" value="25" placeholder="Delay Amount" class="single">
 			<!-- this is a single icon button that spans both columns -->
-			<input type="button" id="floatingConnectorColour" name="floatingConnectorColour" data-jscolor="{value:'#FF0000'}" title="Connector Colour" placeholder="Connector Colour" class="single">
+			<input type="button" id="floatingConnectorColor" name="floatingConnectorColor" data-jscolor="{value:'#FF0000'}" title="Connector Color" placeholder="Connector Color" class="single">
 
 			<label class="label2" id="measureLabel">Measure</label>
 			<input type="checkbox" id="rulerTool" name="rulerTool" value="rulerTool">
