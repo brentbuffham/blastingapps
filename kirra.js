@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250629.0300AWST"
-const buildVersion = "20250629.0300AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250702.0008AWST"
+const buildVersion = "20250702.0008AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -58,6 +58,7 @@ function updatePopup() {
 				<br><label class="labelWhite18">✅ Drawing Optimised - Pixel Distance kulling          </label>
 				<br><label class="labelWhite18">✅ Image Show/Hide/Remove/Transparency            </label>
 				<br><label class="labelWhite18">✅ Delete All Images/Surfaces to cleanup DB    </label>
+				<br><label class="labelWhite18">✅ Tree View - Context Menu - Delete & Properties   </label>
                 <br><label class="labelWhite18">                    </label>
 				<br><label class="labelWhite18">✅ ⭐ Duplicate hole check and resolve             </label>
 				<hr>
@@ -81,7 +82,7 @@ function updatePopup() {
 	        <br>
 	        <label class="labelWhite12c">Version: Build ${buildVersion}</label>
 		  `,
-		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" },
+		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
 	}).then((result) => {
 		if (result.isConfirmed) {
 		}
@@ -240,8 +241,7 @@ let useToeLocation = false;
 let selectedVoronoiMetric = "powderFactor"; // default
 // Add these variables near the top (around line 190)
 let lastKADDrawPoint = null; // Store the last drawn point from any KAD tool
-let isAnyKADDrawingActive = false; // Track if any KAD drawing tool is active
-
+let isVoronoiLegendFixed = false;
 let isBearingToolActive = false;
 // Add this declaration around line 99 (after bearingToolSelectedHole declaration)
 let bearingToolSelectedHole = null;
@@ -380,7 +380,7 @@ const bools = [
 	isModifyingPoint,
 	isOffsetLinePoly,
 	isMeasureRecording,
-	isMultiHoleSelectionEnabled, //check this
+	isMultiHoleSelectionEnabled //check this
 ];
 
 // Boolean set to False
@@ -1177,6 +1177,44 @@ function getDarkModeSettings() {
 	}
 }
 
+document.getElementById("buttonGoBack").addEventListener("click", function () {
+	Swal.fire({
+		title: "Leave Kirra 2D?",
+		html: `
+			<div class="labelWhite18" style="margin-bottom: 15px;">
+				You might lose unsaved data.
+			</div>
+			<div class="labelWhite18" style="margin-bottom: 15px;">
+				Make sure to save any important work before leaving.
+			</div>
+			<div class="labelWhite15" style="text-align: left;">
+				<strong>Consider saving your work first:</strong>
+				<ul style="margin: 20px 0; padding-left: 20px;">
+					<li>Save holes to CSV file</li>
+					<li>Save drawing to KAD file</li>
+					<li>Export your current work</li>
+				</ul>
+			</div>
+		`,
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: "Leave anyway",
+		cancelButtonText: "Stay and save",
+		reverseButtons: true,
+		width: "500px",
+		customClass: {
+			popup: "custom-popup-container",
+			confirmButton: "confirm",
+			cancelButton: "cancel"
+		},
+		buttonsStyling: false // This disables default SweetAlert2 button styling so your CSS takes over
+	}).then((result) => {
+		if (result.isConfirmed) {
+			window.location.href = "index.html";
+		}
+	});
+});
+
 // Tie Connect Tool event listener
 const tieConnectTool = document.getElementById("tieConnectTool");
 tieConnectTool.addEventListener("change", function () {
@@ -1248,7 +1286,8 @@ selectionModeButton.addEventListener("change", function () {
 	}
 });
 function setSelectionModeToFalse() {
-	resetFloatingToolbarButtons("none");
+	// resetFloatingToolbarButtons("none");
+	isMultiHoleSelectionEnabled = false;
 	selectedMultipleHoles = [];
 	timingWindowHolesSelected = [];
 	console.log("selectionModeSettings set to false");
@@ -2096,7 +2135,7 @@ function resizeChart() {
 			const newWidth = document.documentElement.clientWidth;
 			// Use the string ID instead of the DOM element
 			Plotly.relayout("timeChart", {
-				width: newWidth,
+				width: newWidth
 			});
 		} else {
 			console.warn("resizeChart skipped: timeChart not yet initialized by Plotly");
@@ -2151,7 +2190,7 @@ document.getElementById("saveHoles").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2202,7 +2241,7 @@ document.getElementById("saveAll").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2258,7 +2297,7 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2418,7 +2457,7 @@ canvasContainer.addEventListener(
 		}
 	},
 	{
-		passive: false,
+		passive: false
 	}
 );
 
@@ -2509,8 +2548,8 @@ timeSlider.addEventListener("input", function () {
 	Plotly.relayout("timeChart", {
 		width: newWidthRight - 50,
 		yaxis: {
-			autorange: true, // Adjust the y-axis range to fit the data
-		},
+			autorange: true // Adjust the y-axis range to fit the data
+		}
 	});
 });
 
@@ -2523,8 +2562,8 @@ timeOffsetSlider.addEventListener("input", function () {
 	Plotly.relayout("timeChart", {
 		width: newWidthRight - 50,
 		yaxis: {
-			autorange: true, // Adjust the y-axis range to fit the data
-		},
+			autorange: true // Adjust the y-axis range to fit the data
+		}
 	});
 });
 
@@ -2602,7 +2641,7 @@ const optionConfigs = [
 	{ option: displayMLength },
 	{ option: displayMMass },
 	{ option: displayMComment },
-	{ option: displayVaronoiCells },
+	{ option: displayVaronoiCells }
 ];
 
 // Add event listeners programmatically
@@ -2685,7 +2724,7 @@ function handleMouseMove(event) {
 	if (isResizingRight) {
 		newWidthRight = window.innerWidth - event.clientX;
 		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50,
+			width: newWidthRight - 50
 		});
 		document.getElementById("sidenavRight").style.width = newWidthRight + "px";
 	}
@@ -2903,6 +2942,7 @@ async function handleFileUpload(event) {
 	};
 
 	reader.readAsText(file);
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 let randomHex = Math.floor(Math.random() * 16777215).toString(16);
@@ -2914,7 +2954,7 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
 		hasDuplicates: false,
 		duplicates: [],
 		resolved: [],
-		errors: [],
+		errors: []
 	};
 
 	// Group holes by entity name
@@ -2943,7 +2983,7 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
 					entityName,
 					holeID,
 					existing: { hole: existingHole.hole, index: existingHole.originalIndex },
-					duplicate: { hole, index: originalIndex },
+					duplicate: { hole, index: originalIndex }
 				};
 
 				duplicateReport.duplicates.push(duplicateInfo);
@@ -3029,7 +3069,7 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
 				alphaIDs: [],
 				maxNumeric: 0,
 				maxAlphaRow: "A",
-				maxAlphaNum: 0,
+				maxAlphaNum: 0
 			});
 		}
 		const entity = entitiesMap.get(hole.entityName);
@@ -3099,7 +3139,7 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
 			entityName: duplicate.entityName,
 			oldID: oldID,
 			newID: newID,
-			action: "renumbered",
+			action: "renumbered"
 		});
 
 		console.log("🔧 Renumbered duplicate hole:", duplicate.entityName + ":" + oldID, "→", newID);
@@ -3116,7 +3156,7 @@ function resolveDuplicatesKeepFirst(points, duplicateReport) {
 		duplicateReport.resolved.push({
 			entityName: duplicate.entityName,
 			holeID: duplicate.holeID,
-			action: "removed-duplicate",
+			action: "removed-duplicate"
 		});
 
 		console.log("🗑️ Removed duplicate hole:", duplicate.entityName + ":" + duplicate.holeID);
@@ -3140,7 +3180,7 @@ function resolveDuplicatesKeepLast(points, duplicateReport) {
 		duplicateReport.resolved.push({
 			entityName: duplicate.entityName,
 			holeID: duplicate.holeID,
-			action: "removed-original",
+			action: "removed-original"
 		});
 
 		console.log("🗑️ Removed original hole:", duplicate.entityName + ":" + duplicate.holeID);
@@ -3400,7 +3440,7 @@ function parseCSV(data) {
 				measuredMass,
 				measuredMassTimeStamp,
 				measuredComment,
-				measuredCommentTimeStamp,
+				measuredCommentTimeStamp
 			};
 
 			// Add to points array first
@@ -3479,6 +3519,7 @@ async function handleDXFUpload(event) {
 		}
 	};
 	reader.readAsText(file);
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 function parseDXFtoKadMaps(dxf) {
@@ -3524,9 +3565,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointXLocation: x,
 							pointYLocation: y,
 							pointZLocation: z,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -3550,9 +3591,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointXLocation: xi,
 							pointYLocation: yi,
 							pointZLocation: zi,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		} else if (t === "LINE") {
@@ -3574,7 +3615,7 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: v[0].z || 0,
 							lineWidth: 1,
 							color: color,
-							closed: false,
+							closed: false
 						},
 						{
 							entityName: nameL,
@@ -3585,9 +3626,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: v[1].z || 0,
 							lineWidth: 1,
 							color: color,
-							closed: false,
-						},
-					],
+							closed: false
+						}
+					]
 				});
 			}
 		}
@@ -3609,7 +3650,7 @@ function parseDXFtoKadMaps(dxf) {
 				allKADDrawingsMap.set(nameP, {
 					entityName: nameP,
 					entityType: entityType,
-					data: [],
+					data: []
 				});
 				var dataP = allKADDrawingsMap.get(nameP).data;
 				verts.forEach(function (v, i) {
@@ -3622,7 +3663,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: v.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: false,
+						closed: false
 					});
 				});
 				// close if flagged
@@ -3637,7 +3678,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: v0p.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: true,
+						closed: true
 					});
 				}
 			}
@@ -3661,9 +3702,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: ent.center.z || 0,
 							radius: ent.radius,
 							lineWidth: 1,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -3676,7 +3717,7 @@ function parseDXFtoKadMaps(dxf) {
 				allKADDrawingsMap.set(nameE, {
 					entityName: nameE,
 					entityType: "poly",
-					data: [],
+					data: []
 				});
 				var dataE = allKADDrawingsMap.get(nameE).data;
 				var segs = 64;
@@ -3694,7 +3735,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: ent.center.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: closed,
+						closed: closed
 					});
 				}
 				// close loop
@@ -3720,9 +3761,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointYLocation: pos.y - offsetY,
 							pointZLocation: pos.z || 0,
 							text: ent.text,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -3745,6 +3786,7 @@ function handleGeotiffUpload(event) {
 		loadGeoTIFF(file);
 		updateStatusMessage("Loading geotiff: " + file.name);
 	}
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 function handleSurfaceUpload(event) {
@@ -3759,6 +3801,7 @@ function handleSurfaceUpload(event) {
 	} else {
 		loadPointCloudFile(file);
 	}
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 // ENHANCED: Update OBJ loading to pass texture data
@@ -3840,6 +3883,7 @@ async function handleMeasuredUpload(event) {
 	};
 
 	reader.readAsText(file);
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 function fileFormatPopup(error) {
@@ -3861,8 +3905,8 @@ function fileFormatPopup(error) {
 			confirmButton: "confirm",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			//console.log("Confirmed");
@@ -3894,7 +3938,7 @@ function parseKADFile(fileData) {
 					allKADDrawingsMap.set(entityName, {
 						entityName: entityName,
 						entityType: "point", // Keep original entityType for identification
-						data: [],
+						data: []
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3912,7 +3956,7 @@ function parseKADFile(fileData) {
 					pointDiameter: pointDiameter,
 					color: color,
 					connected: false, // Points are never connected
-					closed: false, // Points are never closed
+					closed: false // Points are never closed
 				});
 				break;
 			case "poly":
@@ -3921,7 +3965,7 @@ function parseKADFile(fileData) {
 					allKADDrawingsMap.set(entityName, {
 						entityName: entityName, // Store the entityName
 						entityType: entityType,
-						data: [],
+						data: []
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3940,7 +3984,7 @@ function parseKADFile(fileData) {
 					pointZLocation: pointZLocation,
 					lineWidth: lineWidth,
 					color: color,
-					closed: closed,
+					closed: closed
 				});
 				break;
 			case "line":
@@ -3949,7 +3993,7 @@ function parseKADFile(fileData) {
 					allKADDrawingsMap.set(entityName, {
 						entityName: entityName, // Store the entityName
 						entityType: "poly", // Lines are now poly entities
-						data: [],
+						data: []
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3967,7 +4011,7 @@ function parseKADFile(fileData) {
 					pointZLocation: pointZLocation,
 					lineWidth: lineWidth,
 					color: color,
-					closed: false, // Lines are open polygons
+					closed: false // Lines are open polygons
 				});
 				break;
 			case "circle":
@@ -3976,7 +4020,7 @@ function parseKADFile(fileData) {
 					allKADDrawingsMap.set(entityName, {
 						entityName: entityName,
 						entityType: "circle", // Keep original entityType for identification
-						data: [],
+						data: []
 					});
 				}
 				pointID = row[2]; // Id of the point
@@ -3996,7 +4040,7 @@ function parseKADFile(fileData) {
 					pointZLocation: pointZLocation,
 					radius: radius,
 					lineWidth: lineWidth,
-					color: color,
+					color: color
 				});
 				break;
 
@@ -4006,7 +4050,7 @@ function parseKADFile(fileData) {
 					allKADDrawingsMap.set(entityName, {
 						entityName: entityName,
 						entityType: "text",
-						data: [],
+						data: []
 					});
 				}
 				pointID = row[2];
@@ -4024,7 +4068,7 @@ function parseKADFile(fileData) {
 					pointYLocation: pointYLocation,
 					pointZLocation: pointZLocation,
 					text: text,
-					color: color,
+					color: color
 				});
 				break;
 
@@ -4059,94 +4103,108 @@ function parseKADFile(fileData) {
 	centroidY = sumY / count;
 
 	console.log(allKADDrawingsMap);
+	// save to IndexedDB
+	debouncedSaveKAD();
+	debouncedUpdateTreeView(); // Use debounced version
 }
 let mapData = [allKADDrawingsMap];
 
-function exportKADFile(mapData) {
+function exportKADFile() {
+	// First, check if we have data to export
+	if (!allKADDrawingsMap || allKADDrawingsMap.size === 0) {
+		alert("No data to export. Please add some drawings first.");
+		return;
+	}
+
+	console.log("Exporting KAD data, map size:", allKADDrawingsMap.size);
+
 	// Prepare the CSV content for .kad file
 	let csvContentKAD = "";
 	let csvContentTXT = "";
 
-	for (const map of mapData) {
-		for (const entry of map.entries()) {
-			const entityName = entry[0];
-			//console.log(entityName);
-			const entityData = entry[1];
-			//console.log(entityData);
+	try {
+		// Directly iterate through the allKADDrawingsMap
+		for (const [entityName, entityData] of allKADDrawingsMap.entries()) {
+			// Log each entity we're processing
+			console.log(`Processing entity: ${entityName}, type: ${entityData.entityType}`);
 
-			if (entityData.entityType.trim() === "hole") {
-				//commented out to avoid exporting holes
-				//console.log(entityData.entityType);
-				//for (const hole of entityData.data) {
-				//	const csvLine = `${entityName},${hole.entityType},${hole.holeID},${hole.startXLocation},${hole.startYLocation},${hole.startZLocation},${hole.endXLocation},${hole.endYLocation},${hole.endZLocation},${hole.holeDiameter},${hole.holeType},${hole.fromHoleID},${hole.timingDelayMilliseconds},${hole.colorHexDecimal},${hole.holeLengthCalculated},${hole.holeAngle},${hole.holeBearing}\n`;
-				//	csvContentKAD += csvLine;
-				//}
-			} else if (entityData.entityType.trim() === "point") {
-				//console.log(entityData.entityType);
+			if (!entityData || !entityData.entityType) {
+				console.warn(`Skipping invalid entity: ${entityName}`);
+				continue;
+			}
+
+			if (entityData.entityType.trim() === "point") {
 				for (const point of entityData.data) {
-					const csvLine = `${entityName},${point.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.color}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.pointDiameter || 1},${point.color}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
 			} else if (entityData.entityType.trim() === "poly") {
-				//console.log(entityData.entityType);
 				for (let i = 0; i < entityData.data.length; i++) {
 					const polygon = entityData.data[i];
 					const isLast = i === entityData.data.length - 1;
-					const csvLine = `${entityName},${polygon.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.color},${isLast ? "1" : "0"}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${polygon.pointID},${polygon.pointXLocation},${polygon.pointYLocation},${polygon.pointZLocation},${polygon.lineWidth},${polygon.color},${isLast ? "1" : "0"}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
 			} else if (entityData.entityType.trim() === "line") {
-				//console.log(entityData.entityType);
 				for (const entityLine of entityData.data) {
-					const csvLine = `${entityName},${entityLine.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.color}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${entityLine.pointID},${entityLine.pointXLocation},${entityLine.pointYLocation},${entityLine.pointZLocation},${entityLine.lineWidth},${entityLine.color}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
 			} else if (entityData.entityType.trim() === "circle") {
-				//console.log(entityData.entityType);
 				for (const circle of entityData.data) {
-					const csvLine = `${entityName},${circle.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.color}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${circle.pointID},${circle.pointXLocation},${circle.pointYLocation},${circle.pointZLocation},${circle.radius},${circle.lineWidth},${circle.color}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
 			} else if (entityData.entityType.trim() === "text") {
-				//console.log(entityData.entityType);
 				for (const text of entityData.data) {
-					const csvLine = `${entityName},${text.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.color}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${text.pointID},${text.pointXLocation},${text.pointYLocation},${text.pointZLocation},${text.text},${text.color}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
 			}
 		}
+	} catch (error) {
+		console.error("Error generating KAD export:", error);
+		alert("Error exporting KAD file: " + error.message);
+		return;
 	}
-	// Create a Blob with the CSV content for .kad file
-	const blobKAD = new Blob([csvContentKAD], {
-		type: "text/csv",
-	});
 
-	// Create a Blob with the CSV content for .txt file
-	const blobTXT = new Blob([csvContentTXT], {
-		type: "text/plain",
-	});
+	// If we generated any content, create and download the files
+	if (csvContentKAD) {
+		// Create a Blob with the CSV content for .kad file
+		const blobKAD = new Blob([csvContentKAD], {
+			type: "text/csv"
+		});
 
-	// Create temporary anchor elements to trigger the download for both files
-	const aKAD = document.createElement("a");
-	const aTXT = document.createElement("a");
+		// Create a Blob with the CSV content for .txt file
+		const blobTXT = new Blob([csvContentTXT], {
+			type: "text/plain"
+		});
 
-	// Set the content for the anchor elements
-	aKAD.href = URL.createObjectURL(blobKAD);
-	aKAD.download = "KAD_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".kad";
+		// Create temporary anchor elements to trigger the download for both files
+		const aKAD = document.createElement("a");
+		const aTXT = document.createElement("a");
 
-	aTXT.href = URL.createObjectURL(blobTXT);
-	aTXT.download = "TXT_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".txt";
+		// Set the content for the anchor elements
+		aKAD.href = URL.createObjectURL(blobKAD);
+		aKAD.download = "KAD_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".kad";
 
-	// Simulate clicks on both anchor elements to trigger the downloads
-	aKAD.click();
-	aTXT.click();
+		aTXT.href = URL.createObjectURL(blobTXT);
+		aTXT.download = "TXT_EXPORT" + new Date().toISOString().slice(0, 19).replace(/-/g, "").replace(/:/g, "").replace("T", "_") + ".txt";
+
+		// Simulate clicks on both anchor elements to trigger the downloads
+		aKAD.click();
+		aTXT.click();
+
+		console.log("KAD export completed successfully");
+	} else {
+		alert("No data to export. Please add some drawings first.");
+	}
 }
-
 function getNearestNeighborDistancesByAggregation(points, mode, useToeLocation) {
 	// Step 1: Compute nearest neighbor distances for each point
 	const nearestDistances = points.map((pt, idx) => {
@@ -4327,8 +4385,8 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
-			},
+				htmlContainer: "swal2-html-container"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// Show progress message
@@ -4360,8 +4418,8 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 							icon: "error",
 							customClass: {
 								container: "custom-popup-container",
-								confirmButton: "confirm",
-							},
+								confirmButton: "confirm"
+							}
 						});
 					}
 				}, 100);
@@ -4394,16 +4452,18 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
-			},
+				htmlContainer: "swal2-html-container"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, color, lineWidth, datasetDescription);
+				debouncedUpdateTreeView(); // Use debounced version
 			}
 		});
 	} else {
 		// Process normally for smaller datasets
 		processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, color, lineWidth, datasetDescription);
+		debouncedUpdateTreeView(); // Use debounced version
 	}
 });
 
@@ -4426,11 +4486,12 @@ function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colo
 			icon: "success",
 			customClass: {
 				container: "custom-popup-container",
-				confirmButton: "confirm",
-			},
+				confirmButton: "confirm"
+			}
 		}).then(() => {
 			//save the drawing using douncedSave
 			debouncedSaveKAD();
+			debouncedUpdateTreeView(); // Use debounced version
 		});
 	} catch (error) {
 		console.error("Error creating radii polygons:", error);
@@ -4447,8 +4508,8 @@ function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colo
 			icon: "error",
 			customClass: {
 				container: "custom-popup-container",
-				confirmButton: "confirm",
-			},
+				confirmButton: "confirm"
+			}
 		});
 	}
 }
@@ -4817,8 +4878,8 @@ function saveIREDESPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
@@ -4854,8 +4915,8 @@ function saveIREDESPopup() {
 						//cancelButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon",
-					},
+						icon: "swal2-icon"
+					}
 				});
 				return; // Exit the function
 			}
@@ -4865,7 +4926,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Plan ID",
 					text: "Please enter a Drill Plan ID.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			}
@@ -4875,7 +4936,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Site ID",
 					text: "Please enter a Site ID.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			}
@@ -4886,7 +4947,7 @@ function saveIREDESPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([xmlContent], {
-					type: "text/xml;charset=utf-8",
+					type: "text/xml;charset=utf-8"
 				});
 
 				// Create a URL for the Blob
@@ -4960,7 +5021,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 			endYLocation: point.endYLocation,
 			endZLocation: point.endZLocation,
 			holeDiameter: point.holeDiameter,
-			holeType: point.holeType,
+			holeType: point.holeType
 		});
 	});
 	iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
@@ -5154,7 +5215,7 @@ function validateIREDESXML(xmlContent) {
 		valid: isValid,
 		originalChecksum: originalChecksum,
 		calculatedChecksum: calculatedChecksum,
-		error: isValid ? null : "Checksum validation failed",
+		error: isValid ? null : "Checksum validation failed"
 	};
 }
 
@@ -5207,7 +5268,7 @@ function calculateTimes(points) {
 				const combinedFromHoleID = point.fromHoleID;
 				surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
 					time: 0,
-					delay: point.timingDelayMilliseconds,
+					delay: point.timingDelayMilliseconds
 				};
 
 				holeTimes[combinedHoleID] = null;
@@ -5459,7 +5520,7 @@ function interpolate(p1, p2, contourLevel) {
 	const t = (contourLevel - p1.z) / (p2.z - p1.z);
 	return {
 		x: p1.x + t * (p2.x - p1.x),
-		y: p1.y + t * (p2.y - p1.y),
+		y: p1.y + t * (p2.y - p1.y)
 	};
 }
 
@@ -5478,8 +5539,8 @@ function simplifyLine(line, epsilon) {
 					maxDist: distSq,
 					maxDistPoint: {
 						index: i + 1,
-						point,
-					},
+						point
+					}
 				};
 			}
 			return result;
@@ -5488,8 +5549,8 @@ function simplifyLine(line, epsilon) {
 			maxDist: 0,
 			maxDistPoint: {
 				index: 0,
-				point: null,
-			},
+				point: null
+			}
 		}
 	);
 
@@ -5722,13 +5783,13 @@ function delaunayTriangles(points, maxEdgeLength) {
 					resultTriangles.push([
 						[getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
 						[getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-						[getX(p3), getY(p3), p3.startZLocation], // [x, y, z] of point 3
+						[getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
 					]);
 
 					reliefTriangles.push([
 						[getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
 						[getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-						[getX(p3), getY(p3), p3.holeTime], // [x, y, z] of point 3
+						[getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
 					]);
 				}
 			}
@@ -5874,7 +5935,7 @@ function getVoronoiMetrics(points, useToeLocation) {
 				holeFiringTime: holeFiringTime,
 				volume: volume,
 				mass: mass,
-				powderFactor: powderFactor,
+				powderFactor: powderFactor
 				//add a scaled heelan vibration calculation here
 			});
 		}
@@ -6212,8 +6273,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 						lineWidth: 5,
 						color: 1,
 						closed: true,
-						entityType: "poly",
-					})),
+						entityType: "poly"
+					}))
 				});
 			});
 		}
@@ -6224,7 +6285,7 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 	const clipperPolys = rawPolygons.map((poly) =>
 		poly.map((pt) => ({
 			X: Math.round(pt.x * scale),
-			Y: Math.round(pt.y * scale),
+			Y: Math.round(pt.y * scale)
 		}))
 	);
 
@@ -6284,8 +6345,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 					lineWidth: lineWidth || 5,
 					color: color || 1,
 					closed: true,
-					entityType: "poly",
-				})),
+					entityType: "poly"
+				}))
 			});
 		});
 	}
@@ -6324,7 +6385,7 @@ function clipVoronoiCells(voronoiMetrics) {
 
 		const subjPath = cell.polygon.map((p) => ({
 			X: Math.round((p.x || p[0]) * scale),
-			Y: Math.round((p.y || p[1]) * scale),
+			Y: Math.round((p.y || p[1]) * scale)
 		}));
 
 		let cellSuccessfullyClippedAndAdded = false;
@@ -6335,7 +6396,7 @@ function clipVoronoiCells(voronoiMetrics) {
 			// Convert the current boundary polygon to Clipper format
 			const clipperSingleClipPath = currentBoundaryPolygon.map((p) => ({
 				X: Math.round(p.x * scale),
-				Y: Math.round(p.y * scale),
+				Y: Math.round(p.y * scale)
 			}));
 
 			const clipper = new ClipperLib.Clipper();
@@ -6349,7 +6410,7 @@ function clipVoronoiCells(voronoiMetrics) {
 				// Check solution[0] for valid polygon
 				const clippedResultPolygon = solution[0].map((pt) => ({
 					x: pt.X / scale,
-					y: pt.Y / scale,
+					y: pt.Y / scale
 				}));
 
 				const area = Math.abs(
@@ -6366,7 +6427,7 @@ function clipVoronoiCells(voronoiMetrics) {
 					polygon: clippedResultPolygon,
 					area,
 					volume,
-					powderFactor,
+					powderFactor
 				});
 				cellSuccessfullyClippedAndAdded = true;
 				break; // Important: Cell is clipped by this boundary, no need to check others
@@ -6383,7 +6444,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 	const scale = 100000;
 	const scaledPath = polygon.map((p) => ({
 		X: Math.round((p.x || p[0]) * scale),
-		Y: Math.round((p.y || p[1]) * scale),
+		Y: Math.round((p.y || p[1]) * scale)
 	}));
 
 	const c = new ClipperLib.Clipper();
@@ -6393,7 +6454,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 
 	const simplified = cleaned.map((p) => ({
 		x: p.X / scale,
-		y: p.Y / scale,
+		y: p.Y / scale
 	}));
 
 	if (forceClose && simplified.length > 0) {
@@ -6411,7 +6472,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
 	// Convert to Clipper path format
 	const path = polygon.map((p) => ({
 		X: Math.round(p.x * scale),
-		Y: Math.round(p.y * scale),
+		Y: Math.round(p.y * scale)
 	}));
 
 	// Initialize and execute offset
@@ -6425,7 +6486,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
 	if (offsetPaths.length === 0) return [];
 	return offsetPaths[0].map((p) => ({
 		x: p.X / scale,
-		y: p.Y / scale,
+		y: p.Y / scale
 	}));
 }
 
@@ -6481,11 +6542,11 @@ function offsetPolygonMathematical(polygon, offset) {
 
 		const p1 = {
 			x: polygon[i].x + dx,
-			y: polygon[i].y + dy,
+			y: polygon[i].y + dy
 		};
 		const p2 = {
 			x: polygon[(i + 1) % n].x + dx,
-			y: polygon[(i + 1) % n].y + dy,
+			y: polygon[(i + 1) % n].y + dy
 		};
 		offsetSegments.push([p1, p2]);
 	}
@@ -6890,7 +6951,6 @@ function drawKADTexts(x, y, z, text, color) {
 	// 	ctx.fillText(line, x, yOffset);
 	// }
 }
-
 /*** CODE TO DRAW POINTS FROM CSV DATA ***/
 function drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, gradeX, gradeY, strokeColor, subdrillAmount) {
 	ctx.lineWidth = 1;
@@ -6938,7 +6998,6 @@ function drawTrack(lineStartX, lineStartY, lineEndX, lineEndY, gradeX, gradeY, s
 		ctx.fill();
 	}
 }
-
 function drawHoleToe(x, y, fillColor, strokeColor, radius) {
 	ctx.beginPath();
 	// Use the toeSizeInMeters directly to set the radius
@@ -6949,7 +7008,6 @@ function drawHoleToe(x, y, fillColor, strokeColor, radius) {
 	ctx.stroke();
 	ctx.fill();
 }
-
 function drawHole(x, y, radius, fillColor, strokeColor) {
 	ctx.strokeStyle = strokeColor;
 	ctx.fillStyle = strokeColor;
@@ -6961,7 +7019,6 @@ function drawHole(x, y, radius, fillColor, strokeColor) {
 	ctx.fill(); // fill the circle with the fill color
 	ctx.stroke(); // draw the circle border with the stroke color
 }
-//draw an X shape with the intersection of the lines at x,y and the length of the lines being the radius of the drawHole function
 function drawDummy(x, y, radius, strokeColor) {
 	ctx.strokeStyle = strokeColor;
 	ctx.lineWidth = 2; // Adjust the line width as needed
@@ -6972,7 +7029,6 @@ function drawDummy(x, y, radius, strokeColor) {
 	ctx.lineTo(x + radius, y - radius);
 	ctx.stroke();
 }
-//draw an square shape with the intersection of the lines at x,y and the length of the lines being the radius of the drawHole function
 function drawNoDiameterHole(x, y, sideLength, strokeColor) {
 	ctx.strokeStyle = strokeColor;
 	ctx.lineWidth = 2; // Adjust the line width as needed
@@ -6985,7 +7041,6 @@ function drawNoDiameterHole(x, y, sideLength, strokeColor) {
 	ctx.closePath(); // Close the path to form a square
 	ctx.stroke();
 }
-
 function drawHiHole(x, y, radius, fillColor, strokeColor) {
 	ctx.strokeStyle = strokeColor;
 	ctx.beginPath();
@@ -6995,7 +7050,6 @@ function drawHiHole(x, y, radius, fillColor, strokeColor) {
 	ctx.lineWidth = 5;
 	ctx.stroke(); // draw the circle border with the stroke color
 }
-
 function drawExplosion(x, y, spikes, outerRadius, innerRadius, color1, color2) {
 	let rotation = (Math.PI / 2) * 3;
 	let step = Math.PI / spikes;
@@ -7019,7 +7073,6 @@ function drawExplosion(x, y, spikes, outerRadius, innerRadius, color1, color2) {
 	ctx.fillStyle = color2;
 	ctx.fill();
 }
-
 function drawHexagon(x, y, sideLength, fillColor, strokeColor) {
 	ctx.strokeStyle = strokeColor;
 	ctx.beginPath();
@@ -7042,14 +7095,11 @@ function drawHexagon(x, y, sideLength, fillColor, strokeColor) {
 	ctx.lineWidth = 5;
 	ctx.stroke(); // draw the hexagon border with the stroke color
 }
-
-//Left-align the text
 function drawText(x, y, text, color) {
 	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
 	ctx.fillStyle = color;
 	ctx.fillText(text, x, y);
 }
-// Right-align the text by calculating the text width
 function drawRightAlignedText(x, y, text, color) {
 	ctx.font = parseInt(currentFontSize - 2) + "px Arial";
 	const textWidth = ctx.measureText(text).width;
@@ -7057,7 +7107,6 @@ function drawRightAlignedText(x, y, text, color) {
 	// Draw the text at an x position minus the text width for right alignment
 	drawText(x - textWidth, y, text, color);
 }
-// Helper function to draw multiline text
 function drawMultilineText(ctx, text, x, y, lineHeight = 16, alignment = "left", textColor, boxColor, showBox = false) {
 	if (!text) return; //if no text, return
 	if (!ctx) return; //if no context, return
@@ -7094,7 +7143,6 @@ function drawMultilineText(ctx, text, x, y, lineHeight = 16, alignment = "left",
 		ctx.stroke();
 	}
 }
-
 function drawDirectionArrow(startX, startY, endX, endY, fillColor, strokeColor, connScale) {
 	try {
 		// Set up the arrow parameters
@@ -7138,7 +7186,6 @@ function drawDirectionArrow(startX, startY, endX, endY, fillColor, strokeColor, 
 		console.error("Error while drawing arrow:", error);
 	}
 }
-
 function drawArrow(startX, startY, endX, endY, color, connScale) {
 	//console.log(`Drawing arrow from (${startX}, ${startY}) to (${endX}, ${endY}) with color ${color}`);
 	try {
@@ -7183,7 +7230,6 @@ function drawArrow(startX, startY, endX, endY, color, connScale) {
 		console.error("Error while drawing arrow:", error);
 	}
 }
-
 function drawArrowDelayText(startX, startY, endX, endY, color, text) {
 	// Calculate the angle of the text and the midpoint of the line
 	const angle = Math.atan2(endY - startY, endX - startX);
@@ -7203,7 +7249,6 @@ function drawArrowDelayText(startX, startY, endX, endY, color, text) {
 	// Restore the canvas state
 	ctx.restore();
 }
-
 function drawDelauanySlopeMap(triangles, centroid, strokeColor) {
 	if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
 	ctx.strokeStyle = strokeColor;
@@ -7225,17 +7270,17 @@ function drawDelauanySlopeMap(triangles, centroid, strokeColor) {
 		const edge1 = {
 			x: tBX - tAX,
 			y: tBY - tAY,
-			z: tBZ - tAZ,
+			z: tBZ - tAZ
 		};
 		const edge2 = {
 			x: tCX - tAX,
 			y: tCY - tAY,
-			z: tCZ - tAZ,
+			z: tCZ - tAZ
 		};
 		const edge3 = {
 			x: tCX - tBX,
 			y: tCY - tBY,
-			z: tCZ - tBZ,
+			z: tCZ - tBZ
 		};
 
 		// Calculate the maximum absolute slope angle for this triangle
@@ -7416,25 +7461,6 @@ function drawDelauanyBurdenRelief(triangles, centroid, strokeColor) {
 		ctx.fill();
 	}
 }
-
-function calculateTriangleCentroid(triangle) {
-	const tAX = triangle[0][0];
-	const tAY = triangle[0][1];
-	const tAZ = triangle[0][2];
-	const tBX = triangle[1][0];
-	const tBY = triangle[1][1];
-	const tBZ = triangle[1][2];
-	const tCX = triangle[2][0];
-	const tCY = triangle[2][1];
-	const tCZ = triangle[2][2];
-
-	const triangleCentroid = {
-		x: (tAX + tBX + tCX) / 3,
-		y: (tAY + tBY + tCY) / 3,
-		z: (tAZ + tBZ + tCZ) / 3,
-	};
-	return triangleCentroid;
-}
 function drawReliefLegend(strokecolor) {
 	//draw a legend at the bottom of the screen in the center
 	//the legend should be for the drawDelauanyTriangles function
@@ -7494,21 +7520,18 @@ function drawReliefLegend(strokecolor) {
 	ctx.fillRect(130, canvas.height / 2 + 245, 20, 20);
 	ctx.stroke();
 }
-
 function drawTriangleAngleText(triangle, centroid, strokeColor) {
 	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
 	const triangleCentroid = calculateTriangleCentroid(triangle);
 	let maxSlopeAngle = getDipAngle(triangle);
 	drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(maxSlopeAngle).toFixed(1), strokeColor);
 }
-
 function drawTriangleBurdenReliefText(triangle, centroid, strokeColor) {
 	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
 	const triangleCentroid = calculateTriangleCentroid(triangle);
 	let burdenRelief = getBurdenRelief(triangle);
 	drawText((triangleCentroid.x - centroid.x) * currentScale + canvas.width / 2, (-triangleCentroid.y + centroid.y) * currentScale + canvas.height / 2, parseFloat(burdenRelief).toFixed(1), strokeColor);
 }
-
 function getAngleBetweenEdges(edge1, edge2) {
 	const dotProduct = edge1.x * edge2.x + edge1.y * edge2.y + edge1.z * edge2.z;
 	const magEdge1 = Math.sqrt(edge1.x * edge1.x + edge1.y * edge1.y + edge1.z * edge1.z);
@@ -7524,6 +7547,24 @@ function getAngleBetweenEdges(edge1, edge2) {
 	return (angle * 180) / Math.PI;
 }
 
+function calculateTriangleCentroid(triangle) {
+	const tAX = triangle[0][0];
+	const tAY = triangle[0][1];
+	const tAZ = triangle[0][2];
+	const tBX = triangle[1][0];
+	const tBY = triangle[1][1];
+	const tBZ = triangle[1][2];
+	const tCX = triangle[2][0];
+	const tCY = triangle[2][1];
+	const tCZ = triangle[2][2];
+
+	const triangleCentroid = {
+		x: (tAX + tBX + tCX) / 3,
+		y: (tAY + tBY + tCY) / 3,
+		z: (tAZ + tBZ + tCZ) / 3
+	};
+	return triangleCentroid;
+}
 function getDipAngle(triangle) {
 	const edge1 = [triangle[1][0] - triangle[0][0], triangle[1][1] - triangle[0][1], triangle[1][2] - triangle[0][2]];
 	const edge2 = [triangle[2][0] - triangle[0][0], triangle[2][1] - triangle[0][1], triangle[2][2] - triangle[0][2]];
@@ -8278,7 +8319,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 		const newEntity = {
 			entityName: `${entityName}_offset`, // Modify this as needed
 			entityType: entityType,
-			data: [],
+			data: []
 		};
 
 		let prevPoint = null;
@@ -8318,7 +8359,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 				pointYLocation: offsetY,
 				pointZLocation: point.pointZLocation,
 				lineWidth: point.lineWidth,
-				color: point.color,
+				color: point.color
 			});
 
 			if (extendIfNecessary && prevPoint) {
@@ -8334,7 +8375,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 						pointYLocation: offsetY,
 						pointZLocation: point.pointZLocation,
 						lineWidth: point.lineWidth,
-						color: point.color,
+						color: point.color
 					});
 				}
 			}
@@ -8588,8 +8629,13 @@ function deleteSelectedPattern() {
 
 //function to delete All Entities in the kadHolesMap and all the Entityies in the points array
 function deleteSelectedAllPatterns() {
+	console.log("🚨 deleteSelectedAllPatterns called!");
+	console.log("isDeletingHole:", isDeletingHole);
+	console.log("selectedHole:", selectedHole);
+	console.log("selectedMultipleHoles:", selectedMultipleHoles);
+	console.log("Stack trace:", new Error().stack);
 	if (isDeletingHole) {
-		if (selectedHole !== null) {
+		if (selectedHole !== null || selectedMultipleHoles.length > 0) {
 			// Remove all holes from kadHolesMap
 			//kadHolesMap.clear();
 
@@ -8729,11 +8775,13 @@ function handleKADPointClick(event) {
 			setTimeout(() => updateStatusMessage(""), 1500);
 		}
 		addKADPoint();
+		debouncedUpdateTreeView();
 	} else {
 		worldX = null;
 		worldY = null;
 		lastKADDrawPoint = null; // Reset when switching tools
 		//save the drawing using douncedSave
+		debouncedUpdateTreeView(); // Use debounced version
 		debouncedSaveKAD();
 	}
 }
@@ -8763,7 +8811,7 @@ function addKADPoint() {
 			pointZLocation: pointZLocation,
 			color: color,
 			connected: false,
-			closed: false,
+			closed: false
 		};
 
 		// Create the entity if it doesn't exist
@@ -8771,7 +8819,7 @@ function addKADPoint() {
 			allKADDrawingsMap.set(entityName, {
 				entityName: entityName,
 				entityType: entityType,
-				data: [],
+				data: []
 			});
 		}
 
@@ -8779,6 +8827,7 @@ function addKADPoint() {
 
 		drawData(points, selectedHole);
 		debouncedSaveKAD();
+		debouncedUpdateTreeView();
 		console.log("Added point", pointID, "to", entityName);
 	}
 }
@@ -8809,6 +8858,7 @@ function handleKADLineClick(event) {
 			setTimeout(() => updateStatusMessage(""), 1500);
 		}
 		addKADLine();
+		debouncedUpdateTreeView(); // Use debounced version
 	} else {
 		worldX = null;
 		worldY = null;
@@ -8842,7 +8892,7 @@ function addKADLine() {
 			pointZLocation: pointZLocation,
 			lineWidth: lineWidth,
 			color: color,
-			closed: false, // Added: lines are open
+			closed: false // Added: lines are open
 		};
 
 		// Add to allKADDrawingsMap instead
@@ -8850,7 +8900,7 @@ function addKADLine() {
 			allKADDrawingsMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: [],
+				data: []
 			});
 		}
 		allKADDrawingsMap.get(entityName).data.push(lineObject); // Changed map
@@ -8858,6 +8908,7 @@ function addKADLine() {
 	}
 	drawData(points, selectedHole);
 	debouncedSaveKAD();
+	debouncedUpdateTreeView();
 }
 
 function handleKADPolyClick(event) {
@@ -8893,6 +8944,7 @@ function handleKADPolyClick(event) {
 		lastKADDrawPoint = null; // Reset when switching tools
 		//save the drawing using douncedSave
 		debouncedSaveKAD();
+		debouncedUpdateTreeView();
 	}
 }
 // Function to add a point to the allKADDrawingsMap
@@ -8922,7 +8974,7 @@ function addKADPoly() {
 			pointZLocation: pointZLocation,
 			lineWidth: lineWidth,
 			color: color,
-			closed: closed, // Set to true if the polygon is closed
+			closed: closed // Set to true if the polygon is closed
 		};
 
 		// Add the point to allKADDrawingsMap
@@ -8930,7 +8982,7 @@ function addKADPoly() {
 			allKADDrawingsMap.set(entityName, {
 				name: entityName,
 				entityType: entityType,
-				data: [],
+				data: []
 			});
 		}
 		allKADDrawingsMap.get(entityName).data.push(polyObject);
@@ -8939,6 +8991,7 @@ function addKADPoly() {
 	}
 	drawData(points, selectedHole);
 	debouncedSaveKAD();
+	debouncedUpdateTreeView();
 	console.log("allKADDrawingsMap: ", allKADDrawingsMap);
 }
 
@@ -9007,7 +9060,7 @@ function addKADCircle() {
 			lineWidth: lineWidth,
 			color: color,
 			connected: false,
-			closed: false,
+			closed: false
 		};
 
 		// Create the entity if it doesn't exist
@@ -9015,7 +9068,7 @@ function addKADCircle() {
 			allKADDrawingsMap.set(entityName, {
 				entityName: entityName,
 				entityType: entityType,
-				data: [],
+				data: []
 			});
 		}
 
@@ -9023,6 +9076,7 @@ function addKADCircle() {
 
 		drawData(points, selectedHole);
 		debouncedSaveKAD();
+		debouncedUpdateTreeView();
 		console.log("Added circle", pointID, "to", entityName);
 	}
 }
@@ -9134,8 +9188,8 @@ function showCalculationErrorPopup(originalText, errorMessage) {
 				cancelButton: "cancel",
 				content: "swal2-content",
 				htmlContainer: "swal2-html-container",
-				icon: "swal2-icon",
-			},
+				icon: "swal2-icon"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// User wants to fix it - keep the text field focused for editing
@@ -9169,7 +9223,7 @@ async function addKADText() {
 				html: `<div style="text-align: left;">Please enter some text before placing it on the canvas.</div>`,
 				showCancelButton: true,
 				confirmButtonText: "Enter Text",
-				cancelButtonText: "Cancel",
+				cancelButtonText: "Cancel"
 			});
 
 			if (result.isConfirmed) {
@@ -9216,7 +9270,7 @@ async function addKADText() {
 			text: text,
 			color: color,
 			connected: false,
-			closed: false,
+			closed: false
 		};
 
 		// Create the entity if it doesn't exist
@@ -9225,7 +9279,7 @@ async function addKADText() {
 			allKADDrawingsMap.set(entityName, {
 				entityName: entityName,
 				entityType: entityType,
-				data: [],
+				data: []
 			});
 		} else {
 			console.log("Using existing map entry for:", entityName);
@@ -9235,6 +9289,7 @@ async function addKADText() {
 		allKADDrawingsMap.get(entityName).data.push(textObject);
 
 		drawData(points, selectedHole);
+		debouncedUpdateTreeView();
 		console.log("Added text", pointID, "to", entityName);
 		console.log("Final entity type:", allKADDrawingsMap.get(entityName).entityType);
 		debouncedSaveKAD();
@@ -9446,7 +9501,7 @@ function saveAQMPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		preConfirm: () => {
 			// Get user input values
@@ -9501,7 +9556,7 @@ function saveAQMPopup() {
 			savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
 			savedAQMPopupSettings.columnOrderArray = columnOrderArray;
 			localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
@@ -9528,8 +9583,8 @@ function saveAQMPopup() {
 						confirmButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon",
-					},
+						icon: "swal2-icon"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9565,7 +9620,7 @@ function saveAQMPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([aqm], {
-					type: "text/csv;charset=utf-8",
+					type: "text/csv;charset=utf-8"
 				});
 				// Create a URL for the Blob
 				const url = URL.createObjectURL(blob);
@@ -9659,7 +9714,7 @@ function addHolePopup() {
 		length: savedAddHolePopupSettings.length || 0,
 		subdrill: savedAddHolePopupSettings.subdrill || 0,
 		angle: savedAddHolePopupSettings.angle || 0,
-		bearing: savedAddHolePopupSettings.bearing || 0,
+		bearing: savedAddHolePopupSettings.bearing || 0
 	};
 
 	// Calculate default length if using grade Z
@@ -9708,7 +9763,7 @@ function addHolePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -9761,7 +9816,7 @@ function addHolePopup() {
 
 			// Initial update
 			updateFieldsBasedOnUseGradeZ();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
@@ -9783,8 +9838,8 @@ function addHolePopup() {
 						cancelButton: "Try Again",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "error",
-					},
+						icon: "error"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9800,8 +9855,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9816,8 +9871,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9831,8 +9886,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9846,8 +9901,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9861,8 +9916,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9877,8 +9932,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9894,8 +9949,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9910,8 +9965,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -9928,7 +9983,7 @@ function addHolePopup() {
 				length: lengthValue,
 				subdrill: subdrillValue,
 				angle: angleValue,
-				bearing: bearingValue,
+				bearing: bearingValue
 			};
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
@@ -9998,7 +10053,7 @@ function addPatternPopup(worldX, worldY) {
 		burden: savedAddPatternPopupSettings.burden || 3.0,
 		spacing: savedAddPatternPopupSettings.spacing || 3.3,
 		rows: savedAddPatternPopupSettings.rows || 6,
-		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10,
+		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
 	};
 
 	//${lastValues.}
@@ -10065,8 +10120,8 @@ function addPatternPopup(worldX, worldY) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -10098,7 +10153,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10108,7 +10163,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Offset",
 						text: "Please enter an offset between -1 and 1.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10118,7 +10173,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Name Type",
 						text: "Please enter a Name Type.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10128,7 +10183,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Row Orientation",
 						text: "Please enter a row orientation between 0 and 359.999 degrees.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10138,7 +10193,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid X",
 						text: "Please enter an X value in meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10148,7 +10203,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Y",
 						text: "Please enter an Y value in meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10158,7 +10213,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Z",
 						text: "Please enter an Z value in meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10168,7 +10223,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Diameter",
 						text: "Please enter an diameter between 0 and 1000 millimeters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10178,7 +10233,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Type",
 						text: "Please enter a Type.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10188,7 +10243,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Angle",
 						text: "Please enter an angle between 0 and 60 degrees.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10198,7 +10253,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Bearing",
 						text: "Please enter an bearing between 0 and 360 degrees.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10208,7 +10263,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Length",
 						text: "Please enter an length between 0 and 200 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10218,7 +10273,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Subdrill",
 						text: "Please enter an subdrill between -50 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10228,7 +10283,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Burden",
 						text: "Please enter an burden between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10238,7 +10293,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Spacing",
 						text: "Please enter an spacing between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10248,7 +10303,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Rows",
 						text: "Please enter an rows between 1 and 500.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10258,7 +10313,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Holes Per Row",
 						text: "Please enter an holes per row between 1 and 500.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Exit the function
 				}
@@ -10282,7 +10337,7 @@ function addPatternPopup(worldX, worldY) {
 					burden: burden,
 					spacing: spacing,
 					rows: rows,
-					holesPerRow: holesPerRow,
+					holesPerRow: holesPerRow
 				};
 				localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
@@ -10342,6 +10397,8 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
 			if (points === null) {
 				points = [];
 			}
+
+			const useCustomHoleID = false;
 
 			if (patternnameTypeIsNumerical) {
 				holeID = currentLetter + currentRow; // Generate the hole ID
@@ -10429,8 +10486,8 @@ function editHoleLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
@@ -10440,7 +10497,7 @@ function editHoleLengthPopup() {
 				Swal.fire({
 					title: "Invalid length",
 					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			} else if (selectedHole) {
@@ -10491,8 +10548,8 @@ function measuredLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
@@ -10534,8 +10591,8 @@ function measuredMassPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const massInput = document.getElementById("mass");
@@ -10587,8 +10644,8 @@ function measuredCommentPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const commentInput = document.getElementById("comment");
@@ -10637,6 +10694,7 @@ function handleBlastNameClick(event) {
 	isBlastNameEditing = false;
 	editBlastNameSwitch.checked = false;
 	drawData(points, selectedHole);
+	debouncedUpdateTreeView(); // Use debounced version
 }
 
 function editBlastNamePopup(selectedHole) {
@@ -10657,8 +10715,9 @@ function editBlastNamePopup(selectedHole) {
         <div class="button-container-2col">
             <label class="labelWhite18" for="blastName">Blast Name</label>
             <input type="text" id="blastName" placeholder="Blast Name" value="${blastNameValue}" inputmode="text" autofocus />
-			<label class="labelWhite18" for="allHoleBlastNames">Apply to all holes with the same name</label>
-			<input type="checkbox" id="allHoleBlastNames" name="allHoleBlastNames" checked>
+            <br>
+			<label class="labelWhite15" for="allHoleBlastNames">Apply to all holes with the same name</label>
+            <input type="checkbox" id="allHoleBlastNames" name="allHoleBlastNames" checked>
         </div>
         `,
 		customClass: {
@@ -10668,8 +10727,8 @@ function editBlastNamePopup(selectedHole) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const blastNameInput = document.getElementById("blastName");
@@ -10716,6 +10775,22 @@ function editBlastNamePopup(selectedHole) {
 						}
 					});
 				}
+
+				// ADD THIS: Check for duplicate hole IDs after renaming
+				if (typeof checkAndResolveDuplicateHoleIDs === "function") {
+					checkAndResolveDuplicateHoleIDs(points);
+					console.log("Checked and resolved any duplicate hole IDs");
+				}
+
+				// Update tree view if available
+				if (typeof updateTreeView === "function") {
+					debouncedUpdateTreeView(); // Use debounced version
+				}
+
+				// Save changes to DB if available
+				if (typeof savePointsToDB === "function") {
+					savePointsToDB();
+				}
 			}
 			drawData(points, selectedHole);
 		}
@@ -10751,8 +10826,8 @@ function editHoleTypePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const typeInput = document.getElementById("type");
@@ -10766,6 +10841,7 @@ function editHoleTypePopup() {
 					clickedHole.holeType = typeValue;
 
 					drawData(points, selectedHole);
+					debouncedUpdateTreeView(); // Use debounced version
 				}
 			}
 		}
@@ -10934,7 +11010,7 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 		measuredMass: measuredMass,
 		measuredMassTimeStamp: measuredMassTimeStamp,
 		measuredComment: measuredComment,
-		measuredCommentTimeStamp: measuredCommentTimeStamp,
+		measuredCommentTimeStamp: measuredCommentTimeStamp
 	});
 	console.log("Added Hole: " + newHoleID);
 	// console.log(
@@ -10996,6 +11072,7 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 	// 		measuredCommentTimeStamp
 	// );
 	if (isAddingHole && !isAddingPattern) {
+		debouncedUpdateTreeView();
 		drawData(points, selectedHole);
 	}
 }
@@ -11044,6 +11121,7 @@ function handleMeasuredMassClick(event) {
 				fromHoleStore = clickedHole;
 				selectedHole = clickedHole;
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 			}
 		} else if (clickedHole && measuredMassSwitch.checked == true) {
 			measuredMassPopup();
@@ -11069,6 +11147,7 @@ function handleMeasuredCommentClick(event) {
 				fromHoleStore = clickedHole;
 				selectedHole = clickedHole;
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 			}
 		} else if (clickedHole && measuredCommentSwitch.checked == true) {
 			measuredCommentPopup();
@@ -11092,6 +11171,7 @@ function handleHoleTypeEditClick(event) {
 				fromHoleStore = clickedHole;
 				selectedHole = clickedHole;
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 			}
 		} else if (clickedHole && editHoleTypePopupSwitch.checked == true) {
 			editHoleTypePopup();
@@ -11116,8 +11196,10 @@ function handleHoleLengthEditClick(event) {
 				fromHoleStore = clickedHole;
 				selectedHole = clickedHole;
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 			} else {
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
 			}
 		} else if (clickedHole && editLengthPopupSwitch.checked == true) {
@@ -11127,6 +11209,7 @@ function handleHoleLengthEditClick(event) {
 		if (multipleClickedHoles.length > 0 && isMultiHoleSelectionEnabled && editLengthPopupSwitch.checked == false) {
 			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
 			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+			debouncedUpdateTreeView();
 		}
 	}
 }
@@ -11150,11 +11233,13 @@ function handleSelection(event) {
 				selectedKADPolygon = null; // Clear polygon selection when hole selected
 				selectedKADObject = null; // Clear KAD object selection when hole selected
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 				return;
 			} else {
 				selectedKADPolygon = null; // Clear polygon selection when hole selected
 				selectedKADObject = null; // Clear KAD object selection when hole selected
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 				return;
 			}
 		}
@@ -11166,6 +11251,7 @@ function handleSelection(event) {
 			selectedKADPolygon = null; // Clear polygon selection when holes selected
 			selectedKADObject = null; // Clear KAD object selection when holes selected
 			drawData(points, selectedHole);
+			debouncedUpdateTreeView();
 			return;
 		}
 
@@ -11181,6 +11267,7 @@ function handleSelection(event) {
 				selectedKADObject = clickedKADObject; // Store selected KAD object
 				updateStatusMessage("Selected " + clickedKADObject.entityType + " (Right-click to edit)");
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 				return;
 			}
 			// Nothing was clicked - clear both selections
@@ -11210,8 +11297,10 @@ function handleHoleEditingSelection(event) {
 				fromHoleStore = clickedHole;
 				selectedHole = clickedHole;
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 			} else {
 				drawData(points, selectedHole);
+				debouncedUpdateTreeView();
 				//console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
 			}
 		}
@@ -11220,6 +11309,7 @@ function handleHoleEditingSelection(event) {
 		if (multipleClickedHoles.length > 0 && isMultiHoleSelectionEnabled) {
 			selectedMultipleHoles = [...multipleClickedHoles]; // Update the selection
 			drawData(points, selectedHole); // You might need to modify this function to handle multiple selected holes
+			debouncedUpdateTreeView();
 		}
 	}
 }
@@ -11246,7 +11336,7 @@ function recalculateContours(points, deltaX, deltaY) {
 				contourData.push({
 					x: point.startXLocation,
 					y: point.startYLocation,
-					z: time,
+					z: time
 				});
 			}
 		}
@@ -11407,7 +11497,7 @@ function calculateHoleGeometry(clickedHole, newValue, modeLAB) {
 		hole.endYLocation = startY + horizontalProjectionOfHoleLength * Math.sin(radBearing);
 		hole.endZLocation = startZ - hole.holeLengthCalculated * cosAngle;
 	}
-
+	debouncedUpdateTreeView(); // Use debounced version
 	// No need to reassign points[index] since we're working on the original object
 }
 
@@ -11419,7 +11509,7 @@ function timeChart() {
 			title: {
 				text: "Time Window Chart - No Data",
 				xanchor: "right",
-				font: { size: 10 },
+				font: { size: 10 }
 			},
 			plot_bgcolor: noneColor,
 			paper_bgcolor: noneColor,
@@ -11429,18 +11519,18 @@ function timeChart() {
 				bgcolor: noneColor,
 				color: "rgba(255, 0, 0, 0.4)",
 				activecolor: "red",
-				position: "left",
+				position: "left"
 			},
 			margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
 			xaxis: {
 				title: { text: "milliseconds (ms)", font: { size: 10 } },
 				showgrid: true,
-				range: [0, 100],
+				range: [0, 100]
 			},
 			yaxis: {
 				title: { text: "Holes Firing", font: { size: 10 } },
 				showgrid: true,
-				range: [0, 10],
+				range: [0, 10]
 			},
 			height: 380,
 			width: chart.offsetWidth - 50,
@@ -11454,16 +11544,16 @@ function timeChart() {
 					xanchor: "center",
 					yanchor: "middle",
 					showarrow: false,
-					font: { size: 12, color: textFillColor },
-				},
-			],
+					font: { size: 12, color: textFillColor }
+				}
+			]
 		};
 
 		Plotly.react("timeChart", [], layout, {
 			responsive: true,
 			displayModeBar: true,
 			modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
 		});
 
 		return; // Exit early after creating blank chart
@@ -11549,7 +11639,7 @@ function timeChart() {
 		title: {
 			text: "Time Window Chart",
 			xanchor: "right",
-			font: { size: 10 },
+			font: { size: 10 }
 		},
 		plot_bgcolor: noneColor,
 		paper_bgcolor: noneColor,
@@ -11559,7 +11649,7 @@ function timeChart() {
 			bgcolor: noneColor,
 			color: "rgba(255, 0, 0, 0.4)",
 			activecolor: "red",
-			position: "left",
+			position: "left"
 		},
 		margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
 		xaxis: {
@@ -11567,16 +11657,16 @@ function timeChart() {
 			showgrid: true,
 			rangeslider: { visible: true, thickness: 0.1 },
 			tickvals: "auto", //tickvals, // if you want bin ranges
-			ticktext: "~s", //ticktext, //if you want bin ranges
+			ticktext: "~s" //ticktext, //if you want bin ranges
 		},
 		yaxis: {
 			title: { text: newYLabel, font: { size: 10 } },
 			showgrid: true,
 			automargin: true,
-			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
+			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
 		},
 		height: 380,
-		width: chart.offsetWidth - 50, // ✅ dynamic width based on container,
+		width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
 	};
 
 	const data = [
@@ -11589,15 +11679,15 @@ function timeChart() {
 			text: hoverText,
 			textposition: "none", // ✅ disables labels drawn on bars
 			//hoverinfo: "text+y",
-			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>",
-		},
+			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
+		}
 	];
 
 	Plotly.react("timeChart", data, layout, {
 		responsive: true,
 		displayModeBar: true,
 		modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
 	});
 
 	// ✅ Clear previously registered listeners
@@ -11788,7 +11878,7 @@ function getDisplayOptions() {
 		measuredLength: document.getElementById("display13").checked,
 		measuredMass: document.getElementById("display14").checked,
 		measuredComment: document.getElementById("display15").checked,
-		voronoiPF: document.getElementById("display16").checked,
+		voronoiPF: document.getElementById("display16").checked
 	};
 }
 
@@ -11881,7 +11971,7 @@ function drawData(points, selectedHole) {
 
 				for (const pointData of simplifiedPoints) {
 					const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-					drawKADPoints(x, y, pointData.pointZLocation, pointData.pointDiameter, pointData.color);
+					drawKADPoints(x, y, pointData.pointZLocation, pointData.color);
 				}
 			} else if (entity.entityType === "circle") {
 				// Draw circles
@@ -12332,7 +12422,7 @@ function drawData(points, selectedHole) {
 					middleSideCollar,
 					bottomSideCollar,
 					holeMap,
-					displayOptions,
+					displayOptions
 				});
 
 				// Draw main hole geometry, with selection highlight logic
@@ -12411,6 +12501,9 @@ function drawData(points, selectedHole) {
 		// Update font slider and label after loop (once)
 		fontSlider.value = currentFontSize;
 		fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
+		if (printMode) {
+			drawPrintBoundary(ctx);
+		}
 	} else {
 		// Handle missing context
 		return;
@@ -12645,7 +12738,7 @@ function getMousePos(canvas, evt) {
 
 	return {
 		x: canvasX,
-		y: canvasY,
+		y: canvasY
 	};
 }
 
@@ -12802,7 +12895,7 @@ function getImageBoundaries() {
 		minX: backgroundImage.bbox[0],
 		maxX: backgroundImage.bbox[2],
 		minY: backgroundImage.bbox[1],
-		maxY: backgroundImage.bbox[3],
+		maxY: backgroundImage.bbox[3]
 	};
 }
 function resetZoom() {
@@ -12886,7 +12979,7 @@ function refreshPoints() {
 		for (const entity of pointsMap.values()) {
 			// console.log(entity);
 		}
-
+		debouncedUpdateTreeView(); // Use debounced version
 		return points;
 	}
 	return null;
@@ -13069,6 +13162,7 @@ function loadKADFromDB() {
 			if (result && result.data && result.data.length > 0) {
 				allKADDrawingsMap = new Map(result.data); // ✅ Access the data property
 				console.log("✅ //-- LOADED UNIFIED DRAWING OBJECTS FROM IndexedDB --//");
+				debouncedUpdateTreeView();
 				drawData(points, selectedHole);
 				resolve(true);
 			} else {
@@ -13103,13 +13197,14 @@ function saveSurfaceToDB(surfaceName) {
 				triangles: surfaceTriangles,
 				visible: surfaceVisible,
 				gradient: currentGradient,
-				savedAt: new Date().toISOString(),
+				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(surfaceRecord);
 
 			request.onsuccess = () => {
 				console.log("✅ Surface " + surfaceName + " saved (" + surfacePoints.length + " points)");
+				debouncedUpdateTreeView();
 				resolve(surfaceRecord);
 			};
 
@@ -13201,6 +13296,7 @@ async function deleteSurfaceFromDB(surfaceId) {
 
 			request.onsuccess = () => {
 				console.log("✅ Surface " + surfaceId + " deleted from IndexedDB");
+				debouncedUpdateTreeView();
 				resolve();
 			};
 
@@ -13235,6 +13331,7 @@ async function deleteAllSurfacesFromDB() {
 
 			request.onsuccess = () => {
 				console.log("✅ All surfaces deleted from IndexedDB");
+				debouncedUpdateTreeView();
 				resolve();
 			};
 
@@ -13261,6 +13358,7 @@ async function deleteAllImagesFromDB() {
 
 			request.onsuccess = () => {
 				console.log("✅ All images deleted from IndexedDB");
+				debouncedUpdateTreeView();
 				resolve();
 			};
 
@@ -13303,12 +13401,15 @@ async function saveImageToDB(imageName) {
 				blob: blob,
 				visible: imageVisible,
 				transparency: imageTransparency,
-				savedAt: new Date().toISOString(),
+				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(imageRecord);
 
-			request.onsuccess = () => resolve(imageRecord);
+			request.onsuccess = () => {
+				debouncedUpdateTreeView();
+				resolve(imageRecord);
+			};
 			request.onerror = () => reject(request.error);
 			transaction.onerror = () => reject(transaction.error);
 		});
@@ -13362,19 +13463,21 @@ async function loadImageFromDB(imageId = null) {
 					img.onload = () => {
 						canvas.width = img.width;
 						canvas.height = img.height;
+
 						ctx.drawImage(img, 0, 0);
 
 						backgroundImage = {
 							canvas: canvas,
 							bbox: imageData.bbox,
 							name: imageData.name,
-							type: imageData.type,
+							type: imageData.type
 						};
 
 						imageVisible = imageData.visible;
 						imageTransparency = imageData.transparency;
 
 						updateCentroids();
+						debouncedUpdateTreeView();
 						drawData(points, selectedHole);
 
 						console.log("Image " + imageData.name + " loaded from IndexedDB");
@@ -13408,6 +13511,7 @@ async function deleteImageFromDB(imageId) {
 			const request = store.delete(imageId);
 
 			request.onsuccess = () => {
+				debouncedUpdateTreeView();
 				console.log(`✅ Image "${imageId}" deleted from IndexedDB`);
 				resolve();
 			};
@@ -13438,6 +13542,7 @@ async function deleteAllImagesFromDB() {
 			const request = store.clear();
 
 			request.onsuccess = () => {
+				debouncedUpdateTreeView();
 				console.log("✅ All images deleted from IndexedDB");
 				resolve();
 			};
@@ -13508,6 +13613,7 @@ function checkAndPromptForStoredData() {
 		// FIX: Check for kadData.data instead of kadData.length
 		if (pointsData || (kadData && kadData.data && kadData.data.length > 0)) {
 			showPopup(true); // Pass flag indicating DB is available
+			debouncedUpdateTreeView();
 		}
 	};
 
@@ -13546,9 +13652,11 @@ async function showPopup(isDBReady) {
 
 		// NOW that all data is loaded, frame it all correctly.
 		zoomToFitAll();
+		debouncedUpdateTreeView();
 		debugDatabaseContents();
 	} else {
 		clearLoadedData();
+		debouncedUpdateTreeView();
 		zoomToFitAll(); // Also frame on a fresh start
 	}
 }
@@ -13706,7 +13814,7 @@ function findClosestKadPoint(worldPoint, snapDistance) {
 					closestPoint = {
 						entityName: name,
 						pointIndex: i,
-						point: pt,
+						point: pt
 					};
 				}
 			}
@@ -13740,7 +13848,7 @@ function handleKADModificationClick(event) {
 			pointXLocation: selectedKADPoint.clickedX,
 			pointYLocation: selectedKADPoint.clickedY,
 			// Add other properties as needed by existing code
-			...entity.data[0], // Copy properties from first point
+			...entity.data[0] // Copy properties from first point
 		};
 		console.log("DEBUG: selectedKADObject created:", selectedKADObject);
 		//selectedKADPolygon = null; // Clear the other variable
@@ -13842,8 +13950,14 @@ window.onload = function () {
 		}
 	});
 
-	// --- Initialize Database & Load Data ---
-	///-----------CRITICAL: This must be called before any other DB operations
+	///-------CRITICAL IMPORTANT --------///
+	// This code is critical and must be called before any other database operations.
+	// It is responsible for initializing the database and loading the stored data.
+	// If the database is not initialized, the application will not work correctly.
+	// This code should be called only once during application initialization,
+	// typically in window.onload or similar startup code, not inside event handlers.
+	// This placement means the database initialization would run every time certain keys
+	// are pressed, which is inefficient and could cause issues with multiple database
 	initDB()
 		.then((database) => {
 			db = database; // ✅ Set the global db variable
@@ -14035,7 +14149,7 @@ function openNavRight() {
 		sidenavRight.style.height = "350px";
 		//resize the timechart
 		Plotly.relayout("timeChart", {
-			width: 280,
+			width: 280
 		});
 	} else {
 		body.style.marginRight = "315px"; // Push body to the left
@@ -14124,7 +14238,7 @@ let dragInitialPositions = [];
 let previousToolState = {
 	isSelectionPointerActive: false,
 	isPolygonSelectionActive: false,
-	selectionMode: false,
+	selectionMode: false
 };
 // Helper function to remove all canvas listeners
 function removeAllCanvasListenersKeepDefault() {
@@ -14177,7 +14291,7 @@ moveToTool.addEventListener("change", function () {
 		previousToolState = {
 			isSelectionPointerActive: isSelectionPointerActive,
 			isPolygonSelectionActive: isPolygonSelectionActive,
-			selectionMode: isMultiHoleSelectionEnabled,
+			selectionMode: isMultiHoleSelectionEnabled
 		};
 
 		// Disable other tools
@@ -14269,7 +14383,7 @@ function handleMoveToolMouseDown(event) {
 		dragInitialPositions = selectedMultipleHoles.map((hole) => ({
 			hole: hole,
 			x: hole.startXLocation,
-			y: hole.startYLocation,
+			y: hole.startYLocation
 		}));
 		canvas.addEventListener("mousemove", handleMoveToolMouseMove);
 		canvas.addEventListener("touchmove", handleMoveToolMouseMove);
@@ -14679,6 +14793,7 @@ function closeAllContextMenus() {
 			try {
 				document.body.removeChild(menu);
 				console.log("🗑️ Removed existing context menu");
+				debouncedUpdateTreeView(); // Use debounced version
 			} catch (error) {
 				// Menu already removed
 			}
@@ -14710,12 +14825,14 @@ canvas.addEventListener("contextmenu", function (e) {
 	// For holes: Check multiple selection first, then single hole
 	if (selectedMultipleHoles && selectedMultipleHoles.length > 1) {
 		showMultipleHolePropertyEditor(selectedMultipleHoles);
+		debouncedUpdateTreeView(); // Use debounced version
 		return;
 	}
 
 	const clickedHole = getClickedHole(clickX, clickY);
 	if (clickedHole) {
 		showHolePropertyEditor(clickedHole);
+		debouncedUpdateTreeView(); // Use debounced version
 		return;
 	}
 
@@ -14727,6 +14844,7 @@ canvas.addEventListener("contextmenu", function (e) {
 			const isClickedObjectSelected = isKADObjectSelected(clickedKADObject);
 			if (isClickedObjectSelected) {
 				showKADPropertyEditor(clickedKADObject);
+				debouncedUpdateTreeView(); // Use debounced version
 				return;
 			}
 		}
@@ -14777,7 +14895,7 @@ function isClickOnSelectedPolygon(worldX, worldY, selectedPolygon) {
 				...point,
 				mapType: "allKADDrawingsMap", // ← Use unified map name
 				entityType: entity.entityType, // ← Use actual entity type from data
-				entityName: entity.entityName, // ← Add entity name for consistency
+				entityName: entity.entityName // ← Add entity name for consistency
 			};
 		}
 	}
@@ -14796,7 +14914,7 @@ function isClickOnSelectedPolygon(worldX, worldY, selectedPolygon) {
 				...point1,
 				mapType: "allKADDrawingsMap", // ← Use unified map name
 				entityType: entity.entityType, // ← Use actual entity type from data
-				entityName: entity.entityName, // ← Add entity name for consistency
+				entityName: entity.entityName // ← Add entity name for consistency
 			};
 		}
 	}
@@ -14856,7 +14974,7 @@ function getClickedKADObject(clickX, clickY) {
 							entityType: entity.entityType,
 							elementIndex: i,
 							segmentIndex: i,
-							selectionType: "point",
+							selectionType: "point"
 						};
 						minDistance = distance;
 					}
@@ -14890,7 +15008,7 @@ function getClickedKADObject(clickX, clickY) {
 							segmentIndex: i, // This is the specific segment clicked
 							selectionType: "segment",
 							clickedX: closestPoint.x,
-							clickedY: closestPoint.y,
+							clickedY: closestPoint.y
 						};
 						minDistance = segmentDistance;
 					}
@@ -14910,7 +15028,7 @@ function getClickedKADObject(clickX, clickY) {
 								entityType: entity.entityType,
 								elementIndex: i,
 								segmentIndex: i,
-								selectionType: "vertex",
+								selectionType: "vertex"
 							};
 							minDistance = distance;
 						}
@@ -15003,12 +15121,12 @@ function showMultipleHolePropertyEditor(holes) {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the dialog opens
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		// Clear any dragging states when dialog closes
 		isDragging = false;
@@ -15077,7 +15195,7 @@ function jsColorPaletteForPicker() {
 	// This function sets the default color palette for the color picker
 	jscolor.presets.default = {
 		format: "rgb",
-		palette: ["#990000", "#FF0000", "#FFAA00", "#CCCC00", "#FFF000", "#00ff00", "#00bb00", "#00bbff", "#0055FF", "#aa00ff", "#F1F1F1", "#E3E3E3", "#C6C6C6", "#7F7F7F", "#555555", "#393939", "#1C1C1C", "#00FFFF", "#006699", "#FF00FF"],
+		palette: ["#990000", "#FF0000", "#FFAA00", "#CCCC00", "#FFF000", "#00ff00", "#00bb00", "#00bbff", "#0055FF", "#aa00ff", "#F1F1F1", "#E3E3E3", "#C6C6C6", "#7F7F7F", "#555555", "#393939", "#1C1C1C", "#00FFFF", "#006699", "#FF00FF"]
 	};
 }
 
@@ -15115,12 +15233,12 @@ function showHolePropertyEditor(hole) {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the dialog opens
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		// Clear any dragging states when dialog closes
 		isDragging = false;
@@ -15238,13 +15356,13 @@ function showKADPropertyEditor(kadObject) {
 			content: "swal2-content",
 			confirmButton: "confirm",
 			denyButton: "deny",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the popup opens
 			jsColorPaletteForPicker();
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed || result.isDenied) {
 			const colorElement = document.getElementById("editKADColor");
@@ -15254,7 +15372,7 @@ function showKADPropertyEditor(kadObject) {
 				color: selectedColor,
 				lineWidth: document.getElementById("editLineWidth")?.value,
 				radius: document.getElementById("editRadius")?.value,
-				text: document.getElementById("editText")?.value,
+				text: document.getElementById("editText")?.value
 			};
 
 			// Handle line/poly conversion
@@ -15536,7 +15654,7 @@ function showSurfaceContextMenu(x, y) {
 		{ name: "Turbo 🔥", value: "turbo" },
 		{ name: "Parula 🔵", value: "parula" },
 		{ name: "Cividis 🔵", value: "cividis" },
-		{ name: "Terrain 🟢", value: "terrain" },
+		{ name: "Terrain 🟢", value: "terrain" }
 	];
 
 	gradients.forEach((gradient) => {
@@ -15877,7 +15995,7 @@ fileInputCustomCSV.addEventListener("change", function () {
 		Papa.parse(file, {
 			skipEmptyLines: true,
 			complete: (results) => showCsvImportModal(results.data, file.name),
-			error: (error) => Swal.fire("Error", "Could not parse the CSV file: " + error.message, "error"),
+			error: (error) => Swal.fire("Error", "Could not parse the CSV file: " + error.message, "error")
 		});
 	} else if (file) {
 		Swal.fire("Invalid File", "Please select a valid .csv file.", "warning");
@@ -15929,7 +16047,7 @@ function showCsvImportModal(csvData, fileName) {
 		{ name: "colorHexDecimal", label: "Tie color" },
 		{ name: "measuredLength", label: "Measured Length" },
 		{ name: "measuredMass", label: "Measured Mass" },
-		{ name: "measuredComment", label: "Measured Comment" },
+		{ name: "measuredComment", label: "Measured Comment" }
 	];
 
 	const mappingHtml = modalFields.map((field) => '<label class="labelWhite12" for="swal-col-' + field.name + '">' + field.label + '</label><select id="swal-col-' + field.name + '" style="font-size: 12px; height: 26px; padding: 3px 6px; width: 120px; border-radius: 4px; background-color: #fff; color: #000; border: 1px solid #999; appearance: none; box-sizing: border-box;">' + ignoreOption + columnOptions + "</select>").join("");
@@ -16007,7 +16125,7 @@ function showCsvImportModal(csvData, fileName) {
 			title: "swal2-title",
 			confirmButton: "confirm",
 			cancelButton: "cancel",
-			htmlContainer: "swal2-html-container",
+			htmlContainer: "swal2-html-container"
 		},
 		width: "800px",
 		showCancelButton: true,
@@ -16039,7 +16157,7 @@ function showCsvImportModal(csvData, fileName) {
 				holeLengthCalculated: ["length", "holelength", "hole length"],
 				holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
 				holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
-				initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"],
+				initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"]
 			};
 
 			const headerRow = headerRowForPreview.map((h) =>
@@ -16228,7 +16346,7 @@ function showCsvImportModal(csvData, fileName) {
 			}
 
 			return order;
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			try {
@@ -16256,8 +16374,8 @@ function showCsvImportModal(csvData, fileName) {
 						customClass: {
 							container: "custom-popup-container",
 							confirmButton: "confirm",
-							confirmButtonText: "OK",
-						},
+							confirmButtonText: "OK"
+						}
 					});
 				} else {
 					Swal.fire({
@@ -16268,8 +16386,8 @@ function showCsvImportModal(csvData, fileName) {
 							container: "custom-popup-container",
 							showCancelButton: true,
 							showConfirmButton: false,
-							cancelButton: "cancel",
-						},
+							cancelButton: "cancel"
+						}
 					});
 				}
 			} catch (error) {
@@ -16282,8 +16400,8 @@ function showCsvImportModal(csvData, fileName) {
 						container: "custom-popup-container",
 						showCancelButton: true,
 						showConfirmButton: false,
-						cancelButton: "cancel",
-					},
+						cancelButton: "cancel"
+					}
 				});
 			}
 		}
@@ -16356,7 +16474,7 @@ function processCsvData(data, columnOrder, fileName) {
 					holeID: holeID,
 					entityName: holeEntityName,
 					type: blastHoleDupe !== -1 ? "Blast Name + Hole ID" : "Location",
-					action: "Skipped",
+					action: "Skipped"
 				});
 				return; // Skip this hole
 			}
@@ -16404,7 +16522,7 @@ function processCsvData(data, columnOrder, fileName) {
 				holeID: holeID,
 				entityName: holeEntityName,
 				type: duplicateType,
-				action: "Updated",
+				action: "Updated"
 			});
 		} else {
 			// Create new hole
@@ -16438,7 +16556,7 @@ function processCsvData(data, columnOrder, fileName) {
 				measuredMass: parseFloat(getValue("measuredMass")) || 0,
 				measuredMassTimeStamp: "09/05/1975 00:00:00",
 				measuredComment: getValue("measuredComment") || "None",
-				measuredCommentTimeStamp: "09/05/1975 00:00:00",
+				measuredCommentTimeStamp: "09/05/1975 00:00:00"
 			};
 		}
 
@@ -16628,8 +16746,8 @@ function processCsvData(data, columnOrder, fileName) {
 			text: "Found " + duplicateWarnings.length + " duplicate holes. Check console for details.",
 			icon: "warning",
 			customClass: {
-				container: "custom-popup-container",
-			},
+				container: "custom-popup-container"
+			}
 		});
 	}
 
@@ -17043,7 +17161,6 @@ patternInPolygonTool.addEventListener("change", function () {
 		drawData(points, selectedHole);
 	}
 });
-
 function handlePatternInPolygonClick(event) {
 	event.preventDefault();
 	event.stopPropagation();
@@ -17152,7 +17269,6 @@ holesAlongPolyLineTool.addEventListener("change", function () {
 		drawData(points, selectedHole);
 	}
 });
-
 // Updated click handler with multi-step process
 function handleHolesAlongPolyLineClick(event) {
 	if (!isHolesAlongPolyLineActive) return;
@@ -17188,9 +17304,9 @@ function handleHolesAlongPolyLineClick(event) {
 					type: "line",
 					vertices: clickedLine.points.map((point) => ({
 						x: point.pointXLocation,
-						y: point.pointYLocation,
+						y: point.pointYLocation
 					})),
-					entity: clickedLine.entity,
+					entity: clickedLine.entity
 				};
 				polylineStep = 1;
 				updateStatusMessage("Step 2: Click on a vertex or point along the line to set the start point.");
@@ -17201,11 +17317,15 @@ function handleHolesAlongPolyLineClick(event) {
 			// Try to find a clicked polygon
 			const clickedPolygon = getClickedKADEntity(worldX, worldY);
 
+			// Fix the polygon selection part
 			if (clickedPolygon) {
 				selectedPolyline = {
 					type: "polygon",
-					vertices: clickedPolygon.vertices,
-					entity: clickedPolygon.entity,
+					vertices: clickedPolygon.entity.data.map((point) => ({
+						x: point.pointXLocation,
+						y: point.pointYLocation
+					})),
+					entity: clickedPolygon.entity
 				};
 				polylineStep = 1;
 				updateStatusMessage("Step 2: Click on a vertex of the polygon to set the start point.");
@@ -17232,11 +17352,13 @@ function handleHolesAlongPolyLineClick(event) {
 			if (polylineEndPoint) {
 				console.log("End point set at:", polylineEndPoint);
 
-				// Create path from start to end point
-				const pathVertices = createPathBetweenVertices(selectedPolyline.vertices, polylineStartPoint, polylineEndPoint);
+				// Create path from start to end point - now with polygon awareness
+				const isPolygon = selectedPolyline.type === "polygon";
+				const pathVertices = createPathBetweenVertices(selectedPolyline.vertices, polylineStartPoint, polylineEndPoint, isPolygon);
 
 				if (pathVertices.length >= 2) {
-					showHolesAlongPolylinePopup(pathVertices);
+					// Pass the polygon type and original vertices to the popup for reverse handling
+					showHolesAlongPolylinePopup(pathVertices, selectedPolyline);
 				} else {
 					updateStatusMessage("Invalid path between selected points. Please try again.");
 					polylineStep = 1;
@@ -17255,7 +17377,6 @@ function handleHolesAlongPolyLineClick(event) {
 
 	drawData(points, selectedHole);
 }
-
 //---------------HOLES ALONG LINE TOOL---------------//
 holesAlongLineTool.addEventListener("change", function () {
 	if (this.checked) {
@@ -17295,7 +17416,6 @@ holesAlongLineTool.addEventListener("change", function () {
 		drawData(points, selectedHole);
 	}
 });
-
 function handleHolesAlongLineClick(event) {
 	event.preventDefault();
 	event.stopPropagation();
@@ -17333,7 +17453,6 @@ function handleHolesAlongLineClick(event) {
 
 	drawData(points, selectedHole);
 }
-
 // Helper function to update status messages
 function updateStatusMessage(message) {
 	// You can display this in a status bar or console
@@ -17342,7 +17461,6 @@ function updateStatusMessage(message) {
 	// If you have a status element in your HTML, update it:
 	// document.getElementById("statusMessage").textContent = message;
 }
-
 // Enhanced snapping function for CAD vertices and hole points
 function findNearestSnapPoint(worldX, worldY, tolerance = getSnapToleranceInWorldUnits()) {
 	let closestPoint = null;
@@ -17448,7 +17566,6 @@ function findNearestSnapPoint(worldX, worldY, tolerance = getSnapToleranceInWorl
 
 	return closestPoint ? { point: closestPoint, type: snapType, distance: minDistance } : null;
 }
-
 // Helper function to find the closest vertex to a click point (keep original for compatibility)
 function findClosestVertex(clickX, clickY, vertices, tolerance = getSnapToleranceInWorldUnits()) {
 	let closestVertex = null;
@@ -17464,9 +17581,9 @@ function findClosestVertex(clickX, clickY, vertices, tolerance = getSnapToleranc
 
 	return closestVertex;
 }
-
 // Helper function to create a path between two vertices
-function createPathBetweenVertices(vertices, startVertex, endVertex) {
+// Now properly handles polygons as closed shapes
+function createPathBetweenVertices(vertices, startVertex, endVertex, isPolygon = false) {
 	const startIndex = startVertex.index;
 	const endIndex = endVertex.index;
 
@@ -17476,21 +17593,78 @@ function createPathBetweenVertices(vertices, startVertex, endVertex) {
 
 	let pathVertices = [];
 
-	// If start index is less than end index, go forward
-	if (startIndex < endIndex) {
-		for (let i = startIndex; i <= endIndex; i++) {
-			pathVertices.push(vertices[i]);
+	if (!isPolygon) {
+		// For open polylines/lines - original logic
+		if (startIndex < endIndex) {
+			for (let i = startIndex; i <= endIndex; i++) {
+				pathVertices.push(vertices[i]);
+			}
+		} else {
+			for (let i = startIndex; i >= endIndex; i--) {
+				pathVertices.push(vertices[i]);
+			}
 		}
 	} else {
-		// If start index is greater, go backward
-		for (let i = startIndex; i >= endIndex; i--) {
-			pathVertices.push(vertices[i]);
+		// For polygons - handle as closed loop
+		const totalVertices = vertices.length;
+
+		// Calculate forward path distance (going from start to end in forward direction)
+		let forwardDistance;
+		if (endIndex >= startIndex) {
+			forwardDistance = endIndex - startIndex;
+		} else {
+			forwardDistance = totalVertices - startIndex + endIndex;
 		}
+
+		// Calculate backward path distance (going from start to end in backward direction)
+		let backwardDistance;
+		if (startIndex >= endIndex) {
+			backwardDistance = startIndex - endIndex;
+		} else {
+			backwardDistance = startIndex + (totalVertices - endIndex);
+		}
+
+		// Choose the shorter path by default (can be overridden by reverse option)
+		let useForwardPath = forwardDistance <= backwardDistance;
+
+		if (useForwardPath) {
+			// Forward path around the polygon
+			let currentIndex = startIndex;
+			while (true) {
+				pathVertices.push(vertices[currentIndex]);
+				if (currentIndex === endIndex) break;
+
+				currentIndex = (currentIndex + 1) % totalVertices;
+
+				// Safety check to prevent infinite loop
+				if (pathVertices.length > totalVertices) break;
+			}
+		} else {
+			// Backward path around the polygon
+			let currentIndex = startIndex;
+			while (true) {
+				pathVertices.push(vertices[currentIndex]);
+				if (currentIndex === endIndex) break;
+
+				currentIndex = (currentIndex - 1 + totalVertices) % totalVertices;
+
+				// Safety check to prevent infinite loop
+				if (pathVertices.length > totalVertices) break;
+			}
+		}
+
+		console.log("Polygon path created:", {
+			startIndex: startIndex,
+			endIndex: endIndex,
+			forwardDistance: forwardDistance,
+			backwardDistance: backwardDistance,
+			usedForwardPath: useForwardPath,
+			pathLength: pathVertices.length
+		});
 	}
 
 	return pathVertices;
 }
-
 function toRadians(degrees) {
 	return (degrees * Math.PI) / 180;
 }
@@ -17500,7 +17674,6 @@ function toDegrees(radians) {
 function toBearing(degrees) {
 	return (degrees + 90) % 360;
 }
-
 // Function to generate pattern in polygon
 function generatePatternInPolygon(patternSettings) {
 	if (!selectedPolygon || !patternStartPoint || !patternEndPoint || !patternReferencePoint) {
@@ -17531,7 +17704,7 @@ function generatePatternInPolygon(patternSettings) {
 	// Get polygon vertices - FIX: Convert from entity.data to vertices format
 	const polygonVertices = selectedPolygon.data.map((point) => ({
 		x: point.pointXLocation,
-		y: point.pointYLocation,
+		y: point.pointYLocation
 	}));
 
 	console.log("Polygon vertices:", polygonVertices.length); // Debug log
@@ -17595,7 +17768,7 @@ function generatePatternInPolygon(patternSettings) {
 		maxDistance: maxDistance.toFixed(2),
 		numRows,
 		numCols,
-		patternType: patternType || (spacingOffset === 0 ? "square" : "staggered"),
+		patternType: patternType || (spacingOffset === 0 ? "square" : "staggered")
 	});
 
 	// Generate grid of holes
@@ -17675,8 +17848,8 @@ function generatePatternInPolygon(patternSettings) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -17693,8 +17866,8 @@ function generatePatternInPolygon(patternSettings) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 	// Update display
@@ -17704,6 +17877,7 @@ function generatePatternInPolygon(patternSettings) {
 
 // Function to show holes along line popup
 function showHolesAlongLinePopup() {
+	let blastNameValue = "LinePattern_" + Date.now();
 	// Retrieve the last entered values from local storage
 	let savedHolesAlongLineSettings = JSON.parse(localStorage.getItem("savedHolesAlongLineSettings")) || {};
 	let lastValues = {
@@ -17720,7 +17894,7 @@ function showHolesAlongLinePopup() {
 		nameTypeIsNumerical: savedHolesAlongLineSettings.nameTypeIsNumerical !== undefined ? savedHolesAlongLineSettings.nameTypeIsNumerical : true,
 		useGradeZ: savedHolesAlongLineSettings.useGradeZ !== undefined ? savedHolesAlongLineSettings.useGradeZ : true,
 		useLineBearing: savedHolesAlongLineSettings.useLineBearing !== undefined ? savedHolesAlongLineSettings.useLineBearing : true,
-		length: savedHolesAlongLineSettings.length || 10,
+		length: savedHolesAlongLineSettings.length || 10
 	};
 
 	// Calculate default length if using grade Z
@@ -17792,7 +17966,7 @@ function showHolesAlongLinePopup() {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -17857,7 +18031,7 @@ function showHolesAlongLinePopup() {
 
 			// Hide the loading spinner when the popup is ready
 			Swal.hideLoading();
-		},
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -17885,8 +18059,8 @@ function showHolesAlongLinePopup() {
 						icon: "error",
 						customClass: {
 							container: "custom-popup-container",
-							popup: "custom-popup-container",
-						},
+							popup: "custom-popup-container"
+						}
 					});
 					return;
 				}
@@ -17898,8 +18072,8 @@ function showHolesAlongLinePopup() {
 						icon: "error",
 						customClass: {
 							container: "custom-popup-container",
-							popup: "custom-popup-container",
-						},
+							popup: "custom-popup-container"
+						}
 					});
 					return;
 				}
@@ -17919,7 +18093,7 @@ function showHolesAlongLinePopup() {
 					diameter: diameter,
 					type: type,
 					useGradeZ: useGradeZ,
-					useLineBearing: useLineBearing,
+					useLineBearing: useLineBearing
 				};
 				localStorage.setItem("savedHolesAlongLineSettings", JSON.stringify(newValues));
 
@@ -17938,17 +18112,17 @@ function showHolesAlongLinePopup() {
 					angle: angle,
 					bearing: bearing - 90,
 					diameter: diameter,
-					type: type,
+					type: type
 				});
 			}
 		})
 		.finally(() => {
 			// Reset tool
+			debouncedUpdateTreeView(); // Use debounced version
 			holesAlongLineTool.checked = false;
 			holesAlongLineTool.dispatchEvent(new Event("change"));
 		});
 }
-
 // Update the generateHolesAlongLine function to correctly apply the bearing:
 function generateHolesAlongLine(params) {
 	if (!lineStartPoint || !lineEndPoint) {
@@ -18027,6 +18201,7 @@ function generateHolesAlongLine(params) {
 	}
 
 	// Redraw
+	debouncedUpdateTreeView(); // Use debounced version
 	drawData(points, selectedHole);
 	saveHolesToLocalStorage(points);
 
@@ -18049,8 +18224,8 @@ function generateHolesAlongLine(params) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -18066,8 +18241,8 @@ function generateHolesAlongLine(params) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 }
@@ -18108,9 +18283,9 @@ function getClickedKADEntity(worldX, worldY) {
 						index: 0,
 						x: point.pointXLocation,
 						y: point.pointYLocation,
-						distance: distance,
+						distance: distance
 					},
-					clickedSegment: null,
+					clickedSegment: null
 				});
 			}
 			continue; // Skip to next entity
@@ -18146,7 +18321,7 @@ function getClickedKADEntity(worldX, worldY) {
 						endIndex: (i + 1) % points.length,
 						startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
 						endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
-						distance: distance,
+						distance: distance
 					};
 				}
 			}
@@ -18159,7 +18334,7 @@ function getClickedKADEntity(worldX, worldY) {
 				minDistance: minDistance,
 				selectionType: clickedVertex ? "vertex" : "segment",
 				clickedVertex: clickedVertex,
-				clickedSegment: clickedSegment,
+				clickedSegment: clickedSegment
 			});
 		}
 	}
@@ -18196,7 +18371,7 @@ function getClickedKADEntity(worldX, worldY) {
 		clickedY: snappedY,
 		selectionType: selected.selectionType,
 		clickedVertex: selected.clickedVertex,
-		clickedSegment: selected.clickedSegment,
+		clickedSegment: selected.clickedSegment
 	};
 }
 // Helper function to get closest point on line segment (add if not exists)
@@ -18218,11 +18393,10 @@ function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2) {
 
 	return {
 		x: x1 + t * C,
-		y: y1 + t * D,
+		y: y1 + t * D
 	};
 }
-
-// Add this helper function for point-in-polygon detection
+//Add this helper function for point-in-polygon detection
 function isPointInPolygonVertices(x, y, vertices) {
 	let inside = false;
 	for (let i = 0, j = vertices.length - 1; i < vertices.length; j = i++) {
@@ -18232,7 +18406,6 @@ function isPointInPolygonVertices(x, y, vertices) {
 	}
 	return inside;
 }
-
 // Add this new function to detect clicked lines
 function getClickedLine(worldX, worldY, tolerance = getSnapToleranceInWorldUnits()) {
 	if (allKADDrawingsMap.size === 0) return null;
@@ -18257,7 +18430,7 @@ function getClickedLine(worldX, worldY, tolerance = getSnapToleranceInWorldUnits
 					points: linePoints,
 					segmentIndex: i,
 					startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
-					endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
+					endPoint: { x: p2.pointXLocation, y: p2.pointYLocation }
 				};
 			}
 		}
@@ -18265,7 +18438,6 @@ function getClickedLine(worldX, worldY, tolerance = getSnapToleranceInWorldUnits
 
 	return null;
 }
-
 // Helper function for point-to-line-segment distance (add if not exists)
 function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
 	const A = px - x1;
@@ -18296,6 +18468,7 @@ function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
 }
 // Add this new function for the pattern in polygon popup
 function showPatternInPolygonPopup() {
+	let blastNameValue = "PolygonPattern_" + Date.now();
 	// Retrieve the last entered values from local storage
 	let savedPatternInPolygonSettings = JSON.parse(localStorage.getItem("savedPatternInPolygonSettings")) || {};
 	let lastValues = {
@@ -18313,7 +18486,7 @@ function showPatternInPolygonPopup() {
 		startNumber: savedPatternInPolygonSettings.startNumber || 1,
 		nameTypeIsNumerical: savedPatternInPolygonSettings.nameTypeIsNumerical || true,
 		useGradeZ: savedPatternInPolygonSettings.useGradeZ !== undefined ? savedPatternInPolygonSettings.useGradeZ : true,
-		length: savedPatternInPolygonSettings.length || 10,
+		length: savedPatternInPolygonSettings.length || 10
 	};
 
 	// Calculate default length if using grade Z
@@ -18374,7 +18547,7 @@ function showPatternInPolygonPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -18427,7 +18600,7 @@ function showPatternInPolygonPopup() {
 
 			// Initial update
 			updateFieldsBasedOnUseGradeZ();
-		},
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -18453,7 +18626,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -18462,7 +18635,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Offset",
 						text: "Please enter an offset between -1 and 1.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -18471,7 +18644,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Burden",
 						text: "Please enter burden between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -18480,7 +18653,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Spacing",
 						text: "Please enter spacing between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -18501,7 +18674,7 @@ function showPatternInPolygonPopup() {
 					bearing: bearing,
 					diameter: diameter,
 					type: type,
-					useGradeZ: useGradeZ,
+					useGradeZ: useGradeZ
 				};
 				localStorage.setItem("savedPatternInPolygonSettings", JSON.stringify(newValues));
 
@@ -18527,20 +18700,19 @@ function showPatternInPolygonPopup() {
 					bearing: bearing,
 					diameter: diameter,
 					type: type,
-					patternType: spacingOffset === 0 ? "square" : "staggered",
+					patternType: spacingOffset === 0 ? "square" : "staggered"
 				});
 			}
 		})
 		.finally(() => {
 			// Hide the loading spinner when the popup is closed
 			Swal.hideLoading();
-
+			debouncedUpdateTreeView(); // Use debounced version
 			// Reset tool
 			patternInPolygonTool.checked = false;
 			patternInPolygonTool.dispatchEvent(new Event("change"));
 		});
 }
-
 function drawPatternInPolygonVisual() {
 	if (!isPatternInPolygonActive) return;
 
@@ -18702,6 +18874,12 @@ function drawPatternInPolygonVisual() {
 function drawPatternOnPolylineVisual() {
 	if (!isHolesAlongPolyLineActive) return;
 
+	// Add safety checks
+	if (!selectedPolyline || !selectedPolyline.vertices || !Array.isArray(selectedPolyline.vertices)) {
+		console.log("Can't draw along Polyline as there is no selectedPolyline, vertices or array");
+		return;
+	}
+
 	// Draw selected polyline in bright color
 	if (selectedPolyline) {
 		ctx.strokeStyle = "#00FF00"; // Bright green
@@ -18765,7 +18943,6 @@ function drawPatternOnPolylineVisual() {
 		ctx.fillText("END", endX + 12, endY - 8);
 	}
 }
-
 // Function to draw KAD polygon selection visuals
 function drawKADPolygonSelectionVisuals() {
 	if (!selectedKADPolygon || !isSelectionPointerActive) return;
@@ -18830,188 +19007,9 @@ function calculateTextDimensions(text) {
 		height: totalHeight,
 		lineHeight: lineHeight,
 		lines: lines,
-		numLines: lines.length,
+		numLines: lines.length
 	};
 }
-// // ENHANCED: Add segment highlighting for lines and polygons
-// function drawKADSelectionVisuals() {
-// 	if (!selectedKADObject || !isSelectionPointerActive) return;
-
-// 	const tolerance = 5;
-// 	const entity = getEntityFromKADObject(selectedKADObject);
-// 	if (!entity) return;
-
-// 	// Common selection styling
-// 	ctx.strokeStyle = "#00FF00"; // Bright green
-// 	ctx.lineWidth = 3;
-// 	ctx.setLineDash([]);
-// 	ctx.fillStyle = "#FF0000"; // Red for vertices/points
-
-// 	switch (selectedKADObject.entityType) {
-// 		case "point":
-// 			// Highlight the selected point with extra emphasis
-// 			const [px, py] = worldToCanvas(selectedKADObject.pointXLocation, selectedKADObject.pointYLocation);
-
-// 			// Highlight the specific selected point
-// 			ctx.strokeStyle = "#00FF00"; // Green for selected element
-// 			ctx.lineWidth = 4;
-// 			ctx.beginPath();
-// 			ctx.arc(px, py, tolerance + 3, 0, 2 * Math.PI);
-// 			ctx.stroke();
-
-// 			// Draw all other points in the entity with standard highlighting
-// 			ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
-// 			ctx.lineWidth = 2;
-// 			entity.data.forEach((point, index) => {
-// 				if (index !== selectedKADObject.elementIndex) {
-// 					const [opx, opy] = worldToCanvas(point.pointXLocation, point.pointYLocation);
-// 					ctx.beginPath();
-// 					ctx.arc(opx, opy, tolerance, 0, 2 * Math.PI);
-// 					ctx.stroke();
-// 				}
-// 			});
-// 			break;
-
-// 		case "line":
-// 			// Highlight all line segments
-// 			entity.data.forEach((point, index) => {
-// 				const [x, y] = worldToCanvas(point.pointXLocation, point.pointYLocation);
-
-// 				// Draw line segments with special highlighting for selected segment
-// 				if (index > 0) {
-// 					const [prevX, prevY] = worldToCanvas(entity.data[index - 1].pointXLocation, entity.data[index - 1].pointYLocation);
-
-// 					// Highlight the specific selected segment
-// 					if (index - 1 === selectedKADObject.segmentIndex || index === selectedKADObject.segmentIndex) {
-// 						ctx.strokeStyle = "#00FF00"; // Yellow for selected segment
-// 						ctx.lineWidth = 5;
-// 					} else {
-// 						ctx.strokeStyle = "#00FF00"; // Green for other segments
-// 						ctx.lineWidth = 2;
-// 					}
-
-// 					ctx.beginPath();
-// 					ctx.moveTo(prevX, prevY);
-// 					ctx.lineTo(x, y);
-// 					ctx.stroke();
-// 				}
-
-// 				// Draw vertices
-// 				ctx.fillStyle = "#FF0000";
-// 				ctx.beginPath();
-// 				ctx.arc(x, y, 4, 0, 2 * Math.PI);
-// 				ctx.fill();
-// 			});
-// 			break;
-
-// 		case "poly":
-// 			// Highlight polygon with segment-specific highlighting
-// 			const polygonPoints = entity.data;
-
-// 			// Draw all segments including closing segment
-// 			for (let i = 0; i < polygonPoints.length; i++) {
-// 				const point1 = polygonPoints[i];
-// 				const point2 = polygonPoints[(i + 1) % polygonPoints.length];
-// 				const [x1, y1] = worldToCanvas(point1.pointXLocation, point1.pointYLocation);
-// 				const [x2, y2] = worldToCanvas(point2.pointXLocation, point2.pointYLocation);
-
-// 				// Highlight the specific selected segment
-// 				if (i === selectedKADObject.segmentIndex) {
-// 					ctx.strokeStyle = "#00FF00"; // Yellow for selected segment
-// 					ctx.lineWidth = 5;
-// 				} else {
-// 					ctx.strokeStyle = "#00FF00"; // Green for other segments
-// 					ctx.lineWidth = 2;
-// 				}
-
-// 				ctx.beginPath();
-// 				ctx.moveTo(x1, y1);
-// 				ctx.lineTo(x2, y2);
-// 				ctx.stroke();
-// 			}
-
-// 			// Draw vertices
-// 			polygonPoints.forEach((point) => {
-// 				const [x, y] = worldToCanvas(point.pointXLocation, point.pointYLocation);
-// 				ctx.fillStyle = "#FF0000";
-// 				ctx.beginPath();
-// 				ctx.arc(x, y, 4, 0, 2 * Math.PI);
-// 				ctx.fill();
-// 			});
-// 			break;
-
-// 		case "circle":
-// 			// Highlight the selected circle with extra emphasis
-// 			const [cx, cy] = worldToCanvas(selectedKADObject.pointXLocation, selectedKADObject.pointYLocation);
-
-// 			// Highlight the specific selected circle
-// 			ctx.strokeStyle = "#00FF00"; // Yellow for selected element
-// 			ctx.lineWidth = 4;
-// 			const radiusCanvas = selectedKADObject.radius * currentScale;
-// 			ctx.beginPath();
-// 			ctx.arc(cx, cy, radiusCanvas, 0, 2 * Math.PI);
-// 			ctx.stroke();
-
-// 			// Draw all other circles in the entity with standard highlighting
-// 			ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
-// 			ctx.lineWidth = 2;
-// 			entity.data.forEach((circle, index) => {
-// 				if (index !== selectedKADObject.elementIndex) {
-// 					const [ocx, ocy] = worldToCanvas(circle.pointXLocation, circle.pointYLocation);
-// 					const oradiusCanvas = circle.radius * currentScale;
-// 					ctx.beginPath();
-// 					ctx.arc(ocx, ocy, oradiusCanvas + 5, 0, 2 * Math.PI);
-// 					ctx.stroke();
-// 				}
-// 			});
-// 			break;
-
-// 		case "text":
-// 			// FIXED: Highlight text with proper dimensions matching drawKADTexts
-// 			const [tx, ty] = worldToCanvas(selectedKADObject.pointXLocation, selectedKADObject.pointYLocation);
-
-// 			// Calculate exact text dimensions using the same method as drawKADTexts
-// 			const textDimensions = calculateTextDimensions(selectedKADObject.text || "Text");
-
-// 			// Highlight the specific selected text with proper dimensions
-// 			ctx.strokeStyle = "#00FF00"; // Green for selected element
-// 			ctx.lineWidth = 4;
-
-// 			// Position the rectangle to match how drawMultilineText draws text
-// 			// Text is drawn from bottom-left, so we need to adjust for that
-// 			const rectX = tx - 5;
-// 			const rectY = ty - textDimensions.lineHeight + 2; // Adjust for baseline
-// 			const rectWidth = textDimensions.width + 10;
-// 			const rectHeight = textDimensions.height + 6;
-
-// 			ctx.strokeRect(rectX, rectY, rectWidth, rectHeight);
-
-// 			// Draw anchor point
-// 			ctx.fillStyle = "#FF0000";
-// 			ctx.beginPath();
-// 			ctx.arc(tx, ty, 4, 0, 2 * Math.PI);
-// 			ctx.fill();
-
-// 			// Draw all other text in the entity with standard highlighting
-// 			ctx.strokeStyle = "rgba(0, 255, 0, 0.5)";
-// 			ctx.lineWidth = 2;
-// 			entity.data.forEach((textData, index) => {
-// 				if (index !== selectedKADObject.elementIndex) {
-// 					const [otx, oty] = worldToCanvas(textData.pointXLocation, textData.pointYLocation);
-// 					const otherTextDimensions = calculateTextDimensions(textData.text || "Text");
-
-// 					const otherRectX = otx - 5;
-// 					const otherRectY = oty - otherTextDimensions.lineHeight + 2;
-// 					const otherRectWidth = otherTextDimensions.width + 10;
-// 					const otherRectHeight = otherTextDimensions.height + 6;
-
-// 					ctx.strokeRect(otherRectX, otherRectY, otherRectWidth, otherRectHeight);
-// 				}
-// 			});
-// 			break;
-// 	}
-// }
-
 // ENHANCED: Fix segment highlighting to show only the clicked segment
 function drawKADSelectionVisuals() {
 	if (!selectedKADObject || !isSelectionPointerActive) return;
@@ -19207,12 +19205,10 @@ function drawKADSelectionVisuals() {
 			break;
 	}
 }
-
 function getEntityFromKADObject(kadObject) {
 	// Everything is now in the unified map
 	return allKADDrawingsMap.get(kadObject.entityName);
 }
-
 function drawHolesAlongLineVisuals() {
 	// Only draw visuals if holes along line tool is active
 	if (!isHolesAlongLineActive) return;
@@ -19448,8 +19444,8 @@ function generateHolesAlongPolyline(params, vertices) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -19465,14 +19461,15 @@ function generateHolesAlongPolyline(params, vertices) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 }
-
+// SHOW HOLES ALONG POLYLINE POPUP
 // Add this function to show the popup for polyline hole generation
 function showHolesAlongPolylinePopup(vertices) {
+	let blastNameValue = "PolylinePattern_" + Date.now();
 	// Retrieve the last entered values from local storage
 	let savedHolesAlongPolylineSettings = JSON.parse(localStorage.getItem("savedHolesAlongPolylineSettings")) || {};
 	let lastValues = {
@@ -19490,6 +19487,7 @@ function showHolesAlongPolylinePopup(vertices) {
 		useGradeZ: savedHolesAlongPolylineSettings.useGradeZ !== undefined ? savedHolesAlongPolylineSettings.useGradeZ : true,
 		useLineBearing: savedHolesAlongPolylineSettings.useLineBearing !== undefined ? savedHolesAlongPolylineSettings.useLineBearing : true,
 		length: savedHolesAlongPolylineSettings.length || 10,
+		reverseDirection: savedHolesAlongPolylineSettings.reverseDirection !== undefined ? savedHolesAlongPolylineSettings.reverseDirection : false
 	};
 
 	// Calculate default length if using grade Z
@@ -19538,8 +19536,10 @@ function showHolesAlongPolylinePopup(vertices) {
           <label class="labelWhite18" for="diameter">Diameter (mm)</label>
           <input type="number3" id="diameter" name="diameter" placeholder="Diameter" value="${lastValues.diameter}" step="1" min="1" max="1000" inputmode="decimal" pattern="[0-9]*"/>
           <label class="labelWhite18" for="type">Hole Type</label>
-          <input type="text3" id="type" name="type" placeholder="Type" value="${lastValues.type}"/>
-        </div>
+		  <input type="text3" id="type" name="type" placeholder="Type" value="${lastValues.type}"/>
+          <label class="labelWhite18" for="reverseDirection">Reverse Direction</label>
+          <input type="checkbox" id="reverseDirection" name="reverseDirection">
+    	</div>
       `,
 		customClass: {
 			container: "custom-popup-container",
@@ -19549,7 +19549,7 @@ function showHolesAlongPolylinePopup(vertices) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -19614,7 +19614,7 @@ function showHolesAlongPolylinePopup(vertices) {
 
 			// Hide the loading spinner when the popup is ready
 			Swal.hideLoading();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Retrieve values from the input fields
@@ -19633,17 +19633,23 @@ function showHolesAlongPolylinePopup(vertices) {
 				bearing: parseFloat(document.getElementById("bearing").value),
 				diameter: parseFloat(document.getElementById("diameter").value),
 				type: document.getElementById("type").value,
+				reverseDirection: document.getElementById("reverseDirection").checked
 			};
-
+			// Reverse the vertices if checkbox is checked
+			let finalVertices = vertices;
+			if (params.reverseDirection) {
+				finalVertices = [...vertices].reverse(); // Create a reversed copy
+			}
 			// Save values to localStorage
 			localStorage.setItem("savedHolesAlongPolylineSettings", JSON.stringify(params));
 
 			// Generate the holes along the polyline
-			generateHolesAlongPolyline(params, vertices);
+			generateHolesAlongPolyline(params, finalVertices);
 		}
 
 		// Clear selection
 		selectedVertices = [];
+		debouncedUpdateTreeView(); // Use debounced version
 		drawData(points, selectedHole);
 		// Add tool deactivation here if it's missing:
 		holesAlongPolyLineTool.checked = false;
@@ -20049,7 +20055,7 @@ function createSurfaceFromPoints(points, surfaceName = null, autoSave = true) {
 		surfaceTriangles.push({
 			vertices: [p1, p2, p3],
 			minZ: Math.min(p1.z, p2.z, p3.z),
-			maxZ: Math.max(p1.z, p2.z, p3.z),
+			maxZ: Math.max(p1.z, p2.z, p3.z)
 		});
 	}
 
@@ -20088,8 +20094,8 @@ function showDecimationWarning(points, fileName) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then(async (result) => {
 		// Make this async
 		if (result.isConfirmed) {
@@ -20216,7 +20222,7 @@ function drawSurfaceLegend() {
 		turbo: "Turbo",
 		parula: "Parula",
 		cividis: "Cividis",
-		terrain: "Terrain",
+		terrain: "Terrain"
 	};
 	ctx.fillText(gradientNames[currentGradient] || "Default", legendX + legendWidth / 2, legendY + legendHeight + 30);
 
@@ -20231,7 +20237,7 @@ function getViridisColor(ratio) {
 		[59, 82, 139], // Blue-purple
 		[33, 144, 140], // Teal
 		[92, 200, 99], // Green
-		[253, 231, 37], // Yellow
+		[253, 231, 37] // Yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -20242,7 +20248,7 @@ function getTurboColor(ratio) {
 		[50, 136, 189], // Blue
 		[94, 201, 98], // Green
 		[253, 231, 37], // Yellow
-		[240, 21, 22], // Red
+		[240, 21, 22] // Red
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -20256,7 +20262,7 @@ function getParulaColor(ratio) {
 		[21, 177, 180], // Teal
 		[89, 189, 140], // Green
 		[170, 194, 97], // Yellow-green
-		[249, 251, 14], // Yellow
+		[249, 251, 14] // Yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -20269,7 +20275,7 @@ function getCividisColor(ratio) {
 		[92, 125, 147], // Gray-blue
 		[150, 159, 157], // Gray
 		[206, 187, 158], // Beige
-		[254, 230, 206], // Light yellow
+		[254, 230, 206] // Light yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -20284,7 +20290,7 @@ function getTerrainColor(ratio) {
 		[120, 85, 45], // Brown (mid elevation)
 		[160, 118, 74], // Light brown
 		[200, 200, 200], // Gray (high elevation)
-		[255, 255, 255], // White (peaks)
+		[255, 255, 255] // White (peaks)
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -20503,7 +20509,7 @@ assignSurfaceTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					const elevation = parseFloat(document.getElementById("surfaceElevation").value);
@@ -20512,7 +20518,7 @@ assignSurfaceTool.addEventListener("change", function () {
 						return false;
 					}
 					return elevation;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					assignHolesToFixedElevation(result.value, "collar");
@@ -20550,8 +20556,8 @@ assignSurfaceTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			});
 
 			// Deselect tool
@@ -20595,7 +20601,7 @@ assignGradeToHolesTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					const elevation = parseFloat(document.getElementById("gradeElevation").value);
@@ -20604,7 +20610,7 @@ assignGradeToHolesTool.addEventListener("change", function () {
 						return false;
 					}
 					return elevation;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					assignHolesToFixedElevation(result.value, "grade");
@@ -20642,8 +20648,8 @@ assignGradeToHolesTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			});
 
 			// Deselect tool
@@ -20685,8 +20691,8 @@ function assignHolesToFixedElevation(elevation, type) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		updateStatusMessage("No holes selected for elevation assignment.");
@@ -20887,7 +20893,7 @@ const SNAP_PRIORITIES = {
 	KAD_POLYGON_VERTEX: 6,
 	KAD_CIRCLE_CENTER: 7,
 	KAD_TEXT_POSITION: 8,
-	SURFACE_POINT: 9, // Lowest priority
+	SURFACE_POINT: 9 // Lowest priority
 };
 
 // Enhanced global snapping function
@@ -20898,7 +20904,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 			worldY: rawWorldY,
 			worldZ: drawingZValue || document.getElementById("drawingElevation")?.value || 0, // Use current drawing elevation
 			snapped: false,
-			snapTarget: null,
+			snapTarget: null
 		};
 	}
 
@@ -20916,7 +20922,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.startXLocation, y: hole.startYLocation, z: hole.startZLocation },
 					type: "HOLE_COLLAR",
 					priority: SNAP_PRIORITIES.HOLE_COLLAR,
-					description: `Hole ${hole.holeID} collar`,
+					description: `Hole ${hole.holeID} collar`
 				});
 			}
 
@@ -20928,7 +20934,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.gradeXLocation, y: hole.gradeYLocation, z: hole.gradeZLocation },
 					type: "HOLE_GRADE",
 					priority: SNAP_PRIORITIES.HOLE_GRADE,
-					description: `Hole ${hole.holeID} grade`,
+					description: `Hole ${hole.holeID} grade`
 				});
 			}
 
@@ -20940,7 +20946,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.endXLocation, y: hole.endYLocation, z: hole.endZLocation },
 					type: "HOLE_TOE",
 					priority: SNAP_PRIORITIES.HOLE_TOE,
-					description: `Hole ${hole.holeID} toe`,
+					description: `Hole ${hole.holeID} toe`
 				});
 			}
 		});
@@ -20975,7 +20981,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 						point: { x: dataPoint.pointXLocation, y: dataPoint.pointYLocation, z: dataPoint.pointZLocation },
 						type: snapType,
 						priority: priority,
-						description: `${entity.entityType} ${dataPoint.pointID || "item"}`,
+						description: `${entity.entityType} ${dataPoint.pointID || "item"}`
 					});
 				}
 			});
@@ -20992,7 +20998,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
 					type: "SURFACE_POINT",
 					priority: SNAP_PRIORITIES.SURFACE_POINT,
-					description: `Surface point ${index}`,
+					description: `Surface point ${index}`
 				});
 			}
 		});
@@ -21006,7 +21012,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 				point: { x: rawWorldX, y: rawWorldY, z: interpolatedZ },
 				type: "SURFACE_INTERPOLATED",
 				priority: SNAP_PRIORITIES.SURFACE_INTERPOLATED,
-				description: `Surface (${interpolatedZ.toFixed(2)}m RL)`,
+				description: `Surface (${interpolatedZ.toFixed(2)}m RL)`
 			});
 		}
 	}
@@ -21026,7 +21032,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 			worldY: bestCandidate.point.y,
 			worldZ: bestCandidate.point.z || drawingElevation || 0, // Use snapped point's Z or fallback
 			snapped: true,
-			snapTarget: bestCandidate,
+			snapTarget: bestCandidate
 		};
 	}
 
@@ -21036,7 +21042,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 		worldY: rawWorldY,
 		worldZ: drawingZValue || document.getElementById("drawingElevation").value || 0,
 		snapped: false,
-		snapTarget: null,
+		snapTarget: null
 	};
 }
 
@@ -21264,7 +21270,7 @@ async function createElevationSurface(elevationData, bbox, width, height, surfac
 			width: width,
 			height: height,
 			rasterData: elevationData, // Keep raw data for interpolation
-			name: surfaceName,
+			name: surfaceName
 		};
 
 		// Also create point cloud for visualization (sampled)
@@ -21281,7 +21287,7 @@ async function createElevationSurface(elevationData, bbox, width, height, surfac
 					points.push({
 						x: worldX,
 						y: worldY,
-						z: elevation,
+						z: elevation
 					});
 				}
 			}
@@ -21330,7 +21336,7 @@ async function createImageSurface(rasters, bbox, width, height, bandCount, surfa
 			canvas: imageCanvas,
 			bbox: bbox,
 			name: surfaceName,
-			type: "imagery",
+			type: "imagery"
 		};
 
 		// CRITICAL: Update centroids to include GeoTIFF extents
@@ -21703,7 +21709,7 @@ const top100EPSGCodes = [
 	{ code: "28992", name: "Amersfoort / RD New" },
 	{ code: "2056", name: "CH1903+ / LV95" },
 	{ code: "5514", name: "S-JTSK / Krovak East North" },
-	{ code: "102100", name: "WGS 1984 Web Mercator Auxiliary Sphere" },
+	{ code: "102100", name: "WGS 1984 Web Mercator Auxiliary Sphere" }
 ];
 //function to cache a list of common world EPSG codes.
 // NOT IN USE - USE THE TOP100EPSGCodes ARRAY ABOVE
@@ -21808,7 +21814,7 @@ async function promptForProjection(bbox) {
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
+				htmlContainer: "swal2-html-container"
 			},
 			preConfirm: async () => {
 				const epsgCode = document.getElementById("epsgCode").value;
@@ -21838,13 +21844,13 @@ async function promptForProjection(bbox) {
 						transformed: true,
 						bbox: [ll[0], ll[1], ur[0], ur[1]],
 						epsgCode: epsgCode || null,
-						customProj4: customProj4 || null,
+						customProj4: customProj4 || null
 					};
 				} catch (error) {
 					Swal.showValidationMessage(`Transformation error: ${error.message}`);
 					return false;
 				}
-			},
+			}
 		}).then((result) => {
 			if (result.isConfirmed && result.value) {
 				resolve(result.value);
@@ -21873,13 +21879,3206 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 });
 
+//----REPLACEMENT OPTION FOR PRINTING----///
+
+///------------------ PRINT TEMPLATE SYSTEM ------------------///
+
+//KEEP
+// Print template configuration
+let printMode = false;
+let printOrientation = "landscape"; // 'landscape' or 'portrait'
+let printPaperSize = "A4"; // 'A4', 'A3', 'A2', 'A1', 'A0'
+let currentBlastName = points.length > 0 ? [...new Set(points.map((p) => p.entityName))].join(", ") : "Unnamed Blast";
+let isPrinting = false;
+//KEEP
+// Paper size ratios (width:height)
+const paperRatios = {
+	A4: { width: 297, height: 210 },
+	A3: { width: 420, height: 297 },
+	A2: { width: 594, height: 420 },
+	A1: { width: 841, height: 594 },
+	A0: { width: 1189, height: 841 }
+};
+//KEEP
+// Add this with your other event listeners
+document.getElementById("addPrintPreviewToggle").addEventListener("change", function () {
+	togglePrintMode();
+});
+//KEEP
+function changePaperSize() {
+	const paperSizeSelect = document.getElementById("paperSize");
+	if (paperSizeSelect) {
+		printPaperSize = paperSizeSelect.value;
+		if (printMode) {
+			drawData(points, selectedHole); // Redraw with new paper size
+		}
+	}
+}
+//KEEP
+function changeOrientation() {
+	const orientationSelect = document.getElementById("orientation");
+	if (orientationSelect) {
+		printOrientation = orientationSelect.value;
+		if (printMode) {
+			drawData(points, selectedHole); // Redraw with new orientation
+		}
+	}
+}
+//KEEP
+function togglePrintMode() {
+	printMode = !printMode;
+
+	// Sync the checkbox state
+	const toggle = document.getElementById("addPrintPreviewToggle");
+	if (toggle) toggle.checked = printMode;
+
+	if (printMode) {
+		updateStatusMessage("Print Preview Mode ON - Position elements within the print boundary");
+	} else {
+		updateStatusMessage("Print Preview Mode OFF");
+	}
+
+	drawData(points, selectedHole); // Redraw with/without print boundary
+	// After your drawData call, add:
+}
+//KEEP
+// Calculate print-safe boundary on canvas
+function getPrintBoundary() {
+	if (!printMode) return null;
+
+	const paper = paperRatios[printPaperSize];
+	const aspectRatio = printOrientation === "landscape" ? paper.width / paper.height : paper.height / paper.width;
+
+	// Calculate boundary that fits in canvas with margins
+	const canvasMargin = 50; // pixels
+	const availableWidth = canvas.width - canvasMargin * 2;
+	const availableHeight = canvas.height - canvasMargin * 2;
+
+	let boundaryWidth, boundaryHeight;
+
+	if (availableWidth / availableHeight > aspectRatio) {
+		// Canvas is wider than needed - fit by height
+		boundaryHeight = availableHeight;
+		boundaryWidth = boundaryHeight * aspectRatio;
+	} else {
+		// Canvas is taller than needed - fit by width
+		boundaryWidth = availableWidth;
+		boundaryHeight = boundaryWidth / aspectRatio;
+	}
+
+	return {
+		x: (canvas.width - boundaryWidth) / 2,
+		y: (canvas.height - boundaryHeight) / 2,
+		width: boundaryWidth,
+		height: boundaryHeight,
+		marginPercent: 0.1 // 10% margin inside boundary
+	};
+}
+//KEEP
+function drawPrintBoundary(ctx) {
+	if (!printMode) return;
+
+	const boundary = getPrintBoundary();
+	if (!boundary) return;
+
+	ctx.save();
+
+	// Only draw boundaries in preview mode, not when actually printing
+	if (!isPrinting) {
+		// Add this flag
+		// Draw outer boundary (paper edge)
+		ctx.strokeStyle = "#ff0000";
+		ctx.lineWidth = 2;
+		ctx.setLineDash([10, 5]);
+		ctx.strokeRect(boundary.x, boundary.y, boundary.width, boundary.height);
+
+		// Draw inner boundary (print-safe area)
+		const margin = boundary.width * boundary.marginPercent;
+		ctx.strokeStyle = "#0066cc";
+		ctx.lineWidth = 1;
+		ctx.setLineDash([5, 3]);
+		ctx.strokeRect(boundary.x + margin, boundary.y + margin, boundary.width - margin * 2, boundary.height - margin * 2);
+	}
+
+	ctx.restore();
+}
+function printToPDF() {
+	printCanvasHiRes();
+}
+
+// These are now declared with 'let' in the global scope to allow resizing.
+let printCanvas = document.createElement("canvas");
+let printCtx = printCanvas.getContext("2d");
+
+// This is the complete, robust printing system.
+function printCanvasHiRes() {
+	if (!points || points.length === 0) {
+		Swal.fire("No Data", "No blast data available for printing", "warning");
+		return;
+	}
+
+	// Show a loading indicator for better user experience
+	Swal.fire({
+		title: "Generating High-Resolution PDF",
+		text: "Please wait, this may take a moment...",
+		allowOutsideClick: false,
+		didOpen: () => {
+			Swal.showLoading();
+		}
+	});
+
+	// Use a short delay to ensure the browser has time to process before we
+	// try to convert the canvas to an image. This avoids race conditions.
+	setTimeout(() => {
+		try {
+			const dpi = 300;
+			const mmToPx = dpi / 25.4;
+
+			const paperSizes = {
+				A4: { width: 210, height: 297 },
+				A3: { width: 297, height: 420 },
+				A2: { width: 420, height: 594 },
+				A1: { width: 594, height: 841 },
+				A0: { width: 841, height: 1189 }
+			};
+
+			const paperSize = paperSizes[printPaperSize] || paperSizes["A4"];
+			const isLandscape = printOrientation === "landscape";
+
+			const pageWidth = isLandscape ? paperSize.height : paperSize.width;
+			const pageHeight = isLandscape ? paperSize.width : paperSize.height;
+
+			// Safety check for maximum canvas size to prevent browser errors
+			const MAX_CANVAS_SIDE = 16384; // Most browsers support up to 16384px
+			if (pageWidth * mmToPx > MAX_CANVAS_SIDE || pageHeight * mmToPx > MAX_CANVAS_SIDE) {
+				throw new Error(`The selected paper size (${printPaperSize}) creates an image too large for the browser to handle.`);
+			}
+
+			// Resize the canvas and get a new context (resizing wipes the old one)
+			printCanvas.width = pageWidth * mmToPx;
+			printCanvas.height = pageHeight * mmToPx;
+			printCtx = printCanvas.getContext("2d");
+
+			printCtx.imageSmoothingEnabled = true;
+			printCtx.imageSmoothingQuality = "high";
+			printCtx.fillStyle = "white";
+			printCtx.fillRect(0, 0, printCanvas.width, printCanvas.height);
+
+			const margin = pageWidth * mmToPx * 0.05;
+			const headerHeight = pageHeight * mmToPx * 0.1;
+			const footerHeight = pageHeight * mmToPx * 0.05;
+
+			const printArea = {
+				x: margin,
+				y: margin + headerHeight,
+				width: printCanvas.width - 2 * margin,
+				height: printCanvas.height - headerHeight - footerHeight - 2 * margin
+			};
+
+			printHeader(printCtx, margin, margin, printCanvas.width - 2 * margin, headerHeight);
+			printFooter(printCtx, margin, printCanvas.height - footerHeight - margin, printCanvas.width - 2 * margin, footerHeight);
+
+			// This is the key function that correctly scales and draws your data
+			drawDataForPrinting(printCtx, printArea);
+
+			// --- PDF Generation ---
+			const imgData = printCanvas.toDataURL("image/png", 1.0);
+
+			if (!imgData || imgData.length < 100 || imgData === "data:,") {
+				throw new Error("The browser failed to generate the canvas image. This can happen if the image is too large or memory is low.");
+			}
+
+			const { jsPDF } = window.jspdf;
+			const orientation = isLandscape ? "l" : "p";
+			const pdf = new jsPDF(orientation, "mm", printPaperSize.toLowerCase());
+
+			pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+			pdf.save("kirra-blast-" + new Date().toISOString().split("T")[0] + ".pdf");
+
+			Swal.close();
+		} catch (error) {
+			console.error("PDF Generation Error:", error);
+			Swal.fire({
+				icon: "error",
+				title: "PDF Creation Failed",
+				html: `Could not generate the PDF. This usually happens if the paper size is too large for the browser.<br><br><b>Suggestion:</b> Try a smaller paper size (like A4 or A3).<br><br><small>Error: ${error.message}</small>`
+			});
+		}
+	}, 250); // 250ms delay
+}
+
+// Replace your existing drawDataForPrinting function with this one.
+function drawDataForPrinting(printCtx, printArea) {
+	// --- NEW WYSIWYG LOGIC ---
+
+	// 1. Get the on-screen print preview boundary. This is what the user is looking at.
+	const screenBoundary = getPrintBoundary();
+	if (!screenBoundary) {
+		// This error will be caught by the Swal popup in the calling function.
+		throw new Error("Print Preview Mode must be active to generate a WYSIWYG print.");
+	}
+
+	// 2. Convert the on-screen boundary to world coordinates to find out what data is visible.
+	// We use the screen's canvas dimensions, scale, and center point (centroid) to do this.
+	const world_x1 = (screenBoundary.x - canvas.width / 2) / currentScale + centroidX;
+	const world_y1 = -(screenBoundary.y + screenBoundary.height - canvas.height / 2) / currentScale + centroidY; // World coords are Y-up
+	const world_x2 = (screenBoundary.x + screenBoundary.width - canvas.width / 2) / currentScale + centroidX;
+	const world_y2 = -(screenBoundary.y - canvas.height / 2) / currentScale + centroidY;
+
+	const minX = world_x1;
+	const maxX = world_x2;
+	const minY = world_y1;
+	const maxY = world_y2;
+
+	// 3. Calculate the correct scale to fit this specific world view into the PDF's printArea.
+	const dataWidth = maxX - minX;
+	const dataHeight = maxY - minY;
+	if (dataWidth <= 0 || dataHeight <= 0) return; // Nothing to print
+
+	const scaleX = printArea.width / dataWidth;
+	const scaleY = printArea.height / dataHeight;
+	const printScale = Math.min(scaleX, scaleY);
+
+	const scaledWidth = dataWidth * printScale;
+	const scaledHeight = dataHeight * printScale;
+	const offsetX = printArea.x + (printArea.width - scaledWidth) / 2;
+	const offsetY = printArea.y + (printArea.height - scaledHeight) / 2;
+
+	const printCentroidX = minX + dataWidth / 2;
+	const printCentroidY = minY + dataHeight / 2;
+
+	// This is our temporary, print-specific coordinate conversion function
+	function worldToPrint(worldX, worldY) {
+		const x = (worldX - printCentroidX) * printScale + offsetX + scaledWidth / 2;
+		const y = -(worldY - printCentroidY) * printScale + offsetY + scaledHeight / 2;
+		return [x, y];
+	}
+
+	// --- TEMPORARY GLOBAL OVERRIDES ---
+	const original_currentScale = currentScale;
+	const original_centroidX = centroidX;
+	const original_centroidY = centroidY;
+	const original_canvas_width = canvas.width;
+	const original_canvas_height = canvas.height;
+	const original_worldToCanvas = window.worldToCanvas;
+	const original_imageVisible = imageVisible;
+	const original_surfaceVisible = surfaceVisible;
+
+	// Temporarily set the globals to our new print-specific values
+	currentScale = printScale;
+	centroidX = printCentroidX;
+	centroidY = printCentroidY;
+	canvas.width = printCanvas.width;
+	canvas.height = printCanvas.height;
+	window.worldToCanvas = worldToPrint;
+	imageVisible = false;
+	surfaceVisible = false;
+
+	// --- CALL THE DRAWING ENGINE ---
+	printData(points, selectedHole);
+
+	// --- RESTORE GLOBALS ---
+	currentScale = original_currentScale;
+	centroidX = original_centroidX;
+	centroidY = original_centroidY;
+	canvas.width = original_canvas_width;
+	canvas.height = original_canvas_height;
+	window.worldToCanvas = original_worldToCanvas;
+	imageVisible = original_imageVisible;
+	surfaceVisible = original_surfaceVisible;
+}
+//----------------- REPLICATION OF THE UX Canvas but for High Resolution Printing ------------------///
+function printVoronoiMetric(metrics, metricName, getColorForMetric) {
+	for (let cell of metrics) {
+		// Skip if the cell doesn't have a polygon or the metric is null/undefined
+		if (!cell.polygon || cell[metricName] == null) continue;
+
+		const color = getColorForMetric(cell[metricName]);
+
+		printCtx.beginPath();
+		printCtx.moveTo(cell.polygon[0][0], cell.polygon[0][1]);
+		for (let j = 1; j < cell.polygon.length; j++) {
+			printCtx.lineTo(cell.polygon[j][0], cell.polygon[j][1]);
+		}
+		printCtx.closePath();
+		printCtx.fillStyle = color;
+		printCtx.fill();
+	}
+}
+function printBlastBoundary(polygon, color) {
+	//convert wold coords to screen cords
+	const screenCoords = polygon.map((point) => {
+		const x = (point.x - centroidX) * currentScale + printCanvas.width / 2;
+		const y = (-point.y + centroidY) * currentScale + printCanvas.height / 2;
+		return { x, y };
+	});
+
+	printCtx.beginPath();
+	printCtx.moveTo(screenCoords[0].x, screenCoords[0].y);
+	for (let i = 1; i < screenCoords.length; i++) {
+		printCtx.lineTo(screenCoords[i].x, screenCoords[i].y);
+	}
+	printCtx.closePath();
+	printCtx.strokeStyle = color;
+	printCtx.lineWidth = 2;
+	printCtx.stroke();
+}
+function printKADPoints(x, y, z, color) {
+	printCtx.beginPath();
+	printCtx.arc(x, y, 2, 0, 2 * Math.PI);
+	printCtx.strokeStyle = color;
+	printCtx.fillStyle = color;
+	printCtx.stroke();
+	printCtx.fill();
+}
+function printKADLines(sx, sy, ex, ey, sz, ez, lineWidth, color) {
+	printCtx.beginPath();
+	printCtx.moveTo(sx, sy);
+	printCtx.lineTo(ex, ey);
+	printCtx.strokeStyle = color;
+	printCtx.lineWidth = lineWidth;
+	printCtx.stroke();
+}
+function printKADPolys(sx, sy, ex, ey, sz, ez, lineWidth, color, isClosed) {
+	printCtx.beginPath();
+	printCtx.moveTo(sx, sy);
+	printCtx.lineTo(ex, ey);
+	printCtx.strokeStyle = color;
+	printCtx.lineWidth = lineWidth;
+	printCtx.stroke();
+	if (isClosed) {
+		printCtx.closePath();
+	}
+}
+function printKADCircles(x, y, z, radius, lineWidth, strokeColor) {
+	printCtx.strokeStyle = strokeColor;
+	printCtx.beginPath();
+	// Convert radius from world units to screen pixels
+	const radiusInPixels = radius * currentScale;
+	printCtx.arc(x, y, radiusInPixels, 0, 2 * Math.PI);
+	printCtx.lineWidth = lineWidth;
+	printCtx.stroke();
+}
+function printKADTexts(x, y, z, text, color) {
+	//printCtx.fillStyle = color;
+	printCtx.font = parseInt(currentFontSize - 2) + "px Roboto";
+	printMultilineText(printCtx, text, x, y, currentFontSize, "left", color, color, false);
+}
+function printTrack(lineStartX, lineStartY, lineEndX, lineEndY, gradeX, gradeY, color, subdrillAmount) {
+	printCtx.lineWidth = 1;
+	const printColor = "black";
+
+	if (subdrillAmount < 0) {
+		// NEGATIVE SUBDRILL: Draw only from start to toe (bypass grade)
+		// Use 20% opacity for the entire line since it represents "over-drilling"
+		printCtx.beginPath();
+		printCtx.strokeStyle = printColor;
+		printCtx.moveTo(lineStartX, lineStartY);
+		printCtx.lineTo(lineEndX, lineEndY);
+		printCtx.stroke();
+		// Draw from grade to toe (subdrill portion - red)
+		printCtx.beginPath();
+		printCtx.strokeStyle = "rgba(255, 0, 0, 0.2)"; // Red line (full opacity)
+		printCtx.moveTo(lineEndX, lineEndY);
+		printCtx.lineTo(gradeX, gradeY);
+		printCtx.stroke();
+		// Draw grade marker with 20% opacity
+		printCtx.beginPath();
+		printCtx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+		printCtx.fillStyle = `rgba(255, 0, 0, 0.2)`; // Red marker with 20% opacity
+		printCtx.fill();
+	} else {
+		// POSITIVE SUBDRILL: Draw from start to grade (dark), then grade to toe (red)
+
+		// Draw from start to grade point (bench drill portion - dark)
+		printCtx.beginPath();
+		printCtx.strokeStyle = printColor; // Dark line (full opacity)
+		printCtx.moveTo(lineStartX, lineStartY);
+		printCtx.lineTo(gradeX, gradeY);
+		printCtx.stroke();
+
+		// Draw from grade to toe (subdrill portion - red)
+		printCtx.beginPath();
+		printCtx.strokeStyle = "rgba(255, 0, 0, 1.0)"; // Red line (full opacity)
+		printCtx.moveTo(gradeX, gradeY);
+		printCtx.lineTo(lineEndX, lineEndY);
+		printCtx.stroke();
+
+		// Draw grade marker (full opacity)
+		printCtx.beginPath();
+		printCtx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+		printCtx.fillStyle = "rgba(255, 0, 0, 1.0)"; // Red marker (full opacity)
+		printCtx.fill();
+	}
+}
+function printHoleToe(x, y, fillColor, strokeColor, radius) {
+	printCtx.beginPath();
+	// Use the toeSizeInMeters directly to set the radius
+	printCtx.lineWidth = 1;
+	printCtx.arc(x, y, radius, 0, 2 * Math.PI);
+	printCtx.fillStyle = fillColor;
+	printCtx.strokeStyle = "black";
+	printCtx.stroke();
+	printCtx.fill();
+}
+function printHole(x, y, radius, strokeColor) {
+	printCtx.strokeStyle = "black";
+	printCtx.fillStyle = "black";
+	printCtx.lineWidth = 1;
+	printCtx.beginPath();
+	const minRadius = 1.5;
+	const drawRadius = radius > minRadius ? radius : minRadius;
+	printCtx.arc(x, y, drawRadius, 0, 2 * Math.PI);
+	printCtx.fill(); // fill the circle with the fill color
+	printCtx.stroke(); // draw the circle border with the stroke color
+}
+function printDummy(x, y, radius, strokeColor) {
+	printCtx.strokeStyle = "black";
+	printCtx.lineWidth = 2; // Adjust the line width as needed
+	printCtx.beginPath();
+	printCtx.moveTo(x - radius, y - radius);
+	printCtx.lineTo(x + radius, y + radius);
+	printCtx.moveTo(x - radius, y + radius);
+	printCtx.lineTo(x + radius, y - radius);
+	printCtx.stroke();
+}
+function printNoDiameterHole(x, y, sideLength, strokeColor) {
+	printCtx.strokeStyle = "black";
+	printCtx.lineWidth = 2; // Adjust the line width as needed
+	const halfSide = sideLength / 2;
+	printCtx.beginPath();
+	printCtx.moveTo(x - halfSide, y - halfSide);
+	printCtx.lineTo(x + halfSide, y - halfSide);
+	printCtx.lineTo(x + halfSide, y + halfSide);
+	printCtx.lineTo(x - halfSide, y + halfSide);
+	printCtx.closePath(); // Close the path to form a square
+	printCtx.stroke();
+}
+function printHiHole(x, y, radius, fillColor, strokeColor) {
+	printCtx.strokeStyle = strokeColor;
+	printCtx.beginPath();
+	printCtx.arc(x, y, radius, 0, 2 * Math.PI);
+	printCtx.fillStyle = fillColor;
+	printCtx.fill(); // fill the circle with the fill color
+	printCtx.lineWidth = 5;
+	printCtx.stroke(); // draw the circle border with the stroke color
+}
+function printText(x, y, text, color) {
+	printCtx.font = parseInt(currentFontSize - 2) + "px Arial";
+	printCtx.fillStyle = color;
+	printCtx.fillText(text, x, y);
+}
+function printRightAlignedText(x, y, text, color) {
+	printCtx.font = parseInt(currentFontSize - 2) + "px Arial";
+	const textWidth = printCtx.measureText(text).width;
+	printCtx.fillStyle = color;
+	// Draw the text at an x position minus the text width for right alignment
+	printText(x - textWidth, y, text, color);
+}
+function printMultilineText(printCtx, text, x, y, lineHeight = 16, alignment = "left", textColor, boxColor, showBox = false) {
+	if (!text) return; //if no text, return
+	if (!printCtx) return; //if no context, return
+	const lines = text.split("\n");
+	//calculate the text width of the widest line NOT the the entire sting.
+	let textWidth = 0;
+	for (let i = 0; i < lines.length; i++) {
+		const lineWidth = printCtx.measureText(lines[i]).width;
+		if (lineWidth > textWidth) {
+			textWidth = lineWidth;
+		}
+	}
+	//colorise the text
+	printCtx.fillStyle = textColor;
+	for (let i = 0; i < lines.length; i++) {
+		if (alignment == "left") {
+			printCtx.fillText(lines[i], x, y + i * lineHeight);
+		} else if (alignment == "right") {
+			printCtx.fillText(lines[i], x - textWidth, y + i * lineHeight);
+		} else if (alignment == "center") {
+			// Center each line individually based on its own width
+			const lineWidth = printCtx.measureText(lines[i]).width;
+			printCtx.fillText(lines[i], x - lineWidth / 2, y + i * lineHeight);
+		}
+	}
+
+	if (showBox) {
+		printCtx.strokeStyle = boxColor;
+		printCtx.lineWidth = 1;
+		printCtx.beginPath();
+		printCtx.roundRect(x - 5 - textWidth / 2, y - 6 - lineHeight / 2, textWidth + 10, lines.length * lineHeight + 6, 4);
+		printCtx.stroke();
+	}
+}
+function printDirectionArrow(startX, startY, endX, endY, fillColor, strokeColor, connScale) {
+	try {
+		// Set up the arrow parameters
+		var arrowWidth = (firstMovementSize / 4) * currentScale; // Width of the arrowhead
+		var arrowLength = 2 * (firstMovementSize / 4) * currentScale; // Length of the arrowhead
+		var tailWidth = arrowWidth * 0.7; // Width of the tail (adjust as needed)
+		const angle = Math.atan2(endY - startY, endX - startX); // Angle of the arrow
+
+		// Set the stroke and fill colors
+		printCtx.strokeStyle = "black"; // Stroke color (black outline)
+		printCtx.fillStyle = fillColor; // Fill color (goldenrod)
+
+		// Begin drawing the arrow as a single path
+		printCtx.beginPath();
+
+		// Move to the start point of the arrow
+		printCtx.moveTo(startX + (tailWidth / 2) * Math.sin(angle), startY - (tailWidth / 2) * Math.cos(angle)); // Top-left corner of the tail
+
+		// Draw to the end point of the tail (top-right corner)
+		printCtx.lineTo(endX - arrowLength * Math.cos(angle) + (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) - (tailWidth / 2) * Math.cos(angle));
+
+		// Draw the right base of the arrowhead
+		printCtx.lineTo(endX - arrowLength * Math.cos(angle) + arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) - arrowWidth * Math.cos(angle));
+
+		// Draw the tip of the arrowhead
+		printCtx.lineTo(endX, endY);
+
+		// Draw the left base of the arrowhead
+		printCtx.lineTo(endX - arrowLength * Math.cos(angle) - arrowWidth * Math.sin(angle), endY - arrowLength * Math.sin(angle) + arrowWidth * Math.cos(angle));
+
+		// Draw back to the bottom-right corner of the tail
+		printCtx.lineTo(endX - arrowLength * Math.cos(angle) - (tailWidth / 2) * Math.sin(angle), endY - arrowLength * Math.sin(angle) + (tailWidth / 2) * Math.cos(angle));
+
+		// Draw to the bottom-left corner of the tail
+		printCtx.lineTo(startX - (tailWidth / 2) * Math.sin(angle), startY + (tailWidth / 2) * Math.cos(angle));
+
+		printCtx.closePath();
+		printCtx.fill(); // Fill the arrow with color
+		printCtx.stroke(); // Outline the arrow with a stroke
+	} catch (error) {
+		console.error("Error while drawing arrow:", error);
+	}
+}
+function printArrow(startX, startY, endX, endY, color, connScale) {
+	//console.log(`Drawing arrow from (${startX}, ${startY}) to (${endX}, ${endY}) with color ${color}`);
+	try {
+		// Set up the arrow parameters
+		var arrowWidth = (connScale / 4) * currentScale;
+		var arrowLength = 2 * (connScale / 4) * currentScale;
+
+		// Calculate the angle of the line
+		const angle = Math.atan2(startX - endX, startY - endY); // Calculate the angle of the line (reversed)
+
+		printCtx.strokeStyle = color;
+		printCtx.fillStyle = color;
+
+		// Draw the line
+		printCtx.beginPath();
+		printCtx.moveTo(parseInt(startX), parseInt(startY));
+		printCtx.lineTo(parseInt(endX), parseInt(endY));
+		printCtx.lineWidth = 2;
+		printCtx.stroke();
+
+		// Draw the arrowhead
+		if (endX == startX && endY == startY) {
+			var size = (connScale / 4) * currentScale; // Change this value to adjust the size of the house shape
+			printCtx.fillStyle = color;
+			printCtx.beginPath();
+			printCtx.moveTo(endX, endY); // Apex of the house
+			printCtx.lineTo(endX - size / 2, endY + size); // Bottom left corner
+			printCtx.lineTo(endX - size / 2, endY + 1.5 * size);
+			printCtx.lineTo(endX + size / 2, endY + 1.5 * size); // Bottom right corner
+			printCtx.lineTo(endX + size / 2, endY + size); // Bottom right corner
+			printCtx.closePath(); // Close the shape
+			printCtx.stroke(); // Draw the outline
+		} else {
+			printCtx.beginPath();
+			printCtx.moveTo(parseInt(endX), parseInt(endY));
+			printCtx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) - arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) + arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
+			printCtx.lineTo(endX - arrowLength * Math.cos((Math.PI / 2) * 3 - angle) + arrowWidth * Math.sin((Math.PI / 2) * 3 - angle), endY - arrowLength * Math.sin((Math.PI / 2) * 3 - angle) - arrowWidth * Math.cos((Math.PI / 2) * 3 - angle));
+			printCtx.closePath();
+			printCtx.fill();
+		}
+	} catch (error) {
+		console.error("Error while printing arrow:", error);
+	}
+}
+function printArrowDelayText(startX, startY, endX, endY, color, text) {
+	// Calculate the angle of the text and the midpoint of the line
+	const angle = Math.atan2(endY - startY, endX - startX);
+	const midX = (startX + endX) / 2;
+	const midY = (startY + endY) / 2;
+
+	// Save the current printCanvas state and apply transformations
+	printCtx.save();
+	printCtx.translate(midX, midY);
+	printCtx.rotate(angle);
+
+	// Draw the text along the line
+	printCtx.fillStyle = color;
+	printCtx.font = parseInt(currentFontSize - 2) + "px Arial";
+	printCtx.fillText(text, -currentFontSize, -3);
+
+	// Restore the printCanvas state
+	printCtx.restore();
+}
+function printDelauanySlopeMap(triangles, centroid, strokeColor) {
+	if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
+	printCtx.strokeStyle = "black";
+	printCtx.fillStyle = fillColor;
+	printCtx.lineWidth = 1;
+	console.log("drawDelauanySlopeMap: " + triangles.length);
+	for (let i = 0; i < triangles.length; i++) {
+		const triangle = triangles[i];
+		const tAX = triangle[0][0];
+		const tAY = triangle[0][1];
+		const tAZ = triangle[0][2];
+		const tBX = triangle[1][0];
+		const tBY = triangle[1][1];
+		const tBZ = triangle[1][2];
+		const tCX = triangle[2][0];
+		const tCY = triangle[2][1];
+		const tCZ = triangle[2][2];
+
+		const edge1 = {
+			x: tBX - tAX,
+			y: tBY - tAY,
+			z: tBZ - tAZ
+		};
+		const edge2 = {
+			x: tCX - tAX,
+			y: tCY - tAY,
+			z: tCZ - tAZ
+		};
+		const edge3 = {
+			x: tCX - tBX,
+			y: tCY - tBY,
+			z: tCZ - tBZ
+		};
+
+		let maxSlopeAngle = getDipAngle(triangle);
+
+		// Create a triangle array
+		const aAX = (tAX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aAY = (-tAY + centroid.y) * currentScale + printCanvas.height / 2;
+		const aAZ = tAZ;
+		const aBX = (tBX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aBY = (-tBY + centroid.y) * currentScale + printCanvas.height / 2;
+		const aBZ = tBZ;
+		const aCX = (tCX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aCY = (-tCY + centroid.y) * currentScale + printCanvas.height / 2;
+		const aCZ = tCZ;
+
+		// Define the minimum and maximum RGB values (rgb(50, 50, 50) and rgb(200, 200, 200))
+		const minRGB = [225, 225, 225];
+		const maxRGB = [100, 100, 100];
+
+		// Calculate the RGB values based on maxSlopeAngle using linear interpolation
+		const r = Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
+		const g = Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
+		const b = Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
+
+		const ir = 255 - Math.round(minRGB[0] + (maxRGB[0] - minRGB[0]) * (maxSlopeAngle / 50));
+		const ig = 255 - Math.round(minRGB[1] + (maxRGB[1] - minRGB[1]) * (maxSlopeAngle / 50));
+		const ib = 255 - Math.round(minRGB[2] + (maxRGB[2] - minRGB[2]) * (maxSlopeAngle / 50));
+
+		// Define the color ranges and corresponding RGB values
+		let triangleFillColor;
+		if (maxSlopeAngle >= 0 && maxSlopeAngle < 5) {
+			// Cornflower blue for angles in the range [0, 4)
+			triangleFillColor = "rgb(51, 139, 255)";
+		} else if (maxSlopeAngle >= 5 && maxSlopeAngle < 7) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(0, 102, 204)";
+		} else if (maxSlopeAngle >= 7 && maxSlopeAngle < 9) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(0, 204, 204)";
+		} else if (maxSlopeAngle >= 9 && maxSlopeAngle < 12) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(102, 204, 0)";
+		} else if (maxSlopeAngle >= 12 && maxSlopeAngle < 15) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(204, 204, 0)";
+		} else if (maxSlopeAngle >= 15 && maxSlopeAngle < 17) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(255, 128, 0)";
+		} else if (maxSlopeAngle >= 17 && maxSlopeAngle < 20) {
+			// Green for angles in the range [7, 10]
+			triangleFillColor = "rgb(255, 0, 0)";
+		} else {
+			// Default to grey for all other angles
+			triangleFillColor = "rgb(153, 0, 76)";
+		}
+
+		// Combine the calculated RGB values into the final fill color
+		// triangleFillColor = `rgb(${r}, ${g}, ${b})`;
+		const triangleStrokeColor = `rgb(${r}, ${g}, ${b})`;
+		// Invert the color by subtracting each channel value from 255
+		const invertedColor = `rgb(${ir}, ${ig}, ${ib})`;
+
+		printCtx.strokeStyle = triangleStrokeColor;
+		printCtx.fillStyle = triangleFillColor;
+		printCtx.lineWidth = 1;
+
+		printCtx.beginPath();
+		printCtx.moveTo(aAX, aAY);
+		printCtx.lineTo(aBX, aBY);
+		printCtx.lineTo(aCX, aCY);
+		printCtx.closePath();
+		printCtx.stroke();
+		printCtx.fill();
+
+		printCtx.lineWidth = 1;
+	}
+}
+function printDelauanyBurdenRelief(triangles, centroid, strokeColor) {
+	if (!triangles || !Array.isArray(triangles) || triangles.length === 0) return;
+	printCtx.strokeStyle = "black";
+	printCtx.lineWidth = 1;
+	//console.log("drawDelauanyBurdenRelief: " + triangles.length);
+	// const reliefResults = delaunayContourBurdenRelief(triangles, 20, 0);
+	// console.log("Relief Results:", reliefResults);
+	for (let i = 0; i < triangles.length; i++) {
+		const triangle = triangles[i];
+		const tAX = triangle[0][0];
+		const tAY = triangle[0][1];
+		const tAZ = triangle[0][2];
+		const tBX = triangle[1][0];
+		const tBY = triangle[1][1];
+		const tBZ = triangle[1][2];
+		const tCX = triangle[2][0];
+		const tCY = triangle[2][1];
+		const tCZ = triangle[2][2];
+
+		// Find the earliest and latest times
+		const earliestTime = Math.min(tAZ, tBZ, tCZ);
+		const latestTime = Math.max(tAZ, tBZ, tCZ);
+
+		// Calculate the time difference
+		const timeDifference = latestTime - earliestTime; // ms
+
+		// Determine which points correspond to the earliest and latest times
+		let p1, p2;
+		if (earliestTime === tAZ) {
+			p1 = { x: tAX, y: tAY };
+		} else if (earliestTime === tBZ) {
+			p1 = { x: tBX, y: tBY };
+		} else {
+			p1 = { x: tCX, y: tCY };
+		}
+
+		if (latestTime === tAZ) {
+			p2 = { x: tAX, y: tAY };
+		} else if (latestTime === tBZ) {
+			p2 = { x: tBX, y: tBY };
+		} else {
+			p2 = { x: tCX, y: tCY };
+		}
+
+		// Calculate the distance between the two points (earliest and latest)
+		const distance = Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+
+		// Calculate burden relief in ms/m
+		const burdenRelief = timeDifference / distance;
+
+		//console.log("Time Difference (ms):", timeDifference);
+		//console.log("Distance (m):", distance);
+		//console.log("Burden Relief (ms/m):", burdenRelief);
+
+		// Color mapping based on timing relief (adjust values as needed)
+		let triangleFillColor;
+		if (burdenRelief < 4) {
+			triangleFillColor = "rgb(75, 20, 20)"; // fast
+		} else if (burdenRelief < 7) {
+			triangleFillColor = "rgb(255, 40, 40)";
+		} else if (burdenRelief < 10) {
+			triangleFillColor = "rgb(255, 120, 50)"; //
+		} else if (burdenRelief < 13) {
+			triangleFillColor = "rgb(255, 255, 50)"; //
+		} else if (burdenRelief < 16) {
+			triangleFillColor = "rgb(50, 255, 70)"; //
+		} else if (burdenRelief < 19) {
+			triangleFillColor = "rgb(50, 255, 200)"; //
+		} else if (burdenRelief < 22) {
+			triangleFillColor = "rgb(50, 230, 255)"; //
+		} else if (burdenRelief < 25) {
+			triangleFillColor = "rgb(50, 180, 255)"; //
+		} else if (burdenRelief < 30) {
+			triangleFillColor = "rgb(50, 100, 255)"; //
+		} else if (burdenRelief < 40) {
+			triangleFillColor = "rgb(50, 0, 255)"; //
+		} else {
+			triangleFillColor = "rgb(75, 0, 150)"; // slow
+		}
+
+		printCtx.fillStyle = triangleFillColor;
+
+		// Draw triangle
+		const aAX = (tAX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aAY = (-tAY + centroid.y) * currentScale + printCanvas.height / 2;
+		const aBX = (tBX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aBY = (-tBY + centroid.y) * currentScale + printCanvas.height / 2;
+		const aCX = (tCX - centroid.x) * currentScale + printCanvas.width / 2;
+		const aCY = (-tCY + centroid.y) * currentScale + printCanvas.height / 2;
+
+		printCtx.beginPath();
+		printCtx.moveTo(aAX, aAY);
+		printCtx.lineTo(aBX, aBY);
+		printCtx.lineTo(aCX, aCY);
+		printCtx.closePath();
+		printCtx.stroke();
+		printCtx.fill();
+	}
+}
+function printReliefLegend(strokecolor) {
+	//draw a legend at the bottom of the screen in the center
+	//the legend should be for the drawDelauanyTriangles function
+
+	const legend0to4 = "rgb(75, 20, 20)"; // fast
+	const legend4to7 = "rgb(255, 40, 40)";
+	const legend7to10 = "rgb(255, 120, 50)"; //
+	const legend10to13 = "rgb(255, 255, 50)"; //
+	const legend13to16 = "rgb(50, 255, 70)"; //
+	const legend16to19 = "rgb(50, 255, 200)"; //
+	const legend19to22 = "rgb(50, 230, 255)"; //
+	const legend22to25 = "rgb(50, 180, 255)"; //
+	const legend25to30 = "rgb(50, 100, 255)"; //
+	const legend30to40 = "rgb(50, 0, 255)"; //
+	const legend40above = "rgb(75, 0, 150)"; // slow
+
+	//draw the legend
+	printCtx.beginPath();
+	printCtx.fill();
+
+	printCtx.font = "14px Roboto";
+	printCtx.fontWeight = "bold";
+	printCtx.fillStyle = "black";
+	printCtx.fillText("Legend Relief", 10, printCanvas.height / 2 - 70);
+	printCtx.fillText("0ms/m - 4ms/m", 10, printCanvas.height / 2 - 40);
+	printCtx.fillText("4ms/m - 7ms/m", 10, printCanvas.height / 2 - 10);
+	printCtx.fillText("7ms/m - 10ms/m", 10, printCanvas.height / 2 + 20);
+	printCtx.fillText("10ms/m - 13ms/m", 10, printCanvas.height / 2 + 50);
+	printCtx.fillText("13ms/m - 16ms/m", 10, printCanvas.height / 2 + 80);
+	printCtx.fillText("16ms/m - 19ms/m", 10, printCanvas.height / 2 + 110);
+	printCtx.fillText("19ms/m - 22ms/m", 10, printCanvas.height / 2 + 140);
+	printCtx.fillText("22ms/m - 25ms/m", 10, printCanvas.height / 2 + 170);
+	printCtx.fillText("25ms/m - 30ms/m", 10, printCanvas.height / 2 + 200);
+	printCtx.fillText("30ms/m - 40ms/m", 10, printCanvas.height / 2 + 230);
+	printCtx.fillText("40ms/m above", 10, printCanvas.height / 2 + 260);
+	printCtx.fillStyle = legend0to4;
+	printCtx.fillRect(130, printCanvas.height / 2 - 55, 20, 20);
+	printCtx.fillStyle = legend4to7;
+	printCtx.fillRect(130, printCanvas.height / 2 - 25, 20, 20);
+	printCtx.fillStyle = legend7to10;
+	printCtx.fillRect(130, printCanvas.height / 2 + 5, 20, 20);
+	printCtx.fillStyle = legend10to13;
+	printCtx.fillRect(130, printCanvas.height / 2 + 35, 20, 20);
+	printCtx.fillStyle = legend13to16;
+	printCtx.fillRect(130, printCanvas.height / 2 + 65, 20, 20);
+	printCtx.fillStyle = legend16to19;
+	printCtx.fillRect(130, printCanvas.height / 2 + 95, 20, 20);
+	printCtx.fillStyle = legend19to22;
+	printCtx.fillRect(130, printCanvas.height / 2 + 125, 20, 20);
+	printCtx.fillStyle = legend22to25;
+	printCtx.fillRect(130, printCanvas.height / 2 + 155, 20, 20);
+	printCtx.fillStyle = legend25to30;
+	printCtx.fillRect(130, printCanvas.height / 2 + 185, 20, 20);
+	printCtx.fillStyle = legend30to40;
+	printCtx.fillRect(130, printCanvas.height / 2 + 215, 20, 20);
+	printCtx.fillStyle = legend40above;
+	printCtx.fillRect(130, printCanvas.height / 2 + 245, 20, 20);
+	printCtx.stroke();
+}
+function printTriangleAngleText(triangle, centroid, strokeColor) {
+	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
+	const triangleCentroid = calculateTriangleCentroid(triangle);
+	let maxSlopeAngle = getDipAngle(triangle);
+
+	// FIX: Use worldToCanvas and printText to draw on the correct (print) canvas
+	const [x, y] = worldToCanvas(triangleCentroid.x, triangleCentroid.y);
+	printText(x, y, parseFloat(maxSlopeAngle).toFixed(1), "black");
+}
+function printTriangleBurdenReliefText(triangle, centroid, strokeColor) {
+	if (!triangle || !Array.isArray(triangle) || triangle.length !== 3) return;
+	const triangleCentroid = calculateTriangleCentroid(triangle);
+	let burdenRelief = getBurdenRelief(triangle);
+
+	// FIX: Use worldToCanvas and printText to draw on the correct (print) canvas
+	const [x, y] = worldToCanvas(triangleCentroid.x, triangleCentroid.y);
+	printText(x, y, parseFloat(burdenRelief).toFixed(1), "black");
+}
+function printLegend(strokecolor) {
+	const legend0to5 = "rgb(51, 139, 255)";
+	const legend5to7 = "rgb(0, 102, 204)";
+	const legend7to9 = "rgb(0, 204, 204)";
+	const legend9to12 = "rgb(102, 204, 0)";
+	const legend12to15 = "rgb(204, 204, 0)";
+	const legend15to17 = "rgb(255, 128, 0)";
+	const legend17to20 = "rgb(255, 0, 0)";
+	const legend20above = "rgb(153, 0, 76)";
+	//draw the legend
+	printCtx.beginPath();
+	printCtx.fill();
+	printCtx.font = "14px Roboto";
+	printCtx.fontWeight = "bold";
+	printCtx.fillStyle = strokecolor;
+	printCtx.fillText("Legend Slope", 10, printCanvas.height / 2 - 70);
+	printCtx.fillText("0\u00B0-5\u00B0", 10, printCanvas.height / 2 - 40);
+	printCtx.fillText("5\u00B0-7\u00B0", 10, printCanvas.height / 2 - 10);
+	printCtx.fillText("7\u00B0-9\u00B0", 10, printCanvas.height / 2 + 20);
+	printCtx.fillText("9\u00B0-12\u00B0", 10, printCanvas.height / 2 + 50);
+	printCtx.fillText("12\u00B0-15\u00B0", 10, printCanvas.height / 2 + 80);
+	printCtx.fillText("15\u00B0-17\u00B0", 10, printCanvas.height / 2 + 110);
+	printCtx.fillText("17\u00B0-20\u00B0", 10, printCanvas.height / 2 + 140);
+	printCtx.fillText("20\u00B0+", 10, printCanvas.height / 2 + 170);
+	printCtx.fillStyle = legend0to5;
+	printCtx.fillRect(60, printCanvas.height / 2 - 55, 20, 20);
+	printCtx.fillStyle = legend5to7;
+	printCtx.fillRect(60, printCanvas.height / 2 - 25, 20, 20);
+	printCtx.fillStyle = legend7to9;
+	printCtx.fillRect(60, printCanvas.height / 2 + 5, 20, 20);
+	printCtx.fillStyle = legend9to12;
+	printCtx.fillRect(60, printCanvas.height / 2 + 35, 20, 20);
+	printCtx.fillStyle = legend12to15;
+	printCtx.fillRect(60, printCanvas.height / 2 + 65, 20, 20);
+	printCtx.fillStyle = legend15to17;
+	printCtx.fillRect(60, printCanvas.height / 2 + 95, 20, 20);
+	printCtx.fillStyle = legend17to20;
+	printCtx.fillRect(60, printCanvas.height / 2 + 125, 20, 20);
+	printCtx.fillStyle = legend20above;
+	printCtx.fillRect(60, printCanvas.height / 2 + 155, 20, 20);
+	printCtx.stroke();
+}
+//ENGINE
+// Replace your existing printData function with this one
+function printData(points, selectedHole) {
+	// This resizing logic can cause issues, we handle it in the print setup.
+	// if (printCanvas) {
+	// 	if (printCanvas.width !== printCanvas.clientWidth || printCanvas.height !== printCanvas.clientHeight) {
+	// 		printCanvas.width = printCanvas.clientWidth;
+	// 		printCanvas.height = printCanvas.clientHeight;
+	// 	}
+	// }
+
+	if (printCtx) {
+		// FIX: Do NOT clear the canvas here. The print setup already prepared it with a
+		// white background. This function was likely clearing the main screen canvas by mistake.
+		// clearCanvas();
+
+		printCtx.imageSmoothingEnabled = false;
+		const displayOptions = getDisplayOptions();
+		let holeMap = new Map();
+		if (points && Array.isArray(points) && points.length > 0) {
+			holeMap = buildHoleMap(points);
+		}
+		// Draw background image FIRST (bottom layer)
+		printBackgroundImage();
+		// Draw surface triangles SECOND
+		printSurface();
+
+		// In printData function, replace the printing logic with:
+		for (const [name, entity] of allKADDrawingsMap.entries()) {
+			if (developerModeEnabled && entity.entityType === "point") {
+				// Draw points - FIX: Remove extra parameters
+				entity.data.forEach((point) => {
+					const screenX = (point.pointXLocation - centroidX) * currentScale + printCanvas.width / 2;
+					const screenY = -(point.pointYLocation - centroidY) * currentScale + printCanvas.height / 2;
+					printKADPoints(screenX, screenY, point.pointZLocation, point.color); // ← Remove pointDiameter and 1
+				});
+			} else if (entity.entityType === "point") {
+				// Apply pixel distance simplification to points for performance
+				const originalPoints = entity.data;
+				const simplifiedPoints = simplifyByPxDist(originalPoints, 3); // Slightly smaller threshold for points
+
+				for (const pointData of simplifiedPoints) {
+					const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+					printKADPoints(x, y, pointData.pointZLocation, pointData.color);
+				}
+			} else if (entity.entityType === "circle") {
+				// Draw circles
+				entity.data.forEach((circle) => {
+					const screenX = (circle.pointXLocation - centroidX) * currentScale + printCanvas.width / 2;
+					const screenY = -(circle.pointYLocation - centroidY) * currentScale + printCanvas.height / 2;
+					printKADCircles(screenX, screenY, circle.pointZLocation, circle.radius, circle.lineWidth, circle.color);
+				});
+			} else if (entity.entityType === "text") {
+				// Draw text - Fix the property name
+				entity.data.forEach((textData) => {
+					if (textData && textData.text) {
+						// ← Change from textValue to text
+						const screenX = (textData.pointXLocation - centroidX) * currentScale + printCanvas.width / 2;
+						const screenY = -(textData.pointYLocation - centroidY) * currentScale + printCanvas.height / 2;
+						printKADTexts(screenX, screenY, textData.pointZLocation, textData.text, textData.color); // ← Change textValue to text and strokeColor to color
+					}
+				});
+			} else if (developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
+				// --- Developer Mode: Full quality, no simplification ---
+				const points = entity.data;
+				if (points.length < 2) continue;
+
+				// Draw all segments without any simplification
+				for (let i = 0; i < points.length - 1; i++) {
+					const currentPoint = points[i]; // FIRST point of segment
+					const nextPoint = points[i + 1]; // SECOND point of segment
+
+					const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+					const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
+
+					// Use FIRST point properties
+					printKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
+				}
+
+				// Handle closing segment for polygons
+				const isClosed = entity.entityType === "poly";
+				if (isClosed && points.length > 2) {
+					const firstPoint = points[0];
+					const lastPoint = points[points.length - 1];
+					const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
+					const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+
+					// Use last point properties for closing segment
+					printKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
+				}
+			} else if (!developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
+				// --- Pixel-distance simplification for performance ---
+				const originalPoints = entity.data;
+				if (originalPoints.length < 2) continue;
+
+				// Simplify by pixel distance
+				let pointThreshold = 2;
+				if (currentScale > 1) {
+					pointThreshold = 2;
+				} else {
+					pointThreshold = 1;
+				}
+
+				const simplifiedPoints = simplifyByPxDist(originalPoints, pointThreshold);
+
+				// Draw the simplified line/polygon
+				for (let i = 0; i < simplifiedPoints.length - 1; i++) {
+					const currentPoint = simplifiedPoints[i];
+					const nextPoint = simplifiedPoints[i + 1];
+
+					const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+					const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
+
+					// Use FIRST point properties
+					printKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
+				}
+
+				// Handle closing segment for polygons
+				const isClosed = entity.entityType === "poly";
+				if (isClosed && simplifiedPoints.length > 2) {
+					const firstPoint = simplifiedPoints[0];
+					const lastPoint = simplifiedPoints[simplifiedPoints.length - 1];
+					const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
+					const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+
+					// Use last point properties for closing segment
+					printKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
+				}
+			}
+		}
+
+		// VORONOI PF & OVERLAYS
+		const tri = delaunayTriangles(points, maxEdgeLength);
+		const blastBoundaryPolygon = createBlastBoundaryPolygon(tri.resultTriangles);
+		const offsetBoundaryPolygon = offsetPolygonClipper(blastBoundaryPolygon, getAverageDistance(points) / 2);
+
+		// Voronoi Powder Factor
+		if (displayOptions.voronoiPF) {
+			// console.log("DEBUG: VORONOI PF");
+			switch (selectedVoronoiMetric) {
+				case "powderFactor":
+					// console.log("Drawing Powder Factor");
+					//get the min and max values for the PF if isVoronoiLegendFixed is false
+					let minPF, maxPF, intervalPF, deltaPF;
+
+					if (!isVoronoiLegendFixed) {
+						// console.log("DEBUG: VORONOI PF NOT FIXED");
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.powderFactor).filter((v) => v != null && !isNaN(v));
+						minPF = 0; //values.length > 0 ? Math.min(...values) : 0;
+						maxPF = values.length > 0 ? Math.max(...values) : 3;
+						if (maxPF - minPF > 0) {
+							deltaPF = maxPF - minPF;
+							intervalPF = deltaPF / 4;
+						} else {
+							minPF = 0;
+							maxPF = 1;
+							intervalPF = 0.2;
+						}
+					} else {
+						// console.log("DEBUG: VORONOI PF FIXED");
+						minPF = 0;
+						maxPF = 3;
+						if (maxPF - minPF > 0) {
+							deltaPF = maxPF - minPF;
+							intervalPF = deltaPF > 0 ? Math.ceil(deltaPF / 10) : 0.5;
+						} else {
+							minPF = 0;
+							maxPF = 1;
+							intervalPF = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getPFColor(value, minPF, maxPF), "Legend Powder Factor", minPF, maxPF, intervalPF);
+					break;
+				case "mass":
+					// console.log("Drawing Mass");
+					let minMass, maxMass, intervalMass, deltaMass;
+
+					if (!isVoronoiLegendFixed) {
+						// console.log("DEBUG: VORONOI MASS NOT FIXED");
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.mass).filter((v) => v != null && !isNaN(v));
+						minMass = values.length > 0 ? Math.min(...values) : 0;
+						maxMass = values.length > 0 ? Math.max(...values) : 500;
+						if (maxMass - minMass > 0) {
+							deltaMass = maxMass - minMass;
+							intervalMass = deltaMass / 4;
+						} else {
+							minMass = 0;
+							maxMass = 1;
+							intervalMass = 0.2;
+						}
+					} else {
+						// console.log("DEBUG: VORONOI MASS FIXED");
+						minMass = 0;
+						maxMass = 1000;
+						if (maxMass - minMass > 0) {
+							deltaMass = maxMass - minMass;
+							intervalMass = deltaMass > 0 ? Math.ceil(deltaMass / 10) : 250;
+						} else {
+							minMass = 0;
+							maxMass = 1;
+							intervalMass = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getMassColor(value, minMass, maxMass), "Legend Mass", minMass, maxMass, intervalMass);
+					break;
+				case "volume": {
+					// console.log("Drawing Volume");
+					let minVol, maxVol, intervalVol, deltaVol;
+
+					if (!isVoronoiLegendFixed) {
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.volume).filter((v) => v != null && !isNaN(v));
+						minVol = values.length > 0 ? Math.min(...values) : 0;
+						maxVol = values.length > 0 ? Math.max(...values) : 100;
+						if (maxVol - minVol > 0) {
+							deltaVol = maxVol - minVol;
+							intervalVol = deltaVol / 10;
+						} else {
+							minVol = 0;
+							maxVol = 1;
+							intervalVol = 0.2;
+						}
+					} else {
+						minVol = 0;
+						maxVol = 5000;
+						if (maxVol - minVol > 0) {
+							deltaVol = maxVol - minVol;
+							intervalVol = 500;
+						} else {
+							minVol = 0;
+							maxVol = 1;
+							intervalVol = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getVolumeColor(value, minVol, maxVol), "Legend Volume", minVol, maxVol, intervalVol);
+					break;
+				}
+				case "area": {
+					// console.log("Drawing Area");
+					let minArea, maxArea, intervalArea, deltaArea;
+
+					if (!isVoronoiLegendFixed) {
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.area).filter((v) => v != null && !isNaN(v));
+						minArea = values.length > 0 ? Math.min(...values) : 0;
+						maxArea = values.length > 0 ? Math.max(...values) : 100;
+						if (maxArea - minArea > 0) {
+							deltaArea = maxArea - minArea;
+							intervalArea = deltaArea / 10;
+						} else {
+							minArea = 0;
+							maxArea = 1;
+							intervalArea = 0.2;
+						}
+					} else {
+						minArea = 0;
+						maxArea = 500;
+						if (maxArea - minArea > 0) {
+							deltaArea = maxArea - minArea;
+							intervalArea = 50;
+						} else {
+							minArea = 0;
+							maxArea = 1;
+							intervalArea = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getAreaColor(value, minArea, maxArea), "Legend Area", minArea, maxArea, intervalArea);
+					break;
+				}
+				case "measuredLength": {
+					// console.log("Drawing Measured Length");
+					let minMLen, maxMLen, intervalMLen, deltaMLen;
+
+					if (!isVoronoiLegendFixed) {
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.measuredLength).filter((v) => v != null && !isNaN(v));
+						minMLen = values.length > 0 ? Math.min(...values) : 0;
+						maxMLen = values.length > 0 ? Math.max(...values) : 50;
+						if (maxMLen - minMLen > 0) {
+							deltaMLen = maxMLen - minMLen;
+							intervalMLen = deltaMLen / 10;
+						} else if (maxMLen > 0) {
+							minMLen = 0;
+							maxMLen = maxMLen;
+							intervalMLen = (maxMLen - minMLen) / 10;
+						} else {
+							minMLen = 0;
+							maxMLen = 1;
+							intervalMLen = 0.2;
+						}
+					} else {
+						minMLen = 0;
+						maxMLen = 50;
+						if (maxMLen - minMLen > 0) {
+							deltaMLen = maxMLen - minMLen;
+							intervalMLen = 5;
+						} else if (maxMLen > 0) {
+							minMLen = 0;
+							maxMLen = maxMLen;
+							intervalMLen = (maxMLen - minMLen) / 10;
+						} else {
+							minMLen = 0;
+							maxMLen = 1;
+							intervalMLen = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getLengthColor(value, minMLen, maxMLen), "Legend Measured Length", minMLen, maxMLen, intervalMLen);
+					break;
+				}
+				case "designedLength": {
+					// console.log("Drawing Designed Length");
+					let minDLen, maxDLen, intervalDLen, deltaDLen;
+
+					if (!isVoronoiLegendFixed) {
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const values = clippedCells.map((c) => c.designedLength).filter((v) => v != null && !isNaN(v));
+						minDLen = values.length > 0 ? Math.min(...values) : 0;
+						maxDLen = values.length > 0 ? Math.max(...values) : 50;
+						if (maxDLen - minDLen > 0) {
+							deltaDLen = maxDLen - minDLen;
+							intervalDLen = deltaDLen / 10;
+						} else if (maxDLen > 0) {
+							minDLen = 0;
+							maxDLen = maxDLen;
+							intervalDLen = (maxDLen - minDLen) / 10;
+						} else {
+							minDLen = 0;
+							maxDLen = 1;
+							intervalDLen = 0.2;
+						}
+					} else {
+						minDLen = 0;
+						maxDLen = 50;
+						if (maxDLen - minDLen > 0) {
+							deltaDLen = maxDLen - minDLen;
+							intervalDLen = 5;
+						} else if (maxDLen > 0) {
+							minDLen = 0;
+							maxDLen = maxDLen;
+							intervalDLen = (maxDLen - minDLen) / 10;
+						} else {
+							minDLen = 0;
+							maxDLen = 1;
+							intervalDLen = 0.2;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getLengthColor(value, minDLen, maxDLen), "Legend Designed Length", minDLen, maxDLen, intervalDLen);
+					break;
+				}
+				case "holeFiringTime": {
+					// console.log("Drawing Hole Firing Time");
+					let minHTime, maxHTime, intervalHTime, deltaHTime;
+
+					if (!isVoronoiLegendFixed) {
+						const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+						const clippedCells = clipVoronoiCells(voronoiMetrics);
+						const holeTimes = clippedCells.map((c) => c.holeFiringTime).filter((t) => t != null && !isNaN(t));
+						minHTime = holeTimes.length > 0 ? Math.min(...holeTimes) : 0;
+						maxHTime = holeTimes.length > 0 ? Math.max(...holeTimes) : 5000;
+						if (maxHTime - minHTime > 0) {
+							deltaHTime = maxHTime - minHTime;
+							intervalHTime = deltaHTime / 10;
+						} else {
+							minHTime = 0;
+							maxHTime = 1;
+							intervalHTime = 0.5;
+						}
+					} else {
+						minHTime = 0;
+						maxHTime = 5000;
+						if (maxHTime - minHTime > 0) {
+							deltaHTime = maxHTime - minHTime;
+							intervalHTime = deltaHTime > 0 ? Math.ceil(deltaHTime / 10) : 1000;
+						} else {
+							minHTime = 0;
+							maxHTime = 1;
+							intervalHTime = 0.5;
+						}
+					}
+					printVoronoiLegendAndCells(points, selectedVoronoiMetric, (value) => getHoleFiringTimeColor(value, minHTime, maxHTime), "Legend Hole Firing Time", minHTime, maxHTime, intervalHTime);
+					break;
+				}
+			}
+		}
+
+		// Slope Map
+		if (displayOptions.slopeMap) {
+			const centroid = { x: centroidX, y: centroidY };
+			const { resultTriangles } = delaunayTriangles(points, maxEdgeLength);
+			printDelauanySlopeMap(resultTriangles, centroid, strokeColor);
+			for (const triangle of resultTriangles) {
+				printTriangleAngleText(triangle, centroid, "black");
+			}
+			printLegend("black");
+		}
+
+		// Burden Relief
+		if (displayOptions.burdenRelief) {
+			const centroid = { x: centroidX, y: centroidY };
+			const { reliefTriangles } = delaunayTriangles(points, maxEdgeLength);
+			printDelauanyBurdenRelief(reliefTriangles, centroid, strokeColor);
+			for (const triangle of reliefTriangles) {
+				printTriangleBurdenReliefText(triangle, centroid, "black");
+			}
+			printReliefLegend("black");
+		}
+
+		// First Movement Direction Arrows
+		if (displayOptions.firstMovement) {
+			connScale = document.getElementById("connSlider").value;
+			for (const arrow of directionArrows) {
+				const [startX, startY] = worldToCanvas(arrow[0], arrow[1]);
+				const [endX, endY] = worldToCanvas(arrow[2], arrow[3]);
+				printDirectionArrow(startX, startY, endX, endY, arrow[4], "black", arrow[5]);
+			}
+		}
+
+		// Contour Lines
+		if (displayOptions.contour) {
+			printCtx.lineWidth = 3;
+			printCtx.strokeStyle = "magenta";
+			for (const contourLines of contourLinesArray) {
+				for (const line of contourLines) {
+					const [startX, startY] = worldToCanvas(line[0].x, line[0].y);
+					const [endX, endY] = worldToCanvas(line[1].x, line[1].y);
+					printCtx.beginPath();
+					printCtx.moveTo(startX, startY);
+					printCtx.lineTo(endX, endY);
+					printCtx.stroke();
+				}
+			}
+		}
+
+		// Main hole loop
+		printCtx.lineWidth = 1;
+		printCtx.strokeStyle = "black";
+		printCtx.font = parseInt(currentFontSize) + "px Arial";
+		if (points && Array.isArray(points) && points.length > 0) {
+			for (const point of points) {
+				const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
+				const [gradeX, gradeY] = worldToCanvas(point.gradeXLocation, point.gradeYLocation);
+				const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
+
+				toeSizeInMeters = document.getElementById("toeSlider").value;
+				connScale = document.getElementById("connSlider").value;
+
+				// Draw collar-to-toe track if angled
+				if (point.holeAngle > 0) {
+					printTrack(x, y, lineEndX, lineEndY, gradeX, gradeY, "black", point.subdrillAmount);
+				}
+
+				// FIX: Do not draw UI-specific highlights on the print version
+				// handleHoleHighlighting(point, x, y);
+
+				// Draw toe if hole length is not zero
+				if (parseFloat(point.holeLengthCalculated).toFixed(1) != 0.0) {
+					const radiusInPixels = toeSizeInMeters * currentScale;
+					printHoleToe(lineEndX, lineEndY, transparentFillColor, "black", radiusInPixels);
+				}
+
+				// Calculate text offsets
+				const textOffset = parseInt((point.holeDiameter / 1000) * holeScale * currentScale);
+				const leftSideToe = parseInt(lineEndX) - textOffset;
+				const rightSideToe = parseInt(lineEndX) + textOffset;
+				const leftSideCollar = parseInt(x) - textOffset;
+				const rightSideCollar = parseInt(x) + textOffset;
+				const topSideToe = parseInt(lineEndY - textOffset);
+				const middleSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize / 4));
+				const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(currentFontSize));
+				const topSideCollar = parseInt(y - textOffset);
+				const middleSideCollar = parseInt(y + parseInt(currentFontSize / 2));
+				const bottomSideCollar = parseInt(y + textOffset + parseInt(currentFontSize));
+
+				// Draw text/labels based on displayOptions
+				printHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, {
+					leftSideToe,
+					rightSideToe,
+					leftSideCollar,
+					rightSideCollar,
+					topSideToe,
+					middleSideToe,
+					bottomSideToe,
+					topSideCollar,
+					middleSideCollar,
+					bottomSideCollar,
+					holeMap,
+					displayOptions
+				});
+
+				// Draw main hole geometry, with selection highlight logic
+				printHoleMainShape(point, x, y, selectedHole);
+
+				// Font slider/label only needs to be updated once, after loop
+			}
+		}
+
+		// Holes Displayed Count
+		printCtx.fillStyle = "black";
+		printCtx.font = "12px Arial";
+		if (!points || !Array.isArray(points) || points.length < 1) {
+			printCtx.fillText("Holes Displayed: 0", 10, printCanvas.height - 65);
+		} else {
+			printCtx.fillText("Holes Displayed: " + points.length, 10, printCanvas.height - 65);
+		}
+		printCtx.fillText("Scale [ 1:" + currentScale.toFixed(4) + " ]", 10, printCanvas.height - 55);
+		printCtx.fillStyle = "blue";
+		printCtx.fillText("Version: Build: " + buildVersion, 10, printCanvas.height - 35);
+
+		// These are DOM manipulations and should not be in a print function
+		// fontSlider.value = currentFontSize;
+		// fontLabel.textContent = "Font Size: " + parseFloat(currentFontSize).toFixed(1) + "px";
+	} else {
+		// Handle missing context
+		return;
+	}
+}
+
+function printVoronoiLegendAndCells(points, selectedVoronoiMetric, getColorForMetric, legendLabel, minValue, maxValue, step) {
+	const legendX = 10,
+		legendY = printCanvas.height / 2 - 70,
+		gradientWidth = 20,
+		gradientHeight = 160;
+	printCtx.fillStyle = "black";
+	printCtx.font = "14px Roboto";
+	printCtx.fontWeight = "bold";
+	printCtx.fillText(legendLabel || "Legend " + selectedVoronoiMetric, legendX, legendY - 15);
+
+	// Create gradient for legend
+	const gradient = printCtx.createLinearGradient(0, legendY, 0, legendY + gradientHeight);
+	const stops = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0];
+	stops.forEach(function (stop) {
+		const value = minValue + stop * (maxValue - minValue);
+		const color = getColorForMetric(value);
+		if (typeof color !== "string" || color.includes("NaN")) {
+			// fallback or skip this color stop
+		} else {
+			gradient.addColorStop(stop, color);
+		}
+	});
+	printCtx.fillStyle = gradient;
+	printCtx.fillRect(legendX + 50, legendY, gradientWidth, gradientHeight);
+
+	printCtx.fillStyle = "black";
+	printCtx.textAlign = "left";
+	printCtx.textBaseline = "middle";
+	// Draw tick marks and labels
+	for (let v = minValue; v <= maxValue; v += step) {
+		const y = legendY + ((v - minValue) / (maxValue - minValue)) * gradientHeight;
+		printCtx.strokeStyle = "black";
+		printCtx.beginPath();
+		printCtx.moveTo(legendX + 50 + gradientWidth, y);
+		printCtx.lineTo(legendX + 50 + gradientWidth + 8, y);
+		printCtx.stroke();
+		printCtx.fillText(v.toFixed(1), legendX, y);
+	}
+
+	const voronoiMetrics = getVoronoiMetrics(points, useToeLocation);
+	//modes available: min, max, average, mode
+
+	const clippedCells = clipVoronoiCells(voronoiMetrics);
+
+	for (const cell of clippedCells) {
+		const value = cell[selectedVoronoiMetric];
+		if (!cell.polygon || value == null) continue;
+		printCtx.beginPath();
+		for (let j = 0; j < cell.polygon.length; j++) {
+			const pt = cell.polygon[j];
+			const [x, y] = worldToCanvas(pt.x !== undefined ? pt.x : pt[0], pt.y !== undefined ? pt.y : pt[1]);
+			if (j === 0) printCtx.moveTo(x, y);
+			else printCtx.lineTo(x, y);
+		}
+		printCtx.closePath();
+		printCtx.fillStyle = getColorForMetric(value);
+		printCtx.fill();
+		printCtx.strokeStyle = "black";
+		printCtx.lineWidth = 1;
+		printCtx.stroke();
+	}
+}
+function printHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, printCtxObj) {
+	const { leftSideToe, rightSideToe, leftSideCollar, rightSideCollar, topSideToe, middleSideToe, bottomSideToe, topSideCollar, middleSideCollar, bottomSideCollar, holeMap, displayOptions } = printCtxObj;
+
+	if (displayOptions.holeID) {
+		printText(rightSideCollar, topSideCollar, point.holeID, "black");
+	}
+	if (displayOptions.holeDia) {
+		printText(rightSideCollar, middleSideCollar, parseFloat(point.holeDiameter).toFixed(0), "rgb(0, 50, 0)");
+	}
+	if (displayOptions.holeLen) {
+		printText(rightSideCollar, bottomSideCollar, parseFloat(point.holeLengthCalculated).toFixed(1), "rgb(0, 0, 67)");
+	}
+	if (displayOptions.holeAng) {
+		printRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.holeAngle).toFixed(0) + "°", "rgb(67, 30, 0)");
+	}
+	if (displayOptions.holeDip) {
+		printRightAlignedText(leftSideToe, topSideToe, 90 - parseFloat(point.holeAngle).toFixed(0) + "°", "rgb(67, 30, 0)");
+	}
+	if (displayOptions.holeBea) {
+		printRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.holeBearing).toFixed(1) + "°", "red");
+	}
+	if (displayOptions.holeSubdrill) {
+		printRightAlignedText(leftSideToe, bottomSideToe, parseFloat(point.subdrillAmount).toFixed(1), "blue");
+	}
+	if (displayOptions.initiationTime) {
+		printRightAlignedText(leftSideCollar, middleSideCollar, point.holeTime, "red");
+	}
+	if (displayOptions.connector && point.fromHoleID) {
+		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+		if (fromHole) {
+			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+			const connColor = point.colorHexDecimal;
+			try {
+				printArrow(startX, startY, x, y, connColor, connScale);
+			} catch (error) {
+				console.error("Error printing arrow:", error);
+			}
+		}
+	}
+	if (displayOptions.delayValue && point.fromHoleID) {
+		const [splitEntityName, splitFromHoleID] = point.fromHoleID.split(":::");
+		const fromHole = holeMap.get(splitEntityName + ":::" + splitFromHoleID);
+		if (fromHole) {
+			const [startX, startY] = worldToCanvas(fromHole.startXLocation, fromHole.startYLocation);
+			const connColor = point.colorHexDecimal;
+			const pointDelay = point.timingDelayMilliseconds;
+			printArrowDelayText(startX, startY, x, y, connColor, pointDelay);
+		}
+	}
+	if (displayOptions.xValue) {
+		printRightAlignedText(leftSideCollar, topSideCollar, parseFloat(point.startXLocation).toFixed(2), textFillColor);
+	}
+	if (displayOptions.yValue) {
+		printRightAlignedText(leftSideCollar, middleSideCollar, parseFloat(point.startYLocation).toFixed(2), textFillColor);
+	}
+	if (displayOptions.zValue) {
+		printRightAlignedText(leftSideCollar, bottomSideCollar, parseFloat(point.startZLocation).toFixed(2), textFillColor);
+	}
+	if (displayOptions.holeType) {
+		printText(rightSideCollar, middleSideCollar, point.holeType, "rgb(53, 0, 72)");
+	}
+	if (displayOptions.measuredLength) {
+		printRightAlignedText(leftSideCollar, bottomSideToe, point.measuredLength, "rgb(70, 0, 0)");
+	}
+	if (displayOptions.measuredMass) {
+		printRightAlignedText(leftSideCollar, topSideToe, point.measuredMass, "rgb(70, 0, 0)");
+	}
+	if (displayOptions.measuredComment) {
+		printText(rightSideCollar, middleSideCollar, point.measuredComment, "rgb(70, 0, 0)");
+	}
+}
+function printHoleMainShape(point, x, y, selectedHole) {
+	const diameterPx = parseInt((point.holeDiameter / 1000) * currentScale * holeScale);
+
+	let highlightType = null;
+	let highlightColor1 = null,
+		highlightColor2 = null,
+		highlightText = null;
+
+	// Check if we're in connector mode
+	if (isAddingConnector || isAddingMultiConnector) {
+		// First selected hole in connector mode (using fromHoleStore)
+		if (fromHoleStore && fromHoleStore === point) {
+			highlightType = "first";
+			highlightColor1 = "rgba(0, 255, 0, 0.2)";
+			highlightColor2 = "rgba(0, 190, 0, .8)";
+			highlightText = "1st Selected Hole: " + point.holeID + " in: " + point.entityName + " (Select second hole)";
+		}
+		// Second selected hole in connector mode (using firstSelectedHole/secondSelectedHole)
+		else if (firstSelectedHole && firstSelectedHole === point) {
+			highlightType = "first";
+			highlightColor1 = "rgba(0, 255, 0, 0.2)";
+			highlightColor2 = "rgba(0, 190, 0, .8)";
+			highlightText = "1st Selected Hole: " + point.holeID + " in: " + point.entityName;
+		} else if (secondSelectedHole && secondSelectedHole === point) {
+			highlightType = "second";
+			highlightColor1 = "rgba(255, 255, 0, 0.2)";
+			highlightColor2 = "rgba(255, 200, 0, .8)";
+			highlightText = "2nd Selected Hole: " + point.holeID + " in: " + point.entityName + " (Click to connect)";
+		}
+	}
+	// Regular selection highlighting (NOT in connector mode)
+	else if (selectedHole != null && selectedHole === point) {
+		highlightType = "selected";
+		highlightColor1 = "rgba(255, 0, 150, 0.2)";
+		highlightColor2 = "rgba(255, 0, 150, .8)";
+		highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \nEscape key to clear Selection";
+	}
+	// Multiple selection highlighting
+	else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === point.entityName && p.holeID === point.holeID)) {
+		highlightType = "multi";
+		highlightColor1 = "rgba(255, 0, 150, 0.2)";
+		highlightColor2 = "rgba(255, 0, 150, .8)";
+		if (point === selectedMultipleHoles[0]) {
+			highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \nEscape key to clear Selection";
+		} else {
+			highlightText = "";
+		}
+	}
+
+	// Draw main hole/track shape (dummy, missing, or real)
+	printCtx.lineWidth = 1;
+
+	printCtx.strokeStyle = strokeColor;
+
+	if (parseFloat(point.holeLengthCalculated).toFixed(1) == 0.0) {
+		printDummy(x, y, parseInt(0.2 * holeScale * currentScale), "black");
+	} else if (point.holeDiameter == 0) {
+		printNoDiameterHole(x, y, 10, "black");
+	} else {
+		printHole(x, y, diameterPx, "black", "black");
+	}
+}
+function printSurface() {
+	if (!surfaceVisible || surfaceTriangles.length === 0) return;
+
+	// Find global Z range for color mapping
+	let minZ = Infinity;
+	let maxZ = -Infinity;
+
+	surfacePoints.forEach((point) => {
+		if (point.z < minZ) minZ = point.z;
+		if (point.z > maxZ) maxZ = point.z;
+	});
+
+	surfaceTriangles.forEach((triangle) => {
+		printTriangleWithGradient(triangle, minZ, maxZ);
+	});
+
+	// Draw legend after surface
+	printSurfaceLegend();
+}
+function printSurfaceLegend() {
+	if (!showSurfaceLegend || !surfaceVisible || surfaceTriangles.length === 0) return;
+
+	// FIXED: Calculate elevation range without spread operator
+	let minZ = Infinity;
+	let maxZ = -Infinity;
+
+	surfacePoints.forEach((point) => {
+		if (point.z < minZ) minZ = point.z;
+		if (point.z > maxZ) maxZ = point.z;
+	});
+
+	if (maxZ - minZ < 0.001) return; // Skip legend for flat surfaces
+
+	// Legend dimensions and position
+	const legendWidth = 20;
+	const legendHeight = 200;
+	const legendX = printCanvas.width - legendWidth - 60;
+	const legendY = 50;
+	const steps = 50;
+
+	// Draw color gradient
+	for (let i = 0; i < steps; i++) {
+		const ratio = i / (steps - 1);
+		const y = legendY + legendHeight - (i * legendHeight) / steps;
+		const height = legendHeight / steps + 1;
+
+		printCtx.fillStyle = elevationToColor(minZ + ratio * (maxZ - minZ), minZ, maxZ);
+		printCtx.fillRect(legendX, y, legendWidth, height);
+	}
+
+	// Draw elevation labels
+	printCtx.fillStyle = strokeColor;
+	printCtx.font = "12px Roboto";
+	printCtx.fontWeight = "bold";
+	printCtx.textAlign = "left";
+
+	const labelCount = 5;
+	for (let i = 0; i < labelCount; i++) {
+		const ratio = i / (labelCount - 1);
+		const elevation = minZ + ratio * (maxZ - minZ);
+		const y = legendY + legendHeight - ratio * legendHeight;
+
+		// Draw tick mark
+		printCtx.beginPath();
+		printCtx.moveTo(legendX + legendWidth, y);
+		printCtx.lineTo(legendX + legendWidth + 5, y);
+		printCtx.stroke();
+
+		// Draw elevation text
+		printCtx.fillText(elevation.toFixed(1) + "m", legendX + legendWidth + 8, y + 4);
+	}
+
+	// Draw title
+	printCtx.font = "14px Arial";
+	printCtx.textAlign = "center";
+	printCtx.fillText("Elevation", legendX + legendWidth / 2, legendY - 20);
+
+	// Draw gradient name
+	printCtx.font = "10px Arial";
+	const gradientNames = {
+		default: "Default",
+		viridis: "Viridis",
+		turbo: "Turbo",
+		parula: "Parula",
+		cividis: "Cividis",
+		terrain: "Terrain"
+	};
+	printCtx.fillText(gradientNames[currentGradient] || "Default", legendX + legendWidth / 2, legendY + legendHeight + 30);
+
+	// Reset text alignment
+	printCtx.textAlign = "left";
+}
+function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = printCtx, alpha = surfaceTransparency) {
+	const showWireFrame = false;
+	const [p1, p2, p3] = triangle.vertices;
+
+	// Convert to printCanvas coordinates
+	const [x1, y1] = worldToCanvas(p1.x, p1.y);
+	const [x2, y2] = worldToCanvas(p2.x, p2.y);
+	const [x3, y3] = worldToCanvas(p3.x, p3.y);
+
+	// Save context state
+	targetCtx.save();
+
+	// Set transparency
+	targetCtx.globalAlpha = alpha;
+
+	// Check if we have texture data (future enhancement)
+	if (surfaceTextureData && surfaceTextureData.hasTextures) {
+		// For now, use a different color scheme for textured surfaces
+		printCtx.beginPath();
+		printCtx.moveTo(x1, y1);
+		printCtx.lineTo(x2, y2);
+		printCtx.lineTo(x3, y3);
+		printCtx.closePath();
+
+		// Use elevation coloring but with different palette for textured surfaces
+		const avgZ = (p1.z + p2.z + p3.z) / 3;
+		printCtx.fillStyle = elevationToColor(avgZ, globalMinZ, globalMaxZ);
+		printCtx.fill();
+
+		if (showWireFrame) {
+			printCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+			printCtx.lineWidth = 0.1;
+			printCtx.stroke();
+		}
+		return;
+	}
+
+	// Check if surface is flat
+	if (globalMaxZ - globalMinZ < 0.001) {
+		// Flat surface - use solid orange color
+		printCtx.beginPath();
+		printCtx.moveTo(x1, y1);
+		printCtx.lineTo(x2, y2);
+		printCtx.lineTo(x3, y3);
+		printCtx.closePath();
+		printCtx.fillStyle = "rgba(255, 165, 0, 0.7)"; // Semi-transparent orange
+		printCtx.fill();
+
+		// Add wireframe edges
+		if (showWireFrame) {
+			printCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+			printCtx.lineWidth = 0.1;
+			printCtx.stroke();
+		}
+		return;
+	}
+
+	// Create gradient based on elevation for non-flat surfaces
+	const gradient = printCtx.createLinearGradient(x1, y1, x3, y3);
+
+	// Map Z values to colors (spectrum: blue->green->yellow->red)
+	const color1 = elevationToColor(p1.z, globalMinZ, globalMaxZ);
+	const color2 = elevationToColor(p2.z, globalMinZ, globalMaxZ);
+	const color3 = elevationToColor(p3.z, globalMinZ, globalMaxZ);
+
+	gradient.addColorStop(0, color1);
+	gradient.addColorStop(0.5, color2);
+	gradient.addColorStop(1, color3);
+
+	// Draw triangle
+	printCtx.beginPath();
+	printCtx.moveTo(x1, y1);
+	printCtx.lineTo(x2, y2);
+	printCtx.lineTo(x3, y3);
+	printCtx.closePath();
+	printCtx.fillStyle = gradient;
+	printCtx.fill();
+
+	// Add wireframe edges
+	if (showWireFrame) {
+		printCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+		printCtx.lineWidth = 0.1;
+		printCtx.stroke();
+	}
+	// Restore context state
+	targetCtx.restore();
+}
+function printBackgroundImage() {
+	if (!backgroundImage || !backgroundImage.printCanvas || !imageVisible) return;
+
+	const bbox = backgroundImage.bbox;
+
+	//console.log("Drawing GeoTIFF with bbox:", bbox);
+	//console.log("Current view center:", { centroidX, centroidY, scale: currentScale });
+
+	// Use your existing worldToCanvas function
+	const [x1, y1] = worldToCanvas(bbox[0], bbox[3]); // Top-left
+	const [x2, y2] = worldToCanvas(bbox[2], bbox[1]); // Bottom-right
+
+	const printCanvasWidth = Math.abs(x2 - x1);
+	const printCanvasHeight = Math.abs(y2 - y1);
+
+	//console.log("GeoTIFF printing at:", { x1, y1, x2, y2, width: printCanvasWidth, height: printCanvasHeight });
+
+	// Draw the background image
+	printCtx.save();
+	printCtx.globalAlpha = imageTransparency; // It was semi transparent but as its the first I made it opague.
+	printCtx.drawImage(backgroundImage.printCanvas, Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
+
+	// Debug rectangle
+	printCtx.strokeStyle = "red";
+	printCtx.lineWidth = 1;
+	printCtx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
+
+	printCtx.restore();
+}
+function drawCompleteBlastDataForPrint(printCtx, printArea) {
+	if (!points || points.length === 0) return;
+
+	// Calculate data bounds locally
+	let minX = Math.min(...points.map((p) => p.startXLocation));
+	let maxX = Math.max(...points.map((p) => p.startXLocation));
+	let minY = Math.min(...points.map((p) => p.startYLocation));
+	let maxY = Math.max(...points.map((p) => p.startYLocation));
+
+	const padding = Math.max(maxX - minX, maxY - minY) * 0.05;
+	minX -= padding;
+	maxX += padding;
+	minY -= padding;
+	maxY += padding;
+
+	// Calculate scale locally
+	const dataWidth = maxX - minX;
+	const dataHeight = maxY - minY;
+	const scaleX = printArea.width / dataWidth;
+	const scaleY = printArea.height / dataHeight;
+	const printScale = Math.min(scaleX, scaleY) * 0.9;
+
+	// Center data
+	const scaledWidth = dataWidth * printScale;
+	const scaledHeight = dataHeight * printScale;
+	const offsetX = printArea.x + (printArea.width - scaledWidth) / 2;
+	const offsetY = printArea.y + (printArea.height - scaledHeight) / 2;
+
+	// Local coordinate conversion function
+	function worldToPrintCanvas(worldX, worldY) {
+		const printCentroidX = minX + dataWidth / 2;
+		const printCentroidY = minY + dataHeight / 2;
+		const x = (worldX - printCentroidX) * printScale + offsetX + scaledWidth / 2;
+		const y = -(worldY - printCentroidY) * printScale + offsetY + scaledHeight / 2;
+		return [x, y];
+	}
+
+	// Get display options
+	const displayOptions = getDisplayOptions();
+	const printHoleScale = parseFloat(document.getElementById("holeSize")?.value || 3);
+	const printFontSize = Math.max(8, Math.min(24, (12 * printScale) / 50));
+
+	printCtx.save();
+
+	// Draw KAD objects first
+	if (allKADDrawingsMap && allKADDrawingsMap.size > 0) {
+		for (const [name, entity] of allKADDrawingsMap.entries()) {
+			if (entity.entityType === "point") {
+				entity.data.forEach((point) => {
+					const [x, y] = worldToPrintCanvas(point.pointXLocation, point.pointYLocation);
+					printCtx.beginPath();
+					printCtx.arc(x, y, 2, 0, 2 * Math.PI);
+					printCtx.fillStyle = point.color || "black";
+					printCtx.fill();
+				});
+			} else if (entity.entityType === "line" || entity.entityType === "poly") {
+				const entityPoints = entity.data;
+				if (entityPoints.length < 2) continue;
+
+				printCtx.strokeStyle = entityPoints[0].color || "black";
+				printCtx.lineWidth = entityPoints[0].lineWidth || 1;
+				printCtx.beginPath();
+
+				for (let i = 0; i < entityPoints.length - 1; i++) {
+					const [sx, sy] = worldToPrintCanvas(entityPoints[i].pointXLocation, entityPoints[i].pointYLocation);
+					const [ex, ey] = worldToPrintCanvas(entityPoints[i + 1].pointXLocation, entityPoints[i + 1].pointYLocation);
+
+					if (i === 0) printCtx.moveTo(sx, sy);
+					printCtx.lineTo(ex, ey);
+				}
+
+				// Close polygon if needed
+				if (entity.entityType === "poly" && entityPoints.length > 2) {
+					printCtx.closePath();
+				}
+
+				printCtx.stroke();
+			}
+		}
+	}
+
+	// Draw holes
+	printCtx.lineWidth = 1;
+	printCtx.strokeStyle = strokeColor;
+	printCtx.font = parseInt(printFontSize) + "px Arial";
+
+	for (const point of points) {
+		const [x, y] = worldToPrintCanvas(point.startXLocation, point.startYLocation);
+		const [gradeX, gradeY] = worldToPrintCanvas(point.gradeXLocation, point.gradeYLocation);
+		const [lineEndX, lineEndY] = worldToPrintCanvas(point.endXLocation, point.endYLocation);
+
+		// Draw collar-to-toe track if angled
+		if (point.holeAngle > 0) {
+			printCtx.lineWidth = 1;
+
+			if (point.subdrillAmount < 0) {
+				// Negative subdrill
+				printCtx.beginPath();
+				printCtx.strokeStyle = strokeColor;
+				printCtx.moveTo(x, y);
+				printCtx.lineTo(lineEndX, lineEndY);
+				printCtx.stroke();
+
+				printCtx.beginPath();
+				printCtx.strokeStyle = "rgba(255, 0, 0, 0.2)";
+				printCtx.moveTo(lineEndX, lineEndY);
+				printCtx.lineTo(gradeX, gradeY);
+				printCtx.stroke();
+
+				printCtx.beginPath();
+				printCtx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+				printCtx.fillStyle = "rgba(255, 0, 0, 0.2)";
+				printCtx.fill();
+			} else {
+				// Positive subdrill
+				printCtx.beginPath();
+				printCtx.strokeStyle = strokeColor;
+				printCtx.moveTo(x, y);
+				printCtx.lineTo(gradeX, gradeY);
+				printCtx.stroke();
+
+				printCtx.beginPath();
+				printCtx.strokeStyle = "rgba(255, 0, 0, 1.0)";
+				printCtx.moveTo(gradeX, gradeY);
+				printCtx.lineTo(lineEndX, lineEndY);
+				printCtx.stroke();
+
+				printCtx.beginPath();
+				printCtx.arc(gradeX, gradeY, 3, 0, 2 * Math.PI);
+				printCtx.fillStyle = "rgba(255, 0, 0, 1.0)";
+				printCtx.fill();
+			}
+		}
+
+		// Draw toe if hole length is not zero
+		if (parseFloat(point.holeLengthCalculated).toFixed(1) != 0.0) {
+			const radiusInPixels = (document.getElementById("toeSlider")?.value || 3) * printScale;
+			printCtx.beginPath();
+			printCtx.lineWidth = 1;
+			printCtx.arc(lineEndX, lineEndY, radiusInPixels, 0, 2 * Math.PI);
+			printCtx.fillStyle = transparentFillColor;
+			printCtx.strokeStyle = strokeColor;
+			printCtx.stroke();
+			printCtx.fill();
+		}
+
+		// Calculate text positions
+		const textOffset = parseInt((point.holeDiameter / 1000) * printHoleScale * printScale);
+		const leftSideCollar = parseInt(x) - textOffset;
+		const rightSideCollar = parseInt(x) + textOffset;
+		const leftSideToe = parseInt(lineEndX) - textOffset;
+		const topSideCollar = parseInt(y - textOffset);
+		const middleSideCollar = parseInt(y + parseInt(printFontSize / 2));
+		const bottomSideCollar = parseInt(y + textOffset + parseInt(printFontSize));
+		const topSideToe = parseInt(lineEndY - textOffset);
+		const bottomSideToe = parseInt(lineEndY + textOffset + parseInt(printFontSize));
+
+		// Draw text labels based on display options
+		printCtx.font = parseInt(printFontSize - 2) + "px Arial";
+
+		if (displayOptions.holeID) {
+			printCtx.fillStyle = textFillColor;
+			printCtx.fillText(point.holeID, rightSideCollar, topSideCollar);
+		}
+		if (displayOptions.holeDia) {
+			printCtx.fillStyle = "green";
+			printCtx.fillText(parseFloat(point.holeDiameter).toFixed(0), rightSideCollar, middleSideCollar);
+		}
+		if (displayOptions.holeLen) {
+			printCtx.fillStyle = depthColor;
+			printCtx.fillText(parseFloat(point.holeLengthCalculated).toFixed(1), rightSideCollar, bottomSideCollar);
+		}
+		if (displayOptions.holeAng) {
+			printCtx.fillStyle = angleDipColor;
+			const text = parseFloat(point.holeAngle).toFixed(0);
+			const textWidth = printCtx.measureText(text).width;
+			printCtx.fillText(text, leftSideCollar - textWidth, topSideCollar);
+		}
+		if (displayOptions.holeDip) {
+			printCtx.fillStyle = angleDipColor;
+			const text = (90 - parseFloat(point.holeAngle)).toFixed(0);
+			const textWidth = printCtx.measureText(text).width;
+			printCtx.fillText(text, leftSideToe - textWidth, topSideToe);
+		}
+		if (displayOptions.holeBea) {
+			printCtx.fillStyle = "red";
+			const text = parseFloat(point.holeBearing).toFixed(1);
+			const textWidth = printCtx.measureText(text).width;
+			printCtx.fillText(text, leftSideToe - textWidth, bottomSideToe);
+		}
+		if (displayOptions.initiationTime) {
+			printCtx.fillStyle = "red";
+			const text = point.holeTime;
+			const textWidth = printCtx.measureText(text).width;
+			printCtx.fillText(text, leftSideCollar - textWidth, middleSideCollar);
+		}
+
+		// Draw main hole shape
+		const diameterPx = parseInt((point.holeDiameter / 1000) * printScale * printHoleScale);
+
+		printCtx.lineWidth = 1;
+		printCtx.strokeStyle = strokeColor;
+
+		if (parseFloat(point.holeLengthCalculated).toFixed(1) == 0.0) {
+			// Draw dummy (X shape)
+			printCtx.lineWidth = 2;
+			const radius = parseInt(0.2 * printHoleScale * printScale);
+			printCtx.beginPath();
+			printCtx.moveTo(x - radius, y - radius);
+			printCtx.lineTo(x + radius, y + radius);
+			printCtx.moveTo(x - radius, y + radius);
+			printCtx.lineTo(x + radius, y - radius);
+			printCtx.stroke();
+		} else if (point.holeDiameter == 0) {
+			// Draw square for no diameter
+			printCtx.lineWidth = 2;
+			const halfSide = 5;
+			printCtx.beginPath();
+			printCtx.rect(x - halfSide, y - halfSide, halfSide * 2, halfSide * 2);
+			printCtx.stroke();
+		} else {
+			// Draw normal hole (black filled circle)
+			printCtx.beginPath();
+			const minRadius = 1.5;
+			const drawRadius = diameterPx > minRadius ? diameterPx : minRadius;
+			printCtx.arc(x, y, drawRadius, 0, 2 * Math.PI);
+			printCtx.fillStyle = fillColor;
+			printCtx.fill();
+			printCtx.stroke();
+		}
+	}
+
+	printCtx.restore();
+}
+function printHeader(printCtx, x, y, width, height) {
+	printCtx.save();
+	printCtx.fillStyle = "black";
+	printCtx.font = "bold 18px Arial";
+	printCtx.textAlign = "left";
+	printCtx.textBaseline = "top";
+
+	// Title
+	const title = "KIRRA Blast Pattern";
+	printCtx.fillText(title, x, y + 10);
+
+	// Date and time
+	printCtx.font = "12px Arial";
+	const now = new Date();
+	const dateStr = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+	printCtx.textAlign = "right";
+	printCtx.fillText(dateStr, x + width, y + 10);
+
+	// Statistics
+	if (points && points.length > 0) {
+		const stats = getBlastStatistics();
+		printCtx.textAlign = "left";
+		printCtx.font = "10px Arial";
+		let statsY = y + 35;
+		const statsSpacing = 12;
+
+		printCtx.fillText("Holes: " + stats.holeCount, x, statsY);
+		printCtx.fillText("Avg Spacing: " + stats.avgSpacing.toFixed(1) + "m", x + 80, statsY);
+		printCtx.fillText("Avg Burden: " + stats.avgBurden.toFixed(1) + "m", x + 180, statsY);
+		printCtx.fillText("Pattern: " + stats.pattern, x + 280, statsY);
+	}
+
+	printCtx.restore();
+}
+function printFooter(printCtx, x, y, width, height) {
+	printCtx.save();
+	printCtx.fillStyle = "black";
+	printCtx.font = "10px Arial";
+	printCtx.textAlign = "center";
+	printCtx.textBaseline = "middle";
+
+	printCtx.fillText("Generated by KIRRA Blast Design Software", x + width / 2, y + height / 2);
+
+	printCtx.restore();
+}
+//----------------- REPLICATION OF THE UX Canvas but for High Resolution Printing ------------------///
+
+///------------------ STATISTICS CALCULATIONS HERE ------------------///
+function getBlastStatistics() {
+	return {
+		blastName: currentBlastName || "Unnamed Blast",
+		holeCount: points.length,
+		totalLength: points.reduce((sum, point) => sum + (point.length || 0), 0),
+		avgBurden: calculateAverageBurden(), // Implement if you have burden data
+		avgSpacing: calculateAverageSpacing(), // Implement if you have spacing data
+		powderFactor: calculatePowderFactor() // Implement if you have powder factor data
+	};
+}
+function detectRowsAndCalculateMetrics() {
+	if (!points || points.length === 0) return null;
+
+	// Group holes by Y-coordinate (with tolerance for slight variations)
+	const tolerance = 0.5; // Adjust based on your coordinate precision
+	const rows = [];
+
+	// Sort points by Y coordinate first
+	const sortedPoints = [...points].sort((a, b) => a.y - b.y);
+
+	// Group points into rows
+	let currentRow = [sortedPoints[0]];
+	let currentY = sortedPoints[0].y;
+
+	for (let i = 1; i < sortedPoints.length; i++) {
+		const point = sortedPoints[i];
+
+		if (Math.abs(point.y - currentY) <= tolerance) {
+			// Same row
+			currentRow.push(point);
+		} else {
+			// New row
+			rows.push(currentRow.sort((a, b) => a.x - b.x)); // Sort row by X
+			currentRow = [point];
+			currentY = point.y;
+		}
+	}
+
+	// Add the last row
+	if (currentRow.length > 0) {
+		rows.push(currentRow.sort((a, b) => a.x - b.x));
+	}
+
+	return calculateMetricsFromRows(rows);
+}
+function calculateMetricsFromRows(rows) {
+	const spacings = [];
+	const burdens = [];
+
+	// Calculate spacing (distance between holes in same row)
+	rows.forEach((row) => {
+		for (let i = 1; i < row.length; i++) {
+			const distance = Math.sqrt(Math.pow(row[i].x - row[i - 1].x, 2) + Math.pow(row[i].y - row[i - 1].y, 2));
+			spacings.push(distance);
+		}
+	});
+
+	// Calculate burden (distance between rows)
+	for (let i = 1; i < rows.length; i++) {
+		// Find closest holes between adjacent rows
+		const row1 = rows[i - 1];
+		const row2 = rows[i];
+
+		// Simple approach: use Y difference (assuming horizontal rows)
+		const burden = Math.abs(row2[0].y - row1[0].y);
+		burdens.push(burden);
+	}
+
+	return {
+		averageSpacing: spacings.length > 0 ? spacings.reduce((a, b) => a + b) / spacings.length : 0,
+		averageBurden: burdens.length > 0 ? burdens.reduce((a, b) => a + b) / burdens.length : 0,
+		mostCommonSpacing: findMostCommon(spacings),
+		mostCommonBurden: findMostCommon(burdens),
+		rowCount: rows.length,
+		totalHoles: points.length,
+		spacingVariations: spacings,
+		burdenVariations: burdens
+	};
+}
+function detectRowsWithClustering() {
+	if (!points || points.length === 0) return null;
+
+	// Use k-means or density-based clustering on Y-coordinates
+	const yCoordinates = points.map((p) => p.y);
+	const uniqueYs = [...new Set(yCoordinates.map((y) => Math.round(y * 10) / 10))];
+
+	// Group points by rounded Y coordinates
+	const rowGroups = {};
+
+	points.forEach((point) => {
+		const roundedY = Math.round(point.y * 10) / 10;
+		if (!rowGroups[roundedY]) {
+			rowGroups[roundedY] = [];
+		}
+		rowGroups[roundedY].push(point);
+	});
+
+	// Convert to array and sort each row by X
+	const rows = Object.values(rowGroups)
+		.map((row) => row.sort((a, b) => a.x - b.x))
+		.sort((a, b) => a[0].y - b[0].y);
+
+	return calculateMetricsFromRows(rows);
+}
+function findMostCommon(distances) {
+	if (distances.length === 0) return 0;
+
+	// Round to nearest 0.1 to group similar distances
+	const rounded = distances.map((d) => Math.round(d * 10) / 10);
+
+	// Count occurrences
+	const counts = {};
+	rounded.forEach((d) => {
+		counts[d] = (counts[d] || 0) + 1;
+	});
+
+	// Find most common
+	let mostCommon = 0;
+	let maxCount = 0;
+
+	for (const [distance, count] of Object.entries(counts)) {
+		if (count > maxCount) {
+			maxCount = count;
+			mostCommon = parseFloat(distance);
+		}
+	}
+
+	return mostCommon;
+}
+function calculateAverageBurden() {
+	const metrics = detectRowsAndCalculateMetrics();
+	return metrics ? metrics.averageBurden : 0;
+}
+
+function calculateAverageSpacing() {
+	const metrics = detectRowsAndCalculateMetrics();
+	return metrics ? metrics.averageSpacing : 0;
+}
+
+function calculateBlastMetrics() {
+	const metrics = detectRowsAndCalculateMetrics();
+
+	if (!metrics) return null;
+
+	return {
+		averageSpacing: metrics.averageSpacing.toFixed(1),
+		averageBurden: metrics.averageBurden.toFixed(1),
+		mostCommonSpacing: metrics.mostCommonSpacing.toFixed(1),
+		mostCommonBurden: metrics.mostCommonBurden.toFixed(1),
+		rowCount: metrics.rowCount,
+		holesPerRow: Math.round(metrics.totalHoles / metrics.rowCount),
+		totalHoles: metrics.totalHoles,
+		patternType: detectPatternType(metrics)
+	};
+}
+
+function detectPatternType(metrics) {
+	const spacingVariation = Math.abs(metrics.averageSpacing - metrics.mostCommonSpacing);
+	const burdenVariation = Math.abs(metrics.averageBurden - metrics.mostCommonBurden);
+
+	if (spacingVariation < 0.5 && burdenVariation < 0.5) {
+		return "Regular Grid";
+	} else if (spacingVariation < 1.0 && burdenVariation < 1.0) {
+		return "Semi-Regular Grid";
+	} else {
+		return "Irregular Pattern";
+	}
+}
+
+function calculatePowderFactor() {
+	const voronoiMetrics = getVoronoiMetrics(points, true);
+	if (!voronoiMetrics || voronoiMetrics.length === 0) {
+		return 0;
+	}
+	const totalPowderFactor = voronoiMetrics.reduce((sum, cell) => sum + (cell.powderFactor || 0), 0);
+	const averagePowderFactor = voronoiMetrics.length > 0 ? totalPowderFactor / voronoiMetrics.length : 0;
+	return averagePowderFactor;
+}
+
+function calculateBlastVolume() {
+	const voronoiMetrics = getVoronoiMetrics(points, true);
+	if (!voronoiMetrics || voronoiMetrics.length === 0) {
+		return 0;
+	}
+	const totalVolume = voronoiMetrics.reduce((sum, cell) => sum + (cell.volume || 0), 0);
+	return totalVolume;
+}
+
+function calculateBlastMass() {
+	const voronoiMetrics = getVoronoiMetrics(points, true);
+	if (!voronoiMetrics || voronoiMetrics.length === 0) {
+		return 0;
+	}
+	const totalMass = voronoiMetrics.reduce((sum, cell) => sum + (cell.mass || 0), 0);
+	return totalMass;
+}
+
+function calculateBlastArea() {
+	const voronoiMetrics = getVoronoiMetrics(points, true);
+	if (!voronoiMetrics || voronoiMetrics.length === 0) {
+		return 0;
+	}
+	const totalArea = voronoiMetrics.reduce((sum, cell) => sum + (cell.area || 0), 0);
+	return totalArea;
+}
+
+function calculateTotalLength() {
+	//use the sum of the points array calculatedHoleLength
+	const totalMeters = points.reduce((sum, point) => sum + (point.calculatedHoleLength || 0), 0);
+	return totalMeters;
+}
+
+///------------------ STATISTICS CALCULATION END HERE ----------------///
+
 //Make sure everything is loaded before the application initialization
 
-// Replace ALL separate DOMContentLoaded listeners with this single one
+//----------------- Floating Tree View for File interactions ------------------///
+// Tree View System
+class TreeView {
+	constructor(containerId) {
+		this.container = document.getElementById(containerId);
+		this.selectedNodes = new Set();
+		this.expandedNodes = new Set();
+		this.dragData = { isDragging: false, startX: 0, startY: 0 };
+		this.isCollapsed = false;
+
+		this.init();
+	}
+
+	init() {
+		this.setupEventListeners();
+		//this.makeResizable();
+		this.updateTreeData();
+	}
+
+	setupEventListeners() {
+		// Panel dragging
+		const header = document.getElementById("treePanelHeader");
+		header.addEventListener("mousedown", this.startDrag.bind(this));
+
+		// Panel controls
+		document.getElementById("treeCollapseBtn").addEventListener("click", this.toggleCollapse.bind(this));
+		document.getElementById("treeCloseBtn").addEventListener("click", this.hide.bind(this));
+
+		// Tree interactions
+		const treeView = document.getElementById("treeView");
+		treeView.addEventListener("click", this.handleTreeClick.bind(this));
+		treeView.addEventListener("contextmenu", this.handleContextMenu.bind(this));
+
+		// Context menu
+		// Hide context menu on startup
+		document.getElementById("treeContextMenu").style.display = "none";
+		const contextMenu = document.getElementById("treeContextMenu");
+		contextMenu.addEventListener("click", this.handleContextAction.bind(this));
+
+		// Hide context menu on outside click
+		document.addEventListener("click", this.hideContextMenu.bind(this));
+
+		// Keyboard shortcuts
+		document.addEventListener("keydown", this.handleKeyboard.bind(this));
+	}
+
+	startDrag(e) {
+		this.dragData.isDragging = true;
+		this.dragData.startX = e.clientX - this.container.offsetLeft;
+		this.dragData.startY = e.clientY - this.container.offsetTop;
+
+		document.addEventListener("mousemove", this.drag.bind(this));
+		document.addEventListener("mouseup", this.stopDrag.bind(this));
+		e.preventDefault();
+	}
+
+	drag(e) {
+		if (!this.dragData.isDragging) return;
+
+		const x = e.clientX - this.dragData.startX;
+		const y = e.clientY - this.dragData.startY;
+
+		this.container.style.left = x + "px";
+		this.container.style.top = y + "px";
+	}
+
+	stopDrag() {
+		this.dragData.isDragging = false;
+		document.removeEventListener("mousemove", this.drag);
+		document.removeEventListener("mouseup", this.stopDrag);
+	}
+
+	toggleCollapse() {
+		this.isCollapsed = !this.isCollapsed;
+		this.container.classList.toggle("collapsed", this.isCollapsed);
+
+		const btn = document.getElementById("treeCollapseBtn");
+		btn.textContent = this.isCollapsed ? "+" : "−";
+	}
+
+	hide() {
+		this.container.style.display = "none";
+	}
+
+	show() {
+		this.container.style.display = "flex";
+	}
+
+	handleTreeClick(e) {
+		const treeItem = e.target.closest(".tree-item");
+		if (!treeItem) return;
+
+		const expandBtn = e.target.closest(".tree-expand");
+		if (expandBtn && !expandBtn.classList.contains("leaf")) {
+			this.toggleNode(treeItem);
+			return;
+		}
+
+		// Handle selection
+		const nodeId = treeItem.dataset.nodeId;
+
+		if (e.ctrlKey || e.metaKey) {
+			// Multi-select
+			if (this.selectedNodes.has(nodeId)) {
+				this.selectedNodes.delete(nodeId);
+				treeItem.classList.remove("selected", "multi-selected");
+			} else {
+				this.selectedNodes.add(nodeId);
+				treeItem.classList.add("multi-selected");
+			}
+		} else {
+			// Single select
+			this.clearSelection();
+			this.selectedNodes.add(nodeId);
+			treeItem.classList.add("selected");
+		}
+
+		this.onSelectionChange();
+	}
+
+	toggleNode(treeItem) {
+		const nodeId = treeItem.dataset.nodeId;
+		const children = treeItem.parentNode.querySelector(".tree-children");
+		const expandBtn = treeItem.querySelector(".tree-expand");
+
+		if (!children) return;
+
+		if (this.expandedNodes.has(nodeId)) {
+			this.expandedNodes.delete(nodeId);
+			children.classList.remove("expanded");
+			expandBtn.classList.remove("expanded");
+		} else {
+			this.expandedNodes.add(nodeId);
+			children.classList.add("expanded");
+			expandBtn.classList.add("expanded");
+		}
+	}
+
+	clearSelection() {
+		this.selectedNodes.clear();
+		this.container.querySelectorAll(".tree-item").forEach((item) => {
+			item.classList.remove("selected", "multi-selected");
+		});
+	}
+
+	handleContextMenu(e) {
+		const treeItem = e.target.closest(".tree-item");
+		if (!treeItem) return;
+
+		e.preventDefault();
+
+		// If right-clicked item is not selected, select it
+		const nodeId = treeItem.dataset.nodeId;
+		if (!this.selectedNodes.has(nodeId)) {
+			this.clearSelection();
+			this.selectedNodes.add(nodeId);
+			treeItem.classList.add("selected");
+		}
+
+		this.showContextMenu(e.clientX, e.clientY);
+	}
+
+	showContextMenu(x, y) {
+		const menu = document.getElementById("treeContextMenu");
+
+		// Get the selected node to determine what options to show
+		const selectedNodeIds = Array.from(this.selectedNodes);
+		const isTopLevelParent = selectedNodeIds.some((nodeId) => nodeId === "blast" || nodeId === "drawings" || nodeId === "surfaces" || nodeId === "images");
+
+		// Show/hide delete and properties options based on selection
+		const deleteItem = menu.querySelector('[data-action="delete"]');
+		const propertiesItem = menu.querySelector('[data-action="properties"]');
+
+		if (deleteItem) {
+			deleteItem.style.display = isTopLevelParent ? "none" : "flex";
+		}
+
+		if (propertiesItem) {
+			propertiesItem.style.display = isTopLevelParent ? "none" : "flex";
+		}
+
+		menu.style.left = x + "px";
+		menu.style.top = y + "px";
+		menu.style.display = "block";
+	}
+
+	hideContextMenu() {
+		document.getElementById("treeContextMenu").style.display = "none";
+	}
+
+	handleContextAction(e) {
+		const action = e.target.closest(".tree-context-item")?.dataset.action;
+		if (!action) return;
+
+		this.hideContextMenu();
+
+		switch (action) {
+			case "delete":
+				this.deleteSelected();
+				break;
+			case "hide":
+				this.hideSelected();
+				break;
+			case "show":
+				this.showSelected(); // Make sure the "show" action is handled
+				break;
+			case "properties":
+				this.showProperties();
+				break;
+		}
+	}
+
+	deleteSelected() {
+		if (this.selectedNodes.size === 0) return;
+
+		const nodeIds = Array.from(this.selectedNodes);
+
+		// Determine what types we're deleting
+		const hasHoles = nodeIds.some((nodeId) => nodeId.split("-")[0] === "hole");
+		const hasEntities = nodeIds.some((nodeId) => nodeId.split("-")[0] === "entity");
+
+		if (hasEntities) {
+			// Deleting blast entities (which deletes all holes in that blast)
+			Swal.fire({
+				title: "Delete Blast",
+				html: nodeIds.length === 1 ? "Delete this entire blast and all its holes?" : `Delete ${nodeIds.length} blasts and all their holes?`,
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Delete Blast",
+				cancelButtonText: "Cancel",
+				confirmButtonColor: "#d33",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					nodeIds.forEach((nodeId) => {
+						const type = nodeId.split("-")[0];
+						const itemId = nodeId.split("-").slice(1).join("-");
+
+						if (type === "entity") {
+							// Delete all holes with this entity name
+							const entityName = itemId;
+							points = points.filter((hole) => hole.entityName !== entityName);
+							console.log(`Deleted all holes in blast: ${entityName}`);
+						} else if (type === "surface") {
+							deleteSurfaceFromDB(itemId).then(() => {
+								surfacePoints = [];
+								surfaceTriangles = [];
+							});
+						} else if (type === "image") {
+							deleteImageFromDB(itemId).then(() => {
+								backgroundImage = null;
+							});
+						} else {
+							this.deleteNode(nodeId);
+						}
+					});
+					this.updateTreeData();
+					drawData(points, selectedHole);
+				}
+			});
+		} else if (hasHoles) {
+			// Deleting individual holes with renumber option
+			Swal.fire({
+				title: "Delete Holes",
+				html: nodeIds.length === 1 ? "Delete this hole?" : `Delete ${nodeIds.length} holes?`,
+				icon: "warning",
+				showCancelButton: true,
+				showDenyButton: true,
+				confirmButtonText: "Delete Only",
+				denyButtonText: "Delete  Renumber",
+				cancelButtonText: "Cancel",
+				confirmButtonColor: "#d33",
+				denyButtonColor: "#ff6b35",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					denyButton: "deny",
+					cancelButton: "cancel"
+				}
+			}).then((result) => {
+				if (result.isConfirmed || result.isDenied) {
+					const shouldRenumber = result.isDenied;
+
+					nodeIds.forEach((nodeId) => {
+						const type = nodeId.split("-")[0];
+						const itemId = nodeId.split("-").slice(1).join("-");
+
+						if (type === "hole") {
+							const holeIndex = points.findIndex((hole) => hole.holeID === itemId);
+							if (holeIndex !== -1) {
+								const entityName = points[holeIndex].entityName;
+								points.splice(holeIndex, 1);
+
+								if (shouldRenumber) {
+									// Renumber remaining holes in the same entity
+									const entityHoles = points
+										.filter((hole) => hole.entityName === entityName)
+										.sort((a, b) => {
+											if (Math.abs(a.startYLocation - b.startYLocation) > 0.1) {
+												return b.startYLocation - a.startYLocation;
+											}
+											return a.startXLocation - b.startXLocation;
+										});
+
+									entityHoles.forEach((hole, index) => {
+										hole.holeID = (index + 1).toString();
+									});
+								}
+							}
+						}
+					});
+					this.updateTreeData();
+					drawData(points, selectedHole);
+				}
+			});
+		} else {
+			// Standard confirmation for other items (surfaces, images, drawings, etc.)
+			Swal.fire({
+				title: "Delete Items",
+				html: nodeIds.length === 1 ? "Delete this item?" : "Delete " + nodeIds.length + " items?",
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Delete",
+				cancelButtonText: "Cancel",
+				confirmButtonColor: "#d33",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					nodeIds.forEach((nodeId) => {
+						const type = nodeId.split("-")[0];
+						const itemId = nodeId.split("-").slice(1).join("-");
+						if (type === "surface") {
+							deleteSurfaceFromDB(itemId).then(() => {
+								surfacePoints = [];
+								surfaceTriangles = [];
+								drawData(points, selectedHole);
+							});
+						} else if (type === "image") {
+							deleteImageFromDB(itemId).then(() => {
+								backgroundImage = null;
+								drawData(points, selectedHole);
+							});
+						} else if (type === "points" || type === "line" || type === "poly" || type === "circle" || type === "text") {
+							// Delete drawing objects from allKADDrawingsMap
+							const entityName = itemId;
+							if (allKADDrawingsMap && allKADDrawingsMap.has(entityName)) {
+								allKADDrawingsMap.delete(entityName);
+								console.log(`Deleted drawing object: ${entityName}`);
+
+								if (typeof debouncedSaveKAD === "function") {
+									debouncedSaveKAD();
+								}
+
+								drawData(points, selectedHole);
+							}
+						} else {
+							this.deleteNode(nodeId);
+						}
+					});
+					this.updateTreeData();
+				}
+			});
+		}
+	}
+
+	hideSelected() {
+		this.selectedNodes.forEach((nodeId) => {
+			const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
+			if (element) {
+				element.style.opacity = "0.5";
+				element.classList.add("hidden-node");
+
+				// Handle specific node types
+				const type = nodeId.split("-")[0];
+				if (type === "surface") {
+					surfaceVisible = false;
+					drawData(points, selectedHole);
+				} else if (type === "image") {
+					imageVisible = false;
+					drawData(points, selectedHole);
+				}
+			}
+		});
+	}
+
+	showSelected() {
+		this.selectedNodes.forEach((nodeId) => {
+			const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
+			if (element) {
+				element.style.opacity = "1";
+				element.classList.remove("hidden-node");
+
+				// Handle specific node types
+				const type = nodeId.split("-")[0];
+				if (type === "surface") {
+					surfaceVisible = true;
+					drawData(points, selectedHole);
+				} else if (type === "image") {
+					imageVisible = true;
+					drawData(points, selectedHole);
+				}
+			}
+		});
+	}
+	showProperties() {
+		if (this.selectedNodes.size === 1) {
+			const nodeId = Array.from(this.selectedNodes)[0];
+			const type = nodeId.split("-")[0];
+
+			try {
+				if (type === "surface") {
+					// Check if the function exists in global scope
+					if (typeof showSurfaceContextMenu === "function") {
+						const canvas = document.getElementById("renderCanvas") || document.querySelector("canvas");
+						if (canvas) {
+							const rect = canvas.getBoundingClientRect();
+							const centerX = rect.left + rect.width / 2;
+							const centerY = rect.top + rect.height / 2;
+
+							// Call the function in the global scope
+							window.showSurfaceContextMenu(centerX, centerY);
+						} else {
+							console.warn("Canvas not found for surface context menu");
+							// Fallback position
+							window.showSurfaceContextMenu(window.innerWidth / 2, window.innerHeight / 2);
+						}
+					} else {
+						console.error("showSurfaceContextMenu function not found");
+					}
+				} else if (type === "image") {
+					// Check if the function exists in global scope
+					if (typeof showImageContextMenu === "function") {
+						const canvas = document.getElementById("renderCanvas") || document.querySelector("canvas");
+						if (canvas) {
+							const rect = canvas.getBoundingClientRect();
+							const centerX = rect.left + rect.width / 2;
+							const centerY = rect.top + rect.height / 2;
+
+							// Call the function in the global scope
+							window.showImageContextMenu(centerX, centerY);
+						} else {
+							console.warn("Canvas not found for image context menu");
+							// Fallback position
+							window.showImageContextMenu(window.innerWidth / 2, window.innerHeight / 2);
+						}
+					} else {
+						console.error("showImageContextMenu function not found");
+					}
+				} else {
+					// For other node types
+					this.showNodeProperties(nodeId);
+				}
+			} catch (error) {
+				console.error("Error showing properties:", error);
+			}
+		}
+	}
+
+	handleKeyboard(e) {
+		if (!this.container.style.display === "none") return;
+
+		switch (e.key) {
+			case "Delete":
+				this.deleteSelected();
+				break;
+			case "Escape":
+				this.clearSelection();
+				break;
+		}
+	}
+
+	// Data management
+	updateTreeData() {
+		const treeData = this.buildTreeData();
+		const html = this.renderTree(treeData);
+		document.getElementById("treeView").innerHTML = html;
+	}
+
+	buildTreeData() {
+		// Build tree structure from your data
+		const tree = [
+			{
+				id: "blast",
+				type: "blast",
+				label: "Blast",
+				expanded: true,
+				children: this.buildBlastData()
+			},
+			{
+				id: "drawings",
+				type: "drawing",
+				label: "Drawings",
+				expanded: true,
+				children: this.buildDrawingData()
+			},
+			{
+				id: "surfaces",
+				type: "surface",
+				label: "Surfaces",
+				expanded: true,
+				children: this.buildSurfaceData()
+			},
+			{
+				id: "images",
+				type: "image",
+				label: "Images",
+				expanded: true,
+				children: this.buildImageData()
+			}
+		];
+
+		return tree;
+	}
+
+	buildBlastData() {
+		if (!points || points.length === 0) return [];
+
+		// Group holes by entity name
+		const entities = {};
+		points.forEach((hole) => {
+			const entityName = hole.entityName || "Unknown";
+			if (!entities[entityName]) {
+				entities[entityName] = [];
+			}
+			entities[entityName].push(hole);
+		});
+
+		return Object.keys(entities).map((entityName) => {
+			const holes = entities[entityName];
+			const totalLength = holes.reduce((sum, hole) => sum + (hole.holeLengthCalculated || 0), 0);
+			const metrics = getVoronoiMetrics(holes);
+			const stats = getBlastStatistics();
+
+			const volume = metrics.totalVolume;
+
+			return {
+				id: `entity-${entityName}`,
+				type: "entity",
+				label: entityName,
+				meta: "(" + holes.length + ", " + parseFloat(totalLength).toFixed(1) + "m, " + parseFloat(volume).toFixed(1) + "m³)",
+				children: holes.map((hole, index) => ({
+					id: "hole-" + hole.holeID || index,
+					type: "hole",
+					label: hole.holeID || `Hole ${index + 1}`,
+					meta: "",
+					children: [
+						{ id: hole.holeID + "-startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "-starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "-startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "-gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "-diameter", type: "property", label: "Diameter", meta: `${hole.holeDiameter || 115}mm` },
+						{ id: hole.holeID + "-angle", type: "property", label: "Angle", meta: `${hole.holeAngle.toFixed(0) || 0}°` },
+						{ id: hole.holeID + "-bearing", type: "property", label: "Bearing", meta: `${hole.holeBearing.toFixed(2) || 0}°` },
+						{ id: hole.holeID + "-length", type: "property", label: "Length", meta: `${hole.holeLengthCalculated.toFixed(2) || 0}m` },
+						{ id: hole.holeID + "-subdrill", type: "property", label: "Subdrill", meta: `${hole.subdrillAmount.toFixed(2) || 0}m` },
+						{ id: hole.holeID + "-type", type: "property", label: "Hole Type", meta: hole.holeType || "Production" }
+					]
+				}))
+			};
+		});
+	}
+
+	buildDrawingData() {
+		const drawingChildren = [];
+
+		const pointsChildren = [];
+		const linesChildren = [];
+		const polysChildren = [];
+		const circlesChildren = [];
+		const textsChildren = [];
+
+		if (typeof allKADDrawingsMap !== "undefined" && allKADDrawingsMap && allKADDrawingsMap.size > 0) {
+			for (const [name, entity] of allKADDrawingsMap.entries()) {
+				switch (entity.entityType) {
+					case "point":
+						pointsChildren.push({
+							id: "points-" + name,
+							type: "points",
+							label: name,
+							meta: `(${entity.data?.length || 0})`
+						});
+						break;
+					case "line":
+						linesChildren.push({
+							id: "line-" + name,
+							type: "line",
+							label: name,
+							meta: `(${entity.data?.length || 0})`
+						});
+						break;
+					case "poly":
+						polysChildren.push({
+							id: "poly-" + name,
+							type: "polygon",
+							label: name,
+							meta: `(${entity.data?.length || 0})`
+						});
+						break;
+					case "circle":
+						circlesChildren.push({
+							id: "circle-" + name,
+							type: "circle",
+							label: name,
+							meta: `(${entity.data?.length || 0})`
+						});
+						break;
+					case "text":
+						textsChildren.push({
+							id: "text-" + name,
+							type: "text",
+							label: name,
+							meta: `(${entity.data?.length || 0})`
+						});
+						break;
+				}
+			}
+		}
+
+		// Add categories with children to the drawing tree
+		if (pointsChildren.length > 0) {
+			drawingChildren.push({
+				id: "drawings-points",
+				type: "points-folder",
+				label: "Points",
+				children: pointsChildren
+			});
+		}
+
+		if (linesChildren.length > 0) {
+			drawingChildren.push({
+				id: "drawings-lines",
+				type: "lines-folder",
+				label: "Lines",
+				children: linesChildren
+			});
+		}
+
+		if (polysChildren.length > 0) {
+			drawingChildren.push({
+				id: "drawings-polygons",
+				type: "polygons-folder",
+				label: "Polygons",
+				children: polysChildren
+			});
+		}
+
+		if (circlesChildren.length > 0) {
+			drawingChildren.push({
+				id: "drawings-circles",
+				type: "circle-folder",
+				label: "Circles",
+				children: circlesChildren
+			});
+		}
+
+		if (textsChildren.length > 0) {
+			drawingChildren.push({
+				id: "drawings-texts",
+				type: "text-folder",
+				label: "Texts",
+				children: textsChildren
+			});
+		}
+
+		return drawingChildren;
+	}
+
+	// Fixed buildSurfaceData() - use surfacePoints and surfaceTriangles instead of triangulations
+	buildSurfaceData() {
+		// Check if we have surface data loaded
+		if (typeof surfacePoints !== "undefined" && surfacePoints && surfacePoints.length > 0 && typeof surfaceTriangles !== "undefined" && surfaceTriangles && surfaceTriangles.length > 0) {
+			return [
+				{
+					id: "surface-terrain",
+					type: "surface",
+					label: "Surface Terrain",
+					meta: "(" + surfacePoints.length + " points)"
+				}
+			];
+		}
+		return [];
+	}
+
+	// Fixed buildImageData() - use backgroundImage instead of allImages
+	buildImageData() {
+		// Check if background image is loaded
+		if (typeof backgroundImage !== "undefined" && backgroundImage) {
+			return [
+				{
+					id: "image-" + (backgroundImage.name || "background"),
+					type: "image",
+					label: backgroundImage.name || "Background Image",
+					meta: backgroundImage.type || ""
+				}
+			];
+		}
+		return [];
+	}
+
+	renderTree(nodes, level = 0) {
+		return nodes
+			.map((node) => {
+				const hasChildren = node.children && node.children.length > 0;
+				const isExpanded = this.expandedNodes.has(node.id) || node.expanded;
+				const isSelected = this.selectedNodes.has(node.id);
+
+				let html = `
+                <li class="tree-node">
+                    <div class="tree-item ${isSelected ? "selected" : ""}" data-node-id="${node.id}">
+                        <span class="tree-expand ${hasChildren ? (isExpanded ? "expanded" : "") : "leaf"}"></span>
+                        <span class="tree-icon ${node.type}"></span>
+                        <span class="tree-label">${node.label}</span>
+                        ${node.meta ? `<span class="tree-meta">${node.meta}</span>` : ""}
+                    </div>
+            `;
+
+				if (hasChildren) {
+					html += `
+                    <ul class="tree-children ${isExpanded ? "expanded" : ""}">
+                        ${this.renderTree(node.children, level + 1)}
+                    </ul>
+                `;
+				}
+
+				html += "</li>";
+				return html;
+			})
+			.join("");
+	}
+
+	// Callbacks
+	onSelectionChange() {
+		// Override this method to handle selection changes
+		console.log("Selected nodes:", Array.from(this.selectedNodes));
+	}
+
+	deleteNode(nodeId) {
+		// Override this method to handle node deletion
+		console.log("Delete node:", nodeId);
+	}
+
+	showNodeProperties(nodeId) {
+		// Override this method to show node properties
+		console.log("Show properties for:", nodeId);
+	}
+}
+
+// Initialize tree view
+let treeView;
+// Add this debounced version
+let updateTreeViewTimeout;
+function debouncedUpdateTreeView(delay = 100) {
+	if (updateTreeViewTimeout) {
+		clearTimeout(updateTreeViewTimeout);
+	}
+	updateTreeViewTimeout = setTimeout(() => {
+		updateTreeView(); // ✅ Call updateTreeView(), not itself!
+	}, delay);
+}
+// Update tree when data changes
+function updateTreeView() {
+	if (treeView) {
+		treeView.updateTreeData();
+	}
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 	console.log("🚀 Starting application initialization...");
 
-	// Small delay to ensure all elements are ready
+	// REMOVE THIS LINE:
+	// treeView = new TreeView("treePanel");
+
+	// Just hide the panel
+	const treePanel = document.getElementById("treePanel");
+	if (treePanel) {
+		treePanel.style.display = "none";
+	}
+
+	// Initialize TreeView ONLY when the button is first clicked
+	document.getElementById("showTreeBtn").addEventListener("click", function () {
+		// Create TreeView on first use
+		if (!treeView) {
+			console.log("🌳 Creating TreeView for first time...");
+			treeView = new TreeView("treePanel");
+			updateTreeView();
+		}
+
+		// Toggle panel visibility
+		const treePanel = document.getElementById("treePanel");
+		if (treePanel) {
+			if (treePanel.style.display === "none" || !treePanel.style.display) {
+				treePanel.style.display = "flex";
+			} else {
+				treePanel.style.display = "none";
+			}
+		}
+	});
+
+	// The rest of your initialization code...
 	setTimeout(function () {
 		getDarkModeSettings();
 		updatePopup();

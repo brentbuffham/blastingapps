@@ -3,7 +3,7 @@
 	<!--
     Description: This file contains the main UI for the Kirra App
 	Author: Brent Buffham
-	Last Modified: "20250629.0300AWST"
+	Last Modified: "20250702.0008AWST"
 -->
 
 	<head>
@@ -65,13 +65,28 @@
 		<!-- Include DXFParser from jsDeliver-->
 		<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
 
+		<!-- D3 Polygon -->
 		<script src="https://cdn.jsdelivr.net/npm/d3-polygon@3"></script>
 
+		<!-- Clipper -->
 		<script src="https://cdn.jsdelivr.net/npm/clipper-lib@1.0.0/clipper.js"></script>
 
+		<!-- Geotiff -->
 		<script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.js"></script>
 
+		<!-- Proj4 -->
 		<script src="https://unpkg.com/proj4@2.9.1/dist/proj4.js"></script>
+
+		<!-- PrintJS -->
+		<script src="https://cdn.jsdelivr.net/npm/print-js@1.6.0/dist/print.min.js"></script>
+		<!-- JsPDF -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<!-- HTML2Canvas -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<!-- PDF Make -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+		<!-- PDF Make Fonts -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
 
 		<!-- Load all the scripts before the stylesheet -->
 		<link rel="stylesheet" href="kirra.css">
@@ -1519,7 +1534,7 @@
 			<!-- <button id="resetZoomButton">R</button>&nbsp;&nbsp;-->
 			<!--</div> -->
 			<div class="menu">
-				<button id="buttonGoBack" type="button" title="Go Back" href="index.html">
+				<button id="buttonGoBack" type="button" title="Go Back" placeholder="Go Back">
 					<img src="icons/arrow-back.png" alt="Go Back">
 				</button>&nbsp;&nbsp;
 			</div>
@@ -1677,6 +1692,39 @@
 						<label class="icon-button file-import-btn" data-target="fileInputGeotiff" title="File Geotiff Input">
 							<img src="icons/TIF-image.png" alt="Load Geotiff">
 						</label>
+						<!-- Print buttons -->
+						<label class="icon-button file-import-btn" onclick="printToPDF()" title="Print to PDF">
+							<img src="icons/print-to-PDF.png" alt="Print to PDF">
+						</label>
+						<label class="icon-button file-import-btn" onclick="printCanvas()" title="Print Canvas">
+							<img src="icons/print-to-printer.png" alt="Print Canvas">
+						</label>
+						<label class="icon-button file-import-btn" onclick="printToFile()" title="Print to File">
+							<img src="icons/print-to-file.png" alt="Print to File">
+						</label>
+					</div>
+					<hr>
+					<div class="switch-container">
+						<label for="addPrintPreviewToggle" id="addPrintPreviewLabel">Print Preview Mode:</label>
+						<label class="switch">
+							<input type="checkbox" id="addPrintPreviewToggle" placeholder="Add Print Preview Toggle">
+							<span class="slider round"></span>
+						</label>
+					</div>
+					<div class="switch-container">
+						<label for="paperSize" id="paperSizeLabel">Paper Size:</label>
+						<select id="paperSize" onchange="changePaperSize()">
+							<option value="A4">A4</option>
+							<option value="A3">A3</option>
+							<option value="A2">A2</option>
+							<option value="A1">A1</option>
+							<option value="A0">A0</option>
+						</select>
+						<label for="orientation" id="orientationLabel"> Orientation:</label>
+						<select id="orientation" onchange="changeOrientation()">
+							<option value="landscape">Landscape</option>
+							<option value="portrait">Portrait</option>
+						</select>
 					</div>
 				</div>
 				<!-- <div class="panel">
@@ -2295,17 +2343,57 @@
 				<img src="icons/ruler-bearing.png" alt="Ruler Protractor">
 			</label>
 			<label class="label2" id="viewLabel">View</label>
-			<!-- this is a single icon button that spans both columns -->
+			<!-- Add class="toggle-buttons-custom icon-button single" to make it a single icon button-->
 			<input type="checkbox" id="resetViewTool" name="resetViewTool" value="resetViewTool">
-			<label for="resetViewTool" class="toggle-buttons-custom icon-button single" title="Reset View">
+			<label for="resetViewTool" class="toggle-buttons-custom icon-button" title="Reset View">
 				<img src="icons/circle-letter-r.png" alt="Reset View">
+			</label>
+			<!-- Add class="toggle-buttons-custom icon-button single" to make it a single icon button-->
+			<input type="checkbox" id="showTreeBtn" name="showTreeBtn" value="showTreeBtn">
+			<label for="showTreeBtn" class="toggle-buttons-custom icon-button" title="Show Data Explorer">
+				<img src="icons/article.png" alt="Data Explorer">
 			</label>
 
 			<!-- </div> -->
 			<!-- Add more buttons as needed -->
 		</div>
 		<!-- END - FLOATING TOOLBAR -->
+		<!-- Add this to your HTML body, preferably near the end -->
+		<div id="treePanel" class="tree-panel">
+			<div class="tree-panel-header" id="treePanelHeader">
+				<span>Data Explorer</span>
+				<div class="tree-panel-controls">
+					<button class="tree-panel-btn" id="treeCollapseBtn" title="Collapse/Expand">−</button>
+					<button class="tree-panel-btn" id="treeCloseBtn" title="Close">×</button>
+				</div>
+			</div>
+			<div class="tree-panel-content" id="treePanelContent">
+				<ul class="tree-view" id="treeView">
+					<!-- Tree content will be dynamically generated -->
+				</ul>
+			</div>
+		</div>
 
+		<!-- Context Menu -->
+		<div id="treeContextMenu" class="tree-context-menu" title="Context Menu">
+			<div class="tree-context-item" data-action="delete">
+				<span class="tree-icon"></span>
+				<span>Delete</span>
+			</div>
+			<div class="tree-context-item" data-action="hide">
+				<span class="tree-icon"></span>
+				<span>Hide</span>
+			</div>
+			<div class="tree-context-item" data-action="show">
+				<span class="tree-icon"></span>
+				<span>Show</span>
+			</div>
+			<div class="tree-context-separator"></div>
+			<div class="tree-context-item" data-action="properties">
+				<span class="tree-icon"></span>
+				<span>Properties</span>
+			</div>
+		</div>
 
 		</div>
 
