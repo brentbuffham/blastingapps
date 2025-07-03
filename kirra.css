@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250703.1220AWST"
+    Last Modified: "20250704.0225AWST"
 */
 
 :root {
@@ -1590,6 +1590,21 @@ body.dark-mode .file-import-btn:hover {
     box-sizing: border-box;
 }
 
+/* Dropdown with 100% width */
+.swal2-popup .dropdown-80 {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+    /* changed from inline-block */
+    box-sizing: border-box;
+}
+
+.swal2-popup .button-container-2col select.dropdown-80 {
+    flex: 1 1 100%;
+}
+
 /* Scope to SweetAlert only to avoid affecting main UI */
 .swal2-popup .button-container-2col {
     display: grid;
@@ -1702,6 +1717,18 @@ body.dark-mode .file-import-btn:hover {
 .custom-popup-container {
     background-color: #333;
     border: 1px solid #555;
+}
+
+.custom-popup-container.dark-mode .dropdown {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 4px;
+    width: 100%;
+    box-sizing: border-box;
+
 }
 
 .slider-container {
@@ -2262,6 +2289,26 @@ body.dark-mode .tree-meta {
     content: "";
 }
 
+.tree-context-item[data-action="reset-connections"] span:first-child:before {
+    background-image: url("icons/replace.png");
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-size: contain;
+    background-position: center;
+    content: "";
+}
+
+.tree-context-item[data-action="rename"] span:first-child:before {
+    background-image: url("icons/writing-sign.png");
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    background-size: contain;
+    background-position: center;
+    content: "";
+}
+
 /* General icon sizing for all tree icons */
 .tree-icon:before {
     width: 18px;
@@ -2384,7 +2431,9 @@ body.dark-mode .tree-context-item span:first-child:before,
 body.dark-mode .tree-context-item[data-action="hide"] span:first-child:before,
 body.dark-mode .tree-context-item[data-action="show"] span:first-child:before,
 body.dark-mode .tree-context-item[data-action="properties"] span:first-child:before,
-body.dark-mode .tree-context-item[data-action="delete"] span:first-child:before {
+body.dark-mode .tree-context-item[data-action="delete"] span:first-child:before,
+body.dark-mode .tree-context-item[data-action="rename"] span:first-child:before,
+body.dark-mode .tree-context-item[data-action="reset-connections"] span:first-child:before {
     filter: invert(1);
 }
 
@@ -2394,11 +2443,15 @@ body.dark-mode .tree-context-menu {
 }
 
 .tree-context-item {
-    padding: 6px 12px;
+    padding: 6px 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    white-space: nowrap;
+    /* Prevent text wrapping */
+    min-width: 120px;
+    /* Ensure minimum width */
+    gap: 4px;
 }
 
 .tree-context-item:hover {

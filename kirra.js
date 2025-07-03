@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250703.1520WST"
-const buildVersion = "20250703.1550AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250704.0225AWST"
+const buildVersion = "20250704.0225AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -56,6 +56,7 @@ function updatePopup() {
 					<label class="labelWhite15">    ✅ Load Multiple GeoTIFFs and convert from WGS                 </label>
 					<br><label class="labelWhite15">✅ Drawings to IndexDB for large files                         </label>
 					<br><label class="labelWhite15">✅ Load multiple Surfaces and change colors                   </label>
+					<br><label class="labelWhite15">✅ Fixed the Collar and Grade multiple Surfaces Bug           </label>
 					<br><label class="labelWhite15">✅ Improved Decimation of Surfaces                             </label>
 					<br><label class="labelWhite15">✅ Drawing Optimised - Pixel Distance culling                  </label>
 					<br><label class="labelWhite15">✅ Image Show/Hide/Remove/Transparency                          </label>
@@ -70,9 +71,9 @@ function updatePopup() {
 					<br><label class="labelWhite15">✅ Added a radii warning dialog                                 </label>
 					<br><label class="labelWhite15">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
 					<hr>
-					<br><label class="labelWhite18">New & Existing Issues                              </label>
-					<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts          </label>
-					<br><label class="labelWhite12c">🐞 Surface Display - fixed                         </label>
+					<br><label class="labelWhite18">New & Existing Issues                                           </label>
+					<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts                       </label>
+					<br><label class="labelWhite12c">🐞 Surface Display - fixed                                     </label>
 				</div>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">
@@ -10840,13 +10841,13 @@ function editBlastNamePopup(selectedHole) {
 		confirmButtonText: "Confirm",
 		cancelButtonText: "Cancel",
 		html: `
-        <div class="button-container-2col">
-            <label class="labelWhite18" for="blastName">Blast Name</label>
-            <input type="text" id="blastName" placeholder="Blast Name" value="${blastNameValue}" inputmode="text" autofocus />
-            <br>
-			<label class="labelWhite15" for="allHoleBlastNames">Apply to all holes with the same name</label>
-            <input type="checkbox" id="allHoleBlastNames" name="allHoleBlastNames" checked>
-        </div>
+        
+		<div class="button-container-2col">
+		    <label class="labelWhite18" for="blastName">Blast Name</label>
+		    <input type="text" id="blastName" placeholder="Blast Name" value="${blastNameValue}" inputmode="text" autofocus />
+		    <label class="labelWhite15" for="allHoleBlastNames">Apply to all holes with the same name</label>
+		    <input type="checkbox" id="allHoleBlastNames" name="allHoleBlastNames" checked>
+		</div>
         `,
 		customClass: {
 			container: "custom-popup-container",
@@ -20054,7 +20055,7 @@ function showHolesAlongPolylinePopup(vertices) {
 let loadedSurfaces = new Map(); // Map<surfaceId, {id, name, points, triangles, visible, gradient}>
 
 const assignSurfaceToHolesTool = document.getElementById("assignSurfaceTool");
-const assignGradeToHolesTool = document.getElementById("assignGradeTool");
+const assignGradeTool = document.getElementById("assignGradeTool");
 let showSurfaceLegend = true; // Add legend visibility control
 let currentGradient = "default"; // Default gradient
 // Add these variables near your other surface variables
@@ -21008,6 +21009,7 @@ function assignHoleToSurfaceElevation(hole, targetElevation, type) {
 
 			// Use calculateHoleGeometry to properly recalculate all geometry
 			calculateHoleGeometry(hole, newLength, 1); // mode 1 = Length
+			console.log("hole assigned to surface", hole);
 		}
 	} else if (type === "grade") {
 		// Keep collar fixed, adjust toe to target elevation
@@ -21026,6 +21028,7 @@ function assignHoleToSurfaceElevation(hole, targetElevation, type) {
 
 			// Use calculateHoleGeometry to properly recalculate all geometry
 			calculateHoleGeometry(hole, newLength, 1); // mode 1 = Length
+			console.log("hole assigned to grade", hole);
 		}
 	}
 }
@@ -21089,14 +21092,14 @@ assignSurfaceTool.addEventListener("change", function () {
 					<div class="button-container-2col">
 						<div class="labelWhite12">Multiple surfaces are visible. Select which surface to use:</div>
 						<div></div>
-						<select id="surfaceSelect" class="swal2-input">
+						<select id="surfaceSelect" class="dropdown-80">
 							${surfaceOptions}
 						</select>
 						<div></div>
 					</div>
 				`,
 				showCancelButton: true,
-				confirmButtonText: "Use Surface",
+				confirmButtonText: "Use",
 				cancelButtonText: "Cancel",
 				customClass: {
 					container: "custom-popup-container",
@@ -21202,6 +21205,166 @@ assignSurfaceTool.addEventListener("change", function () {
 		canvas.removeEventListener("click", handleAssignSurfaceClick);
 	}
 });
+
+assignGradeTool.addEventListener("change", function () {
+	if (this.checked) {
+		resetFloatingToolbarButtons("assignGradeTool");
+
+		const visibleSurfaces = getAllVisibleSurfaces();
+		if (visibleSurfaces.length === 0) {
+			// No surface available - show dialog for manual entry
+			Swal.fire({
+				title: "No Surface Loaded",
+				html: `
+					<div class="button-container-2col">
+						<div class="labelWhite12">No surface is loaded or visible.</div>
+						<div></div>
+						<div class="labelWhite12">Set toe elevation to:</div>
+						<input type="number" id="gradeElevation" value="274" step="0.1" class="swal2-input" style="width: 80px; text-align: center;"> mZ
+					</div>
+				`,
+				showCancelButton: true,
+				confirmButtonText: "OK",
+				cancelButtonText: "Cancel",
+				customClass: {
+					container: "custom-popup-container",
+					popup: "custom-popup-container",
+					title: "swal2-title",
+					content: "swal2-content",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				},
+				preConfirm: () => {
+					const elevation = parseFloat(document.getElementById("gradeElevation").value);
+					if (isNaN(elevation)) {
+						Swal.showValidationMessage("Please enter a valid elevation");
+						return false;
+					}
+					return elevation;
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					assignHolesToFixedElevation(result.value, "grade");
+				}
+				this.checked = false;
+				resetFloatingToolbarButtons("none");
+			});
+			return;
+		}
+
+		// Multiple surfaces available - ask which one to use
+		if (visibleSurfaces.length > 1) {
+			// Consistent with your rule - no template literals
+			// Consistent with your rule - no template literals
+			const surfaceOptions = visibleSurfaces.map((surface) => '<option value="' + surface.id + '">' + surface.name + "</option>").join("");
+			Swal.fire({
+				title: "Select Surface",
+				html: `
+					<div class="button-container-2col">
+						<div class="labelWhite12">Multiple surfaces are visible. Select which surface to use:</div>
+						<div></div>
+						<select id="surfaceSelect" class="dropdown-80">
+							${surfaceOptions}
+						</select>
+						<div></div>
+					</div>
+				`,
+				showCancelButton: true,
+				confirmButtonText: "Use",
+				cancelButtonText: "Cancel",
+				customClass: {
+					container: "custom-popup-container",
+					popup: "custom-popup-container",
+					title: "swal2-title",
+					content: "swal2-content",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				},
+				preConfirm: () => {
+					return document.getElementById("surfaceSelect").value;
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					const selectedSurfaceId = result.value;
+					if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+						let assignedCount = 0;
+						selectedMultipleHoles.forEach(function (hole) {
+							const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation, selectedSurfaceId);
+							if (surfaceZ !== null) {
+								assignHoleToSurfaceElevation(hole, surfaceZ, "grade");
+								assignedCount++;
+							}
+						});
+						const surface = loadedSurfaces.get(selectedSurfaceId);
+						const surfaceName = surface ? surface.name || "Surface " + selectedSurfaceId : "selected surface";
+						Swal.fire({
+							title: "Grade Assignment Complete",
+							text: "Successfully adjusted " + assignedCount + " hole grades to " + surfaceName + " elevation.",
+							icon: "success",
+							showCancelButton: false,
+							showConfirmButton: true,
+							confirmButtonText: "OK",
+							customClass: {
+								container: "custom-popup-container",
+								popup: "custom-popup-container",
+								title: "swal2-title",
+								content: "swal2-content",
+								confirmButton: "confirm",
+								cancelButton: "cancel"
+							}
+						});
+						updateStatusMessage("Select next tool\n to continue");
+					} else {
+						updateStatusMessage("Click on holes to assign grade elevation to surface.");
+						canvas.addEventListener("click", handleAssignGradeClick);
+					}
+				}
+				this.checked = false;
+				resetFloatingToolbarButtons("none");
+			});
+			return;
+		}
+
+		// Single surface available - proceed directly
+		const surfaceId = visibleSurfaces[0].id;
+		if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+			let assignedCount = 0;
+			selectedMultipleHoles.forEach(function (hole) {
+				const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation, surfaceId);
+				if (surfaceZ !== null) {
+					assignHoleToSurfaceElevation(hole, surfaceZ, "grade");
+					assignedCount++;
+				}
+			});
+			Swal.fire({
+				title: "Grade Assignment Complete",
+				text: "Successfully adjusted " + assignedCount + " hole grades to surface elevation.",
+				icon: "success",
+				showCancelButton: false,
+				showConfirmButton: true,
+				confirmButtonText: "OK",
+				customClass: {
+					container: "custom-popup-container",
+					popup: "custom-popup-container",
+					title: "swal2-title",
+					content: "swal2-content",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				}
+			});
+			this.checked = false;
+			resetFloatingToolbarButtons("none");
+			updateStatusMessage("Select next tool\n to continue");
+		} else {
+			updateStatusMessage("Click on holes to assign grade elevation to surface.");
+			canvas.addEventListener("click", handleAssignGradeClick);
+		}
+	} else {
+		resetFloatingToolbarButtons("none");
+		updateStatusMessage("Select next tool\n to continue");
+		canvas.removeEventListener("click", handleAssignGradeClick);
+	}
+});
 // Helper function to assign holes to a fixed elevation (updated)
 function assignHolesToFixedElevation(elevation, type) {
 	let assignedCount = 0;
@@ -21290,6 +21453,7 @@ function handleAssignGradeClick(event) {
 		updateStatusMessage("No hole found at click location.");
 	}
 }
+
 // Fixed save function (around line 18158)
 function saveViewControlsSliderValues() {
 	// View control sliders
@@ -24943,6 +25107,41 @@ class TreeView {
 		});
 	}
 
+	selectRange(startNodeId, endNodeId) {
+		// Get all visible tree items in DOM order
+		const allTreeItems = Array.from(this.container.querySelectorAll(".tree-item"));
+		const allNodeIds = allTreeItems.map((item) => item.dataset.nodeId);
+
+		// Find the indices of start and end nodes
+		const startIndex = allNodeIds.indexOf(startNodeId);
+		const endIndex = allNodeIds.indexOf(endNodeId);
+
+		if (startIndex === -1 || endIndex === -1) return;
+
+		// Determine the range (handle both directions)
+		const minIndex = Math.min(startIndex, endIndex);
+		const maxIndex = Math.max(startIndex, endIndex);
+
+		// Clear current selection
+		this.clearSelection();
+
+		// Select all nodes in the range
+		for (let i = minIndex; i <= maxIndex; i++) {
+			const nodeId = allNodeIds[i];
+			const treeItem = allTreeItems[i];
+
+			this.selectedNodes.add(nodeId);
+			treeItem.classList.add("multi-selected");
+		}
+	}
+
+	clearSelection() {
+		this.selectedNodes.clear();
+		this.container.querySelectorAll(".tree-item").forEach((item) => {
+			item.classList.remove("selected", "multi-selected");
+		});
+	}
+
 	startDrag(e) {
 		this.dragData.isDragging = true;
 		this.dragData.startX = e.clientX - this.container.offsetLeft;
@@ -24998,8 +25197,11 @@ class TreeView {
 		// Handle selection
 		const nodeId = treeItem.dataset.nodeId;
 
-		if (e.ctrlKey || e.metaKey) {
-			// Multi-select
+		if (e.shiftKey && this.lastClickedNode) {
+			// Shift-click: Select range from last clicked to current
+			this.selectRange(this.lastClickedNode, nodeId);
+		} else if (e.ctrlKey || e.metaKey) {
+			// Ctrl/Cmd-click: Multi-select
 			if (this.selectedNodes.has(nodeId)) {
 				this.selectedNodes.delete(nodeId);
 				treeItem.classList.remove("selected", "multi-selected");
@@ -25007,11 +25209,13 @@ class TreeView {
 				this.selectedNodes.add(nodeId);
 				treeItem.classList.add("multi-selected");
 			}
+			this.lastClickedNode = nodeId;
 		} else {
 			// Single select
 			this.clearSelection();
 			this.selectedNodes.add(nodeId);
 			treeItem.classList.add("selected");
+			this.lastClickedNode = nodeId;
 		}
 
 		this.onSelectionChange();
@@ -25065,10 +25269,19 @@ class TreeView {
 		// Get the selected node to determine what options to show
 		const selectedNodeIds = Array.from(this.selectedNodes);
 		const isTopLevelParent = selectedNodeIds.some((nodeId) => nodeId === "blast" || nodeId === "drawings" || nodeId === "surfaces" || nodeId === "images");
+		// Determine what type of nodes are selected
+		const hasHoles = selectedNodeIds.some((nodeId) => nodeId.startsWith("hole-"));
 
-		// Show/hide delete and properties options based on selection
-		const deleteItem = menu.querySelector('[data-action="delete"]');
+		// Show/hide menu items based on selection
+		const renameItem = menu.querySelector('[data-action="rename"]');
+		const resetConnectionsItem = menu.querySelector('[data-action="reset-connections"]');
 		const propertiesItem = menu.querySelector('[data-action="properties"]');
+		const deleteItem = menu.querySelector('[data-action="delete"]');
+
+		// Reset Connections only for hole nodes
+		if (resetConnectionsItem) {
+			resetConnectionsItem.style.display = hasHoles ? "flex" : "none";
+		}
 
 		if (deleteItem) {
 			deleteItem.style.display = isTopLevelParent ? "none" : "flex";
@@ -25076,6 +25289,24 @@ class TreeView {
 
 		if (propertiesItem) {
 			propertiesItem.style.display = isTopLevelParent ? "none" : "flex";
+		}
+		// Only show "Rename" for entity/group nodes (not for elements or folders)
+		let showRename = false;
+		if (selectedNodeIds.length === 1) {
+			const nodeId = selectedNodeIds[0];
+			const parts = nodeId.split("-");
+			// Only allow rename for group/entity nodes (not element nodes or folders)
+			if ((parts[0] === "points" || parts[0] === "line" || parts[0] === "poly" || parts[0] === "circle" || parts[0] === "text") && parts.length === 2) {
+				showRename = true;
+			}
+			// ADD THIS: allow rename for blast entity nodes
+			if (parts[0] === "entity" && parts.length === 2) {
+				showRename = true;
+			}
+		}
+
+		if (renameItem) {
+			renameItem.style.display = showRename ? "flex" : "none";
 		}
 
 		menu.style.left = x + "px";
@@ -25094,6 +25325,9 @@ class TreeView {
 		this.hideContextMenu();
 
 		switch (action) {
+			case "rename":
+				this.renameEntity();
+				break;
 			case "delete":
 				this.deleteSelected();
 				break;
@@ -25103,10 +25337,86 @@ class TreeView {
 			case "show":
 				this.showSelected(); // Make sure the "show" action is handled
 				break;
+			case "reset-connections":
+				this.resetConnections();
+				break;
 			case "properties":
 				this.showProperties();
 				break;
 		}
+		// Hide context menu
+		document.getElementById("treeContextMenu").style.display = "none";
+	}
+
+	resetConnections() {
+		if (this.selectedNodes.size === 0) return;
+
+		const nodeIds = Array.from(this.selectedNodes);
+		const holeNodeIds = nodeIds.filter((nodeId) => nodeId.startsWith("hole-"));
+
+		if (holeNodeIds.length === 0) return;
+
+		// Find the holes to reset
+		const holesToReset = [];
+		holeNodeIds.forEach((nodeId) => {
+			const holeId = nodeId.substring(5); // Remove "hole-" prefix
+			const hole = points.find((h) => h.holeID === holeId);
+			if (hole) {
+				holesToReset.push(hole);
+			}
+		});
+
+		if (holesToReset.length === 0) return;
+
+		// Show confirmation dialog
+		Swal.fire({
+			title: "Reset Connections",
+			text: "This will reset the selected holes to connect to themselves. Continue?",
+			icon: "question",
+			showCancelButton: true,
+			confirmButtonText: "Reset",
+			cancelButtonText: "Cancel",
+			customClass: {
+				container: "custom-popup-container",
+				popup: "custom-popup-container",
+				title: "swal2-title",
+				content: "swal2-content",
+				confirmButton: "confirm",
+				cancelButton: "cancel"
+			}
+		}).then((result) => {
+			if (result.isConfirmed) {
+				// Reset connections for each hole
+				holesToReset.forEach((hole) => {
+					hole.fromHoleID = hole.entityName + ":::" + hole.holeID;
+				});
+
+				// Recalculate timing and redraw
+				holeTimes = calculateTimes(points);
+				const result = recalculateContours(points, 0, 0);
+				if (result) {
+					contourLinesArray = result.contourLinesArray;
+					directionArrows = result.directionArrows;
+				}
+
+				drawData(points, selectedHole);
+
+				// Show success message
+				Swal.fire({
+					title: "Connections Reset",
+					text: "Successfully reset " + holesToReset.length + " hole connections.",
+					icon: "success",
+					timer: 2000,
+					showConfirmButton: false,
+					customClass: {
+						container: "custom-popup-container",
+						popup: "custom-popup-container",
+						title: "swal2-title",
+						content: "swal2-content"
+					}
+				});
+			}
+		});
 	}
 
 	deleteSelected() {
@@ -25117,8 +25427,56 @@ class TreeView {
 		// Determine what types we're deleting
 		const hasHoles = nodeIds.some((nodeId) => nodeId.split("-")[0] === "hole");
 		const hasEntities = nodeIds.some((nodeId) => nodeId.split("-")[0] === "entity");
+		const hasDrawingElements = nodeIds.some((nodeId) => nodeId.includes("-element"));
 
-		if (hasEntities) {
+		if (hasDrawingElements) {
+			// Deleting individual drawing elements (points, lines, circles, text)
+			Swal.fire({
+				title: "Delete Elements",
+				html: nodeIds.length === 1 ? "Delete this element?" : `Delete ${nodeIds.length} elements?`,
+				icon: "warning",
+				showCancelButton: true,
+				confirmButtonText: "Delete",
+				cancelButtonText: "Cancel",
+				confirmButtonColor: "#d33",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					nodeIds.forEach((nodeId) => {
+						const parts = nodeId.split("-");
+						// Robust parsing for element nodes
+						if (parts.length >= 4 && parts[2] === "element") {
+							const entityType = parts[0];
+							const entityName = parts[1];
+							const elementId = parts[3];
+
+							const entity = allKADDrawingsMap.get(entityName);
+							if (entity && entity.data) {
+								// Find and remove the specific element
+								const elementIndex = entity.data.findIndex((el) => el.pointID == elementId);
+								if (elementIndex !== -1) {
+									entity.data.splice(elementIndex, 1);
+									// If no elements left, delete the entire entity
+									if (entity.data.length === 0) {
+										allKADDrawingsMap.delete(entityName);
+									}
+									if (typeof debouncedSaveKAD === "function") {
+										debouncedSaveKAD();
+									}
+								}
+							}
+						}
+					});
+					this.updateTreeData();
+					drawData(points, selectedHole);
+				}
+			});
+		} else if (hasEntities) {
 			// Deleting blast entities (which deletes all holes in that blast)
 			Swal.fire({
 				title: "Delete Blast",
@@ -25680,74 +26038,150 @@ class TreeView {
 		console.log("Delete node:", nodeId);
 	}
 
+	renameEntity() {
+		if (this.selectedNodes.size !== 1) return;
+		const nodeId = Array.from(this.selectedNodes)[0];
+		const parts = nodeId.split("-");
+		// 1. Handle blast entity nodes (entity-<blastName>)
+		if (parts[0] === "entity" && parts.length === 2) {
+			const entityName = parts[1];
+			const firstHole = points.find((h) => h.entityName === entityName);
+			if (firstHole && typeof editBlastNamePopup === "function") {
+				editBlastNamePopup(firstHole);
+			}
+			return;
+		}
+
+		// 2. Handle KAD group/entity nodes (points-..., line-..., etc)
+		if ((parts[0] === "points" || parts[0] === "line" || parts[0] === "poly" || parts[0] === "circle" || parts[0] === "text") && parts.length === 2) {
+			const entityType = parts[0];
+			const oldEntityName = parts[1];
+			const entity = allKADDrawingsMap.get(oldEntityName);
+			if (!entity) return;
+
+			Swal.fire({
+				title: "Rename " + entityType,
+				input: "text",
+				inputLabel: "New name:",
+				inputValue: oldEntityName,
+				showCancelButton: true,
+				confirmButtonText: "Rename",
+				cancelButtonText: "Cancel",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					const newEntityName = result.value.trim();
+					if (!newEntityName || newEntityName === oldEntityName) return;
+					if (allKADDrawingsMap.has(newEntityName)) {
+						Swal.fire("Name already exists!", "", "error");
+						return;
+					}
+
+					// Handle blast entity nodes
+					if (parts[0] === "entity" && parts.length === 2) {
+						const entityName = parts[1];
+						// Find a hole with this entityName to pass to the popup
+						const firstHole = points.find((h) => h.entityName === entityName);
+						if (firstHole && typeof editBlastNamePopup === "function") {
+							editBlastNamePopup(firstHole);
+						}
+						return;
+					}
+
+					// Rename in the map
+					allKADDrawingsMap.set(newEntityName, {
+						...entity,
+						entityName: newEntityName,
+						data: entity.data.map((el) => ({ ...el, entityName: newEntityName }))
+					});
+					allKADDrawingsMap.delete(oldEntityName);
+
+					// Update all elements' entityName
+					allKADDrawingsMap.get(newEntityName).data.forEach((el) => {
+						el.entityName = newEntityName;
+					});
+
+					if (typeof debouncedSaveKAD === "function") {
+						debouncedSaveKAD();
+					}
+					this.updateTreeData();
+					drawData(points, selectedHole);
+				}
+			});
+		}
+	}
 	showNodeProperties(nodeId) {
-		// Override this method to show node properties
-		console.log("Show properties for:", nodeId);
+		// Handle showing properties for different node types
+		const parts = nodeId.split("-");
+		const nodeType = parts[0];
+
+		try {
+			if (parts.length >= 4 && parts[2] === "element") {
+				const entityType = parts[0];
+				const entityName = parts[1];
+				const elementId = parts[3];
+
+				const entity = allKADDrawingsMap.get(entityName);
+				if (entity && entity.data) {
+					const element = entity.data.find((el) => el.pointID == elementId);
+					if (element) {
+						const kadObject = {
+							...element,
+							entityName: entityName,
+							entityType: entity.entityType,
+							elementIndex: entity.data.indexOf(element)
+						};
+						showKADPropertyEditor(kadObject);
+					}
+				}
+			} else if (nodeType === "hole") {
+				// Show properties for individual hole
+				const holeId = parts.slice(1).join("-");
+				const hole = points.find((h) => h.holeID === holeId);
+				if (hole) {
+					showHolePropertyEditor(hole);
+				}
+			} else if (nodeType === "entity") {
+				// Show properties for blast entity (first hole as representative)
+				const entityName = parts.slice(1).join("-");
+				const firstHole = points.find((h) => h.entityName === entityName);
+				if (firstHole) {
+					showHolePropertyEditor(firstHole);
+				}
+			} else if (nodeType === "surface") {
+				// Show surface properties
+				const surfaceId = parts.slice(1).join("-");
+				const canvas = document.getElementById("renderCanvas") || document.querySelector("canvas");
+				if (canvas && typeof showSurfaceContextMenu === "function") {
+					const rect = canvas.getBoundingClientRect();
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+					window.showSurfaceContextMenu(centerX, centerY);
+				}
+			} else if (nodeType === "image") {
+				// Show image properties
+				const imageId = parts.slice(1).join("-");
+				const canvas = document.getElementById("renderCanvas") || document.querySelector("canvas");
+				if (canvas && typeof showImageContextMenu === "function") {
+					const rect = canvas.getBoundingClientRect();
+					const centerX = rect.left + rect.width / 2;
+					const centerY = rect.top + rect.height / 2;
+					window.showImageContextMenu(centerX, centerY);
+				}
+			} else {
+				console.warn("Unknown node type for properties:", nodeType);
+			}
+		} catch (error) {
+			console.error("Error showing node properties:", nodeId, error);
+		}
 	}
 }
-// Add this new function to handle color picker for individual elements
-// Fix the openColorPickerForElement function
-// // Clean Swal2 wrapper with immediate JSColor
-// function openColorPickerForElement(swatchElement, entityName, pointID) {
-// 	event.stopPropagation();
 
-// 	// Get the element data
-// 	const entity = allKADDrawingsMap.get(entityName);
-// 	if (!entity) return;
-
-// 	const element = entity.data.find((el) => el.pointID === pointID);
-// 	if (!element) return;
-
-// 	const currentColor = element.drawingColor || jsColorHexDrawing;
-
-// 	Swal.fire({
-// 		title: `Color for ${entityName} Point ${pointID}`,
-// 		html: `
-// 			<div style="text-align: center; padding: 20px;">
-// 				<div style="margin-bottom: 15px;">
-// 					<strong>Current:</strong>
-// 					<span class="color-swatch" style="background-color: ${currentColor}; margin-left: 8px;"></span>
-// 					<span style="margin-left: 8px;">${currentColor}</span>
-// 				</div>
-// 				<input id="colorPickerInput" style="width: 200px; height: 40px; border: 2px solid #ccc; border-radius: 4px;" value="${currentColor.replace("#", "")}" data-jscolor="{format:'hex', previewElement:'#colorPreview', mode:'HSV', width:300, height:200}">
-// 				<div id="colorPreview" style="width: 60px; height: 30px; border: 1px solid #666; margin: 10px auto; border-radius: 4px; background-color: ${currentColor};"></div>
-// 			</div>
-// 		`,
-// 		showCancelButton: true,
-// 		confirmButtonText: "Apply Color",
-// 		cancelButtonText: "Cancel",
-// 		width: 400,
-// 		didOpen: () => {
-// 			// Initialize JSColor on the input
-// 			const input = document.getElementById("colorPickerInput");
-// 			new JSColor(input, {
-// 				format: "hex",
-// 				mode: "HSV",
-// 				width: 300,
-// 				height: 200,
-// 				onChange: function () {
-// 					const preview = document.getElementById("colorPreview");
-// 					const newColor = "#" + this.toString();
-// 					preview.style.backgroundColor = newColor;
-// 				}
-// 			});
-// 		}
-// 	}).then((result) => {
-// 		if (result.isConfirmed) {
-// 			const input = document.getElementById("colorPickerInput");
-// 			const newColor = "#" + input.value;
-
-// 			// Update the element color
-// 			element.drawingColor = newColor;
-// 			swatchElement.style.backgroundColor = newColor;
-
-// 			// Redraw the canvas
-// 			drawData(points, selectedHole);
-// 			console.log(`✅ Updated ${entityName} point ${pointID} color to:`, newColor);
-// 		}
-// 	});
-// }
-// Simple direct JSColor popup
 /// Fix the openColorPickerForElement function - remove double hash
 function openColorPickerForElement(swatchElement, entityName, pointID) {
 	event.stopPropagation();
