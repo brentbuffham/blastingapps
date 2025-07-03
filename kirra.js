@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
 // Last Modified: "20250703.1520WST"
-const buildVersion = "20250703.1520AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+const buildVersion = "20250703.1550AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -15749,12 +15749,11 @@ function updateKADObjectInMap(kadObject) {
 	}
 }
 
-// Update showSurfaceContextMenu to accept and use specific surface ID
 function showSurfaceContextMenu(x, y, surfaceId = null) {
 	// Get the specific surface if ID provided, otherwise first visible surface
 	const surface = surfaceId ? loadedSurfaces.get(surfaceId) : Array.from(loadedSurfaces.values()).find((s) => s.visible);
-
 	if (!surface) return;
+
 	const menu = document.createElement("div");
 	menu.className = "context-menu";
 	menu.style.position = "absolute";
@@ -15763,7 +15762,6 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 
 	// Use dynamic colors based on current theme
 	const isDarkMode = document.body.classList.contains("dark-mode") || window.matchMedia("(prefers-color-scheme: dark)").matches;
-
 	const backgroundColor = isDarkMode ? "#2d2d2d" : "#ffffff";
 	const borderColor = isDarkMode ? "#555555" : "#cccccc";
 	const textColor = isDarkMode ? "#ffffff" : "#000000";
@@ -15778,14 +15776,20 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 	menu.style.color = textColor;
 	menu.style.minWidth = "180px";
 
+	// --- TITLE ---
+	const titleDiv = document.createElement("div");
+	titleDiv.textContent = surface.name || "Surface";
+	titleDiv.style.fontWeight = "bold";
+	titleDiv.style.fontSize = "15px";
+	titleDiv.style.padding = "8px 12px 4px 12px";
+	titleDiv.style.borderBottom = "1px solid " + borderColor;
+	titleDiv.style.marginBottom = "4px";
+	titleDiv.style.color = textColor;
+	menu.appendChild(titleDiv);
+
 	// Toggle visibility option
 	const toggleOption = document.createElement("div");
-
-	// Get surface info - need to find which surface this context menu is for
-	const surfaceEntries = Array.from(loadedSurfaces.entries());
-	const firstSurface = surfaceEntries.length > 0 ? surfaceEntries[0][1] : null;
-
-	toggleOption.textContent = firstSurface && firstSurface.visible ? "Hide Surface" : "Show Surface";
+	toggleOption.textContent = surface.visible ? "Hide Surface" : "Show Surface";
 	toggleOption.style.padding = "8px 12px";
 	toggleOption.style.cursor = "pointer";
 	toggleOption.style.color = textColor;
@@ -15797,17 +15801,12 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 	};
 	toggleOption.onclick = (e) => {
 		e.stopPropagation();
-
-		// Toggle visibility of first surface (or all surfaces if preferred)
-		if (firstSurface) {
-			setSurfaceVisibility(surfaceEntries[0][0], !firstSurface.visible);
-		}
-
+		setSurfaceVisibility(surface.id, !surface.visible);
 		drawData(points, selectedHole);
 		safeRemoveMenu(menu);
 	};
 
-	// Remove surface option (enhanced with DB deletion)
+	// Remove surface option
 	const removeOption = document.createElement("div");
 	removeOption.textContent = "Remove Surface";
 	removeOption.style.padding = "8px 12px";
@@ -15821,32 +15820,21 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 	};
 	removeOption.onclick = async (e) => {
 		e.stopPropagation();
-
 		try {
-			// Remove the first surface from database and memory
-			if (firstSurface) {
-				const surfaceId = surfaceEntries[0][0];
-				await deleteSurfaceFromDB(surfaceId);
-				loadedSurfaces.delete(surfaceId);
-			}
-
+			await deleteSurfaceFromDB(surface.id);
+			loadedSurfaces.delete(surface.id);
 			drawData(points, selectedHole);
-			debouncedUpdateTreeView(); // Update tree view
+			debouncedUpdateTreeView();
 			console.log("✅ Surface removed from both memory and database");
 		} catch (error) {
 			console.error("❌ Error removing surface:", error);
-
-			// Still clear from memory even if DB delete fails
-			if (firstSurface) {
-				loadedSurfaces.delete(surfaceEntries[0][0]);
-			}
+			loadedSurfaces.delete(surface.id);
 			drawData(points, selectedHole);
 		}
-
 		safeRemoveMenu(menu);
 	};
 
-	// Delete all surfaces option (fixed)
+	// Delete all surfaces option
 	const deleteOption = document.createElement("div");
 	deleteOption.textContent = "Delete All Surfaces";
 	deleteOption.style.padding = "8px 12px";
@@ -15860,52 +15848,38 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 	};
 	deleteOption.onclick = async (e) => {
 		e.stopPropagation();
-
 		try {
 			await deleteAllSurfacesFromDB();
-
-			loadedSurfaces.delete(surfaceId);
-
+			loadedSurfaces.clear();
 			drawData(points, selectedHole);
 			console.log("✅ All surfaces deleted from database and memory");
 		} catch (error) {
 			console.error("❌ Error deleting all surfaces:", error);
 		}
-
 		safeRemoveMenu(menu);
 	};
 
-	// NEW: Transparency slider (like image menu)
+	// Transparency slider
 	const transparencyOption = document.createElement("div");
 	transparencyOption.textContent = "Transparency:";
 	transparencyOption.appendChild(document.createElement("br"));
 	transparencyOption.style.padding = "8px 12px";
-
 	const slider = document.createElement("input");
 	slider.type = "range";
 	slider.min = "0";
 	slider.max = "100";
-
-	// Get current transparency from first surface or default
-	const currentTransparency = firstSurface ? firstSurface.transparency ?? 1.0 : 1.0;
-	slider.value = Math.round(currentTransparency * 100);
+	slider.value = Math.round((surface.transparency ?? 1.0) * 100);
 	slider.style.width = "95%";
 	slider.style.margin = "8px auto 0";
 	slider.style.display = "block";
-
 	slider.onclick = (e) => e.stopPropagation();
 	slider.oninput = (e) => {
 		e.stopPropagation();
 		const newTransparency = slider.value / 100;
-
-		// Update transparency for the specific surface or all surfaces
-		if (firstSurface) {
-			firstSurface.transparency = newTransparency;
-		}
-
+		surface.transparency = newTransparency;
+		saveSurfaceToDB(surface.id).catch((err) => console.error("Failed to save surface transparency:", err));
 		drawData(points, selectedHole);
 	};
-
 	transparencyOption.appendChild(slider);
 
 	// Legend toggle option
@@ -15927,15 +15901,13 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 		safeRemoveMenu(menu);
 	};
 
-	// Gradient submenu (keep existing code but fix menu removal)
+	// Gradient submenu
 	const gradientOption = document.createElement("div");
 	gradientOption.textContent = "Color Gradient ▶";
 	gradientOption.style.padding = "8px 12px";
 	gradientOption.style.cursor = "pointer";
 	gradientOption.style.color = textColor;
 	gradientOption.style.position = "relative";
-
-	// Create gradient submenu
 	const gradientSubmenu = document.createElement("div");
 	gradientSubmenu.style.position = "absolute";
 	gradientSubmenu.style.left = "100%";
@@ -15947,7 +15919,6 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 	gradientSubmenu.style.boxShadow = isDarkMode ? "0 2px 8px rgba(0,0,0,0.5)" : "0 2px 8px rgba(0,0,0,0.15)";
 	gradientSubmenu.style.minWidth = "150px";
 	gradientSubmenu.style.display = "none";
-
 	const gradients = [
 		{ name: "Default", value: "default" },
 		{ name: "Viridis 🌈", value: "viridis" },
@@ -15956,65 +15927,46 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 		{ name: "Cividis 🔵", value: "cividis" },
 		{ name: "Terrain 🟢", value: "terrain" }
 	];
-
-	// FIXED: Context menu gradient selection in showSurfaceContextMenu
 	gradients.forEach((gradient) => {
 		const gradientItem = document.createElement("div");
 		gradientItem.textContent = gradient.name;
 		gradientItem.style.padding = "6px 10px";
 		gradientItem.style.cursor = "pointer";
 		gradientItem.style.color = textColor;
-
-		// Mark current selection based on THIS surface's gradient
 		const surfaceUsesThisGradient = (surface.gradient || "default") === gradient.value;
-
 		if (surfaceUsesThisGradient) {
 			gradientItem.style.backgroundColor = hoverColor;
 			gradientItem.textContent = "✓ " + gradient.name;
 		}
-
 		gradientItem.onmouseover = () => {
-			if (!surfaceUsesThisGradient) {
-				gradientItem.style.backgroundColor = hoverColor;
-			}
+			if (!surfaceUsesThisGradient) gradientItem.style.backgroundColor = hoverColor;
 		};
 		gradientItem.onmouseout = () => {
-			if (!surfaceUsesThisGradient) {
-				gradientItem.style.backgroundColor = backgroundColor;
-			}
+			if (!surfaceUsesThisGradient) gradientItem.style.backgroundColor = backgroundColor;
 		};
-
-		// CRITICAL FIX: Only update the clicked surface, not all visible surfaces
 		gradientItem.onclick = () => {
-			// Set gradient on ONLY the clicked surface
 			surface.gradient = gradient.value;
-
-			// Update in database
-			saveSurfaceToDB(surface.id || surfaceId).catch((err) => console.error("Failed to save surface gradient:", err));
-
-			console.log("Updated gradient for surface '" + (surface.name || surface.id || surfaceId) + "' to: " + gradient.value);
+			saveSurfaceToDB(surface.id).catch((err) => console.error("Failed to save surface gradient:", err));
+			console.log("Updated gradient for surface '" + (surface.name || surface.id) + "' to: " + gradient.value);
 			drawData(points, selectedHole);
 			document.body.removeChild(menu);
 		};
-
 		gradientSubmenu.appendChild(gradientItem);
 	});
-
 	gradientOption.onmouseover = () => {
 		gradientOption.style.backgroundColor = hoverColor;
 		gradientSubmenu.style.display = "block";
 	};
 	gradientOption.onmouseout = () => {
 		gradientOption.style.backgroundColor = backgroundColor;
-		// Keep submenu visible when hovering over it
 		setTimeout(() => {
 			if (!gradientSubmenu.matches(":hover") && !gradientOption.matches(":hover")) {
 				gradientSubmenu.style.display = "none";
 			}
 		}, 100);
 	};
-
 	gradientOption.appendChild(gradientSubmenu);
+
 	// Add all options to menu
 	menu.appendChild(toggleOption);
 	menu.appendChild(removeOption);
@@ -16032,7 +15984,6 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 		});
 	}, 0);
 }
-
 // Add this helper function near your other menu functions
 function safeRemoveMenu(menu) {
 	try {
