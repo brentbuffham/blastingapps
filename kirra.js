@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250703.1300WST"
-const buildVersion = "20250703.1415AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250703.1520WST"
+const buildVersion = "20250703.1520AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -13411,6 +13411,7 @@ async function saveSurfaceToDB(surfaceId) {
 				triangles: surface.triangles,
 				visible: surface.visible,
 				gradient: surface.gradient,
+				transparency: surface.transparency ?? 1.0, // Add this line
 				savedAt: new Date().toISOString()
 			};
 
@@ -13442,13 +13443,14 @@ async function loadSurfaceIntoMemory(surfaceId) {
 			request.onsuccess = () => {
 				const surfaceData = request.result;
 				if (surfaceData) {
-					loadedSurfaces.set(surfaceId, {
-						id: surfaceId,
+					loadedSurfaces.set(surfaceData.id, {
+						id: surfaceData.id,
 						name: surfaceData.name,
 						points: surfaceData.points,
 						triangles: surfaceData.triangles,
 						visible: surfaceData.visible !== false,
-						gradient: surfaceData.gradient || "default"
+						gradient: surfaceData.gradient || "default",
+						transparency: surfaceData.transparency ?? 1.0 // Add this line
 					});
 					console.log("✅ Surface " + surfaceData.name + " loaded into memory");
 				}
@@ -13480,7 +13482,8 @@ async function loadAllSurfacesIntoMemory() {
 						points: surfaceData.points,
 						triangles: surfaceData.triangles,
 						visible: surfaceData.visible !== false,
-						gradient: surfaceData.gradient || "default"
+						gradient: surfaceData.gradient || "default",
+						transparency: surfaceData.transparency ?? 1.0 // Add this line
 					});
 				});
 				console.log("📊 Loaded " + loadedSurfaces.size + " surfaces into memory");
@@ -20162,8 +20165,21 @@ function interpolateZInTriangle(x, y, vertices) {
 }
 
 // Interpolates the Z value of a point on the surface.
-function interpolateZFromSurface(x, y) {
-	// Find triangle containing point (x, y) from all loaded surfaces
+function interpolateZFromSurface(x, y, surfaceId = null) {
+	// If surfaceId is specified, only check that surface
+	if (surfaceId) {
+		const surface = loadedSurfaces.get(surfaceId);
+		if (surface && surface.visible && surface.triangles && surface.triangles.length > 0) {
+			for (const triangle of surface.triangles) {
+				if (isPointInTriangle(x, y, triangle.vertices)) {
+					return interpolateZInTriangle(x, y, triangle.vertices);
+				}
+			}
+		}
+		return null; // Point not on specified surface
+	}
+
+	// Original behavior: Find triangle containing point (x, y) from all loaded surfaces
 	for (let [surfaceId, surface] of loadedSurfaces) {
 		if (!surface.visible || !surface.triangles || surface.triangles.length === 0) {
 			continue;
@@ -24309,7 +24325,6 @@ function printSurfaceLegend() {
 	// Reset text alignment
 	printCtx.textAlign = "left";
 }
-//Update printTriangleWithGradient function signature (around line 23996)
 function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = printCtx, alpha = 1.0, gradient = "default") {
 	const showWireFrame = false;
 	const [p1, p2, p3] = triangle.vertices;
@@ -24327,74 +24342,68 @@ function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx =
 
 	// Check if we have texture data (future enhancement)
 	if (surfaceTextureData && surfaceTextureData.hasTextures) {
-		// For now, use a different color scheme for textured surfaces
-		printCtx.beginPath();
-		printCtx.moveTo(x1, y1);
-		printCtx.lineTo(x2, y2);
-		printCtx.lineTo(x3, y3);
-		printCtx.closePath();
+		targetCtx.beginPath();
+		targetCtx.moveTo(x1, y1);
+		targetCtx.lineTo(x2, y2);
+		targetCtx.lineTo(x3, y3);
+		targetCtx.closePath();
 
-		// Use elevation coloring but with different palette for textured surfaces
 		const avgZ = (p1.z + p2.z + p3.z) / 3;
-		printCtx.fillStyle = elevationToColor(avgZ, globalMinZ, globalMaxZ);
-		printCtx.fill();
+		targetCtx.fillStyle = elevationToColor(avgZ, globalMinZ, globalMaxZ, gradient);
+		targetCtx.fill();
 
 		if (showWireFrame) {
-			printCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
-			printCtx.lineWidth = 0.1;
-			printCtx.stroke();
+			targetCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+			targetCtx.lineWidth = 0.1;
+			targetCtx.stroke();
 		}
+		targetCtx.restore(); // <-- FIX: restore before return
 		return;
 	}
 
 	// Check if surface is flat
 	if (globalMaxZ - globalMinZ < 0.001) {
-		// Flat surface - use solid orange color
-		printCtx.beginPath();
-		printCtx.moveTo(x1, y1);
-		printCtx.lineTo(x2, y2);
-		printCtx.lineTo(x3, y3);
-		printCtx.closePath();
-		printCtx.fillStyle = "rgba(255, 165, 0, 0.7)"; // Semi-transparent orange
-		printCtx.fill();
+		targetCtx.beginPath();
+		targetCtx.moveTo(x1, y1);
+		targetCtx.lineTo(x2, y2);
+		targetCtx.lineTo(x3, y3);
+		targetCtx.closePath();
+		targetCtx.fillStyle = "rgba(255, 165, 0, 0.7)";
+		targetCtx.fill();
 
-		// Add wireframe edges
 		if (showWireFrame) {
-			printCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-			printCtx.lineWidth = 0.1;
-			printCtx.stroke();
+			targetCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+			targetCtx.lineWidth = 0.1;
+			targetCtx.stroke();
 		}
+		targetCtx.restore(); // <-- FIX: restore before return
 		return;
 	}
 
 	// Create gradient based on elevation for non-flat surfaces
-	gradient = printCtx.createLinearGradient(x1, y1, x3, y3);
+	const canvasGradient = targetCtx.createLinearGradient(x1, y1, x3, y3);
 
-	// Map Z values to colors using the surface's specific gradient
 	const color1 = elevationToColor(p1.z, globalMinZ, globalMaxZ, gradient);
 	const color2 = elevationToColor(p2.z, globalMinZ, globalMaxZ, gradient);
 	const color3 = elevationToColor(p3.z, globalMinZ, globalMaxZ, gradient);
 
-	gradient.addColorStop(0, color1);
-	gradient.addColorStop(0.5, color2);
-	gradient.addColorStop(1, color3);
+	canvasGradient.addColorStop(0, color1);
+	canvasGradient.addColorStop(0.5, color2);
+	canvasGradient.addColorStop(1, color3);
 
-	// Draw triangle
-	printCtx.beginPath();
-	printCtx.moveTo(x1, y1);
-	printCtx.lineTo(x2, y2);
-	printCtx.lineTo(x3, y3);
-	printCtx.closePath();
-	printCtx.fillStyle = gradient;
-	printCtx.fill();
+	targetCtx.beginPath();
+	targetCtx.moveTo(x1, y1);
+	targetCtx.lineTo(x2, y2);
+	targetCtx.lineTo(x3, y3);
+	targetCtx.closePath();
+	targetCtx.fillStyle = canvasGradient;
+	targetCtx.fill();
 
-	// Add wireframe edges
 	if (showWireFrame) {
-		printCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-		printCtx.lineWidth = 0.1;
-		printCtx.stroke();
+		targetCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+		targetCtx.lineWidth = 0.1;
+		targetCtx.stroke();
 	}
-	// Restore context state
 	targetCtx.restore();
 }
 function printBackgroundImage() {
