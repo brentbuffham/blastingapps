@@ -21009,7 +21009,21 @@ function drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, targetCtx 
 }
 // ADD: Global variable for texture data
 let surfaceTextureData = null;
-
+// Add this function near other surface-related functions
+function getAllVisibleSurfaces() {
+	const visibleSurfaces = [];
+	if (loadedSurfaces && loadedSurfaces.size > 0) {
+		for (const [surfaceId, surface] of loadedSurfaces.entries()) {
+			if (surface.visible && surface.triangles && surface.triangles.length > 0) {
+				visibleSurfaces.push({
+					id: surfaceId,
+					name: surface.name || `Surface ${surfaceId}`
+				});
+			}
+		}
+	}
+	return visibleSurfaces;
+}
 // Helper function to assign holes to surface elevation (with proper geometry calculation)
 function assignHoleToSurfaceElevation(hole, targetElevation, type) {
 	if (type === "collar") {
@@ -21049,14 +21063,14 @@ function assignHoleToSurfaceElevation(hole, targetElevation, type) {
 	}
 }
 
-// Updated surface assignment functions
+// Updated surface assignment functions - NO NEW FUNCTIONS
 assignSurfaceTool.addEventListener("change", function () {
 	if (this.checked) {
 		resetFloatingToolbarButtons("assignSurfaceTool");
 
 		// Check if surface is available
-		const hasVisibleSurface = loadedSurfaces.size > 0 && Array.from(loadedSurfaces.values()).some((surface) => surface.visible && surface.triangles && surface.triangles.length > 0);
-		if (!hasVisibleSurface) {
+		const visibleSurfaces = getAllVisibleSurfaces();
+		if (visibleSurfaces.length === 0) {
 			// No surface available - show dialog with proper styling
 			Swal.fire({
 				title: "No Surface Loaded",
@@ -21098,15 +21112,94 @@ assignSurfaceTool.addEventListener("change", function () {
 			return;
 		}
 
-		// Surface is available - proceed with surface assignment
+		// Multiple surfaces available - ask which one to use
+		if (visibleSurfaces.length > 1) {
+			const surfaceOptions = visibleSurfaces.map((surface) => `<option value="${surface.id}">${surface.name}</option>`).join("");
+
+			Swal.fire({
+				title: "Select Surface",
+				html: `
+					<div class="button-container-2col">
+						<div class="labelWhite12">Multiple surfaces are visible. Select which surface to use:</div>
+						<div></div>
+						<select id="surfaceSelect" class="swal2-input">
+							${surfaceOptions}
+						</select>
+						<div></div>
+					</div>
+				`,
+				showCancelButton: true,
+				confirmButtonText: "Use Surface",
+				cancelButtonText: "Cancel",
+				customClass: {
+					container: "custom-popup-container",
+					popup: "custom-popup-container",
+					title: "swal2-title",
+					content: "swal2-content",
+					confirmButton: "confirm",
+					cancelButton: "cancel"
+				},
+				preConfirm: () => {
+					return document.getElementById("surfaceSelect").value;
+				}
+			}).then((result) => {
+				if (result.isConfirmed) {
+					const selectedSurfaceId = result.value;
+
+					// Surface is available - proceed with surface assignment
+					if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+						let assignedCount = 0;
+						selectedMultipleHoles.forEach((hole) => {
+							const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation, selectedSurfaceId);
+							if (surfaceZ !== null) {
+								assignHoleToSurfaceElevation(hole, surfaceZ, "collar");
+								assignedCount++;
+							}
+						});
+
+						// Show success message
+						const surface = loadedSurfaces.get(selectedSurfaceId);
+						const surfaceName = surface ? surface.name || `Surface ${selectedSurfaceId}` : "selected surface";
+
+						Swal.fire({
+							title: "Surface Assignment Complete",
+							text: `Successfully adjusted ${assignedCount} holes to ${surfaceName} elevation.`,
+							icon: "success",
+							showCancelButton: false,
+							showConfirmButton: true,
+							confirmButtonText: "OK",
+							customClass: {
+								container: "custom-popup-container",
+								popup: "custom-popup-container",
+								title: "swal2-title",
+								content: "swal2-content",
+								confirmButton: "confirm",
+								cancelButton: "cancel"
+							}
+						});
+
+						updateStatusMessage("Select next tool\n to continue");
+					} else {
+						updateStatusMessage("Click on holes to assign surface elevation.");
+						canvas.addEventListener("click", handleAssignSurfaceClick);
+					}
+				}
+				// Deselect tool
+				this.checked = false;
+				resetFloatingToolbarButtons("none");
+			});
+			return;
+		}
+
+		// Single surface available - proceed directly with first surface
+		const surfaceId = visibleSurfaces[0].id;
 		if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
 			let assignedCount = 0;
 			selectedMultipleHoles.forEach((hole) => {
-				const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation);
+				const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation, surfaceId);
 				if (surfaceZ !== null) {
 					assignHoleToSurfaceElevation(hole, surfaceZ, "collar");
 					assignedCount++;
-					// console.log(`Adjusted hole ${hole.holeID}: collar at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
 				}
 			});
 
@@ -21142,100 +21235,6 @@ assignSurfaceTool.addEventListener("change", function () {
 		canvas.removeEventListener("click", handleAssignSurfaceClick);
 	}
 });
-
-assignGradeToHolesTool.addEventListener("change", function () {
-	if (this.checked) {
-		resetFloatingToolbarButtons("assignGradeTool");
-
-		// Check if surface is available
-		const hasVisibleSurface = loadedSurfaces.size > 0 && Array.from(loadedSurfaces.values()).some((surface) => surface.visible && surface.triangles && surface.triangles.length > 0);
-		if (!hasVisibleSurface) {
-			// No surface available - show dialog with proper styling
-			Swal.fire({
-				title: "No Surface Loaded",
-				html: `
-					<div class="button-container-2col">
-						<div class="labelWhite12">No surface is loaded or visible.</div>
-						<div></div>
-						<div class="labelWhite12">Set toe elevation to:</div>
-						<input type="number" id="gradeElevation" value="274" step="0.1" class="swal2-input" style="width: 80px; text-align: center;"> mZ
-					</div>
-				`,
-				showCancelButton: true,
-				confirmButtonText: "OK",
-				cancelButtonText: "Cancel",
-				customClass: {
-					container: "custom-popup-container",
-					popup: "custom-popup-container",
-					title: "swal2-title",
-					content: "swal2-content",
-					confirmButton: "confirm",
-					cancelButton: "cancel"
-				},
-				preConfirm: () => {
-					const elevation = parseFloat(document.getElementById("gradeElevation").value);
-					if (isNaN(elevation)) {
-						Swal.showValidationMessage("Please enter a valid elevation");
-						return false;
-					}
-					return elevation;
-				}
-			}).then((result) => {
-				if (result.isConfirmed) {
-					assignHolesToFixedElevation(result.value, "grade");
-				}
-				// Deselect tool
-				this.checked = false;
-				resetFloatingToolbarButtons("none");
-			});
-			return;
-		}
-
-		// Surface is available - proceed with surface assignment
-		if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
-			let assignedCount = 0;
-			selectedMultipleHoles.forEach((hole) => {
-				const surfaceZ = interpolateZFromSurface(hole.startXLocation, hole.startYLocation);
-				if (surfaceZ !== null) {
-					assignHoleToSurfaceElevation(hole, surfaceZ, "grade");
-					assignedCount++;
-					// console.log(`Adjusted hole ${hole.holeID}: toe at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
-				}
-			});
-
-			// Show success message
-			Swal.fire({
-				title: "Grade Assignment Complete",
-				text: `Successfully adjusted ${assignedCount} hole grades to surface elevation.`,
-				icon: "success",
-				showCancelButton: false,
-				showConfirmButton: true,
-				confirmButtonText: "OK",
-				customClass: {
-					container: "custom-popup-container",
-					popup: "custom-popup-container",
-					title: "swal2-title",
-					content: "swal2-content",
-					confirmButton: "confirm",
-					cancelButton: "cancel"
-				}
-			});
-
-			// Deselect tool
-			this.checked = false;
-			resetFloatingToolbarButtons("none");
-			updateStatusMessage("Select next tool\n to continue");
-		} else {
-			updateStatusMessage("Click on holes to assign grade elevation to surface.");
-			canvas.addEventListener("click", handleAssignGradeClick);
-		}
-	} else {
-		resetFloatingToolbarButtons("none");
-		updateStatusMessage("Select next tool\n to continue");
-		canvas.removeEventListener("click", handleAssignGradeClick);
-	}
-});
-
 // Helper function to assign holes to a fixed elevation (updated)
 function assignHolesToFixedElevation(elevation, type) {
 	let assignedCount = 0;
@@ -21270,25 +21269,20 @@ function assignHolesToFixedElevation(elevation, type) {
 	drawData(points, selectedHole);
 }
 
-// Update click handlers too
+// Update click handlers - simplified version
 function handleAssignSurfaceClick(event) {
+	// Check if we have pre-selected holes (this shouldn't happen since we only add this listener when no holes are selected)
+	if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+		// This case is already handled in the main event listener
+		return;
+	}
+
 	const rect = canvas.getBoundingClientRect();
 	const clickX = event.clientX - rect.left;
 	const clickY = event.clientY - rect.top;
 
-	// SNAPPIN SNAP:
-	const snapResult = canvasToWorldWithSnap(clickX, clickY);
-	worldX = snapResult.worldX;
-	worldY = snapResult.worldY;
-
-	// Show snap feedback if snapped
-	if (snapResult.snapped) {
-		updateStatusMessage("Snapped to " + snapResult.snapTarget.description);
-		setTimeout(() => updateStatusMessage(""), 1500);
-	}
-
-	// Find clicked hole
-	const clickedHole = findHoleAtPosition(worldX, worldY);
+	// Find clicked hole using canvas coordinates
+	const clickedHole = getClickedHole(clickX, clickY);
 	if (clickedHole) {
 		const surfaceZ = interpolateZFromSurface(clickedHole.startXLocation, clickedHole.startYLocation);
 		if (surfaceZ !== null) {
@@ -21298,20 +21292,24 @@ function handleAssignSurfaceClick(event) {
 		} else {
 			updateStatusMessage("Hole " + clickedHole.holeID + " is not on the surface.");
 		}
+	} else {
+		updateStatusMessage("No hole found at click location.");
 	}
 }
 
 function handleAssignGradeClick(event) {
+	// Check if we have pre-selected holes (this shouldn't happen since we only add this listener when no holes are selected)
+	if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+		// This case is already handled in the main event listener
+		return;
+	}
+
 	const rect = canvas.getBoundingClientRect();
 	const clickX = event.clientX - rect.left;
 	const clickY = event.clientY - rect.top;
 
-	// Convert to world coordinates
-	const worldX = (clickX - canvas.width / 2) / currentScale + centroidX;
-	const worldY = -(clickY - canvasHeight / 2) / currentScale + centroidY;
-
-	// Find clicked hole
-	const clickedHole = findHoleAtPosition(worldX, worldY);
+	// Find clicked hole using canvas coordinates
+	const clickedHole = getClickedHole(clickX, clickY);
 	if (clickedHole) {
 		const surfaceZ = interpolateZFromSurface(clickedHole.startXLocation, clickedHole.startYLocation);
 		if (surfaceZ !== null) {
@@ -21321,6 +21319,8 @@ function handleAssignGradeClick(event) {
 		} else {
 			updateStatusMessage("Hole " + clickedHole.holeID + " is not on the surface.");
 		}
+	} else {
+		updateStatusMessage("No hole found at click location.");
 	}
 }
 // Fixed save function (around line 18158)
