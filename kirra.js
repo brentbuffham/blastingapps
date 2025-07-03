@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250702.0008AWST"
-const buildVersion = "20250702.0008AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250703.1220AWST"
+const buildVersion = "20250703.1220AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -52,19 +52,23 @@ function updatePopup() {
 			<br>
 				    <label class="labelWhite18">Update - NEW FEATURES:                           </label>
 					<hr>
-				<label class="labelWhite18">    ✅ Load GeoTIFF and convert from WGS        </label>
-				<br><label class="labelWhite18">✅ Drawings to IndexDB for large files       </label>
-				<br><label class="labelWhite18">✅ Improved Decimation of Surfaces       </label>
-				<br><label class="labelWhite18">✅ Drawing Optimised - Pixel Distance kulling          </label>
-				<br><label class="labelWhite18">✅ Image Show/Hide/Remove/Transparency            </label>
-				<br><label class="labelWhite18">✅ Delete All Images/Surfaces to cleanup DB    </label>
-				<br><label class="labelWhite18">✅ Tree View - Context Menu - Delete & Properties   </label>
-                <br><label class="labelWhite18">                    </label>
-				<br><label class="labelWhite18">✅ ⭐ Duplicate hole check and resolve             </label>
-				<hr>
-				<br><label class="labelWhite18">New & Existing Issues                              </label>
-				<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts          </label>
-				<br><label class="labelWhite12c">🐞 Surface Display - fixed          </label>
+				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+					<label class="labelWhite15">    ✅ Load Multiple GeoTIFFs and convert from WGS                 </label>
+					<br><label class="labelWhite15">✅ Drawings to IndexDB for large files             </label>
+					<br><label class="labelWhite15">✅ Load multiple Surfaces and change colours          </label>
+					<br><label class="labelWhite15">✅ Improved Decimation of Surfaces                </label>
+					<br><label class="labelWhite15">✅ Drawing Optimised - Pixel Distance culling          </label>
+					<br><label class="labelWhite15">✅ Image Show/Hide/Remove/Transparency            </label>
+					<br><label class="labelWhite15">✅ Delete All Images/Surfaces to cleanup DB          </label>
+					<br><label class="labelWhite15">✅ Fixed State UI/UX issues                          </label>
+					<br><label class="labelWhite15">✅ Tree View - Context Menu - Delete & Properties   </label>
+	                <br><label class="labelWhite15">✅ Tree View - Colour Change                        </label>
+					<br><label class="labelWhite15">✅ ⭐ Proimity Duplicate hole check and resolve             </label>
+					<hr>
+					<br><label class="labelWhite18">New & Existing Issues                              </label>
+					<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts          </label>
+					<br><label class="labelWhite12c">🐞 Surface Display - fixed                         </label>
+				</div>
 				<br><br>
 				<a href="https://www.buymeacoffee.com/BrentBuffham">
 	          <img src="https://img.buymeacoffee.com/button-api/?text=Buy Brent a coffee&emoji=&slug=BrentBuffham&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy me a coffee" />
@@ -212,7 +216,8 @@ let currentMouseCanvasZ = document.getElementById("drawingElevation").value;
 let currentMouseWorldX = 0;
 let currentMouseWorldY = 0;
 let currentMouseWorldZ = document.getElementById("drawingElevation").value;
-
+// Surfaces
+let allAvailableSurfaces = [];
 let intervalAmount = document.getElementById("intervalSlider").value;
 let firstMovementSize = document.getElementById("firstMovementSlider").value;
 let connectAmount = document.getElementById("connectSlider").value;
@@ -354,7 +359,7 @@ let isRenumberingHoles = false;
 
 const switches = [addConnectorButton, addMultiConnectorButton, addPatternSwitch, addHoleSwitch, editLengthPopupSwitch, editTypeSwitch, editBlastNameSwitch, deleteHoleSwitch, modifyKADSwitch, offsetLinePolySwitch, editHoleTypePopupSwitch, addPointDraw, addLineDraw, addCircleDraw, addPolyDraw, addTextDraw, deleteKADDraw, measuredLengthSwitch, measuredMassSwitch, measuredCommentSwitch, selectionModeButton, editHolesToggle];
 
-const bools = [
+const booleans = [
 	isAddingConnector,
 	isAddingMultiConnector,
 	isAddingHole,
@@ -413,6 +418,30 @@ function setAllBoolsToFalse() {
 	isMultiHoleSelectionEnabled = false;
 	isMoveToolActive = false;
 	isMovingHole = false;
+
+	// CRITICAL FIX: Remove move tool event listeners when deactivating
+	canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+	canvas.removeEventListener("touchstart", handleMoveToolMouseDown);
+	canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+	canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+	canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+	canvas.removeEventListener("touchend", handleMoveToolMouseUp);
+
+	// Also clear move tool state variables
+	moveToolSelectedHole = null;
+	isDraggingHole = false;
+
+	// Remove bearing tool listeners too
+	canvas.removeEventListener("mousedown", handleBearingToolMouseDown);
+	canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
+	canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
+	canvas.removeEventListener("touchstart", handleBearingToolMouseDown);
+	canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
+	canvas.removeEventListener("touchend", handleBearingToolMouseUp);
+
+	// Clear bearing tool state
+	bearingToolSelectedHole = null;
+	isDraggingBearing = false;
 }
 
 // Function 2: Reset all switches and toggles
@@ -456,7 +485,7 @@ function resetAllSelectedStores() {
 	lineStartPoint = null;
 	lineEndPoint = null;
 
-	// Reset polyline tool variables
+	// Reset poly line tool variables
 	polylineStartPoint = null;
 	polylineEndPoint = null;
 
@@ -482,6 +511,28 @@ function resetFloatingToolbarButtons(excluding) {
 	isAddingConnector = false;
 	isAddingMultiConnector = false;
 
+	// CRITICAL: Remove move and bearing tool listeners when switching away
+	if (excluding !== "moveToTool") {
+		canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+		canvas.removeEventListener("touchstart", handleMoveToolMouseDown);
+		canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+		canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+		canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+		canvas.removeEventListener("touchend", handleMoveToolMouseUp);
+		moveToolSelectedHole = null;
+		isDraggingHole = false;
+	}
+
+	if (excluding !== "bearingTool") {
+		canvas.removeEventListener("mousedown", handleBearingToolMouseDown);
+		canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
+		canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
+		canvas.removeEventListener("touchstart", handleBearingToolMouseDown);
+		canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
+		canvas.removeEventListener("touchend", handleBearingToolMouseUp);
+		bearingToolSelectedHole = null;
+		isDraggingBearing = false;
+	}
 	// Set all tool checkboxes to false except the excluded one
 	selectPointerTool.checked = excluding === "selectPointerTool";
 	selectByPolygonTool.checked = excluding === "selectByPolygonTool";
@@ -542,7 +593,7 @@ function resetAppToDefaults() {
 	resetAllSwitchesAndToggles();
 	resetAllSelectedStores();
 	resetFloatingToolbarButtons("none");
-	console.log("App reset to defaults: bools, switches, toggles, and stores cleared");
+	console.log("App reset to defaults: booleans, switches, toggles, and stores cleared");
 }
 
 // Buttons
@@ -1020,7 +1071,7 @@ function updateTranslations(language) {
 		const voronoiBoundaryLabel = document.querySelector("#voronoiBoundaryLabel");
 		if (voronoiBoundaryLabel) voronoiBoundaryLabel.textContent = langTranslations.voronoi_boundary_label;
 
-		// Update voronoi select options
+		// Update select options
 		const voronoiSelect = document.querySelector("#voronoiSelect");
 		if (voronoiSelect) {
 			const options = voronoiSelect.querySelectorAll("option");
@@ -1057,7 +1108,7 @@ function updateTranslations(language) {
 			});
 		}
 
-		// Update voronoi legend select options
+		// Update legend select options
 		const voronoiLegendSelect = document.querySelector("#voronoiLegendSelect");
 		if (voronoiLegendSelect) {
 			const options = voronoiLegendSelect.querySelectorAll("option");
@@ -1073,8 +1124,8 @@ function updateTranslations(language) {
 			});
 		}
 
-		const buymeacoffeelabel = document.querySelector("#buymeacoffeelabel");
-		if (buymeacoffeelabel) buymeacoffeelabel.textContent = langTranslations.buy_coffee_alt;
+		const buymeaCoffeeLabel = document.querySelector("#buymeacoffeelabel");
+		if (buymeaCoffeeLabel) buymeaCoffeeLabel.textContent = langTranslations.buy_coffee_alt;
 
 		const bugButton = document.querySelector("#bugButton");
 		if (bugButton) bugButton.textContent = langTranslations.report_bug_button;
@@ -1163,7 +1214,8 @@ function getDarkModeSettings() {
 		return;
 	}
 
-	const darkModeEnabled = localStorage.getItem("darkMode") === "true";
+	darkModeEnabled = localStorage.getItem("darkMode") === "true";
+
 	if (darkModeEnabled) {
 		darkModeToggle.checked = true;
 		body.classList.add("dark-mode");
@@ -1175,6 +1227,8 @@ function getDarkModeSettings() {
 		sidenavLeft.classList.remove("dark-mode");
 		canvas.classList.remove("dark-canvas");
 	}
+	// Update color variables based on dark mode
+	updateColorsForDarkMode();
 }
 
 document.getElementById("buttonGoBack").addEventListener("click", function () {
@@ -1285,7 +1339,7 @@ selectionModeButton.addEventListener("change", function () {
 		drawData(points, selectedHole);
 	}
 });
-function setSelectionModeToFalse() {
+function setMultipleSelectionModeToFalse() {
 	// resetFloatingToolbarButtons("none");
 	isMultiHoleSelectionEnabled = false;
 	selectedMultipleHoles = [];
@@ -1320,7 +1374,10 @@ measuredLengthSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetFloatingToolbarButtons("none");
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
 		isMeasureRecording = true;
 		measuredLengthSwitch.checked = true;
 		document.getElementById("display13").checked = true; // Set display mode to hole Length
@@ -1347,7 +1404,10 @@ measuredMassSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetFloatingToolbarButtons("none");
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
 		isMeasureRecording = true;
 		measuredMassSwitch.checked = true;
 		document.getElementById("display14").checked = true; // Set display mode to hole Length
@@ -1374,7 +1434,10 @@ measuredCommentSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetFloatingToolbarButtons("none");
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
 		isMeasureRecording = true;
 		measuredCommentSwitch.checked = true;
 		document.getElementById("display15").checked = true; // Set display mode to hole Length
@@ -1401,8 +1464,11 @@ addPointDraw.addEventListener("change", function () {
 		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
-		setSelectionModeToFalse();
 		setAllBoolsToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("rulerTool", "bearingTool");
 		isDrawingPoint = true;
 		addPointDraw.checked = true;
 		createNewEntity = true; // ← ADD THIS LINE
@@ -1423,8 +1489,11 @@ addLineDraw.addEventListener("change", function () {
 		switches.forEach((switchElement) => {
 			if (switchElement) switchElement.checked = false;
 		});
-		setSelectionModeToFalse();
 		setAllBoolsToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("rulerTool", "bearingTool");
 		isDrawingLine = true;
 		addLineDraw.checked = true;
 		createNewEntity = true; // ← ADD THIS LINE
@@ -1446,7 +1515,10 @@ addPolyDraw.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("rulerTool", "bearingTool");
 		isDrawingPoly = true;
 		addPolyDraw.checked = true;
 		createNewEntity = true; // ← ADD THIS LINE
@@ -1467,7 +1539,10 @@ addCircleDraw.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("rulerTool", "bearingTool");
 		isDrawingCircle = true;
 		addCircleDraw.checked = true;
 		createNewEntity = true; // ← ADD THIS LINE
@@ -1488,7 +1563,10 @@ addTextDraw.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("rulerTool", "bearingTool");
 		isDrawingText = true;
 		addTextDraw.checked = true;
 		createNewEntity = true; // ← ADD THIS LINE
@@ -1510,7 +1588,10 @@ deleteKADDraw.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("selectPointer", "selectByPolyhon");
 		isDeletingKAD = true;
 		deleteKADDraw.checked = true;
 		canvas.addEventListener("click", getClickedPoint);
@@ -1529,6 +1610,10 @@ addConnectorButton.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("tieConnectTool");
 		isAddingConnector = true;
 		addConnectorButton.checked = true;
 		isPolygonSelectionActive = false;
@@ -1536,7 +1621,7 @@ addConnectorButton.addEventListener("change", function () {
 		selectedMultipleHoles = [];
 		selectByPolygonTool.checked = false;
 		selectPointerTool.checked = false;
-		setSelectionModeToFalse();
+
 		document.getElementById("display5A").checked = true;
 		canvas.addEventListener("click", handleConnectorClick);
 		canvas.addEventListener("touchstart", handleConnectorClick);
@@ -1559,14 +1644,20 @@ addMultiConnectorButton.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
+		resetAllSelectedStores();
+		resetAllSwitchesAndToggles();
+		setMultipleSelectionModeToFalse();
+		resetFloatingToolbarButtons("tieConnectMultiTool");
+
 		addMultiConnectorButton.checked = true;
 		isAddingMultiConnector = true;
+
 		isPolygonSelectionActive = false;
 		isSelectionPointerActive = false;
 		selectedMultipleHoles = [];
 		selectByPolygonTool.checked = false;
 		selectPointerTool.checked = false;
-		setSelectionModeToFalse();
+
 		document.getElementById("display5A").checked = true;
 		canvas.addEventListener("click", handleConnectorClick);
 		canvas.addEventListener("touchstart", handleConnectorClick);
@@ -1630,7 +1721,7 @@ addHoleSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		setMultipleSelectionModeToFalse();
 		addHoleSwitch.checked = true;
 		isAddingHole = true;
 		isAddingPattern = false;
@@ -1669,7 +1760,7 @@ addPatternSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		setMultipleSelectionModeToFalse();
 		addPatternSwitch.checked = true;
 		isAddingPattern = true;
 		isAddingHole = false;
@@ -1743,7 +1834,7 @@ editBlastNameSwitch.addEventListener("change", function () {
 			if (switchElement) switchElement.checked = false;
 		});
 		setAllBoolsToFalse();
-		setSelectionModeToFalse();
+		setMultipleSelectionModeToFalse();
 		editBlastNameSwitch.checked = true;
 		isBlastNameEditing = true;
 
@@ -1797,7 +1888,7 @@ editHolesToggle.addEventListener("change", function () {
 		console.log("editHolesToggle checked");
 		isHoleEditing = true;
 		//use the set all switches to false function
-		bools.forEach((bool) => {
+		booleans.forEach((bool) => {
 			if (bool !== isHoleEditing || boll != isMultiHoleSelectionEnabled) bool = false;
 		});
 		//turn all the switches off
@@ -3521,6 +3612,25 @@ async function handleDXFUpload(event) {
 	reader.readAsText(file);
 	debouncedUpdateTreeView(); // Use debounced version
 }
+// Add this helper function to generate unique entity names
+function getUniqueEntityName(baseName, entityType) {
+	// If baseName doesn't exist in the map, use it as-is
+	if (!allKADDrawingsMap.has(baseName)) {
+		return baseName;
+	}
+
+	// Otherwise, increment until we find a unique name
+	let counter = 1;
+	let uniqueName = baseName + "_" + counter;
+
+	while (allKADDrawingsMap.has(uniqueName)) {
+		counter++;
+		uniqueName = baseName + "_" + counter;
+	}
+
+	console.log("⚠️ Entity name collision avoided: '" + baseName + "' → '" + uniqueName + "'");
+	return uniqueName;
+}
 
 function parseDXFtoKadMaps(dxf) {
 	// 1) seed counters so we never collide with existing entries
@@ -3543,7 +3653,6 @@ function parseDXFtoKadMaps(dxf) {
 	dxf.entities.forEach(function (ent) {
 		var t = ent.type.toUpperCase();
 		var color = getColor(ent.color);
-		// console.log("Entity type:", t, "\nEntity name:", ent.name, "\nColor:", color, "\n\n");
 
 		// POINT or VERTEX
 		if (t === "POINT" || t === "VERTEX") {
@@ -3553,7 +3662,10 @@ function parseDXFtoKadMaps(dxf) {
 			if (x == null || y == null) {
 				console.warn("POINT/VERTEX missing coords:", ent);
 			} else {
-				var name = ent.name || "pointEntity_" + ++counts.point;
+				// FIXED: Use unique name generation
+				var baseName = ent.name || "pointEntity_" + ++counts.point;
+				var name = getUniqueEntityName(baseName, "point");
+
 				allKADDrawingsMap.set(name, {
 					entityName: name,
 					entityType: "point",
@@ -3579,7 +3691,11 @@ function parseDXFtoKadMaps(dxf) {
 				var xi = ent.position.x - offsetX;
 				var yi = ent.position.y - offsetY;
 				var zi = ent.position.z || 0;
-				var nameI = ent.name || "pointEntity_" + ++counts.point;
+
+				// FIXED: Use unique name generation
+				var baseNameI = ent.name || "pointEntity_" + ++counts.point;
+				var nameI = getUniqueEntityName(baseNameI, "point");
+
 				allKADDrawingsMap.set(nameI, {
 					entityName: nameI,
 					entityType: "point",
@@ -3601,7 +3717,10 @@ function parseDXFtoKadMaps(dxf) {
 			if (!v || v.length < 2) {
 				console.warn("LINE missing vertices:", ent);
 			} else {
-				var nameL = ent.name || "lineEntity_" + ++counts.line;
+				// FIXED: Use unique name generation
+				var baseNameL = ent.name || "lineEntity_" + ++counts.line;
+				var nameL = getUniqueEntityName(baseNameL, "line");
+
 				allKADDrawingsMap.set(nameL, {
 					entityName: nameL,
 					entityType: "line",
@@ -3642,9 +3761,13 @@ function parseDXFtoKadMaps(dxf) {
 				var entityType = isClosed ? "poly" : "line";
 				var nameP;
 				if (isClosed) {
-					nameP = ent.name || "polyEntity_" + ++counts.poly;
+					// FIXED: Use unique name generation
+					var baseNameP = ent.name || "polyEntity_" + ++counts.poly;
+					nameP = getUniqueEntityName(baseNameP, "poly");
 				} else {
-					nameP = ent.name || "lineEntity_" + ++counts.line;
+					// FIXED: Use unique name generation
+					var baseNameP = ent.name || "lineEntity_" + ++counts.line;
+					nameP = getUniqueEntityName(baseNameP, "line");
 				}
 
 				allKADDrawingsMap.set(nameP, {
@@ -3688,7 +3811,10 @@ function parseDXFtoKadMaps(dxf) {
 			if (!ent.center) {
 				console.warn("CIRCLE missing center:", ent);
 			} else {
-				var nameC = ent.name || "circleEntity_" + ++counts.circle;
+				// FIXED: Use unique name generation
+				var baseNameC = ent.name || "circleEntity_" + ++counts.circle;
+				var nameC = getUniqueEntityName(baseNameC, "circle");
+
 				allKADDrawingsMap.set(nameC, {
 					entityName: nameC,
 					entityType: "circle",
@@ -3713,7 +3839,10 @@ function parseDXFtoKadMaps(dxf) {
 			if (!ent.center) {
 				console.warn("ELLIPSE missing center:", ent);
 			} else {
-				var nameE = ent.name || "polyEntity_" + ++counts.poly;
+				// FIXED: Use unique name generation
+				var baseNameE = ent.name || "polyEntity_" + ++counts.poly;
+				var nameE = getUniqueEntityName(baseNameE, "poly");
+
 				allKADDrawingsMap.set(nameE, {
 					entityName: nameE,
 					entityType: "poly",
@@ -3748,7 +3877,10 @@ function parseDXFtoKadMaps(dxf) {
 			if (!pos) {
 				console.warn("TEXT missing position:", ent);
 			} else {
-				var nameT = ent.name || "textEntity_" + ++counts.text;
+				// FIXED: Use unique name generation
+				var baseNameT = ent.name || "textEntity_" + ++counts.text;
+				var nameT = getUniqueEntityName(baseNameT, "text");
+
 				allKADDrawingsMap.set(nameT, {
 					entityName: nameT,
 					entityType: "text",
@@ -9700,6 +9832,7 @@ function saveAQMPopup() {
 // Using SweetAlert Library Create a popup that gets input from the user.
 // Updated addHolePopup function with proper field handling
 function addHolePopup() {
+	let blastNameValue = "Added_hole_" + new Date().getTime();
 	//Retrieve the last entered values from local storage
 	let savedAddHolePopupSettings = JSON.parse(localStorage.getItem("savedAddHolePopupSettings")) || {};
 	let lastValues = {
@@ -9987,8 +10120,32 @@ function addHolePopup() {
 			};
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
-			//create a new hole
-			addHole(useCustomHoleID, useGradeZ, blastNameValue, customHoleID, worldX, worldY, elevationValue, gradeZValue, diameterValue, typeValue, lengthValue, subdrillValue, angleValue, bearingValue);
+			// PROXIMITY CHECK: Check for nearby holes before adding
+			const proximityHoles = checkHoleProximity(parseFloat(worldX), parseFloat(worldY), parseFloat(diameterValue), points);
+
+			if (proximityHoles.length > 0) {
+				const newHoleInfo = {
+					entityName: blastNameValue,
+					holeID: useCustomHoleID ? customHoleID : (points.length + 1).toString(),
+					x: parseFloat(worldX),
+					y: parseFloat(worldY),
+					diameter: parseFloat(diameterValue)
+				};
+
+				showProximityWarning(proximityHoles, newHoleInfo).then((proximityResult) => {
+					if (proximityResult.isConfirmed) {
+						// User chose to continue - add the hole
+						addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : points.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue));
+					} else if (proximityResult.isDenied) {
+						// User chose to skip - don't add this hole
+						console.log("Skipped hole due to proximity");
+					}
+					// If proximityResult.isDismissed (cancel), do nothing
+				});
+			} else {
+				// No proximity issues - add the hole normally
+				addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : points.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue));
+			}
 		} else {
 			worldX = null;
 			worldY = null;
@@ -10032,9 +10189,8 @@ function handlePatternAddingClick(event) {
 	}
 }
 
-// Using SweetAlert Library Create a popup that gets input from the user.
 function addPatternPopup(worldX, worldY) {
-	//Retrieve the last enteredvalues from local storage
+	//Retrieve the last entered values from local storage
 	let savedAddPatternPopupSettings = JSON.parse(localStorage.getItem("savedAddPatternPopupSettings")) || {};
 	let lastValues = {
 		blastName: savedAddPatternPopupSettings.blastName || blastNameValue,
@@ -10043,6 +10199,8 @@ function addPatternPopup(worldX, worldY) {
 		x: savedAddPatternPopupSettings.x || worldX,
 		y: savedAddPatternPopupSettings.y || worldY,
 		z: savedAddPatternPopupSettings.z || 100,
+		useGradeZ: savedAddPatternPopupSettings.useGradeZ || false,
+		gradeZ: savedAddPatternPopupSettings.gradeZ || 94,
 		diameter: savedAddPatternPopupSettings.diameter || 115,
 		type: savedAddPatternPopupSettings.type || "Production",
 		angle: savedAddPatternPopupSettings.angle || 0,
@@ -10056,7 +10214,6 @@ function addPatternPopup(worldX, worldY) {
 		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
 	};
 
-	//${lastValues.}
 	// Show loading spinner while the popup is created
 	Swal.showLoading();
 
@@ -10067,52 +10224,55 @@ function addPatternPopup(worldX, worldY) {
 		confirmButtonText: "Confirm",
 		cancelButtonText: "Cancel",
 		html: `
-		<div class="button-container-2col">
-		  <label class="labelWhite18" for="blastName">Blast Name</label>
-		  <input type="text3" id="blastName" name="blastName" placeholder="Blast Name" value="${lastValues.blastName}"/>
-		  <label class="labelWhite18" for="nameTypeIsNumerical">Numerical Names</label>
-		  <input type="checkbox" id="nameTypeIsNumerical" name="nameTypeIsNumerical" ${lastValues.nameTypeIsNumerical ? "checked" : ""}>
+        <div class="button-container-2col">
+          <label class="labelWhite18" for="blastName">Blast Name</label>
+          <input type="text3" id="blastName" name="blastName" placeholder="Blast Name" value="${lastValues.blastName}"/>
+          <label class="labelWhite18" for="nameTypeIsNumerical">Numerical Names</label>
+          <input type="checkbox" id="nameTypeIsNumerical" name="nameTypeIsNumerical" ${lastValues.nameTypeIsNumerical ? "checked" : ""}>
           
-		  <label class="labelWhite18" for="rowOrientation">Orientation</label>
-		  <input type="number3" id="rowOrientation" name="rowOrientation" placeholder="rowOrientation" value="${lastValues.rowOrientation}" step=0.1 min="0" max="359.999" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="x">Start X</label>
-		  <input type="number3" id="x" name="x" placeholder="X" value="${worldX}" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="y">Start Y</label>
-		  <input type="number3" id="y" name="y" placeholder="Y" value="${worldY}" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="z">Start Z</label>
-		  <input type="number3" id="z" name="z" placeholder="Z" value="${lastValues.z}" inputmode="decimal" pattern="[0-9]*"/>
-          <!-- ghostinput for gradeZ but calculate from elevation - (length-subdrill) * Math.cos(angle * (Math.PI / 180)) if useGradeZ is false -->
+          <label class="labelWhite18" for="rowOrientation">Orientation</label>
+          <input type="number3" id="rowOrientation" name="rowOrientation" placeholder="rowOrientation" value="${lastValues.rowOrientation}" step=0.1 min="0" max="359.999" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="x">Start X</label>
+          <input type="number3" id="x" name="x" placeholder="X" value="${worldX}" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="y">Start Y</label>
+          <input type="number3" id="y" name="y" placeholder="Y" value="${worldY}" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="z">Start Z</label>
+          <input type="number3" id="z" name="z" placeholder="Z" value="${lastValues.z}" inputmode="decimal" pattern="[0-9]*"/>
+          
           <label class="labelWhite18" for="useGradeZ">Use Grade Z</label>
-		  <input type="checkbox" id="useGradeZ" name="useGradeZ" ${lastValues.useGradeZ ? "checked" : ""}>
+          <input type="checkbox" id="useGradeZ" name="useGradeZ" ${lastValues.useGradeZ ? "checked" : ""}>
+          
           <label class="labelWhite18" for="gradeZ">Grade Z</label>
-          <input type="number3" id="gradeZ" placeholder="Grade Z" value="${lastValues.useGradeZ ? lastValues.gradeZ : lastValues.elevation - (lastValues.length - lastValues.subdrill) * Math.cos(lastValues.angle * (Math.PI / 180))}" inputmode="decimal" pattern="[0-9]*" disabled/>
-		  <label class="labelWhite18" for="diameter">Diameter</label>
-		  <input type="number3" id="diameter" name="diameter" placeholder="Diameter" value="${lastValues.diameter}" step=1 min="0" max="1000" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="type">Type</label>
-		  <input type="text3" id="type" name="type" placeholder="Type" value="${lastValues.type}"/>
-		  <label class="labelWhite18" for="angle">Angle</label>
-		  <input type="number3" id="angle" name="angle" placeholder="Angle" value="${lastValues.angle}" step="1" min="0" max="60" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="bearing">Bearing</label>
-		  <input type="number3" id="bearing" name="bearing" placeholder="Bearing" value="${lastValues.bearing}" value="0.0" step=0.1 min="0" max="359.999" inputmode="decimal" pattern="[0-9]*"/>
-          <!-- ghostinput for length but calculated from gradeZ if useGradeZ is true -->
-		  <label class="labelWhite18" for="length">Length</label>
-		  <input type="number3" id="length" name="length" placeholder="Length" value="${lastValues.useGradeZ ? (lastValues.gradeZ + lastValues.subdrill - lastValues.elevation) / Math.cos(lastValues.angle * (Math.PI / 180)) : lastValues.length}" inputmode="decimal" pattern="[0-9]*" disabled/>
-		  <label class="labelWhite18" for="subdrill">Subdrill</label>
-		  <input type="number3" id="subdrill" name="subdrill" placeholder="Subdrill" value="${lastValues.subdrill}" step="0.1" min="0.0" max="100" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="spacingOffset">Offset</label>
-		  <input type="number3" id="spacingOffset" name="spacingOffset" placeholder="SpacingOffset" value="${lastValues.spacingOffset}" step="0.1" min="-1.0" max="1.0" inputmode="decimal" pattern="[0-9]*"/>
-		  <div class="labelWhite12"  id="infolabel1" name="infolabel1">Offset Information: </div> 
-		  <div class="labelWhite12"  id="infolabel2" name="infolabel2">Staggered = -0.5 or 0.5, Square = -1, 0, 1</div> 
-		  <label class="labelWhite18" for="burden">Burden</label>
-		  <input type="number3" id="burden" name="burden" placeholder="Burden" value="${lastValues.burden}" step="0.1" min="0.1" max="50" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="spacing">Spacing</label>
-		  <input type="number3" id="spacing" name="spacing" placeholder="Spacing" value="${lastValues.spacing}" step="0.1" min="0.1" max="50" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="rows">Rows</label>
-		  <input type="number3" id="rows" name="rows" placeholder="Rows" value="${lastValues.rows}" step="1" min="1" max="500" inputmode="decimal" pattern="[0-9]*"/>
-		  <label class="labelWhite18" for="holesPerRow">Holes Per Row</label>
-		  <input type="number3" id="holesPerRow" name="holesPerRow" placeholder="Per Row" value="${lastValues.holesPerRow}" step="1" min="1" max="500" inputmode="decimal" pattern="[0-9]*"/>
-		</div>
-	  `,
+          <input type="number3" id="gradeZ" placeholder="Grade Z" value="${lastValues.gradeZ}" inputmode="decimal" pattern="[0-9]*" ${!lastValues.useGradeZ ? "disabled" : ""}/>
+          
+          <label class="labelWhite18" for="diameter">Diameter</label>
+          <input type="number3" id="diameter" name="diameter" placeholder="Diameter" value="${lastValues.diameter}" step=1 min="0" max="1000" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="type">Type</label>
+          <input type="text3" id="type" name="type" placeholder="Type" value="${lastValues.type}"/>
+          <label class="labelWhite18" for="angle">Angle</label>
+          <input type="number3" id="angle" name="angle" placeholder="Angle" value="${lastValues.angle}" step="1" min="0" max="60" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="bearing">Bearing</label>
+          <input type="number3" id="bearing" name="bearing" placeholder="Bearing" value="${lastValues.bearing}" step=0.1 min="0" max="359.999" inputmode="decimal" pattern="[0-9]*"/>
+          
+          <label class="labelWhite18" for="length">Length</label>
+          <input type="number3" id="length" name="length" placeholder="Length" value="${lastValues.length}" inputmode="decimal" pattern="[0-9]*" ${lastValues.useGradeZ ? "disabled" : ""}/>
+          
+          <label class="labelWhite18" for="subdrill">Subdrill</label>
+          <input type="number3" id="subdrill" name="subdrill" placeholder="Subdrill" value="${lastValues.subdrill}" step="0.1" min="0.0" max="100" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="spacingOffset">Offset</label>
+          <input type="number3" id="spacingOffset" name="spacingOffset" placeholder="SpacingOffset" value="${lastValues.spacingOffset}" step="0.1" min="-1.0" max="1.0" inputmode="decimal" pattern="[0-9]*"/>
+          <div class="labelWhite12" id="infolabel1" name="infolabel1">Offset Information: </div> 
+          <div class="labelWhite12" id="infolabel2" name="infolabel2">Staggered = -0.5 or 0.5, Square = -1, 0, 1</div> 
+          <label class="labelWhite18" for="burden">Burden</label>
+          <input type="number3" id="burden" name="burden" placeholder="Burden" value="${lastValues.burden}" step="0.1" min="0.1" max="50" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="spacing">Spacing</label>
+          <input type="number3" id="spacing" name="spacing" placeholder="Spacing" value="${lastValues.spacing}" step="0.1" min="0.1" max="50" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="rows">Rows</label>
+          <input type="number3" id="rows" name="rows" placeholder="Rows" value="${lastValues.rows}" step="1" min="1" max="500" inputmode="decimal" pattern="[0-9]*"/>
+          <label class="labelWhite18" for="holesPerRow">Holes Per Row</label>
+          <input type="number3" id="holesPerRow" name="holesPerRow" placeholder="Per Row" value="${lastValues.holesPerRow}" step="1" min="1" max="500" inputmode="decimal" pattern="[0-9]*"/>
+        </div>
+      `,
 		customClass: {
 			container: "custom-popup-container",
 			title: "swal2-title",
@@ -10121,13 +10281,64 @@ function addPatternPopup(worldX, worldY) {
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
 			icon: "swal2-icon"
+		},
+		didOpen: () => {
+			// Get references to form elements
+			const useGradeZCheckbox = document.getElementById("useGradeZ");
+			const gradeZInput = document.getElementById("gradeZ");
+			const lengthInput = document.getElementById("length");
+			const zInput = document.getElementById("z");
+			const angleInput = document.getElementById("angle");
+			const subdrillInput = document.getElementById("subdrill");
+
+			// Function to update fields based on checkbox state
+			function updateFieldsBasedOnUseGradeZ() {
+				const useGradeZ = useGradeZCheckbox.checked;
+
+				// Enable/disable fields
+				gradeZInput.disabled = !useGradeZ;
+				lengthInput.disabled = useGradeZ;
+
+				// Update calculations
+				if (useGradeZ) {
+					// Calculate length from grade
+					const collarZ = parseFloat(zInput.value) || 0;
+					const gradeZ = parseFloat(gradeZInput.value) || 0;
+					const subdrill = parseFloat(subdrillInput.value) || 0;
+					const angle = parseFloat(angleInput.value) || 0;
+					const angleRad = angle * (Math.PI / 180);
+
+					const calculatedLength = Math.abs((collarZ - gradeZ + subdrill) / Math.cos(angleRad));
+					lengthInput.value = calculatedLength.toFixed(2);
+				} else {
+					// Calculate grade from length
+					const collarZ = parseFloat(zInput.value) || 0;
+					const length = parseFloat(lengthInput.value) || 0;
+					const subdrill = parseFloat(subdrillInput.value) || 0;
+					const angle = parseFloat(angleInput.value) || 0;
+					const angleRad = angle * (Math.PI / 180);
+
+					const calculatedGradeZ = collarZ - (length - subdrill) * Math.cos(angleRad);
+					gradeZInput.value = calculatedGradeZ.toFixed(2);
+				}
+			}
+
+			// Add event listeners for changes
+			useGradeZCheckbox.addEventListener("change", updateFieldsBasedOnUseGradeZ);
+			gradeZInput.addEventListener("input", updateFieldsBasedOnUseGradeZ);
+			lengthInput.addEventListener("input", updateFieldsBasedOnUseGradeZ);
+			zInput.addEventListener("input", updateFieldsBasedOnUseGradeZ);
+			angleInput.addEventListener("input", updateFieldsBasedOnUseGradeZ);
+			subdrillInput.addEventListener("input", updateFieldsBasedOnUseGradeZ);
+
+			// Initial update
+			updateFieldsBasedOnUseGradeZ();
 		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
 				// Retrieve values from the input fields
 				const entityName = document.getElementById("blastName").value;
-
 				const offset = document.getElementById("spacingOffset").value;
 				const nameTypeIsNumerical = document.getElementById("nameTypeIsNumerical").checked;
 				const rowOrientation = parseFloat(document.getElementById("rowOrientation").value);
@@ -10147,177 +10358,18 @@ function addPatternPopup(worldX, worldY) {
 				const rows = parseInt(document.getElementById("rows").value);
 				const holesPerRow = parseInt(document.getElementById("holesPerRow").value);
 
-				//entityName checks
+				// Input validation
 				if (entityName === null || entityName === "") {
-					// Show an alert to the user
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
 						icon: "error"
 					});
-					return; // Exit the function
+					return;
 				}
-				//offset checks
-				if (isNaN(offset) || offset < -1 || offset > 1) {
-					//show alert to user
-					Swal.fire({
-						title: "Invalid Offset",
-						text: "Please enter an offset between -1 and 1.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//nameTypeIsNumerical checks
-				if (nameTypeIsNumerical === null || nameTypeIsNumerical === "") {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Name Type",
-						text: "Please enter a Name Type.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//rowOrientation checks
-				if (isNaN(rowOrientation) || rowOrientation < 0 || rowOrientation > 359.999) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Row Orientation",
-						text: "Please enter a row orientation between 0 and 359.999 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//x checks
-				if (isNaN(x)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid X",
-						text: "Please enter an X value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//y checks
-				if (isNaN(y)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Y",
-						text: "Please enter an Y value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//z checks
-				if (isNaN(z)) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Z",
-						text: "Please enter an Z value in meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//diameter checks
-				if (isNaN(diameter) || diameter < 0 || diameter > 1000) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Diameter",
-						text: "Please enter an diameter between 0 and 1000 millimeters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//type checks which is only text
-				if (type === null || type === "") {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Type",
-						text: "Please enter a Type.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//angle checks
-				if (isNaN(angle) || angle < 0 || angle > 60) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Angle",
-						text: "Please enter an angle between 0 and 60 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//bearing checks
-				if (isNaN(bearing) || bearing < 0 || bearing > 360) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Bearing",
-						text: "Please enter an bearing between 0 and 360 degrees.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//length checks
-				if (isNaN(length) || length < 0 || length > 200) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Length",
-						text: "Please enter an length between 0 and 200 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//subdrill checks
-				if (isNaN(subdrill) || subdrill < -50 || subdrill > 50) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Subdrill",
-						text: "Please enter an subdrill between -50 and 50 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//burden checks
-				if (isNaN(burden) || burden < 0.1 || burden > 50) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Burden",
-						text: "Please enter an burden between 0.1 and 50 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//spacing checks
-				if (isNaN(spacing) || spacing < 0.1 || spacing > 50) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Spacing",
-						text: "Please enter an spacing between 0.1 and 50 meters.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//rows checksq
-				if (isNaN(rows) || rows < 1 || rows > 500) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Rows",
-						text: "Please enter an rows between 1 and 500.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
-				//holesPerRow checks
-				if (isNaN(holesPerRow) || holesPerRow < 1 || holesPerRow > 500) {
-					// Show an alert to the user
-					Swal.fire({
-						title: "Invalid Holes Per Row",
-						text: "Please enter an holes per row between 1 and 500.",
-						icon: "error"
-					});
-					return; // Exit the function
-				}
+				// [Rest of your validation checks here]
 
+				// Save settings to localStorage
 				lastValues = {
 					blastName: entityName,
 					offset: offset,
@@ -10343,8 +10395,6 @@ function addPatternPopup(worldX, worldY) {
 
 				// Use the obtained values to add the pattern
 				addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrientation, x, y, z, gradeZ, diameter, type, angle, bearing, length, subdrill, burden, spacing, rows, holesPerRow);
-			} else {
-				// Handle cancel action if needed
 			}
 		})
 		.finally(() => {
@@ -10353,6 +10403,77 @@ function addPatternPopup(worldX, worldY) {
 		});
 }
 
+// Same Space Checker
+function checkHoleProximity(newX, newY, newDiameter, existingPoints) {
+	// Use 0.1m for dummy holes or holes with no diameter
+	const checkDiameter = newDiameter || 0.1;
+	const minDistance = checkDiameter / 1000; // Convert mm to meters, 1 diameter minimum
+
+	const proximityHoles = [];
+
+	for (let i = 0; i < existingPoints.length; i++) {
+		const existingHole = existingPoints[i];
+		const existingDiameter = existingHole.holeDiameter || 0.1;
+		const existingMinDistance = existingDiameter / 1000;
+
+		// Calculate distance between hole centers
+		const distance = Math.sqrt(Math.pow(newX - existingHole.startXLocation, 2) + Math.pow(newY - existingHole.startYLocation, 2));
+
+		// Check if holes are too close (less than 1 diameter apart)
+		const combinedMinDistance = Math.max(minDistance, existingMinDistance);
+		if (distance < combinedMinDistance) {
+			proximityHoles.push({
+				hole: existingHole,
+				distance: distance,
+				requiredDistance: combinedMinDistance
+			});
+		}
+	}
+
+	return proximityHoles;
+}
+
+// Function to show proximity warning and get user decision
+function showProximityWarning(proximityHoles, newHoleInfo) {
+	const holeList = proximityHoles.map((ph) => `• ${ph.hole.entityName}:${ph.hole.holeID} (${ph.distance.toFixed(3)}m apart, need ${ph.requiredDistance.toFixed(3)}m)`).join("\n");
+
+	return Swal.fire({
+		title: "Hole Proximity Warning",
+		html: `
+			<div style="text-align: left; max-height: 300px; overflow-y: auto;">
+				<p><strong>New hole would be too close to existing holes:</strong></p>
+				<p>New hole: ${newHoleInfo.entityName}:${newHoleInfo.holeID} at (${newHoleInfo.x.toFixed(3)}, ${newHoleInfo.y.toFixed(3)})</p>
+				<br>
+				<p><strong>Conflicting holes:</strong></p>
+				<pre style="font-size: 12px; color: #ff6b6b;">${holeList}</pre>
+				<br>
+				<p><strong>Options:</strong></p>
+				<ul style="text-align: left;">
+					<li><strong>Continue:</strong> Add this hole and continue adding others</li>
+					<li><strong>Skip:</strong> Skip this hole and continue with pattern</li>
+					<li><strong>Cancel:</strong> Cancel the entire operation</li>
+				</ul>
+			</div>
+		`,
+		icon: "warning",
+		showCancelButton: true,
+		showDenyButton: true,
+		confirmButtonText: "Continue",
+		denyButtonText: "Skip",
+		cancelButtonText: "Cancel",
+		customClass: {
+			container: "custom-popup-container",
+			title: "swal2-title",
+			confirmButton: "confirm",
+			denyButton: "deny",
+			cancelButton: "cancel",
+			content: "swal2-content",
+			htmlContainer: "swal2-html-container"
+		}
+	});
+}
+
+// Update the addPattern function to fix the reference point issue
 function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrientation, x, y, z, gradeZ, diameter, type, angle, bearing, length, subdrill, burden, spacing, rows, holesPerRow) {
 	let entityType = "hole";
 	let useGradeToCalcLength = useGradeZ;
@@ -10375,22 +10496,33 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
 	let patternnameTypeIsNumerical = nameTypeIsNumerical;
 	let patternrowOrientation = parseFloat((90 - rowOrientation) * (Math.PI / 180));
 
+	// FIXED: Store the reference point (pattern origin) separately
+	let referenceX = startXLocation;
+	let referenceY = startYLocation;
+
 	let currentLetter = "A"; // Initialize the current letter
 	let currentRow = 1; // Initialize the current row number
 
 	for (let i = 0; i < patternrows; i++) {
 		for (let j = 0; j < patternholesPerRow; j++) {
-			// Translate to the origin
-			const translatedX = startXLocation - x;
-			const translatedY = startYLocation - y;
+			// FIXED: Calculate position relative to the reference point (pattern origin)
+			const relativeX = j * patternspacing;
+			const relativeY = i * patternburden;
 
-			// Calculate the rotated position based on rowOrientation
-			const rotatedX = translatedX * Math.cos(patternrowOrientation) - translatedY * Math.sin(patternrowOrientation);
-			const rotatedY = translatedX * Math.sin(patternrowOrientation) + translatedY * Math.cos(patternrowOrientation);
+			// Apply offset for staggered patterns
+			let offsetX = 0;
+			if (i % 2 === 1) {
+				// Odd rows get offset
+				offsetX = patternoffset * patternspacing;
+			}
 
-			// Translate back to the original position
-			const finalX = rotatedX + x;
-			const finalY = rotatedY + y;
+			// Calculate final position with rotation around the reference point
+			const rotatedX = (relativeX + offsetX) * Math.cos(patternrowOrientation) - relativeY * Math.sin(patternrowOrientation);
+			const rotatedY = (relativeX + offsetX) * Math.sin(patternrowOrientation) + relativeY * Math.cos(patternrowOrientation);
+
+			// Translate to the reference point
+			const finalX = referenceX + rotatedX;
+			const finalY = referenceY + rotatedY;
 
 			let holeID;
 			// Initialize points as an empty array if it's null
@@ -10407,17 +10539,7 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
 				holeID = currentLetter + (j + 1); // Generate the hole ID
 				addHole(useCustomHoleID, useGradeZ, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(gradeZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing));
 			}
-			startXLocation = startXLocation + patternspacing;
 		}
-
-		// Apply the offset conditionally for every second row
-		if (i % 2 === 0) {
-			startXLocation = x + patternoffset * patternspacing;
-		} else {
-			startXLocation = x;
-		}
-
-		startYLocation = startYLocation + patternburden;
 
 		// Increment the current letter and row number
 		if (currentLetter === "Z") {
@@ -10430,6 +10552,7 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
 
 		currentRow++;
 	}
+
 	// Reset the pattern adding state
 	isAddingPattern = false;
 	//make the switch off
@@ -10981,6 +11104,74 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 
 	let benchHeight = holeLengthCalculated * Math.cos(holeAngle * (Math.PI / 180));
 
+	// PROXIMITY CHECK: Check for nearby holes before adding
+	const proximityHoles = checkHoleProximity(startXLocation, startYLocation, holeDiameter, points);
+
+	if (proximityHoles.length > 0) {
+		// Show warning and get user decision
+		const newHoleInfo = {
+			entityName: entityName,
+			holeID: newHoleID.toString(),
+			x: startXLocation,
+			y: startYLocation,
+			diameter: holeDiameter
+		};
+
+		showProximityWarning(proximityHoles, newHoleInfo).then((result) => {
+			if (result.isConfirmed) {
+				// User chose to continue - add the hole
+				addHoleToPoints(
+					entityName,
+					entityType,
+					newHoleID,
+					startXLocation,
+					startYLocation,
+					startZLocation,
+					endXLocation,
+					endYLocation,
+					endZLocation,
+					gradeXLocation,
+					gradeYLocation,
+					gradeZLocation,
+					subdrillAmount,
+					subdrillLength,
+					benchHeight,
+					holeDiameter,
+					holeType,
+					holeLengthCalculated,
+					holeAngle,
+					holeBearing,
+					toHoleCombinedID,
+					timingDelayMilliseconds,
+					colorHexDecimal,
+					measuredLength,
+					measuredLengthTimeStamp,
+					measuredMass,
+					measuredMassTimeStamp,
+					measuredComment,
+					measuredCommentTimeStamp
+				);
+			} else if (result.isDenied) {
+				// User chose to skip - don't add this hole but continue
+				console.log("Skipped hole due to proximity: " + newHoleID);
+			}
+			// If result.isDismissed (cancel), do nothing - operation is cancelled
+		});
+
+		return; // Exit early, let the promise handle the result
+	}
+
+	// No proximity issues - add the hole normally
+	addHoleToPoints(entityName, entityType, newHoleID, startXLocation, startYLocation, startZLocation, endXLocation, endYLocation, endZLocation, gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter, holeType, holeLengthCalculated, holeAngle, holeBearing, toHoleCombinedID, timingDelayMilliseconds, colorHexDecimal, measuredLength, measuredLengthTimeStamp, measuredMass, measuredMassTimeStamp, measuredComment, measuredCommentTimeStamp);
+
+	if (isAddingHole && !isAddingPattern) {
+		debouncedUpdateTreeView();
+		drawData(points, selectedHole);
+	}
+}
+
+// Helper function to actually add the hole to points array
+function addHoleToPoints(entityName, entityType, newHoleID, startXLocation, startYLocation, startZLocation, endXLocation, endYLocation, endZLocation, gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter, holeType, holeLengthCalculated, holeAngle, holeBearing, toHoleCombinedID, timingDelayMilliseconds, colorHexDecimal, measuredLength, measuredLengthTimeStamp, measuredMass, measuredMassTimeStamp, measuredComment, measuredCommentTimeStamp) {
 	points.push({
 		entityName: entityName,
 		entityType: entityType,
@@ -11012,69 +11203,8 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 		measuredComment: measuredComment,
 		measuredCommentTimeStamp: measuredCommentTimeStamp
 	});
-	console.log("Added Hole: " + newHoleID);
-	// console.log(
-	// 	"Added Hole attributes: \nentiyName: " +
-	// 		entityName +
-	// 		"\nHoleID: " +
-	// 		newHoleID +
-	// 		"\nStartX: " +
-	// 		startXLocation +
-	// 		" StartY: " +
-	// 		startYLocation +
-	// 		" StartZ: " +
-	// 		startZLocation +
-	// 		"\nEndX: " +
-	// 		endXLocation +
-	// 		" EndY: " +
-	// 		endYLocation +
-	// 		" EndZ: " +
-	// 		endZLocation +
-	// 		"\nGradeX: " +
-	// 		gradeXLocation +
-	// 		" GradeY: " +
-	// 		gradeYLocation +
-	// 		" GradeZ: " +
-	// 		gradeZLocation +
-	// 		"\nSubdrill: " +
-	// 		subdrillAmount +
-	// 		" SubdrillLength: " +
-	// 		subdrillLength +
-	// 		" BenchHeight: " +
-	// 		benchHeight +
-	// 		"\nDiameter: " +
-	// 		holeDiameter +
-	// 		" Type: " +
-	// 		holeType +
-	// 		"\nLength: " +
-	// 		holeLengthCalculated +
-	// 		" Angle: " +
-	// 		holeAngle +
-	// 		" Bearing: " +
-	// 		holeBearing +
-	// 		"\nFromHoleID: " +
-	// 		toHoleCombinedID +
-	// 		" TimingDelay: " +
-	// 		timingDelayMilliseconds +
-	// 		" color: " +
-	// 		colorHexDecimal +
-	// 		"\nMeasuredLength: " +
-	// 		measuredLength +
-	// 		" MeasuredLengthTimeStamp: " +
-	// 		measuredLengthTimeStamp +
-	// 		"\nMeasuredMass: " +
-	// 		measuredMass +
-	// 		" MeasuredMassTimeStamp: " +
-	// 		measuredMassTimeStamp +
-	// 		"\nMeasuredComment: " +
-	// 		measuredComment +
-	// 		" MeasuredCommentTimeStamp: " +
-	// 		measuredCommentTimeStamp
-	// );
-	if (isAddingHole && !isAddingPattern) {
-		debouncedUpdateTreeView();
-		drawData(points, selectedHole);
-	}
+
+	//console.log("Added Hole: " + newHoleID);
 }
 
 function handleMeasuredLengthClick(event) {
@@ -11943,10 +12073,10 @@ function drawData(points, selectedHole) {
 			holeMap = buildHoleMap(points);
 		}
 
-		// Draw background image FIRST (bottom layer)
+		// Draw background images FIRST (bottom layer)
 		drawBackgroundImage();
 
-		// Draw surface triangles SECOND
+		// Draw surfaces SECOND
 		drawSurface();
 
 		// Highlight single selected point if needed
@@ -11984,7 +12114,6 @@ function drawData(points, selectedHole) {
 				// Draw text - Fix the property name
 				entity.data.forEach((textData) => {
 					if (textData && textData.text) {
-						// ← Change from textValue to text
 						const screenX = (textData.pointXLocation - centroidX) * currentScale + canvas.width / 2;
 						const screenY = -(textData.pointYLocation - centroidY) * currentScale + canvas.height / 2;
 						drawKADTexts(screenX, screenY, textData.pointZLocation, textData.text, textData.color); // ← Change textValue to text and strokeColor to color
@@ -12497,6 +12626,7 @@ function drawData(points, selectedHole) {
 		drawKADPolygonSelectionVisuals();
 		drawHolesAlongLineVisuals();
 		drawKADSelectionVisuals();
+		drawSurfaceLegend();
 		drawMultilineText(ctx, statusMessage, canvas.width / 2, 16, 16, "center", strokeColor, strokeColor, true);
 		// Update font slider and label after loop (once)
 		fontSlider.value = currentFontSize;
@@ -12647,6 +12777,68 @@ function drawHoleTextsAndConnectors(point, x, y, lineEndX, lineEndY, ctxObj) {
 	}
 }
 
+function drawConnectStadiumZone(sx, sy, endX, endY, connectAmount) {
+	// Only draw stadium zone if multi-connector tool is active
+	if (isAddingMultiConnector) {
+		// Convert world coordinates to canvas coordinates
+		const [canvasStartX, canvasStartY] = worldToCanvas(sx, sy);
+		const [canvasEndX, canvasEndY] = worldToCanvas(endX, endY);
+
+		// connectAmount is already in meters, so just multiply by currentScale
+		const radiusPx = connectAmount * currentScale;
+
+		// Calculate the line vector and perpendicular vector
+		const dx = canvasEndX - canvasStartX;
+		const dy = canvasEndY - canvasStartY;
+		const length = Math.sqrt(dx * dx + dy * dy);
+
+		// Avoid division by zero
+		if (length < 1) return;
+
+		// Normalize the direction vector
+		const dirX = dx / length;
+		const dirY = dy / length;
+
+		// Get perpendicular vector (for width)
+		const perpX = -dirY;
+		const perpY = dirX;
+
+		// Calculate the four corners of the rectangle
+		const corner1X = canvasStartX + perpX * radiusPx;
+		const corner1Y = canvasStartY + perpY * radiusPx;
+		const corner2X = canvasStartX - perpX * radiusPx;
+		const corner2Y = canvasStartY - perpY * radiusPx;
+		const corner3X = canvasEndX - perpX * radiusPx;
+		const corner3Y = canvasEndY - perpY * radiusPx;
+		const corner4X = canvasEndX + perpX * radiusPx;
+		const corner4Y = canvasEndY + perpY * radiusPx;
+		// Set stadium zone color with transparency
+		ctx.strokeStyle = "rgba(0, 255, 0, 0.4)";
+		ctx.fillStyle = "rgba(0, 255, 0, 0.15)";
+		ctx.lineWidth = 2;
+		ctx.setLineDash([5, 5]); // Set dashed line with 5px gap and 5px dash
+
+		// Draw the stadium shape (rounded rectangle)
+		ctx.beginPath();
+
+		// Start at the center of the first semicircle
+		ctx.arc(canvasStartX, canvasStartY, radiusPx, Math.atan2(perpY, perpX), Math.atan2(-perpY, -perpX), false);
+
+		// Line to second corner
+		ctx.lineTo(corner3X, corner3Y);
+
+		// Second semicircle
+		ctx.arc(canvasEndX, canvasEndY, radiusPx, Math.atan2(-perpY, -perpX), Math.atan2(perpY, perpX), false);
+
+		// Line back to first corner
+		ctx.lineTo(corner1X, corner1Y);
+
+		ctx.closePath();
+		ctx.fill();
+		ctx.stroke();
+	}
+}
+
 // === Helper: Draw main hole, highlight if selected ===
 function drawHoleMainShape(point, x, y, selectedHole) {
 	const diameterPx = parseInt((point.holeDiameter / 1000) * currentScale * holeScale);
@@ -12664,6 +12856,7 @@ function drawHoleMainShape(point, x, y, selectedHole) {
 			highlightColor1 = "rgba(0, 255, 0, 0.2)";
 			highlightColor2 = "rgba(0, 190, 0, .8)";
 			highlightText = "1st Selected Hole: " + point.holeID + " in: " + point.entityName + " (Select second hole)";
+			drawConnectStadiumZone(point.startXLocation, point.startYLocation, currentMouseWorldX, currentMouseWorldY, connectAmount);
 		}
 		// Second selected hole in connector mode (using firstSelectedHole/secondSelectedHole)
 		else if (firstSelectedHole && firstSelectedHole === point) {
@@ -12866,37 +13059,51 @@ function zoomToFitAll() {
 	}
 	drawData(points, selectedHole);
 }
-
-// NEW: Get surface boundaries
+// REPLACE the entire function:
 function getSurfaceBoundaries() {
-	if (!surfacePoints || surfacePoints.length === 0) return null;
+	if (loadedSurfaces.size === 0) return null;
 
 	let minX = Infinity,
 		maxX = -Infinity,
 		minY = Infinity,
 		maxY = -Infinity;
 
-	surfacePoints.forEach((point) => {
-		if (point.x < minX) minX = point.x;
-		if (point.x > maxX) maxX = point.x;
-		if (point.y < minY) minY = point.y;
-		if (point.y > maxY) maxY = point.y;
+	loadedSurfaces.forEach((surface) => {
+		if (surface.points && surface.points.length > 0) {
+			surface.points.forEach((point) => {
+				if (point.x < minX) minX = point.x;
+				if (point.x > maxX) maxX = point.x;
+				if (point.y < minY) minY = point.y;
+				if (point.y > maxY) maxY = point.y;
+			});
+		}
 	});
 
+	if (minX === Infinity) return null;
 	return { minX, maxX, minY, maxY };
 }
 
-// NEW: Get background image boundaries
+// REPLACE the entire function:
 function getImageBoundaries() {
-	if (!backgroundImage || !backgroundImage.bbox) return null;
+	if (loadedImages.size === 0) return null;
 
-	// backgroundImage.bbox is [minX, minY, maxX, maxY] format
-	return {
-		minX: backgroundImage.bbox[0],
-		maxX: backgroundImage.bbox[2],
-		minY: backgroundImage.bbox[1],
-		maxY: backgroundImage.bbox[3]
-	};
+	let minX = Infinity,
+		maxX = -Infinity,
+		minY = Infinity,
+		maxY = -Infinity;
+
+	loadedImages.forEach((image) => {
+		if (image.bbox && image.bbox.length >= 4) {
+			// image.bbox is [minX, minY, maxX, maxY] format
+			if (image.bbox[0] < minX) minX = image.bbox[0];
+			if (image.bbox[2] > maxX) maxX = image.bbox[2];
+			if (image.bbox[1] < minY) minY = image.bbox[1];
+			if (image.bbox[3] > maxY) maxY = image.bbox[3];
+		}
+	});
+
+	if (minX === Infinity) return null;
+	return { minX, maxX, minY, maxY };
 }
 function resetZoom() {
 	currentScale = scale; // reset the current scale to the original scale
@@ -13176,108 +13383,124 @@ function loadKADFromDB() {
 		};
 	});
 }
-// RECOMMENDED: Promise pattern, but simple transaction
-function saveSurfaceToDB(surfaceName) {
+// REPLACE this function to accept surfaceId parameter:
+async function saveSurfaceToDB(surfaceId) {
 	return new Promise((resolve, reject) => {
 		try {
-			if (!db || !surfacePoints || !surfaceTriangles) {
+			const surface = loadedSurfaces.get(surfaceId);
+			if (!db || !surface || !surface.points || !surface.triangles) {
 				reject(new Error("Missing database or surface data"));
 				return;
 			}
 
-			// Surface data is already in memory - no async prep needed
 			const transaction = db.transaction([SURFACE_STORE_NAME], "readwrite");
 			const store = transaction.objectStore(SURFACE_STORE_NAME);
 
 			const surfaceRecord = {
-				id: surfaceName,
-				name: surfaceName,
+				id: surfaceId,
+				name: surface.name,
 				type: "triangulated",
-				points: surfacePoints,
-				triangles: surfaceTriangles,
-				visible: surfaceVisible,
-				gradient: currentGradient,
+				points: surface.points,
+				triangles: surface.triangles,
+				visible: surface.visible,
+				gradient: surface.gradient,
 				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(surfaceRecord);
 
 			request.onsuccess = () => {
-				console.log("✅ Surface " + surfaceName + " saved (" + surfacePoints.length + " points)");
+				console.log("✅ Surface " + surface.name + " saved (" + surface.points.length + " points)");
 				debouncedUpdateTreeView();
 				resolve(surfaceRecord);
 			};
 
-			request.onerror = () => {
-				console.error("❌ Failed to save surface " + surfaceName + ":," + request.error);
-				reject(request.error);
-			};
-
-			transaction.onerror = () => {
-				console.error("❌ Transaction failed for surface " + surfaceName + ": ," + transaction.error);
-				reject(transaction.error);
-			};
+			request.onerror = () => reject(request.error);
+			transaction.onerror = () => reject(transaction.error);
 		} catch (error) {
 			reject(error);
 		}
 	});
 }
-
-// Load surface from IndexedDB
-// Fix loadSurfaceFromDB to load the most recent surface when no ID provided
-async function loadSurfaceFromDB(surfaceId = null) {
+// Load a specific surface into the multi-surface system
+async function loadSurfaceIntoMemory(surfaceId) {
 	try {
-		if (!db) {
-			db = await initDB();
-		}
+		if (!db) return null;
 
 		const transaction = db.transaction([SURFACE_STORE_NAME], "readonly");
 		const store = transaction.objectStore(SURFACE_STORE_NAME);
+		const request = store.get(surfaceId);
 
-		let request;
-		if (surfaceId) {
-			// Load specific surface
-			request = store.get(surfaceId);
-		} else {
-			// Load most recent surface
-			request = store.getAll();
-		}
-
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			request.onsuccess = () => {
-				let surface;
-				if (surfaceId) {
-					surface = request.result;
-				} else {
-					// Get the most recent surface
-					const surfaces = request.result;
-					if (surfaces.length === 0) {
-						resolve(null);
-						return;
-					}
-					surface = surfaces.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))[0];
+				const surfaceData = request.result;
+				if (surfaceData) {
+					loadedSurfaces.set(surfaceId, {
+						id: surfaceId,
+						name: surfaceData.name,
+						points: surfaceData.points,
+						triangles: surfaceData.triangles,
+						visible: surfaceData.visible !== false,
+						gradient: surfaceData.gradient || "default"
+					});
+					console.log("✅ Surface " + surfaceData.name + " loaded into memory");
 				}
-
-				if (surface) {
-					surfacePoints = surface.points;
-					surfaceTriangles = surface.triangles;
-					surfaceVisible = surface.visible;
-					currentGradient = surface.gradient || "default";
-
-					updateCentroids();
-					drawData(points, selectedHole);
-
-					console.log("Surface " + surface.name + " loaded from IndexedDB");
-					resolve(surface);
-				} else {
-					resolve(null);
-				}
+				resolve(surfaceData);
 			};
-			request.onerror = () => reject(request.error);
+			request.onerror = () => resolve(null);
 		});
 	} catch (error) {
-		console.error("Error loading surface:", error);
-		throw error;
+		console.error("Error loading surface into memory:", error);
+		return null;
+	}
+}
+
+async function loadAllSurfacesIntoMemory() {
+	try {
+		if (!db) return;
+
+		const transaction = db.transaction([SURFACE_STORE_NAME], "readonly");
+		const store = transaction.objectStore(SURFACE_STORE_NAME);
+		const request = store.getAll();
+
+		return new Promise((resolve) => {
+			request.onsuccess = () => {
+				const surfaces = request.result || [];
+				surfaces.forEach((surfaceData) => {
+					loadedSurfaces.set(surfaceData.id, {
+						id: surfaceData.id,
+						name: surfaceData.name,
+						points: surfaceData.points,
+						triangles: surfaceData.triangles,
+						visible: surfaceData.visible !== false,
+						gradient: surfaceData.gradient || "default"
+					});
+				});
+				console.log("📊 Loaded " + loadedSurfaces.size + " surfaces into memory");
+				resolve();
+			};
+			request.onerror = () => resolve();
+		});
+	} catch (error) {
+		console.error("Error loading surfaces:", error);
+	}
+}
+
+// Surface visibility management
+function setSurfaceVisibility(surfaceId, visible) {
+	const surface = loadedSurfaces.get(surfaceId);
+	if (surface) {
+		surface.visible = visible;
+		console.log("👁️ Surface " + surface.name + " visibility: " + visible);
+		drawData(points, selectedHole);
+	}
+}
+
+function toggleSurfaceVisibility(surfaceId) {
+	const surface = loadedSurfaces.get(surfaceId);
+	if (surface) {
+		surface.visible = !surface.visible;
+		setSurfaceVisibility(surfaceId, surface.visible);
 	}
 }
 
@@ -13373,39 +13596,38 @@ async function deleteAllImagesFromDB() {
 	}
 }
 
-// RECOMMENDED: Async function with proper transaction timing
-async function saveImageToDB(imageName) {
+// REPLACE this function to accept imageId parameter:
+async function saveImageToDB(imageId) {
 	try {
-		if (!db || !backgroundImage) {
+		const image = loadedImages.get(imageId);
+		if (!db || !image || !image.canvas) {
 			throw new Error("Missing database or image data");
 		}
 
-		// Step 1: Do heavy async work FIRST
+		// Create blob from canvas
 		const blob = await new Promise((resolve, reject) => {
-			backgroundImage.canvas.toBlob((result) => {
+			image.canvas.toBlob((result) => {
 				if (result) resolve(result);
 				else reject(new Error("Failed to create blob"));
 			});
 		});
 
-		// Step 2: Quick synchronous transaction (like KAD)
 		return new Promise((resolve, reject) => {
 			const transaction = db.transaction([IMAGE_STORE_NAME], "readwrite");
 			const store = transaction.objectStore(IMAGE_STORE_NAME);
 
 			const imageRecord = {
-				id: imageName,
-				name: imageName,
-				type: backgroundImage.type || "imagery",
-				bbox: backgroundImage.bbox,
+				id: imageId,
+				name: image.name,
+				type: image.type || "imagery",
+				bbox: image.bbox,
 				blob: blob,
-				visible: imageVisible,
-				transparency: imageTransparency,
+				visible: image.visible,
+				transparency: image.transparency,
 				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(imageRecord);
-
 			request.onsuccess = () => {
 				debouncedUpdateTreeView();
 				resolve(imageRecord);
@@ -13415,45 +13637,24 @@ async function saveImageToDB(imageName) {
 		});
 	} catch (error) {
 		console.error("Error saving image:", error);
-		throw error; // Re-throw for calling code
+		throw error;
 	}
 }
 
 // Load image from IndexedDB
-// Fix loadImageFromDB to load the most recent image when no ID provided
-async function loadImageFromDB(imageId = null) {
+
+// Load a specific image into the multi-image system
+async function loadImageIntoMemory(imageId) {
 	try {
-		if (!db) {
-			db = await initDB();
-		}
+		if (!db) return null;
 
 		const transaction = db.transaction([IMAGE_STORE_NAME], "readonly");
 		const store = transaction.objectStore(IMAGE_STORE_NAME);
+		const request = store.get(imageId);
 
-		let request;
-		if (imageId) {
-			// Load specific image
-			request = store.get(imageId);
-		} else {
-			// Load most recent image
-			request = store.getAll();
-		}
-
-		return new Promise((resolve, reject) => {
+		return new Promise((resolve) => {
 			request.onsuccess = async () => {
-				let imageData;
-				if (imageId) {
-					imageData = request.result;
-				} else {
-					// Get the most recent image
-					const images = request.result;
-					if (images.length === 0) {
-						resolve(null);
-						return;
-					}
-					imageData = images.sort((a, b) => new Date(b.savedAt) - new Date(a.savedAt))[0];
-				}
-
+				const imageData = request.result;
 				if (imageData) {
 					// Convert blob back to canvas
 					const img = new Image();
@@ -13463,24 +13664,19 @@ async function loadImageFromDB(imageId = null) {
 					img.onload = () => {
 						canvas.width = img.width;
 						canvas.height = img.height;
-
 						ctx.drawImage(img, 0, 0);
 
-						backgroundImage = {
+						loadedImages.set(imageId, {
+							id: imageId,
+							name: imageData.name,
 							canvas: canvas,
 							bbox: imageData.bbox,
-							name: imageData.name,
-							type: imageData.type
-						};
+							type: imageData.type,
+							visible: imageData.visible !== false,
+							transparency: imageData.transparency || 1.0
+						});
 
-						imageVisible = imageData.visible;
-						imageTransparency = imageData.transparency;
-
-						updateCentroids();
-						debouncedUpdateTreeView();
-						drawData(points, selectedHole);
-
-						console.log("Image " + imageData.name + " loaded from IndexedDB");
+						console.log("✅ Image " + imageData.name + " loaded into memory");
 						resolve(imageData);
 					};
 
@@ -13489,11 +13685,83 @@ async function loadImageFromDB(imageId = null) {
 					resolve(null);
 				}
 			};
-			request.onerror = () => reject(request.error);
+			request.onerror = () => resolve(null);
 		});
 	} catch (error) {
-		console.error("Error loading image:", error);
-		throw error;
+		console.error("Error loading image into memory:", error);
+		return null;
+	}
+}
+
+// Replace your current loadAllImagesIntoMemory function with this:
+async function loadAllImagesIntoMemory() {
+	try {
+		if (!db) return;
+
+		const transaction = db.transaction([IMAGE_STORE_NAME], "readonly");
+		const store = transaction.objectStore(IMAGE_STORE_NAME);
+		const request = store.getAll();
+
+		return new Promise((resolve) => {
+			request.onsuccess = async () => {
+				const images = request.result || [];
+
+				// Load each image into memory
+				for (const imageData of images) {
+					const img = new Image();
+					const canvas = document.createElement("canvas");
+					const ctx = canvas.getContext("2d");
+
+					await new Promise((imgResolve) => {
+						img.onload = () => {
+							canvas.width = img.width;
+							canvas.height = img.height;
+							ctx.drawImage(img, 0, 0);
+
+							loadedImages.set(imageData.id, {
+								id: imageData.id,
+								name: imageData.name,
+								canvas: canvas,
+								bbox: imageData.bbox,
+								type: imageData.type,
+								visible: imageData.visible !== false,
+								transparency: imageData.transparency || 1.0
+							});
+
+							imgResolve();
+						};
+						img.onerror = () => imgResolve(); // Continue even if image fails
+						img.src = URL.createObjectURL(imageData.blob);
+					});
+				}
+
+				console.log("🖼️ Loaded " + loadedImages.size + " images into memory");
+				resolve();
+			};
+			request.onerror = () => {
+				console.error("Failed to load images from database");
+				resolve();
+			};
+		});
+	} catch (error) {
+		console.error("Error loading images into memory:", error);
+	}
+}
+// Image visibility management
+function setImageVisibility(imageId, visible) {
+	const image = loadedImages.get(imageId);
+	if (image) {
+		image.visible = visible;
+		console.log("👁️ Image " + image.name + " visibility: " + visible);
+		drawData(points, selectedHole);
+	}
+}
+
+function toggleImageVisibility(imageId) {
+	const image = loadedImages.get(imageId);
+	if (image) {
+		image.visible = !image.visible;
+		setImageVisibility(imageId, image.visible);
 	}
 }
 
@@ -13625,39 +13893,28 @@ function checkAndPromptForStoredData() {
 
 async function showPopup(isDBReady) {
 	const userDecision = confirm("Do you want to pick up from where you left off?\n\nPress OK to continue or Cancel to start fresh.");
-	console.log("function showPopup()");
 
 	if (userDecision === true) {
-		// Load holes from Local Storage (this is fast)
 		points = loadHolesFromLocalStorage();
 
-		// If the database is ready, await the loading of KAD data
 		if (isDBReady) {
 			try {
 				await loadKADFromDB();
+				await loadAllSurfacesIntoMemory(); // Just this one call
+				await loadAllImagesIntoMemory(); // Just this one call
 			} catch (err) {
-				console.error("Failed to load KAD drawings from DB.", err);
-			}
-			try {
-				await loadSurfaceFromDB();
-			} catch (err) {
-				console.error("Failed to load surface from DB.", err);
-			}
-			try {
-				await loadImageFromDB();
-			} catch (err) {
-				console.error("Failed to load image from DB.", err);
+				console.error("Failed to load data from DB.", err);
 			}
 		}
 
-		// NOW that all data is loaded, frame it all correctly.
 		zoomToFitAll();
 		debouncedUpdateTreeView();
-		debugDatabaseContents();
 	} else {
 		clearLoadedData();
+		loadedSurfaces.clear();
+		loadedImages.clear();
 		debouncedUpdateTreeView();
-		zoomToFitAll(); // Also frame on a fresh start
+		zoomToFitAll();
 	}
 }
 
@@ -13698,12 +13955,16 @@ function updateCentroids() {
 	}
 
 	// Include surface points in centroid calculation
-	if (surfacePoints && surfacePoints.length > 0) {
-		for (const point of surfacePoints) {
-			sumX += point.x;
-			sumY += point.y;
-			records++;
-		}
+	if (loadedSurfaces.size > 0) {
+		loadedSurfaces.forEach((surface) => {
+			if (surface.points && surface.points.length > 0) {
+				for (const point of surface.points) {
+					sumX += point.x;
+					sumY += point.y;
+					records++;
+				}
+			}
+		});
 	}
 
 	if (records > 0) {
@@ -13867,7 +14128,7 @@ function handleKADModificationClick(event) {
 
 window.onload = function () {
 	// --- Dark Mode Setup ---
-	const darkModeEnabled = localStorage.getItem("darkMode") === "true";
+	darkModeEnabled = localStorage.getItem("darkMode") === "true";
 	if (darkModeEnabled) {
 		darkModeToggle.checked = true;
 		body.classList.add("dark-mode");
@@ -13987,21 +14248,24 @@ window.onload = function () {
 	// 	});
 	// }
 
-	transparentFillColor = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
-	fillColor = darkModeEnabled ? "darkgrey" : "lightgrey";
-	strokeColor = darkModeEnabled ? "white" : "black";
-	textFillColor = darkModeEnabled ? "white" : "black";
-	depthColor = darkModeEnabled ? "cyan" : "blue";
-	angleDipColor = darkModeEnabled ? "orange" : "darkorange";
+	updateColorsForDarkMode();
 	clearCanvas();
 };
 
+// Add this helper function to centralize color updates
+function updateColorsForDarkMode() {
+	transparentFillColor = darkModeEnabled ? "rgba(0, 128, 255, 0.3)" : "rgba(128, 255, 0, 0.3)";
+	fillColor = darkModeEnabled ? "lightgrey" : "darkgrey";
+	strokeColor = darkModeEnabled ? "white" : "black";
+	textFillColor = darkModeEnabled ? "white" : "black";
+	depthColor = darkModeEnabled ? "blue" : "cyan";
+	angleDipColor = darkModeEnabled ? "darkcyan" : "orange";
+
+	console.log("🎨 Colors updated for dark mode:", darkModeEnabled);
+}
+
 window.addEventListener("beforeunload", function () {
 	saveHolesToLocalStorage(points);
-	// // Only save to DB if it's initialized
-	// if (db) {
-	// 	saveKADToDB(allKADDrawingsMap);
-	// }
 });
 function getKADBoundaries() {
 	let minX = Infinity;
@@ -14850,22 +15114,25 @@ canvas.addEventListener("contextmenu", function (e) {
 		}
 	}
 	// 1. Check for Surfaces FIRST (highest priority)
-	const onSurface = isPointInSurface(clickX, clickY);
-	// console.log("  - isPointInSurface result:", onSurface);
+	const clickedSurfaceId = isPointInSurface(clickX, clickY); // Now returns surface ID
 
-	if (onSurface) {
-		// console.log("✅ Showing SURFACE menu only");
-		showSurfaceContextMenu(clickX, clickY);
+	if (clickedSurfaceId) {
+		showSurfaceContextMenu(clickX, clickY, clickedSurfaceId); // Pass surface ID
 		return; // Exit early - don't check for image
 	}
 
-	// 2. Check for background image ONLY if not on surface
-	const onImage = backgroundImage && isPointInBackgroundImage(clickX, clickY);
-	// console.log("  - isPointInBackgroundImage result:", onImage);
+	// 2. Check for background image ONLY if not on surface - FIXED to identify specific image
+	let clickedImageId = null;
+	for (const [imageId, image] of loadedImages.entries()) {
+		if (image.visible && isPointInBackgroundImage(clickX, clickY, image)) {
+			clickedImageId = imageId;
+			break; // Found the clicked image, stop searching
+		}
+	}
 
-	if (onImage) {
-		// console.log("✅ Showing IMAGE menu only");
-		showImageContextMenu(clickX, clickY);
+	if (clickedImageId) {
+		console.log("✅ Showing IMAGE menu for:", clickedImageId);
+		showImageContextMenu(clickX, clickY, clickedImageId); // Pass specific image ID
 		return; // Exit early
 	}
 
@@ -15412,6 +15679,7 @@ function convertLinePolyType(kadObject, newType) {
 	});
 
 	updateStatusMessage(`Converted ${kadObject.entityName} to ${newType}`);
+	debouncedUpdateTreeView(); // ✅ ADDED: Update tree view swatches
 	setTimeout(() => updateStatusMessage(""), 2000);
 }
 
@@ -15449,6 +15717,7 @@ function updateKADObjectProperties(kadObject, newProperties, scope = "all") {
 		}
 
 		drawData(points, selectedHole); // Redraw
+		debouncedUpdateTreeView(); // ✅ ADDED: Update tree view swatches
 		setTimeout(() => updateStatusMessage(""), 2000);
 	} else {
 		console.error("Entity not found:", kadObject.entityName, "in unified map");
@@ -15470,7 +15739,12 @@ function updateKADObjectInMap(kadObject) {
 	}
 }
 
-function showSurfaceContextMenu(x, y) {
+// Update showSurfaceContextMenu to accept and use specific surface ID
+function showSurfaceContextMenu(x, y, surfaceId = null) {
+	// Get the specific surface if ID provided, otherwise first visible surface
+	const surface = surfaceId ? loadedSurfaces.get(surfaceId) : Array.from(loadedSurfaces.values()).find((s) => s.visible);
+
+	if (!surface) return;
 	const menu = document.createElement("div");
 	menu.className = "context-menu";
 	menu.style.position = "absolute";
@@ -15496,7 +15770,12 @@ function showSurfaceContextMenu(x, y) {
 
 	// Toggle visibility option
 	const toggleOption = document.createElement("div");
-	toggleOption.textContent = surfaceVisible ? "Hide Surface" : "Show Surface";
+
+	// Get surface info - need to find which surface this context menu is for
+	const surfaceEntries = Array.from(loadedSurfaces.entries());
+	const firstSurface = surfaceEntries.length > 0 ? surfaceEntries[0][1] : null;
+
+	toggleOption.textContent = firstSurface && firstSurface.visible ? "Hide Surface" : "Show Surface";
 	toggleOption.style.padding = "8px 12px";
 	toggleOption.style.cursor = "pointer";
 	toggleOption.style.color = textColor;
@@ -15508,7 +15787,12 @@ function showSurfaceContextMenu(x, y) {
 	};
 	toggleOption.onclick = (e) => {
 		e.stopPropagation();
-		surfaceVisible = !surfaceVisible;
+
+		// Toggle visibility of first surface (or all surfaces if preferred)
+		if (firstSurface) {
+			setSurfaceVisibility(surfaceEntries[0][0], !firstSurface.visible);
+		}
+
 		drawData(points, selectedHole);
 		safeRemoveMenu(menu);
 	};
@@ -15529,23 +15813,23 @@ function showSurfaceContextMenu(x, y) {
 		e.stopPropagation();
 
 		try {
-			// Try to delete from database (we need to track current surface name)
-			if (window.currentSurfaceName) {
-				await deleteSurfaceFromDB(window.currentSurfaceName);
+			// Remove the first surface from database and memory
+			if (firstSurface) {
+				const surfaceId = surfaceEntries[0][0];
+				await deleteSurfaceFromDB(surfaceId);
+				loadedSurfaces.delete(surfaceId);
 			}
 
-			// Clear from memory
-			surfaceTriangles = [];
-			surfacePoints = [];
-
 			drawData(points, selectedHole);
+			debouncedUpdateTreeView(); // Update tree view
 			console.log("✅ Surface removed from both memory and database");
 		} catch (error) {
 			console.error("❌ Error removing surface:", error);
 
 			// Still clear from memory even if DB delete fails
-			surfaceTriangles = [];
-			surfacePoints = [];
+			if (firstSurface) {
+				loadedSurfaces.delete(surfaceEntries[0][0]);
+			}
 			drawData(points, selectedHole);
 		}
 
@@ -15570,9 +15854,7 @@ function showSurfaceContextMenu(x, y) {
 		try {
 			await deleteAllSurfacesFromDB();
 
-			// Clear current surface from memory
-			surfaceTriangles = [];
-			surfacePoints = [];
+			loadedSurfaces.delete(surfaceId);
 
 			drawData(points, selectedHole);
 			console.log("✅ All surfaces deleted from database and memory");
@@ -15593,7 +15875,10 @@ function showSurfaceContextMenu(x, y) {
 	slider.type = "range";
 	slider.min = "0";
 	slider.max = "100";
-	slider.value = Math.round(surfaceTransparency * 100);
+
+	// Get current transparency from first surface or default
+	const currentTransparency = firstSurface ? firstSurface.transparency ?? 1.0 : 1.0;
+	slider.value = Math.round(currentTransparency * 100);
 	slider.style.width = "95%";
 	slider.style.margin = "8px auto 0";
 	slider.style.display = "block";
@@ -15601,8 +15886,13 @@ function showSurfaceContextMenu(x, y) {
 	slider.onclick = (e) => e.stopPropagation();
 	slider.oninput = (e) => {
 		e.stopPropagation();
-		surfaceTransparency = slider.value / 100;
-		//console.log("New surface transparency:", surfaceTransparency);
+		const newTransparency = slider.value / 100;
+
+		// Update transparency for the specific surface or all surfaces
+		if (firstSurface) {
+			firstSurface.transparency = newTransparency;
+		}
+
 		drawData(points, selectedHole);
 	};
 
@@ -15657,6 +15947,7 @@ function showSurfaceContextMenu(x, y) {
 		{ name: "Terrain 🟢", value: "terrain" }
 	];
 
+	// FIXED: Context menu gradient selection in showSurfaceContextMenu
 	gradients.forEach((gradient) => {
 		const gradientItem = document.createElement("div");
 		gradientItem.textContent = gradient.name;
@@ -15664,24 +15955,34 @@ function showSurfaceContextMenu(x, y) {
 		gradientItem.style.cursor = "pointer";
 		gradientItem.style.color = textColor;
 
-		// Mark current selection
-		if (currentGradient === gradient.value) {
+		// Mark current selection based on THIS surface's gradient
+		const surfaceUsesThisGradient = (surface.gradient || "default") === gradient.value;
+
+		if (surfaceUsesThisGradient) {
 			gradientItem.style.backgroundColor = hoverColor;
 			gradientItem.textContent = "✓ " + gradient.name;
 		}
 
 		gradientItem.onmouseover = () => {
-			if (currentGradient !== gradient.value) {
+			if (!surfaceUsesThisGradient) {
 				gradientItem.style.backgroundColor = hoverColor;
 			}
 		};
 		gradientItem.onmouseout = () => {
-			if (currentGradient !== gradient.value) {
+			if (!surfaceUsesThisGradient) {
 				gradientItem.style.backgroundColor = backgroundColor;
 			}
 		};
+
+		// CRITICAL FIX: Only update the clicked surface, not all visible surfaces
 		gradientItem.onclick = () => {
-			currentGradient = gradient.value;
+			// Set gradient on ONLY the clicked surface
+			surface.gradient = gradient.value;
+
+			// Update in database
+			saveSurfaceToDB(surface.id || surfaceId).catch((err) => console.error("Failed to save surface gradient:", err));
+
+			console.log("Updated gradient for surface '" + (surface.name || surface.id || surfaceId) + "' to: " + gradient.value);
 			drawData(points, selectedHole);
 			document.body.removeChild(menu);
 		};
@@ -17118,8 +17419,12 @@ let polylineEndPoint = null;
 //---------------PATTERN IN POLYGON TOOL---------------//
 patternInPolygonTool.addEventListener("change", function () {
 	if (this.checked) {
-		resetFloatingToolbarButtons("patternInPolygonTool");
+		setAllBoolsToFalse();
+		setMultipleSelectionModeToFalse();
+		resetAllSwitchesAndToggles();
 		removeAllCanvasListenersKeepDefault();
+		resetFloatingToolbarButtons("patternInPolygonTool");
+
 		endKadTools();
 		isPatternInPolygonActive = true;
 		patternPolygonStep = 0;
@@ -17225,9 +17530,13 @@ function handlePatternInPolygonClick(event) {
 //---------------HOLES ALONG POLYLINE TOOL---------------//
 holesAlongPolyLineTool.addEventListener("change", function () {
 	if (this.checked) {
-		resetFloatingToolbarButtons("holesAlongPolyLineTool");
+		setAllBoolsToFalse();
+		setMultipleSelectionModeToFalse();
+		resetAllSwitchesAndToggles();
 		removeAllCanvasListenersKeepDefault();
+		resetFloatingToolbarButtons("holesAlongPolyLineTool");
 
+		endKadTools();
 		isHolesAlongPolyLineActive = true;
 		polylineStep = 0;
 		selectedPolyline = null;
@@ -17380,9 +17689,13 @@ function handleHolesAlongPolyLineClick(event) {
 //---------------HOLES ALONG LINE TOOL---------------//
 holesAlongLineTool.addEventListener("change", function () {
 	if (this.checked) {
-		resetFloatingToolbarButtons("holesAlongLineTool");
+		setAllBoolsToFalse();
+		setMultipleSelectionModeToFalse();
+		resetAllSwitchesAndToggles();
 		removeAllCanvasListenersKeepDefault();
+		resetFloatingToolbarButtons("holesAlongLineTool");
 
+		endKadTools();
 		isHolesAlongLineActive = true;
 		holesLineStep = 0;
 		lineStartPoint = null;
@@ -17674,7 +17987,6 @@ function toDegrees(radians) {
 function toBearing(degrees) {
 	return (degrees + 90) % 360;
 }
-// Function to generate pattern in polygon
 function generatePatternInPolygon(patternSettings) {
 	if (!selectedPolygon || !patternStartPoint || !patternEndPoint || !patternReferencePoint) {
 		console.error("Missing pattern data");
@@ -17686,7 +17998,7 @@ function generatePatternInPolygon(patternSettings) {
 		points = [];
 	}
 
-	console.log("Generating pattern in polygon...");
+	console.log("Generating pattern in polygon. REF X:[" + patternReferencePoint.x + ", " + patternReferencePoint.y + "]");
 
 	// Extract pattern settings
 	const { blastName, burden, spacing, spacingOffset, collarZ, gradeZ, subdrill, angle, bearing, diameter, type, startNumber, nameTypeIsNumerical, useGradeZ, length, patternType } = patternSettings;
@@ -17731,6 +18043,7 @@ function generatePatternInPolygon(patternSettings) {
 	// Use the reference point as pattern origin
 	const patternOriginX = patternReferencePoint.x;
 	const patternOriginY = patternReferencePoint.y;
+	console.log("Pattern in polygon. ORIGIN  X:[" + patternOriginX + ", " + patternOriginY + "]");
 
 	// Store original points count to identify new holes
 	const originalPointsCount = points.length;
@@ -17745,20 +18058,56 @@ function generatePatternInPolygon(patternSettings) {
 	const rowRadians = toRadians(rowBearing);
 	const columnRadians = toRadians(columnBearing);
 
+	// Calculate grid extents based on polygon size
 	const bufferFactor = 10.0;
-	// Calculate how many rows and columns we need to cover the entire polygon
-	// Double the polygon diagonal as requested for maximum coverage
-	const maxDistance = polygonDiagonal * bufferFactor; // multiply by the bufferFactor for complete coverage
+	const maxDistance = polygonDiagonal * bufferFactor;
+
+	// NEW APPROACH: Create a grid centered at (0,0) mathematically
+	// Calculate number of rows and columns - make sure they're odd numbers to have a center point
 	const numRows = Math.ceil(maxDistance / burden);
 	const numCols = Math.ceil(maxDistance / spacing);
 
-	// Calculate starting offsets to center the pattern
-	// Start with negative offsets to ensure we cover the entire polygon
-	const startRowOffset = -maxDistance / 2;
-	const startColOffset = -maxDistance / 2;
+	const halfRows = Math.floor(numRows / 2);
+	const halfCols = Math.floor(numCols / 2);
 
-	let currentLetter = "A";
-	let holeCounter = startNumber;
+	// NEW: Find the grid point closest to (0,0)
+	// In a perfect grid with odd numbers of rows/columns, this would be (0,0)
+	// But with staggering or even numbers, we need to find it
+
+	let centerGridX = 0;
+	let centerGridY = 0;
+	let minDistToCenter = Infinity;
+
+	// Iterate through a small section of the grid around the center to find the point closest to (0,0)
+	for (let i = -1; i <= 1; i++) {
+		for (let k = -1; k <= 1; k++) {
+			// Apply staggering if needed
+			let colOffset = k * spacing;
+			const isStaggered = patternType === "staggered" || (patternType === undefined && spacingOffset !== 0);
+			if (isStaggered && i % 2 !== 0) {
+				colOffset += spacingOffset * spacing;
+			}
+
+			// Calculate unrotated grid point
+			const gridX = colOffset;
+			const gridY = i * burden;
+
+			// Calculate distance to origin
+			const distToCenter = Math.sqrt(gridX * gridX + gridY * gridY);
+
+			if (distToCenter < minDistToCenter) {
+				minDistToCenter = distToCenter;
+				centerGridX = gridX;
+				centerGridY = gridY;
+			}
+		}
+	}
+
+	// Calculate grid-to-ref translation
+	const gridXOffset = -centerGridX;
+	const gridYOffset = -centerGridY;
+
+	console.log(`Grid adjustment: Found center grid point at (${centerGridX.toFixed(2)}, ${centerGridY.toFixed(2)}), applying offset (${gridXOffset.toFixed(2)}, ${gridYOffset.toFixed(2)})`);
 
 	console.log("Pattern parameters:", {
 		origin: `${patternOriginX.toFixed(2)}, ${patternOriginY.toFixed(2)}`,
@@ -17771,68 +18120,94 @@ function generatePatternInPolygon(patternSettings) {
 		patternType: patternType || (spacingOffset === 0 ? "square" : "staggered")
 	});
 
-	// Generate grid of holes
-	for (let i = 0; i < numRows; i++) {
+	let currentLetter = "A";
+	let holeCounter = startNumber;
+	let refPointHolePlaced = false;
+
+	// Generate grid of holes - using row/col indices directly for better naming control
+	for (let i = -halfRows; i <= halfRows; i++) {
 		const rowHoles = [];
-		const rowOffset = startRowOffset + i * burden;
 
-		for (let k = 0; k < numCols; k++) {
-			// Calculate hole position in grid
-			let colOffset = startColOffset + k * spacing;
-
-			// Determine if we're using staggered pattern
-			const isStaggered = patternType === "staggered" || (patternType === undefined && spacingOffset !== 0);
-
+		for (let k = -halfCols; k <= halfCols; k++) {
 			// Apply staggering if needed
+			let colOffset = k * spacing;
+			const isStaggered = patternType === "staggered" || (patternType === undefined && spacingOffset !== 0);
 			if (isStaggered && i % 2 !== 0) {
-				colOffset += spacingOffset * spacing; // Add offset to columns in odd rows
+				colOffset += spacingOffset * spacing;
 			}
 
-			// Calculate position using row and column bearings
+			// Apply grid adjustment to center properly
+			const adjustedColOffset = colOffset + gridXOffset;
+			const adjustedRowOffset = i * burden + gridYOffset;
+
+			// Calculate position using row and column bearings (same as original code)
 			// Move along column direction (perpendicular to row)
-			const yFromColumn = rowOffset * Math.sin(columnRadians);
-			const xFromColumn = rowOffset * Math.cos(columnRadians);
+			const yFromColumn = adjustedRowOffset * Math.sin(columnRadians);
+			const xFromColumn = adjustedRowOffset * Math.cos(columnRadians);
 
 			// Move along row direction
-			const yFromRow = colOffset * Math.sin(rowRadians);
-			const xFromRow = colOffset * Math.cos(rowRadians);
+			const yFromRow = adjustedColOffset * Math.sin(rowRadians);
+			const xFromRow = adjustedColOffset * Math.cos(rowRadians);
 
 			// Combine both movements and translate to reference point
 			const holeX = patternOriginX + xFromColumn + xFromRow;
 			const holeY = patternOriginY + yFromColumn + yFromRow;
 
+			// NEW: Check if this is the reference point hole
+			const isRefPoint = Math.abs(adjustedColOffset) < 0.001 && Math.abs(adjustedRowOffset) < 0.001;
+			if (isRefPoint) {
+				refPointHolePlaced = true;
+				console.log("Reference point hole will be placed at grid position");
+			}
+
 			// Check if hole is inside polygon
 			if (isPointInPolygonVertices(holeX, holeY, polygonVertices)) {
-				// Create hole ID based on naming convention
+				// Create hole ID based on naming convention - keeping same naming logic
 				let holeID;
 				if (nameTypeIsNumerical) {
 					holeID = holeCounter++;
 				} else {
-					holeID = currentLetter + (k + 1);
+					// For alphabetical naming, we need the proper row letter and column number
+					// Adjust row index to be positive (0 to numRows)
+					const rowIndex = i + halfRows;
+
+					// Calculate row letter
+					let rowLetter = "A";
+					for (let l = 0; l < rowIndex; l++) {
+						if (rowLetter === "Z") {
+							rowLetter = "AA";
+						} else if (rowLetter === "ZZ") {
+							rowLetter = "AAA";
+						} else {
+							rowLetter = incrementLetter(rowLetter);
+						}
+					}
+
+					// Column number is k + halfCols + 1 (to start at 1 not 0)
+					const colNumber = k + halfCols + 1;
+
+					holeID = rowLetter + colNumber;
 				}
 
 				// Add hole using existing addHole function - with true for useCustomHoleID
 				addHole(true, useGradeZ, blastName, holeID, holeX, holeY, collarZ, gradeZ, diameter, type, length, subdrill, angle, bearing);
 
-				rowHoles.push({ x: holeX, y: holeY });
+				rowHoles.push({ x: holeX, y: holeY, id: holeID });
 			}
 		}
 
-		// Only increment letters for alphabetical naming
-		if (!nameTypeIsNumerical && rowHoles.length > 0) {
-			if (currentLetter === "Z") {
-				currentLetter = "AA";
-			} else if (currentLetter === "ZZ") {
-				currentLetter = "AAA";
-			} else {
-				currentLetter = incrementLetter(currentLetter);
-			}
-		}
+		// We don't need to increment letters here - they're handled per-row in the ID generation
+	}
+
+	// Check if reference point hole was placed
+	if (!refPointHolePlaced) {
+		console.warn("No hole was placed at the reference point - grid adjustment failed");
 	}
 
 	const holesAdded = points.length - originalPointsCount;
 	console.log(`Generated pattern in polygon with ${holesAdded} holes`);
 
+	// Rest of the function remains unchanged
 	if (holesAdded === 0) {
 		Swal.fire({
 			title: "No Holes Generated",
@@ -17874,7 +18249,6 @@ function generatePatternInPolygon(patternSettings) {
 	drawData(points, selectedHole);
 	saveHolesToLocalStorage(points);
 }
-
 // Function to show holes along line popup
 function showHolesAlongLinePopup() {
 	let blastNameValue = "LinePattern_" + Date.now();
@@ -18466,6 +18840,7 @@ function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
 
 	return Math.sqrt(dx * dx + dy * dy);
 }
+
 // Add this new function for the pattern in polygon popup
 function showPatternInPolygonPopup() {
 	let blastNameValue = "PolygonPattern_" + Date.now();
@@ -18775,7 +19150,6 @@ function drawPatternInPolygonVisual() {
 			ctx.lineTo(currentMouseCanvasX, currentMouseCanvasY);
 			ctx.stroke();
 			ctx.setLineDash([]);
-
 			// Show preview distance
 			const dx = currentMouseWorldX - patternStartPoint.x;
 			const dy = currentMouseWorldY - patternStartPoint.y;
@@ -18783,6 +19157,63 @@ function drawPatternInPolygonVisual() {
 
 			const midX = (startX + currentMouseCanvasX) / 2;
 			const midY = (startY + currentMouseCanvasY) / 2;
+
+			//const [startX, startY] = worldToCanvas(patternStartPoint.x, patternStartPoint.y);
+			const [mouseX, mouseY] = [currentMouseCanvasX, currentMouseCanvasY];
+
+			// Draw preview line (already in your code)
+			// ...
+			const lineLength = Math.sqrt(dx * dx + dy * dy);
+
+			if (lineLength > 5) {
+				const midX = (startX + currentMouseCanvasX) / 2;
+				const midY = (startY + currentMouseCanvasY) / 2;
+
+				// Normalized line direction vector
+				const dirX = dx / lineLength;
+				const dirY = -dy / lineLength;
+
+				// Perpendicular vector (-90° from line direction)
+				const perpX = dirY;
+				const perpY = -dirX;
+
+				const arrowLength = 50;
+				const arrowWidth = 24;
+				const arrowOffset = 40;
+
+				// Base point of the arrow (center of base)
+				const baseX = midX + perpX * arrowOffset;
+				const baseY = midY + perpY * arrowOffset;
+
+				// Tip of the arrow (move further left)
+				const tipX = baseX + perpX * arrowLength;
+				const tipY = baseY + perpY * arrowLength;
+
+				// Perpendicular to arrow direction (same as line dir!)
+				const sideX = dirX * (arrowWidth / 2);
+				const sideY = dirY * (arrowWidth / 2);
+
+				// Base left/right points
+				const leftX = baseX + sideX;
+				const leftY = baseY + sideY;
+				const rightX = baseX - sideX;
+				const rightY = baseY - sideY;
+
+				// Draw arrow
+				ctx.beginPath();
+				ctx.moveTo(tipX, tipY); // Tip
+				ctx.lineTo(leftX, leftY); // Left corner of base
+				ctx.lineTo(rightX, rightY); // Right corner of base
+				ctx.closePath();
+
+				ctx.fillStyle = "#00ff00";
+				ctx.globalAlpha = 0.3;
+				ctx.fill();
+				ctx.lineWidth = 2;
+				ctx.strokeStyle = "#009900";
+				ctx.globalAlpha = 1.0;
+				ctx.stroke();
+			}
 
 			ctx.fillStyle = "rgba(0, 255, 0, 0.2)";
 			ctx.fillRect(midX - 30, midY - 15, 60, 20);
@@ -19327,7 +19758,7 @@ function generateHolesAlongPolyline(params, vertices) {
 	// Initialize points array if it's null
 	if (points === null) {
 		points = [];
-		console.log("Initialized empty points array");
+		// console.log("Initialized empty points array");
 	}
 
 	const entityName = params.blastName || "PolylinePattern_" + Date.now();
@@ -19426,7 +19857,7 @@ function generateHolesAlongPolyline(params, vertices) {
 	saveHolesToLocalStorage(points);
 
 	const holesAdded = points.length - originalPointsCount;
-	console.log("Generated " + holesAdded + " holes along polyline");
+	// console.log("Generated " + holesAdded + " holes along polyline");
 
 	// Show success/failure message with custom styling
 	if (holesAdded === 0) {
@@ -19658,16 +20089,15 @@ function showHolesAlongPolylinePopup(vertices) {
 }
 
 ///----------------- ASSIGN HOLE START Z TO A SURFACE TOOL and ASSIGN HOLE GRADE Z to a surface -----------------///
+// WITH this multi-surface system:
+let loadedSurfaces = new Map(); // Map<surfaceId, {id, name, points, triangles, visible, gradient}>
 
 const assignSurfaceToHolesTool = document.getElementById("assignSurfaceTool");
 const assignGradeToHolesTool = document.getElementById("assignGradeTool");
-let surfaceTriangles = [];
-let surfacePoints = [];
-let surfaceVisible = true;
 let showSurfaceLegend = true; // Add legend visibility control
 let currentGradient = "default"; // Default gradient
 // Add these variables near your other surface variables
-let surfaceTransparency = 1.0; // Default fully opaque (same as imageTransparency pattern)
+let surfaceTransparency = 1.0; // Default fully opaque (same as image.transparency pattern)
 
 //IMPORTANT - THIS IS THE FUNCTION THAT ASSIGNS THE HOLE TO THE SURFACE
 function assignHoleToSurface(hole) {
@@ -19675,30 +20105,36 @@ function assignHoleToSurface(hole) {
 	if (surfaceZ !== null) {
 		hole.startZLocation = surfaceZ;
 		hole.gradeZLocation = surfaceZ + hole.length; // Adjust grade accordingly
-		console.log("Assigned hole: " + hole.holeID + " to surface elevation: " + surfaceZ.toFixed(2) + "m");
+		// console.log("Assigned hole: " + hole.holeID + " to surface elevation: " + surfaceZ.toFixed(2) + "m");
 	}
 }
 // NEW: Check if click point is actually on a surface triangle
 function isPointInSurface(x, y) {
-	if (!surfaceTriangles || surfaceTriangles.length === 0 || !surfaceVisible) {
-		return false;
+	// Check all loaded surfaces
+	if (loadedSurfaces.size === 0) {
+		return null; // Changed from false to null
 	}
 
 	// Convert canvas coordinates to world coordinates
 	const worldX = (x - canvas.width / 2) / currentScale + centroidX;
 	const worldY = -(y - canvas.height / 2) / currentScale + centroidY;
 
-	// Check if point is inside any triangle
-	for (let triangle of surfaceTriangles) {
-		// FIX: Pass triangle.vertices array instead of individual vertices
-		if (isPointInTriangle(worldX, worldY, triangle.vertices)) {
-			return true;
+	// Check if point is inside any triangle of any visible surface
+	for (let [surfaceId, surface] of loadedSurfaces) {
+		if (!surface.visible || !surface.triangles || surface.triangles.length === 0) {
+			continue;
+		}
+
+		// Check if point is inside any triangle
+		for (let triangle of surface.triangles) {
+			if (isPointInTriangle(worldX, worldY, triangle.vertices)) {
+				return surfaceId; // Return the specific surface ID
+			}
 		}
 	}
 
-	return false;
+	return null; // Changed from false to null
 }
-
 // Determines if a point is inside a triangle using barycentric coordinates.
 function isPointInTriangle(x, y, vertices) {
 	const [v0, v1, v2] = vertices;
@@ -19720,10 +20156,16 @@ function interpolateZInTriangle(x, y, vertices) {
 
 // Interpolates the Z value of a point on the surface.
 function interpolateZFromSurface(x, y) {
-	// Find triangle containing point (x, y)
-	for (const triangle of surfaceTriangles) {
-		if (isPointInTriangle(x, y, triangle.vertices)) {
-			return interpolateZInTriangle(x, y, triangle.vertices);
+	// Find triangle containing point (x, y) from all loaded surfaces
+	for (let [surfaceId, surface] of loadedSurfaces) {
+		if (!surface.visible || !surface.triangles || surface.triangles.length === 0) {
+			continue;
+		}
+
+		for (const triangle of surface.triangles) {
+			if (isPointInTriangle(x, y, triangle.vertices)) {
+				return interpolateZInTriangle(x, y, triangle.vertices);
+			}
 		}
 	}
 	return null; // Point not on surface
@@ -19801,7 +20243,7 @@ function processSurfacePoints(points, fileName) {
 			// ADD SURFACE SAVE HERE
 			try {
 				await saveSurfaceToDB(fileName || "surface_" + Date.now());
-				console.log("✅ Surface saved from processSurfacePoints:", fileName);
+				// console.log("✅ Surface saved from processSurfacePoints:", fileName);
 			} catch (saveError) {
 				console.error("❌ Failed to save surface from processSurfacePoints:", saveError);
 			}
@@ -20034,39 +20476,42 @@ function parseCSVPointCloud(content) {
 // Add this to track the current surface name
 window.currentSurfaceName = null;
 
-// CRITICAL: Enhanced createSurfaceFromPoints with centroid calculation
 function createSurfaceFromPoints(points, surfaceName = null, autoSave = true) {
-	surfacePoints = points;
+	const surfaceId = surfaceName || "surface_" + Date.now();
 
-	// Track current surface name for deletion
-	window.currentSurfaceName = surfaceName || "surface_" + Date.now();
-
-	// Use existing Delaunay triangulation
+	// Create triangles in LOCAL variable (not global)
+	const triangles = [];
 	const coords = points.flatMap((p) => [p.x, p.y]);
 	const delaunay = new Delaunator(coords);
 
-	// Create triangles with elevation data
-	surfaceTriangles = [];
 	for (let i = 0; i < delaunay.triangles.length; i += 3) {
 		const p1 = points[delaunay.triangles[i]];
 		const p2 = points[delaunay.triangles[i + 1]];
 		const p3 = points[delaunay.triangles[i + 2]];
 
-		surfaceTriangles.push({
+		// ✅ Push to LOCAL triangles array
+		triangles.push({
 			vertices: [p1, p2, p3],
 			minZ: Math.min(p1.z, p2.z, p3.z),
 			maxZ: Math.max(p1.z, p2.z, p3.z)
 		});
 	}
 
-	// CRITICAL: Update centroids to include surface points for coordinate system
-	updateCentroids();
+	// ✅ Add complete surface to the Map
+	loadedSurfaces.set(surfaceId, {
+		id: surfaceId,
+		name: surfaceName || surfaceId,
+		points: points,
+		triangles: triangles,
+		visible: true,
+		gradient: "default"
+	});
 
-	drawData(points, selectedHole); // Redraw with surface
-	// Only auto-save if requested
+	updateCentroids();
+	drawData(points, selectedHole);
+
 	if (autoSave) {
-		const saveName = surfaceName || "surface_" + Date.now();
-		saveSurfaceToDB(saveName).catch((err) => console.error("Failed to save surface:", err));
+		saveSurfaceToDB(surfaceId).catch((err) => console.error("Failed to save surface:", err));
 	}
 }
 // Keep the decimation warning (optional enhancement)
@@ -20104,7 +20549,7 @@ function showDecimationWarning(points, fileName) {
 			// ADD SURFACE SAVE HERE
 			try {
 				await saveSurfaceToDB(fileName || "surface_full_" + Date.now());
-				console.log("✅ Full surface saved from decimation dialog:", fileName);
+				// console.log("✅ Full surface saved from decimation dialog:", fileName);
 			} catch (saveError) {
 				console.error("❌ Failed to save full surface:", saveError);
 			}
@@ -20115,7 +20560,7 @@ function showDecimationWarning(points, fileName) {
 			// ADD DECIMATED SURFACE SAVE HERE
 			try {
 				await saveSurfaceToDB(fileName ? fileName + "_decimated" : "surface_decimated_" + Date.now());
-				console.log("✅ Decimated surface saved from decimation dialog:", fileName);
+				// console.log("✅ Decimated surface saved from decimation dialog:", fileName);
 			} catch (saveError) {
 				console.error("❌ Failed to save decimated surface:", saveError);
 			}
@@ -20134,102 +20579,215 @@ function decimatePointCloud(points, targetCount) {
 
 	return decimatedPoints;
 }
+// Add this simple canvasToWorld function (without snapping)
+function canvasToWorld(canvasX, canvasY) {
+	const worldX = (canvasX - canvas.width / 2) / currentScale + centroidX;
+	const worldY = -(canvasY - canvas.height / 2) / currentScale + centroidY;
+	return [worldX, worldY];
+}
+// Load a specific image into the multi-image system
+async function loadImageIntoMemory(imageId) {
+	try {
+		if (!db) return null;
 
-function drawSurface() {
-	if (!surfaceVisible || surfaceTriangles.length === 0) return;
+		const transaction = db.transaction([IMAGE_STORE_NAME], "readonly");
+		const store = transaction.objectStore(IMAGE_STORE_NAME);
+		const request = store.get(imageId);
 
-	// Find global Z range for color mapping
-	let minZ = Infinity;
-	let maxZ = -Infinity;
+		return new Promise((resolve) => {
+			request.onsuccess = async () => {
+				const imageData = request.result;
+				if (imageData) {
+					// Convert blob back to canvas
+					const img = new Image();
+					const canvas = document.createElement("canvas");
+					const ctx = canvas.getContext("2d");
 
-	surfacePoints.forEach((point) => {
-		if (point.z < minZ) minZ = point.z;
-		if (point.z > maxZ) maxZ = point.z;
-	});
+					img.onload = () => {
+						canvas.width = img.width;
+						canvas.height = img.height;
+						ctx.drawImage(img, 0, 0);
 
-	surfaceTriangles.forEach((triangle) => {
-		drawTriangleWithGradient(triangle, minZ, maxZ);
-	});
+						loadedImages.set(imageId, {
+							id: imageId,
+							name: imageData.name,
+							canvas: canvas,
+							bbox: imageData.bbox,
+							type: imageData.type,
+							visible: imageData.visible !== false,
+							transparency: imageData.transparency || 1.0
+						});
 
-	// Draw legend after surface
-	drawSurfaceLegend();
+						// console.log("✅ Image " + imageData.name + " loaded into memory");
+						resolve(imageData);
+					};
+
+					img.src = URL.createObjectURL(imageData.blob);
+				} else {
+					resolve(null);
+				}
+			};
+			request.onerror = () => resolve(null);
+		});
+	} catch (error) {
+		console.error("Error loading image into memory:", error);
+		return null;
+	}
 }
 
-// FIXED: In drawSurfaceLegend function
+// Image visibility management
+function setImageVisibility(imageId, visible) {
+	const image = loadedImages.get(imageId);
+	if (image) {
+		image.visible = visible;
+		// console.log("👁️ Image " + image.name + " visibility: " + visible);
+		drawData(points, selectedHole);
+	}
+}
+
+function toggleImageVisibility(imageId) {
+	const image = loadedImages.get(imageId);
+	if (image) {
+		image.visible = !image.visible;
+		setImageVisibility(imageId, image.visible);
+	}
+}
+function drawSurface() {
+	if (loadedSurfaces.size === 0) return;
+
+	loadedSurfaces.forEach((surface) => {
+		if (!surface.visible || !surface.triangles || surface.triangles.length === 0) return;
+
+		// Calculate THIS surface's elevation range only
+		let surfaceMinZ = Infinity;
+		let surfaceMaxZ = -Infinity;
+
+		surface.points.forEach((point) => {
+			if (point.z < surfaceMinZ) surfaceMinZ = point.z;
+			if (point.z > surfaceMaxZ) surfaceMaxZ = point.z;
+		});
+
+		// CRITICAL: Pass surface-specific min/max, transparency, AND gradient
+		surface.triangles.forEach((triangle) => {
+			// Fix line 20344 - Surface drawing function
+			drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, ctx, surface.transparency ?? 1.0, surface.gradient || "default");
+		});
+	});
+}
+// FIXED: Enhanced drawSurfaceLegend function to use surface-specific gradients
 function drawSurfaceLegend() {
-	if (!showSurfaceLegend || !surfaceVisible || surfaceTriangles.length === 0) return;
+	// Check if any surfaces are visible and have legend enabled
+	if (!showSurfaceLegend || loadedSurfaces.size === 0) return;
 
-	// FIXED: Calculate elevation range without spread operator
-	let minZ = Infinity;
-	let maxZ = -Infinity;
+	// Get all visible surfaces
+	const visibleSurfaces = Array.from(loadedSurfaces.values()).filter((surface) => surface.visible && surface.points && surface.points.length > 0);
 
-	surfacePoints.forEach((point) => {
-		if (point.z < minZ) minZ = point.z;
-		if (point.z > maxZ) maxZ = point.z;
+	if (visibleSurfaces.length === 0) return;
+
+	// Group surfaces by gradient type
+	const surfacesByGradient = {};
+	visibleSurfaces.forEach((surface) => {
+		const gradient = surface.gradient || "default";
+		if (!surfacesByGradient[gradient]) {
+			surfacesByGradient[gradient] = [];
+		}
+		surfacesByGradient[gradient].push(surface);
 	});
 
-	if (maxZ - minZ < 0.001) return; // Skip legend for flat surfaces
-
-	// Legend dimensions and position
+	// Legend dimensions and base position
 	const legendWidth = 20;
 	const legendHeight = 200;
-	const legendX = canvas.width - legendWidth - 60;
-	const legendY = 50;
-	const steps = 50;
+	const legendSpacing = 140; // Space between multiple legends
+	let legendIndex = 0;
 
-	// Draw color gradient
-	for (let i = 0; i < steps; i++) {
-		const ratio = i / (steps - 1);
-		const y = legendY + legendHeight - (i * legendHeight) / steps;
-		const height = legendHeight / steps + 1;
+	// Draw a legend for each unique gradient
+	Object.entries(surfacesByGradient).forEach(([gradientType, surfaces]) => {
+		// Calculate combined elevation range for all surfaces using this gradient
+		let minZ = Infinity;
+		let maxZ = -Infinity;
 
-		ctx.fillStyle = elevationToColor(minZ + ratio * (maxZ - minZ), minZ, maxZ);
-		ctx.fillRect(legendX, y, legendWidth, height);
-	}
+		surfaces.forEach((surface) => {
+			surface.points.forEach((point) => {
+				if (point.z < minZ) minZ = point.z;
+				if (point.z > maxZ) maxZ = point.z;
+			});
+		});
 
-	// Draw elevation labels
-	ctx.fillStyle = strokeColor;
-	ctx.font = "12px Roboto";
-	ctx.fontWeight = "bold";
-	ctx.textAlign = "left";
+		if (maxZ - minZ < 0.001) return; // Skip legend for flat surfaces
 
-	const labelCount = 5;
-	for (let i = 0; i < labelCount; i++) {
-		const ratio = i / (labelCount - 1);
-		const elevation = minZ + ratio * (maxZ - minZ);
-		const y = legendY + legendHeight - ratio * legendHeight;
+		// Position this legend
+		const legendX = canvas.width - legendWidth - 60 - legendIndex * legendSpacing;
+		const legendY = 50;
+		const steps = 50;
 
-		// Draw tick mark
-		ctx.beginPath();
-		ctx.moveTo(legendX + legendWidth, y);
-		ctx.lineTo(legendX + legendWidth + 5, y);
-		ctx.stroke();
+		// Draw color gradient using the specific gradient type
+		for (let i = 0; i < steps; i++) {
+			const ratio = i / (steps - 1);
+			const y = legendY + legendHeight - (i * legendHeight) / steps;
+			const height = legendHeight / steps + 1;
 
-		// Draw elevation text
-		ctx.fillText(elevation.toFixed(1) + "m", legendX + legendWidth + 8, y + 4);
-	}
+			// FIXED: Pass the gradient parameter
+			ctx.fillStyle = elevationToColor(minZ + ratio * (maxZ - minZ), minZ, maxZ, gradientType);
+			ctx.fillRect(legendX, y, legendWidth, height);
+		}
 
-	// Draw title
-	ctx.font = "14px Arial";
-	ctx.textAlign = "center";
-	ctx.fillText("Elevation", legendX + legendWidth / 2, legendY - 20);
+		// Draw elevation labels
+		ctx.fillStyle = strokeColor;
+		ctx.font = "12px Roboto";
+		ctx.fontWeight = "bold";
+		ctx.textAlign = "left";
 
-	// Draw gradient name
-	ctx.font = "10px Arial";
-	const gradientNames = {
-		default: "Default",
-		viridis: "Viridis",
-		turbo: "Turbo",
-		parula: "Parula",
-		cividis: "Cividis",
-		terrain: "Terrain"
-	};
-	ctx.fillText(gradientNames[currentGradient] || "Default", legendX + legendWidth / 2, legendY + legendHeight + 30);
+		const labelCount = 5;
+		for (let i = 0; i < labelCount; i++) {
+			const ratio = i / (labelCount - 1);
+			const elevation = minZ + ratio * (maxZ - minZ);
+			const y = legendY + legendHeight - ratio * legendHeight;
+
+			// Draw tick mark
+			ctx.beginPath();
+			ctx.moveTo(legendX + legendWidth, y);
+			ctx.lineTo(legendX + legendWidth + 5, y);
+			ctx.stroke();
+
+			// Draw elevation text
+			ctx.fillText(elevation.toFixed(1) + "m", legendX + legendWidth + 8, y + 4);
+		}
+
+		// Draw title
+		ctx.font = "14px Arial";
+		ctx.textAlign = "center";
+		ctx.fillText("Elevation", legendX + legendWidth / 2, legendY - 20);
+
+		// Draw gradient name and surface info
+		ctx.font = "10px Arial";
+		const gradientNames = {
+			default: "Default",
+			viridis: "Viridis",
+			turbo: "Turbo",
+			parula: "Parula",
+			cividis: "Cividis",
+			terrain: "Terrain"
+		};
+
+		// FIXED: Use the surface's gradient instead of global currentGradient
+		const gradientName = gradientNames[gradientType] || "Default";
+		ctx.fillText(gradientName, legendX + legendWidth / 2, legendY + legendHeight + 20);
+
+		// If multiple surfaces, show which surfaces use this gradient
+		if (Object.keys(surfacesByGradient).length > 1) {
+			ctx.font = "9px Arial";
+			const surfaceNames = surfaces.map((s) => s.name || s.id).join(", ");
+			const maxNameLength = 20;
+			const displayName = surfaceNames.length > maxNameLength ? surfaceNames.substring(0, maxNameLength) + "..." : surfaceNames;
+			ctx.fillText(displayName, legendX + legendWidth / 2, legendY + legendHeight + 35);
+		}
+
+		legendIndex++;
+	});
 
 	// Reset text alignment
 	ctx.textAlign = "left";
 }
-
 // Color gradient functions
 function getViridisColor(ratio) {
 	const colors = [
@@ -20315,8 +20873,8 @@ function interpolateColors(colors, ratio) {
 	return `rgb(${r}, ${g}, ${b})`;
 }
 
-// Updated elevationToColor function to handle flat surfaces and gradients
-function elevationToColor(z, minZ, maxZ) {
+// Updated elevationToColor function to accept gradient parameter
+function elevationToColor(z, minZ, maxZ, gradient = "default") {
 	// Check if the surface is flat (no elevation variation)
 	if (maxZ - minZ < 0.001) {
 		// Very small tolerance for floating point comparison
@@ -20325,8 +20883,8 @@ function elevationToColor(z, minZ, maxZ) {
 
 	const ratio = (z - minZ) / (maxZ - minZ);
 
-	// Apply selected gradient
-	switch (currentGradient) {
+	// Apply selected gradient (now surface-specific)
+	switch (gradient) {
 		case "viridis":
 			return getViridisColor(ratio);
 		case "turbo":
@@ -20351,8 +20909,8 @@ function elevationToColor(z, minZ, maxZ) {
 	}
 }
 
-// Modify your existing drawTriangleWithGradient function to accept transparency
-function drawTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = ctx, alpha = surfaceTransparency) {
+// Updated drawTriangleWithGradient function to accept surface-specific gradient
+function drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, targetCtx = ctx, alpha = 1.0, gradient = "default") {
 	const showWireFrame = false;
 	const [p1, p2, p3] = triangle.vertices;
 
@@ -20364,82 +20922,84 @@ function drawTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = 
 	// Save context state
 	targetCtx.save();
 
-	// Set transparency
+	// Set transparency for THIS surface only
 	targetCtx.globalAlpha = alpha;
 
 	// Check if we have texture data (future enhancement)
 	if (surfaceTextureData && surfaceTextureData.hasTextures) {
 		// For now, use a different color scheme for textured surfaces
-		ctx.beginPath();
-		ctx.moveTo(x1, y1);
-		ctx.lineTo(x2, y2);
-		ctx.lineTo(x3, y3);
-		ctx.closePath();
+		targetCtx.beginPath();
+		targetCtx.moveTo(x1, y1);
+		targetCtx.lineTo(x2, y2);
+		targetCtx.lineTo(x3, y3);
+		targetCtx.closePath();
 
 		// Use elevation coloring but with different palette for textured surfaces
 		const avgZ = (p1.z + p2.z + p3.z) / 3;
-		ctx.fillStyle = elevationToColor(avgZ, globalMinZ, globalMaxZ);
-		ctx.fill();
+		targetCtx.fillStyle = elevationToColor(avgZ, surfaceMinZ, surfaceMaxZ, gradient);
+		targetCtx.fill();
 
 		if (showWireFrame) {
-			ctx.strokeStyle = "rgba(0, 0, 0, 0.05)";
-			ctx.lineWidth = 0.1;
-			ctx.stroke();
+			targetCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
+			targetCtx.lineWidth = 0.1;
+			targetCtx.stroke();
 		}
+		targetCtx.restore();
 		return;
 	}
 
-	// Check if surface is flat
-	if (globalMaxZ - globalMinZ < 0.001) {
+	// Check if THIS surface is flat (using surface-specific min/max)
+	if (surfaceMaxZ - surfaceMinZ < 0.001) {
 		// Flat surface - use solid orange color
-		ctx.beginPath();
-		ctx.moveTo(x1, y1);
-		ctx.lineTo(x2, y2);
-		ctx.lineTo(x3, y3);
-		ctx.closePath();
-		ctx.fillStyle = "rgba(255, 165, 0, 0.7)"; // Semi-transparent orange
-		ctx.fill();
+		targetCtx.beginPath();
+		targetCtx.moveTo(x1, y1);
+		targetCtx.lineTo(x2, y2);
+		targetCtx.lineTo(x3, y3);
+		targetCtx.closePath();
+		targetCtx.fillStyle = "rgba(255, 165, 0, 0.7)"; // Semi-transparent orange
+		targetCtx.fill();
 
 		// Add wireframe edges
 		if (showWireFrame) {
-			ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-			ctx.lineWidth = 0.1;
-			ctx.stroke();
+			targetCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+			targetCtx.lineWidth = 0.1;
+			targetCtx.stroke();
 		}
+		targetCtx.restore();
 		return;
 	}
 
 	// Create gradient based on elevation for non-flat surfaces
-	const gradient = ctx.createLinearGradient(x1, y1, x3, y3);
+	const canvasGradient = targetCtx.createLinearGradient(x1, y1, x3, y3);
 
-	// Map Z values to colors (spectrum: blue->green->yellow->red)
-	const color1 = elevationToColor(p1.z, globalMinZ, globalMaxZ);
-	const color2 = elevationToColor(p2.z, globalMinZ, globalMaxZ);
-	const color3 = elevationToColor(p3.z, globalMinZ, globalMaxZ);
+	// Map Z values to colors using THIS surface's elevation range AND gradient
+	const color1 = elevationToColor(p1.z, surfaceMinZ, surfaceMaxZ, gradient);
+	const color2 = elevationToColor(p2.z, surfaceMinZ, surfaceMaxZ, gradient);
+	const color3 = elevationToColor(p3.z, surfaceMinZ, surfaceMaxZ, gradient);
 
-	gradient.addColorStop(0, color1);
-	gradient.addColorStop(0.5, color2);
-	gradient.addColorStop(1, color3);
+	canvasGradient.addColorStop(0, color1);
+	canvasGradient.addColorStop(0.5, color2);
+	canvasGradient.addColorStop(1, color3);
 
 	// Draw triangle
-	ctx.beginPath();
-	ctx.moveTo(x1, y1);
-	ctx.lineTo(x2, y2);
-	ctx.lineTo(x3, y3);
-	ctx.closePath();
-	ctx.fillStyle = gradient;
-	ctx.fill();
+	targetCtx.beginPath();
+	targetCtx.moveTo(x1, y1);
+	targetCtx.lineTo(x2, y2);
+	targetCtx.lineTo(x3, y3);
+	targetCtx.closePath();
+	targetCtx.fillStyle = canvasGradient;
+	targetCtx.fill();
 
 	// Add wireframe edges
 	if (showWireFrame) {
-		ctx.strokeStyle = "rgba(0, 0, 0, 0.1)";
-		ctx.lineWidth = 0.1;
-		ctx.stroke();
+		targetCtx.strokeStyle = "rgba(0, 0, 0, 0.1)";
+		targetCtx.lineWidth = 0.1;
+		targetCtx.stroke();
 	}
+
 	// Restore context state
 	targetCtx.restore();
 }
-
 // ADD: Global variable for texture data
 let surfaceTextureData = null;
 
@@ -20538,7 +21098,7 @@ assignSurfaceTool.addEventListener("change", function () {
 				if (surfaceZ !== null) {
 					assignHoleToSurfaceElevation(hole, surfaceZ, "collar");
 					assignedCount++;
-					console.log(`Adjusted hole ${hole.holeID}: collar at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
+					// console.log(`Adjusted hole ${hole.holeID}: collar at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
 				}
 			});
 
@@ -20630,7 +21190,7 @@ assignGradeToHolesTool.addEventListener("change", function () {
 				if (surfaceZ !== null) {
 					assignHoleToSurfaceElevation(hole, surfaceZ, "grade");
 					assignedCount++;
-					console.log(`Adjusted hole ${hole.holeID}: toe at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
+					// console.log(`Adjusted hole ${hole.holeID}: toe at ${surfaceZ.toFixed(2)}m, length now ${hole.holeLengthCalculated.toFixed(2)}m`);
 				}
 			});
 
@@ -20867,7 +21427,7 @@ if (document.getElementById("snapToleranceSlider")) {
 // Single event listener for snap tolerance
 document.getElementById("snapToleranceSlider")?.addEventListener("input", function () {
 	snapRadiusPixels = parseFloat(this.value);
-	console.log("Snap Tolerance updated: " + snapRadiusPixels + "px");
+	// console.log("Snap Tolerance updated: " + snapRadiusPixels + "px");
 	updateStatusMessage("Snap Tolerance: " + snapRadiusPixels + "px");
 	setTimeout(() => updateStatusMessage(""), 1500);
 
@@ -20988,34 +21548,46 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 		});
 	}
 
-	// 7. Search Surface Points (if available)
-	if (surfacePoints && surfacePoints.length > 0) {
-		surfacePoints.forEach((surfacePoint, index) => {
-			const dist = Math.sqrt(Math.pow(surfacePoint.x - rawWorldX, 2) + Math.pow(surfacePoint.y - rawWorldY, 2));
-			if (dist <= searchRadius) {
-				snapCandidates.push({
-					distance: dist,
-					point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
-					type: "SURFACE_POINT",
-					priority: SNAP_PRIORITIES.SURFACE_POINT,
-					description: `Surface point ${index}`
+	// 7. Search Surface Points (from all loaded surfaces)
+	if (loadedSurfaces && loadedSurfaces.size > 0) {
+		for (const [surfaceId, surface] of loadedSurfaces.entries()) {
+			if (surface.visible && surface.points && surface.points.length > 0) {
+				surface.points.forEach((surfacePoint, index) => {
+					const dist = Math.sqrt(Math.pow(surfacePoint.x - rawWorldX, 2) + Math.pow(surfacePoint.y - rawWorldY, 2));
+					if (dist <= searchRadius) {
+						snapCandidates.push({
+							distance: dist,
+							point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
+							type: "SURFACE_POINT",
+							priority: SNAP_PRIORITIES.SURFACE_POINT,
+							description: `${surface.name} point ${index}`
+						});
+					}
 				});
 			}
-		});
-	}
-	// 8. Surface Interpolation (if surface is available)
-	if (surfaceTriangles && surfaceTriangles.length > 0) {
-		const interpolatedZ = interpolateZFromSurface(rawWorldX, rawWorldY);
-		if (interpolatedZ !== null) {
-			snapCandidates.push({
-				distance: 0, // Always within "range" for surface interpolation
-				point: { x: rawWorldX, y: rawWorldY, z: interpolatedZ },
-				type: "SURFACE_INTERPOLATED",
-				priority: SNAP_PRIORITIES.SURFACE_INTERPOLATED,
-				description: `Surface (${interpolatedZ.toFixed(2)}m RL)`
-			});
 		}
 	}
+
+	// 8. Surface Interpolation (if surface is available)
+	if (loadedSurfaces && loadedSurfaces.size > 0) {
+		for (const [surfaceId, surface] of loadedSurfaces.entries()) {
+			if (surface.visible && surface.points && surface.points.length > 0) {
+				surface.points.forEach((surfacePoint, index) => {
+					const dist = Math.sqrt(Math.pow(surfacePoint.x - rawWorldX, 2) + Math.pow(surfacePoint.y - rawWorldY, 2));
+					if (dist <= searchRadius) {
+						snapCandidates.push({
+							distance: dist,
+							point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
+							type: "SURFACE_POINT",
+							priority: SNAP_PRIORITIES.SURFACE_POINT,
+							description: `${surface.name} point ${index}`
+						});
+					}
+				});
+			}
+		}
+	}
+
 	// Find the best snap candidate (highest priority, then closest 2D distance)
 	if (snapCandidates.length > 0) {
 		snapCandidates.sort((a, b) => {
@@ -21227,7 +21799,7 @@ async function loadGeoTIFF(file) {
 		const height = image.getHeight();
 		const bandCount = image.getSamplesPerPixel();
 
-		console.log(`GeoTIFF Info: ${width}x${height}, ${bandCount} bands`);
+		// console.log(`GeoTIFF Info: ${width}x${height}, ${bandCount} bands`);
 
 		// Check if coordinates are in WGS84 (lat/lon)
 		if (isLikelyWGS84(bbox)) {
@@ -21263,15 +21835,19 @@ async function processGeoTIFF(rasters, bbox, width, height, bandCount, surfaceNa
 // NEW: Create elevation surface with raster data for interpolation
 async function createElevationSurface(elevationData, bbox, width, height, surfaceName) {
 	try {
-		// Store the raw raster data for interpolation
-		backgroundImage = {
-			type: "elevation",
+		const imageId = imageName || "image_" + Date.now();
+		loadedImages.set(imageId, {
+			id: imageId,
+			name: imageName || imageId,
+			canvas: canvas,
 			bbox: bbox,
-			width: width,
-			height: height,
-			rasterData: elevationData, // Keep raw data for interpolation
-			name: surfaceName
-		};
+			type: "elevation", // or whatever type
+			visible: true,
+			transparency: 0.7
+		});
+
+		// Then save to DB:
+		saveSurfaceToDB(imageId);
 
 		// Also create point cloud for visualization (sampled)
 		const points = [];
@@ -21331,13 +21907,19 @@ async function createImageSurface(rasters, bbox, width, height, bandCount, surfa
 		// Put image data on canvas
 		imageCtx.putImageData(imageData, 0, 0);
 
-		// Store the background image
-		backgroundImage = {
+		// Generate unique ID for this image
+		const imageId = "image_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+
+		// Store in the new loadedImages Map instead of backgroundImage global
+		loadedImages.set(imageId, {
+			id: imageId,
+			name: surfaceName || imageId,
 			canvas: imageCanvas,
 			bbox: bbox,
-			name: surfaceName,
-			type: "imagery"
-		};
+			type: "imagery",
+			visible: true,
+			transparency: 1.0
+		});
 
 		// CRITICAL: Update centroids to include GeoTIFF extents
 		updateCentroidsWithBBox(bbox);
@@ -21345,13 +21927,16 @@ async function createImageSurface(rasters, bbox, width, height, bandCount, surfa
 		// Update display
 		drawData(points, selectedHole);
 
-		// SAVE TO DATABASE - Make sure this line is actually executed
+		// SAVE TO DATABASE - Pass the imageId instead of name
 		try {
-			await saveImageToDB(surfaceName || "image_" + Date.now());
-			console.log("✅ Image saved to database:", surfaceName);
+			await saveImageToDB(imageId);
+			// console.log("✅ Image saved to database:", surfaceName);
 		} catch (saveError) {
 			console.error("❌ Failed to save image to database:", saveError);
 		}
+
+		// Update tree view to show new image
+		debouncedUpdateTreeView();
 
 		setTimeout(() => {
 			updateStatusMessage("Background image loaded: " + surfaceName + " (" + width + "x" + height + ")");
@@ -21374,47 +21959,51 @@ function updateCentroidsWithBBox(bbox) {
 	if (centroidX === 0 && centroidY === 0) {
 		centroidX = (bbox[0] + bbox[2]) / 2;
 		centroidY = (bbox[1] + bbox[3]) / 2;
-		console.log("Centering view on GeoTIFF extent:", { centroidX, centroidY });
+		// console.log("Centering view on GeoTIFF extent:", { centroidX, centroidY });
 	}
 }
 
 // NEW: Background image support
-let backgroundImage = null;
-let imageVisible = true;
-let imageTransparency = 0.7; // Default transparency
+// WITH this multi-image system:
+let loadedImages = new Map(); // Map<imageId, {id, name, canvas, bbox, type, visible, transparency}>
 
 function drawBackgroundImage() {
-	if (!backgroundImage || !backgroundImage.canvas || !imageVisible) return;
+	if (loadedImages.size === 0) return;
 
-	const bbox = backgroundImage.bbox;
+	loadedImages.forEach((image) => {
+		if (!image.visible || !image.canvas) return;
 
-	//console.log("Drawing GeoTIFF with bbox:", bbox);
-	//console.log("Current view center:", { centroidX, centroidY, scale: currentScale });
+		// Draw this image
+		const bbox = image.bbox;
+		if (bbox && bbox.length >= 4) {
+			// Convert world coordinates to canvas coordinates
+			const [x1, y1] = worldToCanvas(bbox[0], bbox[3]); // Top-left
+			const [x2, y2] = worldToCanvas(bbox[2], bbox[1]); // Bottom-right
 
-	// Use your existing worldToCanvas function
-	const [x1, y1] = worldToCanvas(bbox[0], bbox[3]); // Top-left
-	const [x2, y2] = worldToCanvas(bbox[2], bbox[1]); // Bottom-right
+			ctx.save();
+			// Fix line 21643 in drawBackgroundImage function
+			ctx.globalAlpha = image.transparency !== undefined && image.transparency !== null ? image.transparency : 1.0;
 
-	const canvasWidth = Math.abs(x2 - x1);
-	const canvasHeight = Math.abs(y2 - y1);
+			ctx.drawImage(image.canvas, x1, y1, x2 - x1, y2 - y1);
+			ctx.restore();
+			// Debug rectangle - FIX: Use canvas.width and canvas.height
+			ctx.strokeStyle = "red";
+			ctx.lineWidth = 1;
+			ctx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
 
-	//console.log("GeoTIFF drawing at:", { x1, y1, x2, y2, width: canvasWidth, height: canvasHeight });
-
-	// Draw the background image
-	ctx.save();
-	ctx.globalAlpha = imageTransparency; // It was semi transparent but as its the first I made it opague.
-	ctx.drawImage(backgroundImage.canvas, Math.min(x1, x2), Math.min(y1, y2), canvasWidth, canvasHeight);
-
-	// Debug rectangle
-	ctx.strokeStyle = "red";
-	ctx.lineWidth = 1;
-	ctx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), canvasWidth, canvasHeight);
-
-	ctx.restore();
+			ctx.restore();
+		}
+	});
 }
 
 // Context menu for the GeoTIFF image
-function showImageContextMenu(x, y) {
+function showImageContextMenu(x, y, imageId = null) {
+	// Get the specific image if ID provided, otherwise first visible image
+	const image = imageId ? loadedImages.get(imageId) : Array.from(loadedImages.values()).find((img) => img.visible);
+
+	if (!image) return;
+
+	if (!image) return;
 	const menu = document.createElement("div");
 	menu.className = "context-menu";
 	menu.style.position = "absolute";
@@ -21440,7 +22029,7 @@ function showImageContextMenu(x, y) {
 
 	// Toggle visibility option
 	const toggleOption = document.createElement("div");
-	toggleOption.textContent = imageVisible ? "Hide Image" : "Show Image";
+	toggleOption.textContent = image.visible ? "Hide Image" : "Show Image";
 	toggleOption.style.padding = "8px 12px";
 	toggleOption.style.cursor = "pointer";
 	toggleOption.style.color = textColor;
@@ -21450,16 +22039,25 @@ function showImageContextMenu(x, y) {
 	toggleOption.onmouseout = () => {
 		toggleOption.style.backgroundColor = backgroundColor;
 	};
+	//Update visibility toggle to only affect the clicked image
 	toggleOption.onclick = (e) => {
-		e.stopPropagation(); // Prevent click-outside handler from firing
+		e.stopPropagation();
 
-		imageVisible = !imageVisible;
-		drawData(points, selectedHole);
-
-		// Now safely remove menu
-		if (document.body.contains(menu)) {
-			document.body.removeChild(menu);
+		// FIXED: Toggle visibility of ONLY the clicked image
+		if (imageId && loadedImages.has(imageId)) {
+			const targetImage = loadedImages.get(imageId);
+			if (targetImage) {
+				targetImage.visible = !targetImage.visible;
+				// console.log("Toggled visibility for image '" + (targetImage.name || imageId) + "' to: " + targetImage.visible);
+			}
+		} else {
+			// Fallback: Toggle the image object we already have
+			image.visible = !image.visible;
+			// console.log("Toggled visibility for image '" + (image.name || "unknown") + "' to: " + image.visible);
 		}
+
+		drawData(points, selectedHole);
+		safeRemoveMenu(menu);
 	};
 
 	// Remove image option
@@ -21475,25 +22073,34 @@ function showImageContextMenu(x, y) {
 		removeOption.style.backgroundColor = backgroundColor;
 	};
 
+	//Update remove option to only remove the clicked image
 	removeOption.onclick = async (e) => {
-		e.stopPropagation(); // Prevent click-outside handler from firing
+		e.stopPropagation();
 
 		try {
-			if (backgroundImage && backgroundImage.name) {
-				await deleteImageFromDB(backgroundImage.name);
+			// FIXED: Remove ONLY the clicked image
+			if (imageId && loadedImages.has(imageId)) {
+				await deleteImageFromDB(imageId);
+				loadedImages.delete(imageId);
+				// console.log("✅ Removed specific image:", imageId);
+			} else {
+				// Fallback: Remove the image object we already have
+				const fallbackImageId = Array.from(loadedImages.entries()).find(([id, img]) => img === image)?.[0];
+				if (fallbackImageId) {
+					await deleteImageFromDB(fallbackImageId);
+					loadedImages.delete(fallbackImageId);
+					// console.log("✅ Removed fallback image:", fallbackImageId);
+				}
 			}
-			backgroundImage = null;
+
 			drawData(points, selectedHole);
 		} catch (error) {
 			console.error("Error removing image:", error);
-			backgroundImage = null;
 			drawData(points, selectedHole);
 		}
 
 		// Now safely remove menu
-		if (document.body.contains(menu)) {
-			document.body.removeChild(menu);
-		}
+		safeRemoveMenu(menu);
 	};
 	//delere all images from DB
 	const deleteOption = document.createElement("div");
@@ -21507,22 +22114,27 @@ function showImageContextMenu(x, y) {
 	deleteOption.onmouseout = () => {
 		deleteOption.style.backgroundColor = backgroundColor;
 	};
-	// Update all onclick handlers to stop event propagation
+	// Fix the "Delete All Images" context menu option
 	deleteOption.onclick = async (e) => {
-		e.stopPropagation(); // Prevent click-outside handler from firing
+		e.stopPropagation();
 
 		try {
+			// Clear database AND memory
 			await deleteAllImagesFromDB();
-			backgroundImage = null;
+
+			// CRITICAL FIX: Clear the loadedImages Map
+			loadedImages.clear();
+
+			// Update tree view and redraw
+			debouncedUpdateTreeView();
 			drawData(points, selectedHole);
+
+			// console.log("✅ All images deleted from database and memory");
 		} catch (error) {
 			console.error("Error deleting all images:", error);
 		}
 
-		// Now safely remove menu
-		if (document.body.contains(menu)) {
-			document.body.removeChild(menu);
-		}
+		safeRemoveMenu(menu);
 	};
 
 	// Try simplifying to just a slider first to see if that works
@@ -21536,16 +22148,29 @@ function showImageContextMenu(x, y) {
 	slider.type = "range";
 	slider.min = "0";
 	slider.max = "100";
-	slider.value = Math.round((1 - imageTransparency) * 100);
+	slider.value = Math.round((image.transparency || 1) * 100);
 	slider.style.width = "95%"; // Make it take up most of the width
 	slider.style.margin = "8px auto 0"; // Add space above
 	slider.style.display = "block"; // Make it block level
 
 	slider.onclick = (e) => e.stopPropagation();
-	slider.oninput = (e) => {
-		e.stopPropagation();
-		imageTransparency = 1 - slider.value / 100;
-		//console.log("New transparency:", imageTransparency); // Debug
+	// UPDATE Update transparency slider to only affect the clicked image
+	slider.oninput = () => {
+		const newTransparency = slider.value / 100;
+
+		// FIXED: Apply to ONLY the specific image, not all images
+		if (imageId && loadedImages.has(imageId)) {
+			const targetImage = loadedImages.get(imageId);
+			if (targetImage) {
+				targetImage.transparency = newTransparency;
+				//console.log("Updated transparency for image '" + (targetImage.name || imageId) + "' to: " + newTransparency);
+			}
+		} else {
+			// Fallback: Apply to the image object we already have
+			image.transparency = newTransparency;
+			//console.log("Updated transparency for image '" + (image.name || "unknown") + "' to: " + newTransparency);
+		}
+
 		drawData(points, selectedHole);
 	};
 
@@ -21566,20 +22191,23 @@ function showImageContextMenu(x, y) {
 		});
 	}, 0);
 }
-// New function to check if a point is inside the GeoTIFF image bounds
-function isPointInBackgroundImage(x, y) {
-	if (!backgroundImage || !backgroundImage.canvas) return false;
+// REPLACE this function to accept image parameter:
+function isPointInBackgroundImage(canvasX, canvasY, image = null) {
+	// If no specific image provided, check all visible images
+	if (!image) {
+		return Array.from(loadedImages.values()).some((img) => img.visible && isPointInBackgroundImage(canvasX, canvasY, img));
+	}
 
-	const bbox = backgroundImage.bbox;
-	const [x1, y1] = worldToCanvas(bbox[0], bbox[3]);
-	const [x2, y2] = worldToCanvas(bbox[2], bbox[1]);
+	if (!image || !image.canvas || !image.visible) return false;
 
-	const minX = Math.min(x1, x2);
-	const maxX = Math.max(x1, x2);
-	const minY = Math.min(y1, y2);
-	const maxY = Math.max(y1, y2);
+	const bbox = image.bbox;
+	if (!bbox || bbox.length < 4) return false;
 
-	return x >= minX && x <= maxX && y >= minY && y <= maxY;
+	// Convert canvas coordinates to world coordinates
+	const [worldX, worldY] = canvasToWorld(canvasX, canvasY);
+
+	// Check if point is within image bounds
+	return worldX >= bbox[0] && worldX <= bbox[2] && worldY >= bbox[1] && worldY <= bbox[3];
 }
 
 ///------------  GEOTIFF STUFF ENDS HERE ------------///
@@ -23563,38 +24191,55 @@ function printHoleMainShape(point, x, y, selectedHole) {
 		printHole(x, y, diameterPx, "black", "black");
 	}
 }
+//Update printSurface function (around line 23909)
 function printSurface() {
-	if (!surfaceVisible || surfaceTriangles.length === 0) return;
+	// Check if any surfaces are visible
+	let hasSurfaces = false;
+	let allMinZ = Infinity;
+	let allMaxZ = -Infinity;
 
-	// Find global Z range for color mapping
-	let minZ = Infinity;
-	let maxZ = -Infinity;
+	// Check all loaded surfaces for visibility and calculate global Z range
+	for (const [surfaceId, surface] of loadedSurfaces.entries()) {
+		if (surface.visible && surface.points && surface.points.length > 0) {
+			hasSurfaces = true;
 
-	surfacePoints.forEach((point) => {
-		if (point.z < minZ) minZ = point.z;
-		if (point.z > maxZ) maxZ = point.z;
-	});
+			// Find Z range for this surface
+			surface.points.forEach((point) => {
+				if (point.z < allMinZ) allMinZ = point.z;
+				if (point.z > allMaxZ) allMaxZ = point.z;
+			});
+		}
+	}
 
-	surfaceTriangles.forEach((triangle) => {
-		printTriangleWithGradient(triangle, minZ, maxZ);
-	});
+	if (!hasSurfaces) return;
 
-	// Draw legend after surface
+	// Draw all visible surfaces with their individual gradients
+	for (const [surfaceId, surface] of loadedSurfaces.entries()) {
+		if (surface.visible && surface.triangles && surface.triangles.length > 0) {
+			surface.triangles.forEach((triangle) => {
+				printTriangleWithGradient(triangle, allMinZ, allMaxZ, printCtx, surface.transparency ?? 1.0, surface.gradient || "default");
+			});
+		}
+	}
+
+	// Draw legend after all surfaces
 	printSurfaceLegend();
 }
 function printSurfaceLegend() {
-	if (!showSurfaceLegend || !surfaceVisible || surfaceTriangles.length === 0) return;
+	if (!showSurfaceLegend || loadedSurfaces.size === 0) return;
 
-	// FIXED: Calculate elevation range without spread operator
+	// Get first visible surface for legend
+	const visibleSurface = Array.from(loadedSurfaces.values()).find((s) => s.visible);
+	if (!visibleSurface || !visibleSurface.triangles || visibleSurface.triangles.length === 0) return;
+
+	// Calculate elevation range
 	let minZ = Infinity;
 	let maxZ = -Infinity;
 
-	surfacePoints.forEach((point) => {
+	visibleSurface.points.forEach((point) => {
 		if (point.z < minZ) minZ = point.z;
 		if (point.z > maxZ) maxZ = point.z;
 	});
-
-	if (maxZ - minZ < 0.001) return; // Skip legend for flat surfaces
 
 	// Legend dimensions and position
 	const legendWidth = 20;
@@ -23655,7 +24300,8 @@ function printSurfaceLegend() {
 	// Reset text alignment
 	printCtx.textAlign = "left";
 }
-function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = printCtx, alpha = surfaceTransparency) {
+//Update printTriangleWithGradient function signature (around line 23996)
+function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx = printCtx, alpha = 1.0, gradient = "default") {
 	const showWireFrame = false;
 	const [p1, p2, p3] = triangle.vertices;
 
@@ -23713,12 +24359,12 @@ function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx =
 	}
 
 	// Create gradient based on elevation for non-flat surfaces
-	const gradient = printCtx.createLinearGradient(x1, y1, x3, y3);
+	gradient = printCtx.createLinearGradient(x1, y1, x3, y3);
 
-	// Map Z values to colors (spectrum: blue->green->yellow->red)
-	const color1 = elevationToColor(p1.z, globalMinZ, globalMaxZ);
-	const color2 = elevationToColor(p2.z, globalMinZ, globalMaxZ);
-	const color3 = elevationToColor(p3.z, globalMinZ, globalMaxZ);
+	// Map Z values to colors using the surface's specific gradient
+	const color1 = elevationToColor(p1.z, globalMinZ, globalMaxZ, gradient);
+	const color2 = elevationToColor(p2.z, globalMinZ, globalMaxZ, gradient);
+	const color3 = elevationToColor(p3.z, globalMinZ, globalMaxZ, gradient);
 
 	gradient.addColorStop(0, color1);
 	gradient.addColorStop(0.5, color2);
@@ -23743,34 +24389,32 @@ function printTriangleWithGradient(triangle, globalMinZ, globalMaxZ, targetCtx =
 	targetCtx.restore();
 }
 function printBackgroundImage() {
-	if (!backgroundImage || !backgroundImage.printCanvas || !imageVisible) return;
+	if (loadedImages.size === 0) return;
 
-	const bbox = backgroundImage.bbox;
+	loadedImages.forEach((image) => {
+		if (!image.visible || !image.canvas) return;
 
-	//console.log("Drawing GeoTIFF with bbox:", bbox);
-	//console.log("Current view center:", { centroidX, centroidY, scale: currentScale });
+		const bbox = image.bbox;
+		if (bbox && bbox.length >= 4) {
+			const [x1, y1] = worldToPrintCanvas(bbox[0], bbox[3]);
+			const [x2, y2] = worldToPrintCanvas(bbox[2], bbox[1]);
 
-	// Use your existing worldToCanvas function
-	const [x1, y1] = worldToCanvas(bbox[0], bbox[3]); // Top-left
-	const [x2, y2] = worldToCanvas(bbox[2], bbox[1]); // Bottom-right
+			printCtx.save();
+			// Also fix line 24010 in the print function
+			printCtx.globalAlpha = image.transparency !== undefined && image.transparency !== null ? image.transparency : 1.0;
+			printCtx.drawImage(image.canvas, Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
+			printCtx.restore();
 
-	const printCanvasWidth = Math.abs(x2 - x1);
-	const printCanvasHeight = Math.abs(y2 - y1);
+			// Debug rectangle
+			printCtx.strokeStyle = "red";
+			printCtx.lineWidth = 1;
+			printCtx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
 
-	//console.log("GeoTIFF printing at:", { x1, y1, x2, y2, width: printCanvasWidth, height: printCanvasHeight });
-
-	// Draw the background image
-	printCtx.save();
-	printCtx.globalAlpha = imageTransparency; // It was semi transparent but as its the first I made it opague.
-	printCtx.drawImage(backgroundImage.printCanvas, Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
-
-	// Debug rectangle
-	printCtx.strokeStyle = "red";
-	printCtx.lineWidth = 1;
-	printCtx.strokeRect(Math.min(x1, x2), Math.min(y1, y2), printCanvasWidth, printCanvasHeight);
-
-	printCtx.restore();
+			printCtx.restore();
+		}
+	});
 }
+
 function drawCompleteBlastDataForPrint(printCtx, printArea) {
 	if (!points || points.length === 0) return;
 
@@ -24313,6 +24957,21 @@ class TreeView {
 
 		// Keyboard shortcuts
 		document.addEventListener("keydown", this.handleKeyboard.bind(this));
+
+		// ADD THIS: Color swatch event delegation
+		this.container.addEventListener("click", (e) => {
+			if (e.target.classList.contains("color-swatch")) {
+				e.stopPropagation(); // Prevent tree node selection
+
+				const entityName = e.target.dataset.entityName;
+				const pointID = parseInt(e.target.dataset.pointId);
+
+				// Call the color picker function
+				if (entityName && !isNaN(pointID)) {
+					openColorPickerForElement(e.target, entityName, pointID);
+				}
+			}
+		});
 	}
 
 	startDrag(e) {
@@ -24497,7 +25156,7 @@ class TreeView {
 				html: nodeIds.length === 1 ? "Delete this entire blast and all its holes?" : `Delete ${nodeIds.length} blasts and all their holes?`,
 				icon: "warning",
 				showCancelButton: true,
-				confirmButtonText: "Delete Blast",
+				confirmButtonText: "Delete",
 				cancelButtonText: "Cancel",
 				confirmButtonColor: "#d33",
 				customClass: {
@@ -24519,12 +25178,11 @@ class TreeView {
 							console.log(`Deleted all holes in blast: ${entityName}`);
 						} else if (type === "surface") {
 							deleteSurfaceFromDB(itemId).then(() => {
-								surfacePoints = [];
-								surfaceTriangles = [];
+								loadedSurfaces.delete(surfaceId);
 							});
 						} else if (type === "image") {
 							deleteImageFromDB(itemId).then(() => {
-								backgroundImage = null;
+								loadedImages.delete(imageId);
 							});
 						} else {
 							this.deleteNode(nodeId);
@@ -24542,8 +25200,8 @@ class TreeView {
 				icon: "warning",
 				showCancelButton: true,
 				showDenyButton: true,
-				confirmButtonText: "Delete Only",
-				denyButtonText: "Delete  Renumber",
+				confirmButtonText: "Delete",
+				denyButtonText: "Renumber",
 				cancelButtonText: "Cancel",
 				confirmButtonColor: "#d33",
 				denyButtonColor: "#ff6b35",
@@ -24613,13 +25271,12 @@ class TreeView {
 						const itemId = nodeId.split("-").slice(1).join("-");
 						if (type === "surface") {
 							deleteSurfaceFromDB(itemId).then(() => {
-								surfacePoints = [];
-								surfaceTriangles = [];
+								loadedSurfaces.delete(itemId);
 								drawData(points, selectedHole);
 							});
 						} else if (type === "image") {
 							deleteImageFromDB(itemId).then(() => {
-								backgroundImage = null;
+								loadedImages.delete(itemId);
 								drawData(points, selectedHole);
 							});
 						} else if (type === "points" || type === "line" || type === "poly" || type === "circle" || type === "text") {
@@ -24652,19 +25309,19 @@ class TreeView {
 				element.style.opacity = "0.5";
 				element.classList.add("hidden-node");
 
-				// Handle specific node types
 				const type = nodeId.split("-")[0];
+				const itemId = nodeId.split("-").slice(1).join("-");
+
 				if (type === "surface") {
-					surfaceVisible = false;
-					drawData(points, selectedHole);
+					setSurfaceVisibility(itemId, false);
 				} else if (type === "image") {
-					imageVisible = false;
-					drawData(points, selectedHole);
+					setImageVisibility(itemId, false);
 				}
 			}
 		});
-	}
 
+		this.clearSelection();
+	}
 	showSelected() {
 		this.selectedNodes.forEach((nodeId) => {
 			const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
@@ -24672,17 +25329,18 @@ class TreeView {
 				element.style.opacity = "1";
 				element.classList.remove("hidden-node");
 
-				// Handle specific node types
 				const type = nodeId.split("-")[0];
+				const itemId = nodeId.split("-").slice(1).join("-");
+
 				if (type === "surface") {
-					surfaceVisible = true;
-					drawData(points, selectedHole);
+					setSurfaceVisibility(itemId, true);
 				} else if (type === "image") {
-					imageVisible = true;
-					drawData(points, selectedHole);
+					setImageVisibility(itemId, true);
 				}
 			}
 		});
+
+		this.clearSelection();
 	}
 	showProperties() {
 		if (this.selectedNodes.size === 1) {
@@ -24816,35 +25474,35 @@ class TreeView {
 			const volume = metrics.totalVolume;
 
 			return {
-				id: `entity-${entityName}`,
+				id: "entity-" + entityName,
 				type: "entity",
 				label: entityName,
 				meta: "(" + holes.length + ", " + parseFloat(totalLength).toFixed(1) + "m, " + parseFloat(volume).toFixed(1) + "m³)",
 				children: holes.map((hole, index) => ({
 					id: "hole-" + hole.holeID || index,
 					type: "hole",
-					label: hole.holeID || `Hole ${index + 1}`,
+					label: hole.holeID || "Hole " + index + 1,
 					meta: "",
 					children: [
 						{ id: hole.holeID + "-startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
 						{ id: hole.holeID + "-starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
 						{ id: hole.holeID + "-startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
 						{ id: hole.holeID + "-gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
-						{ id: hole.holeID + "-diameter", type: "property", label: "Diameter", meta: `${hole.holeDiameter || 115}mm` },
-						{ id: hole.holeID + "-angle", type: "property", label: "Angle", meta: `${hole.holeAngle.toFixed(0) || 0}°` },
-						{ id: hole.holeID + "-bearing", type: "property", label: "Bearing", meta: `${hole.holeBearing.toFixed(2) || 0}°` },
-						{ id: hole.holeID + "-length", type: "property", label: "Length", meta: `${hole.holeLengthCalculated.toFixed(2) || 0}m` },
-						{ id: hole.holeID + "-subdrill", type: "property", label: "Subdrill", meta: `${hole.subdrillAmount.toFixed(2) || 0}m` },
-						{ id: hole.holeID + "-type", type: "property", label: "Hole Type", meta: hole.holeType || "Production" }
+						{ id: hole.holeID + "-diameter", type: "property", label: "Diameter", meta: hole.holeDiameter || 115 + "mm" },
+						{ id: hole.holeID + "-angle", type: "property", label: "Angle", meta: hole.holeAngle.toFixed(0) || 0 + "°" },
+						{ id: hole.holeID + "-bearing", type: "property", label: "Bearing", meta: hole.holeBearing.toFixed(2) || 0 + "°" },
+						{ id: hole.holeID + "-length", type: "property", label: "Length", meta: hole.holeLengthCalculated.toFixed(2) || 0 + "m" },
+						{ id: hole.holeID + "-subdrill", type: "property", label: "Subdrill", meta: hole.subdrillAmount.toFixed(2) || 0 + "m" },
+						{ id: hole.holeID + "-type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" }
 					]
 				}))
 			};
 		});
 	}
 
+	// Enhanced buildDrawingData() - with Z values and color swatches
 	buildDrawingData() {
 		const drawingChildren = [];
-
 		const pointsChildren = [];
 		const linesChildren = [];
 		const polysChildren = [];
@@ -24852,53 +25510,71 @@ class TreeView {
 		const textsChildren = [];
 
 		if (typeof allKADDrawingsMap !== "undefined" && allKADDrawingsMap && allKADDrawingsMap.size > 0) {
-			for (const [name, entity] of allKADDrawingsMap.entries()) {
+			for (const [entityName, entity] of allKADDrawingsMap.entries()) {
+				// Create individual element children for each entity
+				// Fix line 25241 in buildDrawingData method
+				const elementChildren = entity.data.map((element, index) => ({
+					id: entity.entityType + "-" + entityName + "-element-" + (element.pointID || index + 1),
+					type: entity.entityType + "-element",
+					label: entity.entityType === "text" ? element.text || "Text " + (element.pointID || index + 1) : entity.entityType === "circle" ? "Circle " + (element.pointID || index + 1) : "Point " + (element.pointID || index + 1),
+					// FIX: Add safety checks before calling toFixed()
+					meta: entity.entityType === "circle" ? "R:" + (Number(element.radius) || 0).toFixed(1) : "(" + (Number(element.pointXLocation) || 0).toFixed(1) + "," + (Number(element.pointYLocation) || 0).toFixed(1) + "," + (Number(element.pointZLocation) || 0).toFixed(1) + ")",
+					// Add color information for swatch generation
+					elementData: element // Store the full element data for color picker access
+				}));
+
+				// Group by entity type with children
 				switch (entity.entityType) {
 					case "point":
 						pointsChildren.push({
-							id: "points-" + name,
-							type: "points",
-							label: name,
-							meta: `(${entity.data?.length || 0})`
+							id: "points-" + entityName,
+							type: "points-group",
+							label: entityName,
+							meta: "(" + entity.data?.length || 0 + ")",
+							children: elementChildren
 						});
 						break;
 					case "line":
 						linesChildren.push({
-							id: "line-" + name,
-							type: "line",
-							label: name,
-							meta: `(${entity.data?.length || 0})`
+							id: "line-" + entityName,
+							type: "line-group",
+							label: entityName,
+							meta: "(" + entity.data?.length || 0 + ")",
+							children: elementChildren
 						});
 						break;
 					case "poly":
 						polysChildren.push({
-							id: "poly-" + name,
-							type: "polygon",
-							label: name,
-							meta: `(${entity.data?.length || 0})`
+							id: "poly-" + entityName,
+							type: "polygon-group",
+							label: entityName,
+							meta: "(" + entity.data?.length || 0 + ")",
+							children: elementChildren
 						});
 						break;
 					case "circle":
 						circlesChildren.push({
-							id: "circle-" + name,
-							type: "circle",
-							label: name,
-							meta: `(${entity.data?.length || 0})`
+							id: "circle-" + entityName,
+							type: "circle-group",
+							label: entityName,
+							meta: "(" + entity.data?.length || 0 + ")",
+							children: elementChildren
 						});
 						break;
 					case "text":
 						textsChildren.push({
-							id: "text-" + name,
-							type: "text",
-							label: name,
-							meta: `(${entity.data?.length || 0})`
+							id: "text-" + entityName,
+							type: "text-group",
+							label: entityName,
+							meta: "(" + entity.data?.length || 0 + ")",
+							children: elementChildren
 						});
 						break;
 				}
 			}
 		}
 
-		// Add categories with children to the drawing tree
+		// Add categories with children to the drawing tree (same as before)
 		if (pointsChildren.length > 0) {
 			drawingChildren.push({
 				id: "drawings-points",
@@ -24947,38 +25623,40 @@ class TreeView {
 		return drawingChildren;
 	}
 
-	// Fixed buildSurfaceData() - use surfacePoints and surfaceTriangles instead of triangulations
+	// Instead of using cache arrays, use the Maps:
 	buildSurfaceData() {
-		// Check if we have surface data loaded
-		if (typeof surfacePoints !== "undefined" && surfacePoints && surfacePoints.length > 0 && typeof surfaceTriangles !== "undefined" && surfaceTriangles && surfaceTriangles.length > 0) {
-			return [
-				{
-					id: "surface-terrain",
-					type: "surface",
-					label: "Surface Terrain",
-					meta: "(" + surfacePoints.length + " points)"
-				}
-			];
-		}
-		return [];
+		const surfaceChildren = [];
+
+		// Use Map directly instead of cache array
+		loadedSurfaces.forEach((surface, surfaceId) => {
+			surfaceChildren.push({
+				id: "surface-" + surfaceId,
+				type: "surface",
+				label: surface.name,
+				meta: "(" + (surface.points?.length || 0) + " points)"
+			});
+		});
+
+		return surfaceChildren;
 	}
 
-	// Fixed buildImageData() - use backgroundImage instead of allImages
 	buildImageData() {
-		// Check if background image is loaded
-		if (typeof backgroundImage !== "undefined" && backgroundImage) {
-			return [
-				{
-					id: "image-" + (backgroundImage.name || "background"),
-					type: "image",
-					label: backgroundImage.name || "Background Image",
-					meta: backgroundImage.type || ""
-				}
-			];
-		}
-		return [];
+		const imageChildren = [];
+
+		// Use Map directly instead of cache array
+		loadedImages.forEach((image, imageId) => {
+			imageChildren.push({
+				id: "image-" + imageId,
+				type: "image",
+				label: image.name,
+				meta: image.type || "image"
+			});
+		});
+
+		return imageChildren;
 	}
 
+	// Enhanced renderTree() - with color swatches
 	renderTree(nodes, level = 0) {
 		return nodes
 			.map((node) => {
@@ -24986,22 +25664,34 @@ class TreeView {
 				const isExpanded = this.expandedNodes.has(node.id) || node.expanded;
 				const isSelected = this.selectedNodes.has(node.id);
 
+				// Generate color swatch for individual elements
+				let colorSwatchHtml = "";
+				if (node.elementData && node.type.includes("-element")) {
+					const color = node.elementData.color || "#777777";
+					colorSwatchHtml = `<span class="color-swatch" 
+				style="background-color: ${color};" 
+				data-element-id="${node.id}"
+				data-entity-name="${node.elementData.entityName}"
+				data-point-id="${node.elementData.pointID}"></span>`;
+				}
+
 				let html = `
-                <li class="tree-node">
-                    <div class="tree-item ${isSelected ? "selected" : ""}" data-node-id="${node.id}">
-                        <span class="tree-expand ${hasChildren ? (isExpanded ? "expanded" : "") : "leaf"}"></span>
-                        <span class="tree-icon ${node.type}"></span>
-                        <span class="tree-label">${node.label}</span>
-                        ${node.meta ? `<span class="tree-meta">${node.meta}</span>` : ""}
-                    </div>
-            `;
+            <li class="tree-node">
+                <div class="tree-item ${isSelected ? "selected" : ""}" data-node-id="${node.id}">
+                    <span class="tree-expand ${hasChildren ? (isExpanded ? "expanded" : "") : "leaf"}"></span>
+                    <span class="tree-icon ${node.type}"></span>
+                    ${colorSwatchHtml}
+                    <span class="tree-label">${node.label}</span>
+                    ${node.meta ? `<span class="tree-meta">${node.meta}</span>` : ""}
+                </div>
+        `;
 
 				if (hasChildren) {
 					html += `
-                    <ul class="tree-children ${isExpanded ? "expanded" : ""}">
-                        ${this.renderTree(node.children, level + 1)}
-                    </ul>
-                `;
+                <ul class="tree-children ${isExpanded ? "expanded" : ""}">
+                    ${this.renderTree(node.children, level + 1)}
+                </ul>
+            `;
 				}
 
 				html += "</li>";
@@ -25026,7 +25716,112 @@ class TreeView {
 		console.log("Show properties for:", nodeId);
 	}
 }
+// Add this new function to handle color picker for individual elements
+// Fix the openColorPickerForElement function
+// // Clean Swal2 wrapper with immediate JSColor
+// function openColorPickerForElement(swatchElement, entityName, pointID) {
+// 	event.stopPropagation();
 
+// 	// Get the element data
+// 	const entity = allKADDrawingsMap.get(entityName);
+// 	if (!entity) return;
+
+// 	const element = entity.data.find((el) => el.pointID === pointID);
+// 	if (!element) return;
+
+// 	const currentColor = element.drawingColor || jsColorHexDrawing;
+
+// 	Swal.fire({
+// 		title: `Color for ${entityName} Point ${pointID}`,
+// 		html: `
+// 			<div style="text-align: center; padding: 20px;">
+// 				<div style="margin-bottom: 15px;">
+// 					<strong>Current:</strong>
+// 					<span class="color-swatch" style="background-color: ${currentColor}; margin-left: 8px;"></span>
+// 					<span style="margin-left: 8px;">${currentColor}</span>
+// 				</div>
+// 				<input id="colorPickerInput" style="width: 200px; height: 40px; border: 2px solid #ccc; border-radius: 4px;" value="${currentColor.replace("#", "")}" data-jscolor="{format:'hex', previewElement:'#colorPreview', mode:'HSV', width:300, height:200}">
+// 				<div id="colorPreview" style="width: 60px; height: 30px; border: 1px solid #666; margin: 10px auto; border-radius: 4px; background-color: ${currentColor};"></div>
+// 			</div>
+// 		`,
+// 		showCancelButton: true,
+// 		confirmButtonText: "Apply Color",
+// 		cancelButtonText: "Cancel",
+// 		width: 400,
+// 		didOpen: () => {
+// 			// Initialize JSColor on the input
+// 			const input = document.getElementById("colorPickerInput");
+// 			new JSColor(input, {
+// 				format: "hex",
+// 				mode: "HSV",
+// 				width: 300,
+// 				height: 200,
+// 				onChange: function () {
+// 					const preview = document.getElementById("colorPreview");
+// 					const newColor = "#" + this.toString();
+// 					preview.style.backgroundColor = newColor;
+// 				}
+// 			});
+// 		}
+// 	}).then((result) => {
+// 		if (result.isConfirmed) {
+// 			const input = document.getElementById("colorPickerInput");
+// 			const newColor = "#" + input.value;
+
+// 			// Update the element color
+// 			element.drawingColor = newColor;
+// 			swatchElement.style.backgroundColor = newColor;
+
+// 			// Redraw the canvas
+// 			drawData(points, selectedHole);
+// 			console.log(`✅ Updated ${entityName} point ${pointID} color to:`, newColor);
+// 		}
+// 	});
+// }
+// Simple direct JSColor popup
+/// Fix the openColorPickerForElement function - remove double hash
+function openColorPickerForElement(swatchElement, entityName, pointID) {
+	event.stopPropagation();
+
+	// Get the element data
+	const entity = allKADDrawingsMap.get(entityName);
+	if (!entity) return;
+
+	const element = entity.data.find((el) => el.pointID === pointID);
+	if (!element) return;
+
+	// Check if JSColor is already installed and remove it
+	if (swatchElement.jscolor) {
+		try {
+			swatchElement.jscolor.destroy();
+		} catch (e) {
+			// Ignore errors during cleanup
+		}
+	}
+
+	// Create JSColor picker directly
+	const picker = new JSColor(swatchElement, {
+		value: element.color || getJSColorHexDrawing(),
+		format: "hex",
+		mode: "HSV",
+		position: "right",
+		onChange: function () {
+			// ✅ FIX: Use toHEXString() instead of toString() to avoid double hash
+			const newColor = this.toHEXString(); // This already includes the #
+			element.color = newColor;
+			swatchElement.style.backgroundColor = newColor;
+
+			// Redraw the canvas
+			drawData(points, selectedHole);
+			debouncedUpdateTreeView();
+
+			console.log("✅ Updated " + entityName + " point " + pointID + " color to:", newColor);
+		}
+	});
+
+	// Show the picker
+	picker.show();
+}
 // Initialize tree view
 let treeView;
 // Add this debounced version
