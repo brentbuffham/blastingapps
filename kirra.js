@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250703.1220AWST"
-const buildVersion = "20250703.1220AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250703.1300WST"
+const buildVersion = "20250703.1300AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,16 +54,21 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label class="labelWhite15">    ✅ Load Multiple GeoTIFFs and convert from WGS                 </label>
-					<br><label class="labelWhite15">✅ Drawings to IndexDB for large files             </label>
-					<br><label class="labelWhite15">✅ Load multiple Surfaces and change colours          </label>
-					<br><label class="labelWhite15">✅ Improved Decimation of Surfaces                </label>
-					<br><label class="labelWhite15">✅ Drawing Optimised - Pixel Distance culling          </label>
-					<br><label class="labelWhite15">✅ Image Show/Hide/Remove/Transparency            </label>
-					<br><label class="labelWhite15">✅ Delete All Images/Surfaces to cleanup DB          </label>
-					<br><label class="labelWhite15">✅ Fixed State UI/UX issues                          </label>
-					<br><label class="labelWhite15">✅ Tree View - Context Menu - Delete & Properties   </label>
-	                <br><label class="labelWhite15">✅ Tree View - Colour Change                        </label>
-					<br><label class="labelWhite15">✅ ⭐ Proimity Duplicate hole check and resolve             </label>
+					<br><label class="labelWhite15">✅ Drawings to IndexDB for large files                         </label>
+					<br><label class="labelWhite15">✅ Load multiple Surfaces and change colors                   </label>
+					<br><label class="labelWhite15">✅ Improved Decimation of Surfaces                             </label>
+					<br><label class="labelWhite15">✅ Drawing Optimised - Pixel Distance culling                  </label>
+					<br><label class="labelWhite15">✅ Image Show/Hide/Remove/Transparency                          </label>
+					<br><label class="labelWhite15">✅ Delete All Images/Surfaces to cleanup DB                      </label>
+					<br><label class="labelWhite15">✅ Fixed State UI/UX issues                                     </label>
+					<br><label class="labelWhite15">✅ Tree View - Context Menu - Delete & Properties               </label>
+	                <br><label class="labelWhite15">✅ Tree View - Color Change                                     </label>
+					<br><label class="labelWhite15">✅ ⭐ Proximity Duplicate hole check and resolve                 </label>
+					<br><label class="labelWhite15">✅ Critical bug fix to restore loading from local files         </label>
+					<br><label class="labelWhite15">✅ Added support for OBJ and other surface formats              </label>
+					<br><label class="labelWhite15">✅ Improved user interaction for drawing tools                  </label>
+					<br><label class="labelWhite15">✅ Added a radii warning dialog                                 </label>
+					<br><label class="labelWhite15">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
 					<hr>
 					<br><label class="labelWhite18">New & Existing Issues                              </label>
 					<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts          </label>
@@ -12836,6 +12841,8 @@ function drawConnectStadiumZone(sx, sy, endX, endY, connectAmount) {
 		ctx.closePath();
 		ctx.fill();
 		ctx.stroke();
+		// CRITICAL: Reset line dash back to solid line
+		ctx.setLineDash([]);
 	}
 }
 
