@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
 // Last Modified: "20250703.1300WST"
-const buildVersion = "20250703.1300AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+const buildVersion = "20250703.1415AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -21055,7 +21055,8 @@ assignSurfaceTool.addEventListener("change", function () {
 		resetFloatingToolbarButtons("assignSurfaceTool");
 
 		// Check if surface is available
-		if (!surfaceVisible || surfaceTriangles.length === 0) {
+		const hasVisibleSurface = loadedSurfaces.size > 0 && Array.from(loadedSurfaces.values()).some((surface) => surface.visible && surface.triangles && surface.triangles.length > 0);
+		if (!hasVisibleSurface) {
 			// No surface available - show dialog with proper styling
 			Swal.fire({
 				title: "No Surface Loaded",
@@ -21147,7 +21148,8 @@ assignGradeToHolesTool.addEventListener("change", function () {
 		resetFloatingToolbarButtons("assignGradeTool");
 
 		// Check if surface is available
-		if (!surfaceVisible || surfaceTriangles.length === 0) {
+		const hasVisibleSurface = loadedSurfaces.size > 0 && Array.from(loadedSurfaces.values()).some((surface) => surface.visible && surface.triangles && surface.triangles.length > 0);
+		if (!hasVisibleSurface) {
 			// No surface available - show dialog with proper styling
 			Swal.fire({
 				title: "No Surface Loaded",
