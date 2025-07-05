@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
 // Last Modified: "20250705.2028AWST"
-const buildVersion = "20250705.2028AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+const buildVersion = "20250705.2315AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -80,6 +80,8 @@ function updatePopup() {
 					<br><label class="labelWhite12c">🐞 KAD Lines Import auto closing              ✅  resolved  ✅  </label>
 					<br><label class="labelWhite12c">🐞 EventListener collision hopefully resolved ✅  resolved  ✅  </label>
 					<br><label class="labelWhite12c">🐞 Pattern AlphNumeric clipping improved.     ✅  resolved  ✅  </label>
+					<br><label class="labelWhite12c">🐞 Allow for "_", "-", "@" in names in tree   ✅  resolved  ✅  </label>
+					<br><label class="labelWhite12c">🐞 KAD TXT import, deleting sequential fix    ✅  resolved  ✅  </label>
 					<br><label class="labelWhite12c">🐞 Volume for blasts not working in treeView  ❌ unresolved ❌  </label>
 				</div>
 				<br><br>
@@ -4414,193 +4416,394 @@ function fileFormatPopup(error) {
 let allKADDrawingsMap = new Map();
 
 function parseKADFile(fileData) {
-	const dataLines = fileData.split("\n");
 	let minX = Infinity;
 	let minY = Infinity;
-	let pointID, pointXLocation, pointYLocation, pointZLocation, text, radius, color, closed;
+	let pointID, pointXLocation, pointYLocation, pointZLocation, text, radius, color, closed, lineWidth;
 
-	// Parse the kad file data
-	for (let i = 0; i < dataLines.length; i++) {
-		const row = dataLines[i].split(",");
-		const entityName = row[0];
-		const entityType = row[1];
+	try {
+		// ✅ Use PapaParse with error handling
+		const parseResult = Papa.parse(fileData, {
+			delimiter: "", // Auto-detect delimiter
+			skipEmptyLines: true,
+			trimHeaders: true,
+			transform: (value) => value.trim()
+		});
 
-		// Parsing logic for different entity types
-		switch (entityType) {
-			case "point":
-				if (!allKADDrawingsMap.has(entityName)) {
-					allKADDrawingsMap.set(entityName, {
-						entityName: entityName,
-						entityType: "point", // Keep original entityType for identification
-						data: []
-					});
+		// ✅ Check for critical parsing errors
+		const criticalErrors = parseResult.errors.filter((error) => error.type === "Delimiter" || error.type === "Quotes");
+
+		if (criticalErrors.length > 0) {
+			Swal.fire({
+				title: "File Parsing Error",
+				icon: "error",
+				html: '<div style="text-align: left;">' + "<p><strong>Failed to parse the file properly:</strong></p>" + "<ul>" + criticalErrors.map((error) => "<li>" + error.message + "</li>").join("") + "</ul>" + "<p><strong>Common causes:</strong></p>" + "<ul>" + "<li>Mixed delimiters (commas and tabs in same file)</li>" + "<li>Unescaped quotes in text fields</li>" + "<li>Inconsistent number of columns</li>" + "</ul>" + "<p>Please check your file format and try again.</p>" + "</div>",
+				confirmButtonText: "OK",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					content: "swal2-content"
 				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				pointDiameter = parseFloat(row[6]); // Diameter of the point
-				color = (row[7] || "#FF0000").replace(/\r$/, ""); // Stroke color of the point - default to red if missing
-
-				allKADDrawingsMap.get(entityName).data.push({
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					pointDiameter: pointDiameter,
-					color: color,
-					connected: false, // Points are never connected
-					closed: false // Points are never closed
-				});
-				break;
-			case "poly":
-				// Create an empty entity object if it doesn't exist
-				if (!allKADDrawingsMap.has(entityName)) {
-					allKADDrawingsMap.set(entityName, {
-						entityName: entityName, // Store the entityName
-						entityType: entityType,
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				lineWidth = parseFloat(row[6]); // Width of the line
-				color = (row[7] || "#FF0000").replace(/\r$/, ""); // color - default to red if missing
-				closed = String(row[8]).trim().toLowerCase() === "true";
-				allKADDrawingsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: entityType,
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					lineWidth: lineWidth,
-					color: color,
-					closed: closed
-				});
-				break;
-			case "line":
-				// Put lines into allKADDrawingsMap instead of allKADDrawingsMap
-				if (!allKADDrawingsMap.has(entityName)) {
-					allKADDrawingsMap.set(entityName, {
-						entityName: entityName, // Store the entityName
-						entityType: "line",
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				lineWidth = parseFloat(row[6]); // Width of the line
-				color = (row[7] || "#FF0000").replace(/\r$/, ""); // color - default to red if missing
-				allKADDrawingsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: "line",
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					lineWidth: lineWidth,
-					color: color,
-					closed: false // Lines are open polygons
-				});
-				break;
-			case "circle":
-				// Put circles into allKADDrawingsMap instead of kadCirclesMap
-				if (!allKADDrawingsMap.has(entityName)) {
-					allKADDrawingsMap.set(entityName, {
-						entityName: entityName,
-						entityType: "circle", // Keep original entityType for identification
-						data: []
-					});
-				}
-				pointID = row[2]; // Id of the point
-				pointXLocation = parseFloat(row[3]); // X value of the point
-				pointYLocation = parseFloat(row[4]); // Y value of the point
-				pointZLocation = parseFloat(row[5]); // Z value of the point
-				radius = parseFloat(row[6]); // Radius of the circle in meters
-				lineWidth = parseFloat(row[7]) || 1; // Width of the line - default to 1 if missing
-				color = (row[8] || "#FF0000").replace(/\r$/, ""); // color - default to red if missing
-
-				allKADDrawingsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: "circle",
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					radius: radius,
-					lineWidth: lineWidth,
-					color: color
-				});
-				break;
-
-			case "text":
-				// Put text into allKADDrawingsMap instead of kadTextsMap
-				if (!allKADDrawingsMap.has(entityName)) {
-					allKADDrawingsMap.set(entityName, {
-						entityName: entityName,
-						entityType: "text",
-						data: []
-					});
-				}
-				pointID = row[2];
-				pointXLocation = parseFloat(row[3]);
-				pointYLocation = parseFloat(row[4]);
-				pointZLocation = parseFloat(row[5]);
-				text = row[6] || ""; // Default to empty string if missing
-				color = (row[7] || "#FF0000").replace(/\r$/, ""); // Default to black if missing
-
-				allKADDrawingsMap.get(entityName).data.push({
-					entityName: entityName,
-					entityType: "text",
-					pointID: pointID,
-					pointXLocation: pointXLocation,
-					pointYLocation: pointYLocation,
-					pointZLocation: pointZLocation,
-					text: text,
-					color: color
-				});
-				break;
-
-			default:
-				break;
+			});
+			return; // Exit early
 		}
-	}
-	// Simplified centroid calculation using only the unified maps
-	let sumX = 0;
-	let sumY = 0;
-	let count = 0;
 
-	// Points map (if still using separately)
-	for (let [key, value] of allKADDrawingsMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
+		// ✅ Warn about minor parsing issues but continue
+		if (parseResult.errors.length > 0) {
+			console.warn("CSV parsing warnings:", parseResult.errors);
+
+			const additionalErrors = parseResult.errors.length > 5 ? "<li>... and " + (parseResult.errors.length - 5) + " more</li>" : "";
+
+			Swal.fire({
+				title: "File Import Warning",
+				icon: "warning",
+				html:
+					'<div style="text-align: left;">' +
+					"<p>The file was imported but there were " +
+					parseResult.errors.length +
+					" parsing warnings:</p>" +
+					"<ul>" +
+					parseResult.errors
+						.slice(0, 5)
+						.map((error) => "<li>Row " + error.row + ": " + error.message + "</li>")
+						.join("") +
+					additionalErrors +
+					"</ul>" +
+					"<p>Some data may have been skipped. Check your results carefully.</p>" +
+					"</div>",
+				confirmButtonText: "Continue",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					content: "swal2-content"
+				}
+			});
 		}
-	}
 
-	// Unified polygon map (contains lines, polygons, circles, text)
-	for (let [key, value] of allKADDrawingsMap) {
-		for (let i = 0; i < value.data.length; i++) {
-			sumX += value.data[i].pointXLocation;
-			sumY += value.data[i].pointYLocation;
-			count++;
+		const dataRows = parseResult.data;
+
+		// ✅ Check if we got any data
+		if (dataRows.length === 0) {
+			Swal.fire({
+				title: "Empty File",
+				icon: "warning",
+				text: "The file appears to be empty or contains no valid data.",
+				confirmButtonText: "OK",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm"
+				}
+			});
+			return;
 		}
+
+		console.log("Parsed " + dataRows.length + " rows with delimiter: " + parseResult.meta.delimiter);
+
+		let successCount = 0;
+		let errorCount = 0;
+		let errorDetails = [];
+
+		// Parse each row with individual error handling
+		for (let i = 0; i < dataRows.length; i++) {
+			try {
+				const row = dataRows[i];
+
+				// Skip rows that don't have enough columns
+				if (row.length < 3) {
+					errorCount++;
+					errorDetails.push("Row " + (i + 1) + ": Too few columns (" + row.length + ")");
+					continue;
+				}
+
+				const entityName = row[0];
+				const entityType = row[1];
+
+				// Skip if missing essential data
+				if (!entityName || !entityType) {
+					errorCount++;
+					errorDetails.push("Row " + (i + 1) + ": Missing entity name or type");
+					continue;
+				}
+
+				// ✅ Validate entity type
+				const validTypes = ["point", "line", "poly", "circle", "text"];
+				if (!validTypes.includes(entityType)) {
+					errorCount++;
+					errorDetails.push("Row " + (i + 1) + ": Invalid entity type '" + entityType + "'");
+					continue;
+				}
+
+				// ✅ Your existing parsing logic here (same as before)
+				switch (entityType) {
+					case "point":
+						if (!allKADDrawingsMap.has(entityName)) {
+							allKADDrawingsMap.set(entityName, {
+								entityName: entityName,
+								entityType: "point",
+								data: []
+							});
+						}
+
+						pointID = parseInt(row[2]);
+						pointXLocation = parseFloat(row[3]);
+						pointYLocation = parseFloat(row[4]);
+						pointZLocation = parseFloat(row[5]);
+						lineWidth = parseFloat(row[6]) || 1;
+						color = (row[7] || "#FF0000").replace(/\r$/, "");
+
+						allKADDrawingsMap.get(entityName).data.push({
+							entityName: entityName,
+							entityType: entityType,
+							pointID: pointID,
+							pointXLocation: pointXLocation,
+							pointYLocation: pointYLocation,
+							pointZLocation: pointZLocation,
+							lineWidth: lineWidth,
+							color: color,
+							connected: false,
+							closed: false
+						});
+						break;
+
+					case "poly":
+						if (!allKADDrawingsMap.has(entityName)) {
+							allKADDrawingsMap.set(entityName, {
+								entityName: entityName,
+								entityType: entityType,
+								data: []
+							});
+						}
+
+						pointID = parseInt(row[2]);
+						pointXLocation = parseFloat(row[3]);
+						pointYLocation = parseFloat(row[4]);
+						pointZLocation = parseFloat(row[5]);
+						lineWidth = parseFloat(row[6]);
+						color = (row[7] || "#FF0000").replace(/\r$/, "");
+						closed = String(row[8]).trim().toLowerCase() === "true";
+
+						allKADDrawingsMap.get(entityName).data.push({
+							entityName: entityName,
+							entityType: entityType,
+							pointID: pointID,
+							pointXLocation: pointXLocation,
+							pointYLocation: pointYLocation,
+							pointZLocation: pointZLocation,
+							lineWidth: lineWidth,
+							color: color,
+							closed: closed
+						});
+						break;
+
+					case "line":
+						if (!allKADDrawingsMap.has(entityName)) {
+							allKADDrawingsMap.set(entityName, {
+								entityName: entityName,
+								entityType: "line",
+								data: []
+							});
+						}
+
+						pointID = parseInt(row[2]);
+						pointXLocation = parseFloat(row[3]);
+						pointYLocation = parseFloat(row[4]);
+						pointZLocation = parseFloat(row[5]);
+						lineWidth = parseFloat(row[6]);
+						color = (row[7] || "#FF0000").replace(/\r$/, "");
+
+						allKADDrawingsMap.get(entityName).data.push({
+							entityName: entityName,
+							entityType: "line",
+							pointID: pointID,
+							pointXLocation: pointXLocation,
+							pointYLocation: pointYLocation,
+							pointZLocation: pointZLocation,
+							lineWidth: lineWidth,
+							color: color,
+							closed: false
+						});
+						break;
+
+					case "circle":
+						if (!allKADDrawingsMap.has(entityName)) {
+							allKADDrawingsMap.set(entityName, {
+								entityName: entityName,
+								entityType: "circle",
+								data: []
+							});
+						}
+
+						pointID = parseInt(row[2]);
+						pointXLocation = parseFloat(row[3]);
+						pointYLocation = parseFloat(row[4]);
+						pointZLocation = parseFloat(row[5]);
+						radius = parseFloat(row[6]);
+						lineWidth = parseFloat(row[7]) || 1;
+						color = (row[8] || "#FF0000").replace(/\r$/, "");
+
+						allKADDrawingsMap.get(entityName).data.push({
+							entityName: entityName,
+							entityType: "circle",
+							pointID: pointID,
+							pointXLocation: pointXLocation,
+							pointYLocation: pointYLocation,
+							pointZLocation: pointZLocation,
+							radius: radius,
+							lineWidth: lineWidth,
+							color: color
+						});
+						break;
+
+					case "text":
+						if (!allKADDrawingsMap.has(entityName)) {
+							allKADDrawingsMap.set(entityName, {
+								entityName: entityName,
+								entityType: "text",
+								data: []
+							});
+						}
+
+						pointID = parseInt(row[2]);
+						pointXLocation = parseFloat(row[3]);
+						pointYLocation = parseFloat(row[4]);
+						pointZLocation = parseFloat(row[5]);
+						text = row[6] || "";
+						color = (row[7] || "#FF0000").replace(/\r$/, "");
+
+						allKADDrawingsMap.get(entityName).data.push({
+							entityName: entityName,
+							entityType: "text",
+							pointID: pointID,
+							pointXLocation: pointXLocation,
+							pointYLocation: pointYLocation,
+							pointZLocation: pointZLocation,
+							text: text,
+							color: color
+						});
+						break;
+				}
+
+				successCount++;
+			} catch (rowError) {
+				errorCount++;
+				errorDetails.push("Row " + (i + 1) + ": " + rowError.message);
+				console.error("Error parsing row " + (i + 1) + ":", rowError);
+			}
+		}
+
+		// ✅ Show import results
+		if (successCount > 0) {
+			let message = "Successfully imported " + successCount + " items.";
+
+			if (errorCount > 0) {
+				message += "\n" + errorCount + " items failed to import.";
+			}
+
+			const errorDetailsHtml =
+				errorCount > 0
+					? "<details>" +
+					  "<summary>View Error Details (" +
+					  errorCount +
+					  " errors)</summary>" +
+					  '<ul style="max-height: 200px; overflow-y: auto; text-align: left;">' +
+					  errorDetails
+							.slice(0, 10)
+							.map((error) => "<li>" + error + "</li>")
+							.join("") +
+					  (errorDetails.length > 10 ? "<li>... and " + (errorDetails.length - 10) + " more errors</li>" : "") +
+					  "</ul>" +
+					  "</details>"
+					: "";
+
+			Swal.fire({
+				title: errorCount > 0 ? "Import Completed with Errors" : "Import Successful",
+				icon: errorCount > 0 ? "warning" : "success",
+				html: '<div style="text-align: left;">' + "<p><strong>" + message + "</strong></p>" + errorDetailsHtml + "</div>",
+				confirmButtonText: "OK",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					content: "swal2-content"
+				}
+			});
+		} else {
+			// ✅ Complete failure
+			Swal.fire({
+				title: "Import Failed",
+				icon: "error",
+				html:
+					'<div style="text-align: left;">' +
+					"<p><strong>No items could be imported.</strong></p>" +
+					"<p><strong>Common issues:</strong></p>" +
+					"<ul>" +
+					"<li>Wrong file format or column order</li>" +
+					"<li>Missing required columns</li>" +
+					"<li>Invalid data types</li>" +
+					"</ul>" +
+					"<details>" +
+					"<summary>View Error Details</summary>" +
+					'<ul style="max-height: 200px; overflow-y: auto;">' +
+					errorDetails
+						.slice(0, 10)
+						.map((error) => "<li>" + error + "</li>")
+						.join("") +
+					"</ul>" +
+					"</details>" +
+					"</div>",
+				confirmButtonText: "OK",
+				customClass: {
+					container: "custom-popup-container",
+					title: "swal2-title",
+					confirmButton: "confirm",
+					content: "swal2-content"
+				}
+			});
+			return;
+		}
+
+		// Calculate centroid (existing logic)
+		let sumX = 0;
+		let sumY = 0;
+		let count = 0;
+
+		for (let [key, value] of allKADDrawingsMap) {
+			for (let i = 0; i < value.data.length; i++) {
+				sumX += value.data[i].pointXLocation;
+				sumY += value.data[i].pointYLocation;
+				count++;
+			}
+		}
+
+		if (count > 0) {
+			centroidX = sumX / count;
+			centroidY = sumY / count;
+		}
+
+		console.log(allKADDrawingsMap);
+		debouncedSaveKAD();
+		debouncedUpdateTreeView();
+	} catch (error) {
+		// ✅ Catch any unexpected errors
+		console.error("Unexpected error during KAD file parsing:", error);
+
+		Swal.fire({
+			title: "Unexpected Error",
+			icon: "error",
+			html: '<div style="text-align: left;">' + "<p><strong>An unexpected error occurred while importing the file:</strong></p>" + "<p><code>" + error.message + "</code></p>" + "<p>Please check the file format and try again. If the problem persists, contact support.</p>" + "</div>",
+			confirmButtonText: "OK",
+			customClass: {
+				container: "custom-popup-container",
+				title: "swal2-title",
+				confirmButton: "confirm",
+				content: "swal2-content"
+			}
+		});
 	}
-
-	centroidX = sumX / count;
-	centroidY = sumY / count;
-
-	console.log(allKADDrawingsMap);
-	// save to IndexedDB
-	debouncedSaveKAD();
-	debouncedUpdateTreeView(); // Use debounced version
 }
+
 let mapData = [allKADDrawingsMap];
 
 function exportKADFile() {
@@ -4629,7 +4832,7 @@ function exportKADFile() {
 
 			if (entityData.entityType.trim() === "point") {
 				for (const point of entityData.data) {
-					const csvLine = `${entityName},${entityData.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.pointDiameter || 1},${point.color}\n`;
+					const csvLine = `${entityName},${entityData.entityType},${point.pointID},${point.pointXLocation},${point.pointYLocation},${point.pointZLocation},${point.lineWidth || 1},${point.color}\n`;
 					csvContentKAD += csvLine;
 					csvContentTXT += csvLine;
 				}
@@ -5046,7 +5249,7 @@ function getColorInteger(hex) {
  * @param {Array<Map<string, Object>>} mapData - An array of Map objects, where each Map contains
  *   entity names as keys and entity data objects as values. Each entity data object should have:
  *   - {string} entityType - The type of the entity ("point", "line", "poly", "circle", "text").
- *   - {Array<Object>} data - An array of entity-specific data objects.
+ *   - {Array<Object>} data - An array of entity⣿specific data objects.
  *
  * Entity data object structure varies by entityType:
  *   - "point": { pointXLocation, pointYLocation, pointZLocation, color }
@@ -7123,11 +7326,12 @@ function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 /*** CODE TO DRAW POINTS FROM KAD DATA ***/
-function drawKADPoints(x, y, z, strokeColor) {
+function drawKADPoints(x, y, z, lineWidth = 1, strokeColor) {
 	ctx.beginPath();
-	ctx.arc(x, y, 2, 0, 2 * Math.PI);
+	ctx.arc(x, y, lineWidth, 0, 2 * Math.PI);
 	ctx.strokeStyle = strokeColor;
 	ctx.fillStyle = strokeColor;
+	// Don't use line width use the line width as a proxy for diameter.
 	ctx.stroke();
 	ctx.fill();
 }
@@ -9023,6 +9227,8 @@ function deleteAllOfType(map, entityType) {
 	drawData(points, selectedHole);
 	setTimeout(() => updateStatusMessage(""), 2000);
 }
+
+// Replace the deletePointInMap function around line 9227
 function deletePointInMap(map, pointToDelete) {
 	for (const [entityName, entity] of map) {
 		const dataIndex = entity.data.findIndex((point) => {
@@ -9031,12 +9237,15 @@ function deletePointInMap(map, pointToDelete) {
 
 		if (dataIndex !== -1) {
 			entity.data.splice(dataIndex, 1);
-			updateStatusMessage(`Deleted point ${pointToDelete.pointID} from ${entity.entityType}`);
+			updateStatusMessage("Deleted point " + pointToDelete.pointID + " from " + entity.entityType);
+
+			// ✅ ADD: Renumber remaining points sequentially starting from 1
+			renumberEntityPoints(entity);
 
 			// If entity has no more points, delete the entire entity
 			if (entity.data.length === 0) {
 				map.delete(entityName);
-				updateStatusMessage(`Deleted empty ${entity.entityType} entity: ${entityName}`);
+				updateStatusMessage("Deleted empty " + entity.entityType + " entity: " + entityName);
 			}
 
 			selectedPoint = null;
@@ -9047,6 +9256,18 @@ function deletePointInMap(map, pointToDelete) {
 			break;
 		}
 	}
+}
+
+// ✅ ADD: New function to renumber points in an entity
+function renumberEntityPoints(entity) {
+	if (!entity || !entity.data || entity.data.length === 0) return;
+
+	// Renumber all points sequentially starting from 1
+	for (let i = 0; i < entity.data.length; i++) {
+		entity.data[i].pointID = i + 1;
+	}
+
+	console.log("✅ Renumbered " + entity.data.length + " points in " + entity.entityType + " entity");
 }
 
 function deleteObjectInMap(map, pointToDelete) {
@@ -9721,6 +9942,7 @@ function addKADPoint() {
 		const pointXLocation = worldX;
 		const pointYLocation = worldY;
 		const pointZLocation = drawingZValue || document.getElementById("drawingElevation").value || 0;
+		const lineWidth = document.getElementById("drawingLineWidth").value || 1;
 
 		// Create new entity name if needed (like other tools)
 		if (createNewEntity) {
@@ -9728,6 +9950,7 @@ function addKADPoint() {
 			createNewEntity = false; // Set to false after creating new entity
 		}
 
+		// In addKADPoint() function around line 9720
 		const pointObject = {
 			entityName: entityName,
 			entityType: entityType,
@@ -9735,6 +9958,7 @@ function addKADPoint() {
 			pointXLocation: pointXLocation,
 			pointYLocation: pointYLocation,
 			pointZLocation: pointZLocation,
+			lineWidth: document.getElementById("drawingLineWidth").value, // This is added for inter-changable types. points > lines > polys
 			color: color,
 			connected: false,
 			closed: false
@@ -12897,16 +13121,24 @@ function drawData(points, selectedHole) {
 				entity.data.forEach((point) => {
 					const screenX = (point.pointXLocation - centroidX) * currentScale + canvas.width / 2;
 					const screenY = -(point.pointYLocation - centroidY) * currentScale + canvas.height / 2;
-					drawKADPoints(screenX, screenY, point.pointZLocation, point.color); // ← Remove pointDiameter and 1
+					let lineWidthForDisplay = point.lineWidth;
+					if (point.lineWidth < 2) {
+						lineWidthForDisplay = 2;
+					}
+					drawKADPoints(screenX, screenY, point.pointZLocation, lineWidthForDisplay, point.color); // ← use lineWidth as a proxy for point diameter also for conversion.
 				});
 			} else if (entity.entityType === "point") {
 				// Apply pixel distance simplification to points for performance
 				const originalPoints = entity.data;
 				const simplifiedPoints = simplifyByPxDist(originalPoints, 3); // Slightly smaller threshold for points
-
+				//get the line width for each stored point in the simplified points and for display purposes if it is less than 2 then set it to 4
 				for (const pointData of simplifiedPoints) {
+					let lineWidthForDisplay = pointData.lineWidth;
+					if (pointData.lineWidth < 2) {
+						lineWidthForDisplay = 2;
+					}
 					const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-					drawKADPoints(x, y, pointData.pointZLocation, pointData.color);
+					drawKADPoints(x, y, pointData.pointZLocation, lineWidthForDisplay, pointData.color);
 				}
 			} else if (entity.entityType === "circle") {
 				// Draw circles
@@ -16443,8 +16675,8 @@ function showKADPropertyEditorPopup(kadObject) {
         `;
 	} else if (kadObject.entityType === "point") {
 		htmlContent += `
-                <label class="labelWhite12">Point Diameter:</label>
-                <input type="number" id="editPointDiameter" value="${kadObject.pointDiameter || 1}" min="0.1" max="10" step="0.1" class="swal2-input">
+                <label class="labelWhite12">Point Diameter/Line Width:</label>
+                <input type="number" id="editLineWidth" value="${kadObject.lineWidth || 1}" min="0.1" max="10" step="0.1" class="swal2-input">
         `;
 	}
 
@@ -16489,7 +16721,6 @@ function showKADPropertyEditorPopup(kadObject) {
 				lineWidth: document.getElementById("editLineWidth")?.value,
 				radius: document.getElementById("editRadius")?.value,
 				text: document.getElementById("editText")?.value,
-				pointDiameter: document.getElementById("editPointDiameter")?.value,
 				onlyZ: onlyZ
 			};
 
@@ -16548,7 +16779,6 @@ function updateKADObjectProperties(kadObject, newProperties, scope = "all") {
 				if (newProperties.lineWidth) item.lineWidth = parseFloat(newProperties.lineWidth);
 				if (newProperties.radius) item.radius = parseFloat(newProperties.radius);
 				if (newProperties.text) item.text = newProperties.text;
-				if (newProperties.pointDiameter) item.pointDiameter = parseFloat(newProperties.pointDiameter);
 
 				if (onlyZ) {
 					if (newProperties.pointZLocation !== undefined) item.pointZLocation = parseFloat(newProperties.pointZLocation);
@@ -24542,7 +24772,11 @@ function printData(points, selectedHole) {
 				entity.data.forEach((point) => {
 					const screenX = (point.pointXLocation - centroidX) * currentScale + printCanvas.width / 2;
 					const screenY = -(point.pointYLocation - centroidY) * currentScale + printCanvas.height / 2;
-					printKADPoints(screenX, screenY, point.pointZLocation, point.color); // ← Remove pointDiameter and 1
+					let lineWidthForDisplay = point.lineWidth;
+					if (point.lineWidth < 2) {
+						lineWidthForDisplay = 4;
+					}
+					printKADPoints(screenX, screenY, point.pointZLocation, lineWidthForDisplay, point.color); // ← Remove pointDiameter and 1
 				});
 			} else if (entity.entityType === "point") {
 				// Apply pixel distance simplification to points for performance
@@ -24551,7 +24785,11 @@ function printData(points, selectedHole) {
 
 				for (const pointData of simplifiedPoints) {
 					const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-					printKADPoints(x, y, pointData.pointZLocation, pointData.color);
+					let lineWidthForDisplay = pointData.lineWidth;
+					if (pointData.lineWidth < 2) {
+						lineWidthForDisplay = 4;
+					}
+					printKADPoints(x, y, pointData.pointZLocation, lineWidthForDisplay, pointData.color);
 				}
 			} else if (entity.entityType === "circle") {
 				// Draw circles
@@ -25985,17 +26223,32 @@ class TreeView {
 		// Keyboard shortcuts
 		document.addEventListener("keydown", this.handleKeyboard.bind(this));
 
-		// ADD THIS: Color swatch event delegation
+		// Replace the color swatch event delegation around line 25989
 		this.container.addEventListener("click", (e) => {
 			if (e.target.classList.contains("color-swatch")) {
 				e.stopPropagation(); // Prevent tree node selection
 
+				// ADD DEBUGGING
+				console.log("🎨 Color swatch clicked!");
+				console.log("Element:", e.target);
+				console.log("Entity name:", e.target.dataset.entityName);
+				console.log("Point ID:", e.target.dataset.pointId);
+				console.log("All datasets:", e.target.dataset);
+
 				const entityName = e.target.dataset.entityName;
 				const pointID = parseInt(e.target.dataset.pointId);
 
+				// ADD MORE DEBUGGING
+				console.log("Parsed entity name:", entityName);
+				console.log("Parsed point ID:", pointID);
+				console.log("Is NaN?", isNaN(pointID));
+
 				// Call the color picker function
 				if (entityName && !isNaN(pointID)) {
+					console.log("✅ Calling openColorPickerForElement");
 					openColorPickerForElement(e.target, entityName, pointID);
+				} else {
+					console.log("❌ NOT calling openColorPickerForElement - missing data");
 				}
 			}
 		});
@@ -26164,7 +26417,7 @@ class TreeView {
 		const selectedNodeIds = Array.from(this.selectedNodes);
 		const isTopLevelParent = selectedNodeIds.some((nodeId) => nodeId === "blast" || nodeId === "drawings" || nodeId === "surfaces" || nodeId === "images");
 		// Determine what type of nodes are selected
-		const hasHoles = selectedNodeIds.some((nodeId) => nodeId.startsWith("hole-"));
+		const hasHoles = selectedNodeIds.some((nodeId) => nodeId.startsWith("hole⣿"));
 
 		// Show/hide menu items based on selection
 		const renameItem = menu.querySelector('[data-action="rename"]');
@@ -26188,7 +26441,7 @@ class TreeView {
 		let showRename = false;
 		if (selectedNodeIds.length === 1) {
 			const nodeId = selectedNodeIds[0];
-			const parts = nodeId.split("-");
+			const parts = nodeId.split("⣿");
 			// Only allow rename for group/entity nodes (not element nodes or folders)
 			if ((parts[0] === "points" || parts[0] === "line" || parts[0] === "poly" || parts[0] === "circle" || parts[0] === "text") && parts.length === 2) {
 				showRename = true;
@@ -26241,105 +26494,105 @@ class TreeView {
 		// Hide context menu
 		document.getElementById("treeContextMenu").style.display = "none";
 	}
+	// TODO future Development
+	// renumberSelected() {
+	// 	if (this.selectedNodes.size === 0) return;
 
-	renumberSelected() {
-		if (this.selectedNodes.size === 0) return;
+	// 	const nodeIds = Array.from(this.selectedNodes);
+	// 	const entities = new Set();
 
-		const nodeIds = Array.from(this.selectedNodes);
-		const entities = new Set();
+	// 	// Collect all affected entities
+	// 	nodeIds.forEach((nodeId) => {
+	// 		const parts = nodeId.split("⣿");
+	// 		if (parts[0] === "hole") {
+	// 			const holeId = parts.slice(1).join("⣿");
+	// 			const hole = points.find((h) => h.holeID === holeId);
+	// 			if (hole) entities.add(hole.entityName);
+	// 		} else if (parts[0] === "entity") {
+	// 			const entityName = parts.slice(1).join("⣿");
+	// 			entities.add(entityName);
+	// 		}
+	// 	});
 
-		// Collect all affected entities
-		nodeIds.forEach((nodeId) => {
-			const parts = nodeId.split("-");
-			if (parts[0] === "hole") {
-				const holeId = parts.slice(1).join("-");
-				const hole = points.find((h) => h.holeID === holeId);
-				if (hole) entities.add(hole.entityName);
-			} else if (parts[0] === "entity") {
-				const entityName = parts.slice(1).join("-");
-				entities.add(entityName);
-			}
-		});
+	// 	if (entities.size === 0) return;
 
-		if (entities.size === 0) return;
+	// 	Swal.fire({
+	// 		title: "Renumber Holes",
+	// 		html: `
+	// 		<div style="text-align: left; margin-bottom: 15px;">
+	// 			<p>Renumber holes in ${entities.size} blast(s)?</p>
+	// 			<label for="renumberStart" style="display: block; margin-bottom: 5px; font-weight: bold;">Starting Number:</label>
+	// 			<input type="text" id="renumberStart" value="${deleteRenumberStart}"
+	// 				   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+	// 				   placeholder="e.g. 1, A1, B5, 100">
+	// 			<small style="color: #666; display: block; margin-top: 5px;">
+	// 				Enter a number (e.g. 1, 100) for numerical naming<br>
+	// 				or letter+number (e.g. A1, B5) for row-based naming
+	// 			</small>
+	// 		</div>
+	// 	`,
+	// 		icon: "question",
+	// 		showCancelButton: true,
+	// 		confirmButtonText: "Renumber",
+	// 		cancelButtonText: "Cancel",
+	// 		focusConfirm: false,
+	// 		customClass: {
+	// 			container: "custom-popup-container",
+	// 			title: "swal2-title",
+	// 			confirmButton: "confirm",
+	// 			cancelButton: "cancel"
+	// 		},
+	// 		preConfirm: () => {
+	// 			const startValue = document.getElementById("renumberStart").value;
+	// 			if (!startValue || startValue.trim() === "") {
+	// 				Swal.showValidationMessage("Please enter a starting number");
+	// 				return false;
+	// 			}
+	// 			return startValue.trim();
+	// 		}
+	// 	}).then((result) => {
+	// 		if (result.isConfirmed) {
+	// 			const newStartValue = result.value;
 
-		Swal.fire({
-			title: "Renumber Holes",
-			html: `
-			<div style="text-align: left; margin-bottom: 15px;">
-				<p>Renumber holes in ${entities.size} blast(s)?</p>
-				<label for="renumberStart" style="display: block; margin-bottom: 5px; font-weight: bold;">Starting Number:</label>
-				<input type="text" id="renumberStart" value="${deleteRenumberStart}" 
-					   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
-					   placeholder="e.g. 1, A1, B5, 100">
-				<small style="color: #666; display: block; margin-top: 5px;">
-					Enter a number (e.g. 1, 100) for numerical naming<br>
-					or letter+number (e.g. A1, B5) for row-based naming
-				</small>
-			</div>
-		`,
-			icon: "question",
-			showCancelButton: true,
-			confirmButtonText: "Renumber",
-			cancelButtonText: "Cancel",
-			focusConfirm: false,
-			customClass: {
-				container: "custom-popup-container",
-				title: "swal2-title",
-				confirmButton: "confirm",
-				cancelButton: "cancel"
-			},
-			preConfirm: () => {
-				const startValue = document.getElementById("renumberStart").value;
-				if (!startValue || startValue.trim() === "") {
-					Swal.showValidationMessage("Please enter a starting number");
-					return false;
-				}
-				return startValue.trim();
-			}
-		}).then((result) => {
-			if (result.isConfirmed) {
-				const newStartValue = result.value;
+	// 			// Update the global deleteRenumberStart value
+	// 			deleteRenumberStart = newStartValue;
 
-				// Update the global deleteRenumberStart value
-				deleteRenumberStart = newStartValue;
+	// 			// Also update the original input field if it exists
+	// 			const renumberStartInput = document.querySelector('#renumberStartListener, input[name="renumberStart"]');
+	// 			if (renumberStartInput) {
+	// 				renumberStartInput.value = newStartValue;
+	// 			}
 
-				// Also update the original input field if it exists
-				const renumberStartInput = document.querySelector('#renumberStartListener, input[name="renumberStart"]');
-				if (renumberStartInput) {
-					renumberStartInput.value = newStartValue;
-				}
+	// 			entities.forEach((entityName) => {
+	// 				renumberHolesFunction(newStartValue, entityName);
+	// 			});
 
-				entities.forEach((entityName) => {
-					renumberHolesFunction(newStartValue, entityName);
-				});
+	// 			this.updateTreeData();
+	// 			drawData(points, selectedHole);
 
-				this.updateTreeData();
-				drawData(points, selectedHole);
-
-				Swal.fire({
-					title: "Complete",
-					text: "Renumbered holes in " + entities.size + " blast(s) starting from " + newStartValue,
-					icon: "success",
-					timer: 3000,
-					showConfirmButton: false
-				});
-			}
-		});
-	}
+	// 			Swal.fire({
+	// 				title: "Complete",
+	// 				text: "Renumbered holes in " + entities.size + " blast(s) starting from " + newStartValue,
+	// 				icon: "success",
+	// 				timer: 3000,
+	// 				showConfirmButton: false
+	// 			});
+	// 		}
+	// 	});
+	// }
 
 	resetConnections() {
 		if (this.selectedNodes.size === 0) return;
 
 		const nodeIds = Array.from(this.selectedNodes);
-		const holeNodeIds = nodeIds.filter((nodeId) => nodeId.startsWith("hole-"));
+		const holeNodeIds = nodeIds.filter((nodeId) => nodeId.startsWith("hole⣿"));
 
 		if (holeNodeIds.length === 0) return;
 
 		// Find the holes to reset
 		const holesToReset = [];
 		holeNodeIds.forEach((nodeId) => {
-			const holeId = nodeId.substring(5); // Remove "hole-" prefix
+			const holeId = nodeId.substring(5); // Remove "hole⣿" prefix
 			const hole = points.find((h) => h.holeID === holeId);
 			if (hole) {
 				holesToReset.push(hole);
@@ -26405,8 +26658,8 @@ class TreeView {
 		const nodeIds = Array.from(this.selectedNodes);
 
 		// Determine what types we're deleting
-		const hasHoles = nodeIds.some((nodeId) => nodeId.split("-")[0] === "hole");
-		const hasEntities = nodeIds.some((nodeId) => nodeId.split("-")[0] === "entity");
+		const hasHoles = nodeIds.some((nodeId) => nodeId.split("⣿")[0] === "hole");
+		const hasEntities = nodeIds.some((nodeId) => nodeId.split("⣿")[0] === "entity");
 		const hasDrawingElements = nodeIds.some((nodeId) => nodeId.includes("-element"));
 
 		if (hasDrawingElements) {
@@ -26427,8 +26680,10 @@ class TreeView {
 				}
 			}).then((result) => {
 				if (result.isConfirmed) {
+					const entitiesToRenumber = new Set(); // Track entities that need renumbering
+
 					nodeIds.forEach((nodeId) => {
-						const parts = nodeId.split("-");
+						const parts = nodeId.split("⣿");
 						// Robust parsing for element nodes
 						if (parts.length >= 4 && parts[2] === "element") {
 							const entityType = parts[0];
@@ -26441,17 +26696,32 @@ class TreeView {
 								const elementIndex = entity.data.findIndex((el) => el.pointID == elementId);
 								if (elementIndex !== -1) {
 									entity.data.splice(elementIndex, 1);
+
+									// ✅ ADD: Track this entity for renumbering
+									entitiesToRenumber.add(entityName);
+
 									// If no elements left, delete the entire entity
 									if (entity.data.length === 0) {
 										allKADDrawingsMap.delete(entityName);
-									}
-									if (typeof debouncedSaveKAD === "function") {
-										debouncedSaveKAD();
+										entitiesToRenumber.delete(entityName); // No need to renumber if deleted
 									}
 								}
 							}
 						}
 					});
+
+					// ✅ ADD: Renumber all affected entities
+					entitiesToRenumber.forEach((entityName) => {
+						const entity = allKADDrawingsMap.get(entityName);
+						if (entity) {
+							renumberEntityPoints(entity);
+						}
+					});
+
+					if (typeof debouncedSaveKAD === "function") {
+						debouncedSaveKAD();
+					}
+
 					this.updateTreeData();
 					drawData(points, selectedHole);
 				}
@@ -26475,8 +26745,8 @@ class TreeView {
 			}).then((result) => {
 				if (result.isConfirmed) {
 					nodeIds.forEach((nodeId) => {
-						const type = nodeId.split("-")[0];
-						const itemId = nodeId.split("-").slice(1).join("-");
+						const type = nodeId.split("⣿")[0];
+						const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
 						if (type === "entity") {
 							// Delete all holes with this entity name
@@ -26579,8 +26849,8 @@ class TreeView {
 					}
 
 					nodeIds.forEach((nodeId) => {
-						const type = nodeId.split("-")[0];
-						const itemId = nodeId.split("-").slice(1).join("-");
+						const type = nodeId.split("⣿")[0];
+						const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
 						if (type === "hole") {
 							const holeIndex = points.findIndex((hole) => hole.holeID === itemId);
@@ -26646,8 +26916,8 @@ class TreeView {
 			}).then((result) => {
 				if (result.isConfirmed) {
 					nodeIds.forEach((nodeId) => {
-						const type = nodeId.split("-")[0];
-						const itemId = nodeId.split("-").slice(1).join("-");
+						const type = nodeId.split("⣿")[0];
+						const itemId = nodeId.split("⣿").slice(1).join("⣿");
 						if (type === "surface") {
 							deleteSurfaceFromDB(itemId).then(() => {
 								loadedSurfaces.delete(itemId);
@@ -26688,8 +26958,8 @@ class TreeView {
 				element.style.opacity = "0.5";
 				element.classList.add("hidden-node");
 
-				const type = nodeId.split("-")[0];
-				const itemId = nodeId.split("-").slice(1).join("-");
+				const type = nodeId.split("⣿")[0];
+				const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
 				if (type === "surface") {
 					setSurfaceVisibility(itemId, false);
@@ -26708,8 +26978,8 @@ class TreeView {
 				element.style.opacity = "1";
 				element.classList.remove("hidden-node");
 
-				const type = nodeId.split("-")[0];
-				const itemId = nodeId.split("-").slice(1).join("-");
+				const type = nodeId.split("⣿")[0];
+				const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
 				if (type === "surface") {
 					setSurfaceVisibility(itemId, true);
@@ -26724,7 +26994,7 @@ class TreeView {
 	showProperties() {
 		if (this.selectedNodes.size === 1) {
 			const nodeId = Array.from(this.selectedNodes)[0];
-			const type = nodeId.split("-")[0];
+			const type = nodeId.split("⣿")[0];
 
 			try {
 				if (type === "surface") {
@@ -26853,26 +27123,26 @@ class TreeView {
 			const volume = metrics.totalVolume;
 
 			return {
-				id: "entity-" + entityName,
+				id: "entity⣿" + entityName,
 				type: "entity",
 				label: entityName,
 				meta: "(" + holes.length + ", " + parseFloat(totalLength).toFixed(1) + "m, " + parseFloat(volume).toFixed(1) + "m³)",
 				children: holes.map((hole, index) => ({
-					id: "hole-" + hole.holeID || index,
+					id: "hole⣿" + hole.holeID || index,
 					type: "hole",
 					label: hole.holeID || "Hole " + index + 1,
 					meta: "",
 					children: [
-						{ id: hole.holeID + "-startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
-						{ id: hole.holeID + "-starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
-						{ id: hole.holeID + "-startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
-						{ id: hole.holeID + "-gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
-						{ id: hole.holeID + "-diameter", type: "property", label: "Diameter", meta: hole.holeDiameter || 115 + "mm" },
-						{ id: hole.holeID + "-angle", type: "property", label: "Angle", meta: hole.holeAngle.toFixed(0) || 0 + "°" },
-						{ id: hole.holeID + "-bearing", type: "property", label: "Bearing", meta: hole.holeBearing.toFixed(2) || 0 + "°" },
-						{ id: hole.holeID + "-length", type: "property", label: "Length", meta: hole.holeLengthCalculated.toFixed(2) || 0 + "m" },
-						{ id: hole.holeID + "-subdrill", type: "property", label: "Subdrill", meta: hole.subdrillAmount.toFixed(2) || 0 + "m" },
-						{ id: hole.holeID + "-type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" }
+						{ id: hole.holeID + "⣿startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "⣿starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "⣿startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "⣿gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
+						{ id: hole.holeID + "⣿diameter", type: "property", label: "Diameter", meta: hole.holeDiameter || 115 + "mm" },
+						{ id: hole.holeID + "⣿angle", type: "property", label: "Angle", meta: hole.holeAngle.toFixed(0) || 0 + "°" },
+						{ id: hole.holeID + "⣿bearing", type: "property", label: "Bearing", meta: hole.holeBearing.toFixed(2) || 0 + "°" },
+						{ id: hole.holeID + "⣿length", type: "property", label: "Length", meta: hole.holeLengthCalculated.toFixed(2) || 0 + "m" },
+						{ id: hole.holeID + "⣿subdrill", type: "property", label: "Subdrill", meta: hole.subdrillAmount.toFixed(2) || 0 + "m" },
+						{ id: hole.holeID + "⣿type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" }
 					]
 				}))
 			};
@@ -26891,22 +27161,25 @@ class TreeView {
 		if (typeof allKADDrawingsMap !== "undefined" && allKADDrawingsMap && allKADDrawingsMap.size > 0) {
 			for (const [entityName, entity] of allKADDrawingsMap.entries()) {
 				// Create individual element children for each entity
-				// Fix line 25241 in buildDrawingData method
+				//  update the elementChildren mapping:
 				const elementChildren = entity.data.map((element, index) => ({
-					id: entity.entityType + "-" + entityName + "-element-" + (element.pointID || index + 1),
-					type: entity.entityType + "-element",
+					id: entity.entityType + "⣿" + entityName + "⣿element⣿" + (element.pointID || index + 1),
+					type: entity.entityType + "⣿element",
 					label: entity.entityType === "text" ? element.text || "Text " + (element.pointID || index + 1) : entity.entityType === "circle" ? "Circle " + (element.pointID || index + 1) : "Point " + (element.pointID || index + 1),
 					// FIX: Add safety checks before calling toFixed()
 					meta: entity.entityType === "circle" ? "R:" + (Number(element.radius) || 0).toFixed(1) : "(" + (Number(element.pointXLocation) || 0).toFixed(1) + "," + (Number(element.pointYLocation) || 0).toFixed(1) + "," + (Number(element.pointZLocation) || 0).toFixed(1) + ")",
-					// Add color information for swatch generation
-					elementData: element // Store the full element data for color picker access
+					// FIX: Add entityName to the elementData object
+					elementData: {
+						...element,
+						entityName: entityName // ✅ Add the entityName here!
+					}
 				}));
 
 				// Group by entity type with children
 				switch (entity.entityType) {
 					case "point":
 						pointsChildren.push({
-							id: "points-" + entityName,
+							id: "points⣿" + entityName,
 							type: "points-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
@@ -26915,7 +27188,7 @@ class TreeView {
 						break;
 					case "line":
 						linesChildren.push({
-							id: "line-" + entityName,
+							id: "line⣿" + entityName,
 							type: "line-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
@@ -26924,7 +27197,7 @@ class TreeView {
 						break;
 					case "poly":
 						polysChildren.push({
-							id: "poly-" + entityName,
+							id: "poly⣿" + entityName,
 							type: "polygon-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
@@ -26933,7 +27206,7 @@ class TreeView {
 						break;
 					case "circle":
 						circlesChildren.push({
-							id: "circle-" + entityName,
+							id: "circle⣿" + entityName,
 							type: "circle-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
@@ -26942,7 +27215,7 @@ class TreeView {
 						break;
 					case "text":
 						textsChildren.push({
-							id: "text-" + entityName,
+							id: "text⣿" + entityName,
 							type: "text-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
@@ -26956,7 +27229,7 @@ class TreeView {
 		// Add categories with children to the drawing tree (same as before)
 		if (pointsChildren.length > 0) {
 			drawingChildren.push({
-				id: "drawings-points",
+				id: "drawings⣿points",
 				type: "points-folder",
 				label: "Points",
 				children: pointsChildren
@@ -26965,7 +27238,7 @@ class TreeView {
 
 		if (linesChildren.length > 0) {
 			drawingChildren.push({
-				id: "drawings-lines",
+				id: "drawings⣿lines",
 				type: "lines-folder",
 				label: "Lines",
 				children: linesChildren
@@ -26974,7 +27247,7 @@ class TreeView {
 
 		if (polysChildren.length > 0) {
 			drawingChildren.push({
-				id: "drawings-polygons",
+				id: "drawings⣿polygons",
 				type: "polygons-folder",
 				label: "Polygons",
 				children: polysChildren
@@ -26983,7 +27256,7 @@ class TreeView {
 
 		if (circlesChildren.length > 0) {
 			drawingChildren.push({
-				id: "drawings-circles",
+				id: "drawings⣿circles",
 				type: "circle-folder",
 				label: "Circles",
 				children: circlesChildren
@@ -26992,7 +27265,7 @@ class TreeView {
 
 		if (textsChildren.length > 0) {
 			drawingChildren.push({
-				id: "drawings-texts",
+				id: "drawings⣿texts",
 				type: "text-folder",
 				label: "Texts",
 				children: textsChildren
@@ -27009,7 +27282,7 @@ class TreeView {
 		// Use Map directly instead of cache array
 		loadedSurfaces.forEach((surface, surfaceId) => {
 			surfaceChildren.push({
-				id: "surface-" + surfaceId,
+				id: "surface⣿" + surfaceId,
 				type: "surface",
 				label: surface.name,
 				meta: "(" + (surface.points?.length || 0) + " points)"
@@ -27025,7 +27298,7 @@ class TreeView {
 		// Use Map directly instead of cache array
 		loadedImages.forEach((image, imageId) => {
 			imageChildren.push({
-				id: "image-" + imageId,
+				id: "image⣿" + imageId,
 				type: "image",
 				label: image.name,
 				meta: image.type || "image"
@@ -27035,7 +27308,7 @@ class TreeView {
 		return imageChildren;
 	}
 
-	// Enhanced renderTree() - with color swatches
+	// Enhanced renderTree() ⣿ with color swatches
 	renderTree(nodes, level = 0) {
 		return nodes
 			.map((node) => {
@@ -27045,7 +27318,7 @@ class TreeView {
 
 				// Generate color swatch for individual elements
 				let colorSwatchHtml = "";
-				if (node.elementData && node.type.includes("-element")) {
+				if (node.elementData && node.type.includes("⣿element")) {
 					const color = node.elementData.color || "#777777";
 					colorSwatchHtml = `<span class="color-swatch" 
 				style="background-color: ${color};" 
@@ -27093,8 +27366,8 @@ class TreeView {
 	renameEntity() {
 		if (this.selectedNodes.size !== 1) return;
 		const nodeId = Array.from(this.selectedNodes)[0];
-		const parts = nodeId.split("-");
-		// 1. Handle blast entity nodes (entity-<blastName>)
+		const parts = nodeId.split("⣿");
+		// 1. Handle blast entity nodes (entity⣿<blastName>)
 		if (parts[0] === "entity" && parts.length === 2) {
 			const entityName = parts[1];
 			const firstHole = points.find((h) => h.entityName === entityName);
@@ -27104,7 +27377,7 @@ class TreeView {
 			return;
 		}
 
-		// 2. Handle KAD group/entity nodes (points-..., line-..., etc)
+		// 2. Handle KAD group/entity nodes (points⣿..., line⣿..., etc)
 		if ((parts[0] === "points" || parts[0] === "line" || parts[0] === "poly" || parts[0] === "circle" || parts[0] === "text") && parts.length === 2) {
 			const entityType = parts[0];
 			const oldEntityName = parts[1];
@@ -27169,7 +27442,7 @@ class TreeView {
 	}
 	showNodeProperties(nodeId) {
 		// Handle showing properties for different node types
-		const parts = nodeId.split("-");
+		const parts = nodeId.split("⣿");
 		const nodeType = parts[0];
 
 		try {
@@ -27193,21 +27466,21 @@ class TreeView {
 				}
 			} else if (nodeType === "hole") {
 				// Show properties for individual hole
-				const holeId = parts.slice(1).join("-");
+				const holeId = parts.slice(1).join("⣿");
 				const hole = points.find((h) => h.holeID === holeId);
 				if (hole) {
 					showHolePropertyEditor(hole);
 				}
 			} else if (nodeType === "entity") {
 				// Show properties for blast entity (first hole as representative)
-				const entityName = parts.slice(1).join("-");
+				const entityName = parts.slice(1).join("⣿");
 				const firstHole = points.find((h) => h.entityName === entityName);
 				if (firstHole) {
 					showHolePropertyEditor(firstHole);
 				}
 			} else if (nodeType === "surface") {
 				// Show surface properties
-				const surfaceId = parts.slice(1).join("-");
+				const surfaceId = parts.slice(1).join("⣿");
 				const canvas = document.getElementById("canvas") || document.querySelector("canvas");
 				if (canvas && typeof showSurfaceContextMenu === "function") {
 					const rect = canvas.getBoundingClientRect();
@@ -27217,7 +27490,7 @@ class TreeView {
 				}
 			} else if (nodeType === "image") {
 				// Show image properties
-				const imageId = parts.slice(1).join("-");
+				const imageId = parts.slice(1).join("⣿");
 				const canvas = document.getElementById("canvas") || document.querySelector("canvas");
 				if (canvas && typeof showImageContextMenu === "function") {
 					const rect = canvas.getBoundingClientRect();
@@ -27234,16 +27507,44 @@ class TreeView {
 	}
 }
 
-/// Fix the openColorPickerForElement function - remove double hash
+// JS COLOR PICKER FOR INSTANT COLOUR CHANGES
 function openColorPickerForElement(swatchElement, entityName, pointID) {
-	event.stopPropagation();
+	console.log("🎨 openColorPickerForElement called with:", { swatchElement, entityName, pointID });
 
-	// Get the element data
+	// Get the entity data
 	const entity = allKADDrawingsMap.get(entityName);
-	if (!entity) return;
+	console.log("📊 Entity found:", entity);
 
-	const element = entity.data.find((el) => el.pointID === pointID);
-	if (!element) return;
+	if (!entity) {
+		console.log("❌ Entity not found:", entityName);
+		return;
+	}
+
+	// Debug: Show all pointIDs in the entity
+	console.log(
+		"🔍 All pointIDs in entity:",
+		entity.data.map((el) => ({ pointID: el.pointID, type: typeof el.pointID }))
+	);
+
+	// ✅ FIX: Use 'let' instead of 'const' so we can reassign
+	let element = entity.data.find((el) => el.pointID === pointID);
+	console.log("🎯 Element found:", element);
+
+	if (!element) {
+		console.log("❌ Element not found with pointID:", pointID);
+		// Try converting to string
+		element = entity.data.find((el) => el.pointID === pointID.toString());
+		console.log("🔄 Trying as string:", element);
+		if (!element) {
+			// Try converting pointID to string and compare
+			element = entity.data.find((el) => el.pointID.toString() === pointID.toString());
+			console.log("🔄 Trying both as strings:", element);
+		}
+		if (!element) {
+			console.log("❌ Element still not found after all attempts");
+			return;
+		}
+	}
 
 	// Check if JSColor is already installed and remove it
 	if (swatchElement.jscolor) {
