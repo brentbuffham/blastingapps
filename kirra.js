@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250705.2028AWST"
-const buildVersion = "20250705.2315AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250711.1740AWST"
+const buildVersion = "20250711.1740AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -53,25 +53,28 @@ function updatePopup() {
 				    <label class="labelWhite18">Update - NEW FEATURES:                           </label>
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
-					<label     class="labelWhite12c">✅ Load Multiple GeoTIFFs and convert from WGS                  </label>
-					<br><label class="labelWhite12c">✅ Drawings to IndexDB for large files                          </label>
-					<br><label class="labelWhite12c">✅ Load multiple Surfaces and change colors                     </label>
-					<br><label class="labelWhite12c">✅ Fixed the Collar and Grade multiple Surfaces Bug             </label>
-					<br><label class="labelWhite12c">✅ Improved Decimation of Surfaces                              </label>
-					<br><label class="labelWhite12c">✅ Drawing Optimised - Pixel Distance culling                   </label>
-					<br><label class="labelWhite12c">✅ Image Show/Hide/Remove/Transparency                          </label>
-					<br><label class="labelWhite12c">✅ Delete All Images/Surfaces to cleanup DB                     </label>
-					<br><label class="labelWhite12c">✅ Fixed State UI/UX issues                                     </label>
-					<br><label class="labelWhite12c">✅ Tree View - Context Menu - Delete & Properties               </label>
-	                <br><label class="labelWhite12c">✅ Tree View - Color Change                                     </label>
-					<br><label class="labelWhite12c">⭐ ⭐ Proximity Duplicate hole check and resolve                </label>
-					<br><label class="labelWhite12c">✅ Critical bug fix to restore loading from local files         </label>
-					<br><label class="labelWhite12c">✅ Added support for OBJ and other surface formats              </label>
-					<br><label class="labelWhite12c">✅ Improved user interaction for drawing tools                  </label>
-					<br><label class="labelWhite12c">✅ Distance indicator between added to drawing tools            </label>
-					<br><label class="labelWhite12c">✅ Move and Z Leveling for KAD Drawings in Edit Popup           </label>
-					<br><label class="labelWhite12c">✅ Added a radii warning dialog                                 </label>
+					<label     class="labelWhite12c">July 2025                                                       </label>
+					<br><label class="labelWhite12c">✅ Implemented Show/Hide for Blasts, Blast holes, KAD Drawings  </label>
+					<br><label class="labelWhite12c">May, June and July 2025                                         </label>
 					<br><label class="labelWhite12c">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
+					<br><label class="labelWhite12c">✅ Added a radii warning dialog                                 </label>
+					<br><label class="labelWhite12c">✅ Move and Z Leveling for KAD Drawings in Edit Popup           </label>
+					<br><label class="labelWhite12c">✅ Distance indicator between added to drawing tools            </label>
+					<br><label class="labelWhite12c">✅ Improved user interaction for drawing tools                  </label>
+					<br><label class="labelWhite12c">✅ Added support for OBJ and other surface formats              </label>
+					<br><label class="labelWhite12c">✅ Critical bug fix to restore loading from local files         </label>
+					<br><label class="labelWhite12c">⭐ ⭐ Proximity Duplicate hole check and resolve                </label>
+					<br><label class="labelWhite12c">✅ Tree View - Color Change                                     </label>
+					<br><label class="labelWhite12c">✅ Tree View - Context Menu - Delete & Properties               </label>
+					<br><label class="labelWhite12c">✅ Fixed State UI/UX issues                                     </label>
+					<br><label class="labelWhite12c">✅ Delete All Images/Surfaces to cleanup DB                     </label>
+					<br><label class="labelWhite12c">✅ Image Show/Hide/Remove/Transparency                          </label>
+					<br><label class="labelWhite12c">✅ Drawing Optimised - Pixel Distance culling                   </label>
+					<br><label class="labelWhite12c">✅ Improved Decimation of Surfaces                              </label>
+					<br><label class="labelWhite12c">✅ Fixed the Collar and Grade multiple Surfaces Bug             </label>
+					<br><label class="labelWhite12c">✅ Load multiple Surfaces and change colors                     </label>
+					<br><label class="labelWhite12c">✅ Drawings to IndexDB for large files                          </label>
+					<br><label class="labelWhite12c">✅ Load Multiple GeoTIFFs and convert from WGS                  </label>
 					<hr>
 					<br><label  class="labelWhite15">New & Existing Issues & Resolved                               </label>
 					<br><label class="labelWhite12c">🐞 Voronoi Display Lag with large blasts      ❌ unresolved ❌  </label>
@@ -101,7 +104,7 @@ function updatePopup() {
 	        <br>
 	        <i><label class="labelWhite15">Version: Build ${buildVersion}</i></label>
 		  `,
-		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" },
+		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
 	}).then((result) => {
 		if (result.isConfirmed) {
 		}
@@ -163,7 +166,7 @@ const padding = 10; // add 10 pixels of padding
 const uiVersionElement = document.getElementById("htmlUIVersion");
 const htmlUIVersion = uiVersionElement ? uiVersionElement.value : "1"; // Default to "1" if not found
 
-//get the menubar --var from the css
+//get the menu bar --var from the css
 const menubarSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--menubar-size"));
 const canvasBorderWidth2X = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--canvas-border")) * 2;
 const canvasContainerMargin = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--canvas-container-margin"));
@@ -200,7 +203,7 @@ let dxfEntities = [];
 let countPoints = points.length;
 let sumMeters = 0;
 let currentScale = scale; // declare a variable to store the current scale
-let currentFontSize = fontSize; // declare a variable to store the current fontsize
+let currentFontSize = fontSize; // declare a variable to store the current font size
 let toeScale = document.getElementById("toeSlider").value;
 let holeScale = document.getElementById("holeSlider").value;
 let deltaX = 0;
@@ -209,6 +212,17 @@ let centroidX = 0;
 let centroidY = 0;
 let centroidZ = 0;
 let firstPointInLine = null;
+// Group visibility flags
+let blastGroupVisible = true;
+let drawingsGroupVisible = true;
+let surfacesGroupVisible = true;
+let imagesGroupVisible = true;
+// Drawing sub-group visibility flags
+let pointsGroupVisible = true;
+let linesGroupVisible = true;
+let polygonsGroupVisible = true;
+let circlesGroupVisible = true;
+let textsGroupVisible = true;
 // Variable to store the "fromHole" ID during connector mode
 let fromHoleStore = null;
 let isAddingConnector = false;
@@ -356,7 +370,7 @@ const deleteHoleSwitch = document.getElementById("deleteHoleSwitch");
 const modifyKADSwitch = document.getElementById("modifyKADDraw");
 const offsetLinePolySwitch = document.getElementById("offsetLinePolyDraw");
 const selectionModeButton = document.getElementById("selectionModeButton");
-const editHolesToggle = document.getElementById("editHolesToggle"); //required to be true if holes are to be finetuned
+const editHolesToggle = document.getElementById("editHolesToggle"); //required to be true if holes are to be fine tuned
 
 // Drawing Switch Event Listeners
 const addPointDraw = document.getElementById("addPointDraw");
@@ -371,7 +385,7 @@ const measuredLengthSwitch = document.getElementById("measuredLengthSwitch");
 const measuredMassSwitch = document.getElementById("measuredMassSwitch");
 const measuredCommentSwitch = document.getElementById("measuredCommentSwitch");
 
-//switch Options - Do not in clude in switches array
+//switch Options - Do not include in switches array
 const renumberStartListener = document.getElementById("deleteRenumberStart");
 const renumberHoles = document.getElementById("renumberHoles");
 let isRenumberingHoles = false;
@@ -404,7 +418,7 @@ const booleans = [
 	isModifyingPoint,
 	isOffsetLinePoly,
 	isMeasureRecording,
-	isMultiHoleSelectionEnabled, //check this
+	isMultiHoleSelectionEnabled //check this
 ];
 
 // Boolean set to False
@@ -491,7 +505,7 @@ function resetSwitchesTogglesOptionalDisplay(resetDisplayOptions) {
 		"measuredMassSwitch",
 		"measuredCommentSwitch",
 		"selectionModeButton",
-		"editHolesToggle",
+		"editHolesToggle"
 	];
 
 	allSwitches.forEach((switchId) => {
@@ -763,7 +777,7 @@ function removeEventListenersExcluding(excluding = []) {
 	}
 }
 
-// Update resetFloatingToolbarButtons to only clear floating toolbar related bools
+// Update resetFloatingToolbarButtons to only clear floating toolbar related booleans
 function resetFloatingToolbarButtons(excluding) {
 	// Clear only floating toolbar tool states
 	isSelectionPointerActive = false;
@@ -1527,9 +1541,9 @@ document.getElementById("buttonGoBack").addEventListener("click", function () {
 		customClass: {
 			popup: "custom-popup-container",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
-		buttonsStyling: false, // This disables default SweetAlert2 button styling so your CSS takes over
+		buttonsStyling: false // This disables default SweetAlert2 button styling so your CSS takes over
 	}).then((result) => {
 		if (result.isConfirmed) {
 			window.location.href = "index.html";
@@ -2256,7 +2270,7 @@ editHolesToggle.addEventListener("change", function () {
 		switches.forEach((switchElement) => {
 			if (switchElement && (switchElement !== selectionModeButton || switchElement !== editHolesToggle)) switchElement.checked = false;
 		});
-		//turn on the editholes toggle
+		//turn on the edit holes toggle
 		editHolesToggle.checked = true;
 		//attach all the event listeners to the canvas
 		canvas.addEventListener("click", handleHoleEditingSelection);
@@ -2270,7 +2284,7 @@ editHolesToggle.addEventListener("change", function () {
 		//remove all the event listeners from the canvas
 		canvas.removeEventListener("click", handleHoleEditingSelection);
 		canvas.removeEventListener("touchstart", handleHoleEditingSelection);
-		//turn off the editholes toggle
+		//turn off the edit holes toggle
 		editHolesToggle.checked = false;
 		//reset the selected hole
 		selectedHole = null;
@@ -2587,7 +2601,7 @@ function resizeChart() {
 			const newWidth = document.documentElement.clientWidth;
 			// Use the string ID instead of the DOM element
 			Plotly.relayout("timeChart", {
-				width: newWidth,
+				width: newWidth
 			});
 		} else {
 			console.warn("resizeChart skipped: timeChart not yet initialized by Plotly");
@@ -2642,7 +2656,7 @@ document.getElementById("saveHoles").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2693,7 +2707,7 @@ document.getElementById("saveAll").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2749,7 +2763,7 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
 
 		// Create a Blob with the CSV data
 		const blob = new Blob([csv], {
-			type: "text/csv;charset=utf-8",
+			type: "text/csv;charset=utf-8"
 		});
 
 		// Create a URL for the Blob
@@ -2909,7 +2923,7 @@ canvasContainer.addEventListener(
 		}
 	},
 	{
-		passive: false,
+		passive: false
 	}
 );
 
@@ -3000,8 +3014,8 @@ timeSlider.addEventListener("input", function () {
 	Plotly.relayout("timeChart", {
 		width: newWidthRight - 50,
 		yaxis: {
-			autorange: true, // Adjust the y-axis range to fit the data
-		},
+			autorange: true // Adjust the y-axis range to fit the data
+		}
 	});
 });
 
@@ -3014,8 +3028,8 @@ timeOffsetSlider.addEventListener("input", function () {
 	Plotly.relayout("timeChart", {
 		width: newWidthRight - 50,
 		yaxis: {
-			autorange: true, // Adjust the y-axis range to fit the data
-		},
+			autorange: true // Adjust the y-axis range to fit the data
+		}
 	});
 });
 
@@ -3093,7 +3107,7 @@ const optionConfigs = [
 	{ option: displayMLength },
 	{ option: displayMMass },
 	{ option: displayMComment },
-	{ option: displayVaronoiCells },
+	{ option: displayVaronoiCells }
 ];
 
 // Add event listeners programmatically
@@ -3126,7 +3140,7 @@ let newWidthRight = 350;
 let newWidthLeft = 350;
 
 function handleMouseDown(event) {
-	// Ignore right-clicks - they're handled by contextmenu event
+	// Ignore right-clicks - they're handled by context menu event
 	// BUT preserve move tool functionality completely
 	if (event.button === 2) {
 		// Only ignore if not in move tool mode
@@ -3176,7 +3190,7 @@ function handleMouseMove(event) {
 	if (isResizingRight) {
 		newWidthRight = window.innerWidth - event.clientX;
 		Plotly.relayout("timeChart", {
-			width: newWidthRight - 50,
+			width: newWidthRight - 50
 		});
 		document.getElementById("sidenavRight").style.width = newWidthRight + "px";
 	}
@@ -3409,7 +3423,7 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
 		hasDuplicates: false,
 		duplicates: [],
 		resolved: [],
-		errors: [],
+		errors: []
 	};
 
 	// Group holes by entity name
@@ -3438,7 +3452,7 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
 					entityName,
 					holeID,
 					existing: { hole: existingHole.hole, index: existingHole.originalIndex },
-					duplicate: { hole, index: originalIndex },
+					duplicate: { hole, index: originalIndex }
 				};
 
 				duplicateReport.duplicates.push(duplicateInfo);
@@ -3524,7 +3538,7 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
 				alphaIDs: [],
 				maxNumeric: 0,
 				maxAlphaRow: "A",
-				maxAlphaNum: 0,
+				maxAlphaNum: 0
 			});
 		}
 		const entity = entitiesMap.get(hole.entityName);
@@ -3594,7 +3608,7 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
 			entityName: duplicate.entityName,
 			oldID: oldID,
 			newID: newID,
-			action: "renumbered",
+			action: "renumbered"
 		});
 
 		console.log("🔧 Renumbered duplicate hole:", duplicate.entityName + ":" + oldID, "→", newID);
@@ -3611,7 +3625,7 @@ function resolveDuplicatesKeepFirst(points, duplicateReport) {
 		duplicateReport.resolved.push({
 			entityName: duplicate.entityName,
 			holeID: duplicate.holeID,
-			action: "removed-duplicate",
+			action: "removed-duplicate"
 		});
 
 		console.log("🗑️ Removed duplicate hole:", duplicate.entityName + ":" + duplicate.holeID);
@@ -3635,7 +3649,7 @@ function resolveDuplicatesKeepLast(points, duplicateReport) {
 		duplicateReport.resolved.push({
 			entityName: duplicate.entityName,
 			holeID: duplicate.holeID,
-			action: "removed-original",
+			action: "removed-original"
 		});
 
 		console.log("🗑️ Removed original hole:", duplicate.entityName + ":" + duplicate.holeID);
@@ -3896,6 +3910,7 @@ function parseCSV(data) {
 				measuredMassTimeStamp,
 				measuredComment,
 				measuredCommentTimeStamp,
+				visible: true
 			};
 
 			// Add to points array first
@@ -4041,9 +4056,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointXLocation: x,
 							pointYLocation: y,
 							pointZLocation: z,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -4071,9 +4086,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointXLocation: xi,
 							pointYLocation: yi,
 							pointZLocation: zi,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		} else if (t === "LINE") {
@@ -4098,7 +4113,7 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: v[0].z || 0,
 							lineWidth: 1,
 							color: color,
-							closed: false,
+							closed: false
 						},
 						{
 							entityName: nameL,
@@ -4109,9 +4124,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: v[1].z || 0,
 							lineWidth: 1,
 							color: color,
-							closed: false,
-						},
-					],
+							closed: false
+						}
+					]
 				});
 			}
 		}
@@ -4137,7 +4152,7 @@ function parseDXFtoKadMaps(dxf) {
 				allKADDrawingsMap.set(nameP, {
 					entityName: nameP,
 					entityType: entityType,
-					data: [],
+					data: []
 				});
 				var dataP = allKADDrawingsMap.get(nameP).data;
 				verts.forEach(function (v, i) {
@@ -4150,7 +4165,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: v.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: false,
+						closed: false
 					});
 				});
 				// close if flagged
@@ -4165,7 +4180,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: v0p.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: true,
+						closed: true
 					});
 				}
 			}
@@ -4192,9 +4207,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointZLocation: ent.center.z || 0,
 							radius: ent.radius,
 							lineWidth: 1,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -4210,14 +4225,14 @@ function parseDXFtoKadMaps(dxf) {
 				allKADDrawingsMap.set(nameE, {
 					entityName: nameE,
 					entityType: "poly",
-					data: [],
+					data: []
 				});
 				var dataE = allKADDrawingsMap.get(nameE).data;
 				var segs = 64;
 				for (var i = 0; i < segs; i++) {
-					var ang = ent.startAngle + (ent.endAngle - ent.startAngle) * (i / (segs - 1));
-					var px = ent.center.x + ent.xRadius * Math.cos(ang) - offsetX;
-					var py = ent.center.y + ent.yRadius * Math.sin(ang) - offsetY;
+					var angle = ent.startAngle + (ent.endAngle - ent.startAngle) * (i / (segs - 1));
+					var px = ent.center.x + ent.xRadius * Math.cos(angle) - offsetX;
+					var py = ent.center.y + ent.yRadius * Math.sin(angle) - offsetY;
 					var closed = true;
 					dataE.push({
 						entityName: nameE,
@@ -4228,7 +4243,7 @@ function parseDXFtoKadMaps(dxf) {
 						pointZLocation: ent.center.z || 0,
 						lineWidth: 1,
 						color: color,
-						closed: closed,
+						closed: closed
 					});
 				}
 				// close loop
@@ -4257,9 +4272,9 @@ function parseDXFtoKadMaps(dxf) {
 							pointYLocation: pos.y - offsetY,
 							pointZLocation: pos.z || 0,
 							text: ent.text,
-							color: color,
-						},
-					],
+							color: color
+						}
+					]
 				});
 			}
 		}
@@ -4401,8 +4416,8 @@ function fileFormatPopup(error) {
 			confirmButton: "confirm",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			//console.log("Confirmed");
@@ -4426,7 +4441,7 @@ function parseKADFile(fileData) {
 			delimiter: "", // Auto-detect delimiter
 			skipEmptyLines: true,
 			trimHeaders: true,
-			transform: (value) => value.trim(),
+			transform: (value) => value.trim()
 		});
 
 		// ✅ Check for critical parsing errors
@@ -4442,8 +4457,8 @@ function parseKADFile(fileData) {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					content: "swal2-content",
-				},
+					content: "swal2-content"
+				}
 			});
 			return; // Exit early
 		}
@@ -4476,8 +4491,8 @@ function parseKADFile(fileData) {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					content: "swal2-content",
-				},
+					content: "swal2-content"
+				}
 			});
 		}
 
@@ -4493,8 +4508,8 @@ function parseKADFile(fileData) {
 				customClass: {
 					container: "custom-popup-container",
 					title: "swal2-title",
-					confirmButton: "confirm",
-				},
+					confirmButton: "confirm"
+				}
 			});
 			return;
 		}
@@ -4542,7 +4557,7 @@ function parseKADFile(fileData) {
 							allKADDrawingsMap.set(entityName, {
 								entityName: entityName,
 								entityType: "point",
-								data: [],
+								data: []
 							});
 						}
 
@@ -4563,7 +4578,7 @@ function parseKADFile(fileData) {
 							lineWidth: lineWidth,
 							color: color,
 							connected: false,
-							closed: false,
+							closed: false
 						});
 						break;
 
@@ -4572,7 +4587,7 @@ function parseKADFile(fileData) {
 							allKADDrawingsMap.set(entityName, {
 								entityName: entityName,
 								entityType: entityType,
-								data: [],
+								data: []
 							});
 						}
 
@@ -4593,7 +4608,7 @@ function parseKADFile(fileData) {
 							pointZLocation: pointZLocation,
 							lineWidth: lineWidth,
 							color: color,
-							closed: closed,
+							closed: closed
 						});
 						break;
 
@@ -4602,7 +4617,7 @@ function parseKADFile(fileData) {
 							allKADDrawingsMap.set(entityName, {
 								entityName: entityName,
 								entityType: "line",
-								data: [],
+								data: []
 							});
 						}
 
@@ -4622,7 +4637,7 @@ function parseKADFile(fileData) {
 							pointZLocation: pointZLocation,
 							lineWidth: lineWidth,
 							color: color,
-							closed: false,
+							closed: false
 						});
 						break;
 
@@ -4631,7 +4646,7 @@ function parseKADFile(fileData) {
 							allKADDrawingsMap.set(entityName, {
 								entityName: entityName,
 								entityType: "circle",
-								data: [],
+								data: []
 							});
 						}
 
@@ -4652,7 +4667,7 @@ function parseKADFile(fileData) {
 							pointZLocation: pointZLocation,
 							radius: radius,
 							lineWidth: lineWidth,
-							color: color,
+							color: color
 						});
 						break;
 
@@ -4661,7 +4676,7 @@ function parseKADFile(fileData) {
 							allKADDrawingsMap.set(entityName, {
 								entityName: entityName,
 								entityType: "text",
-								data: [],
+								data: []
 							});
 						}
 
@@ -4680,7 +4695,7 @@ function parseKADFile(fileData) {
 							pointYLocation: pointYLocation,
 							pointZLocation: pointZLocation,
 							text: text,
-							color: color,
+							color: color
 						});
 						break;
 				}
@@ -4726,8 +4741,8 @@ function parseKADFile(fileData) {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					content: "swal2-content",
-				},
+					content: "swal2-content"
+				}
 			});
 		} else {
 			// ✅ Complete failure
@@ -4758,8 +4773,8 @@ function parseKADFile(fileData) {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					content: "swal2-content",
-				},
+					content: "swal2-content"
+				}
 			});
 			return;
 		}
@@ -4798,8 +4813,8 @@ function parseKADFile(fileData) {
 				container: "custom-popup-container",
 				title: "swal2-title",
 				confirmButton: "confirm",
-				content: "swal2-content",
-			},
+				content: "swal2-content"
+			}
 		});
 	}
 }
@@ -4874,12 +4889,12 @@ function exportKADFile() {
 	if (csvContentKAD) {
 		// Create a Blob with the CSV content for .kad file
 		const blobKAD = new Blob([csvContentKAD], {
-			type: "text/csv",
+			type: "text/csv"
 		});
 
 		// Create a Blob with the CSV content for .txt file
 		const blobTXT = new Blob([csvContentTXT], {
-			type: "text/plain",
+			type: "text/plain"
 		});
 
 		// Create temporary anchor elements to trigger the download for both files
@@ -4951,7 +4966,7 @@ function getNearestNeighborDistancesByAggregation(points, mode, useToeLocation) 
  * Get the unioned polygon of circles around blast holes, with radius based on nearest neighbor distances.
  * @param {Array} points - Array of points, each with startXLocation, startYLocation, startZLocation, endXLocation, endYLocation, endZLocation.
  * @param {number} percentDistance - Percentage to scale the chosen distance metric.
- * @param {number} steps - Number of steps for circle polygonization.
+ * @param {number} steps - Number of steps for circle polygon-isation.
  * @param {string} mode - One of "min", "max", "average", "mode" (statistical mode of distances).
  * @returns {Array} Array of {x, y, z} points representing the unioned polygon.
  */
@@ -5082,8 +5097,8 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
-			},
+				htmlContainer: "swal2-html-container"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// Show progress message
@@ -5115,8 +5130,8 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 							icon: "error",
 							customClass: {
 								container: "custom-popup-container",
-								confirmButton: "confirm",
-							},
+								confirmButton: "confirm"
+							}
 						});
 					}
 				}, 100);
@@ -5149,8 +5164,8 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
-			},
+				htmlContainer: "swal2-html-container"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, color, lineWidth, datasetDescription);
@@ -5183,8 +5198,8 @@ function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colo
 			icon: "success",
 			customClass: {
 				container: "custom-popup-container",
-				confirmButton: "confirm",
-			},
+				confirmButton: "confirm"
+			}
 		}).then(() => {
 			//save the drawing using douncedSave
 			debouncedSaveKAD();
@@ -5205,8 +5220,8 @@ function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, colo
 			icon: "error",
 			customClass: {
 				container: "custom-popup-container",
-				confirmButton: "confirm",
-			},
+				confirmButton: "confirm"
+			}
 		});
 	}
 }
@@ -5575,8 +5590,8 @@ function saveIREDESPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
@@ -5612,8 +5627,8 @@ function saveIREDESPopup() {
 						//cancelButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon",
-					},
+						icon: "swal2-icon"
+					}
 				});
 				return; // Exit the function
 			}
@@ -5623,7 +5638,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Plan ID",
 					text: "Please enter a Drill Plan ID.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			}
@@ -5633,7 +5648,7 @@ function saveIREDESPopup() {
 				Swal.fire({
 					title: "Invalid Site ID",
 					text: "Please enter a Site ID.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			}
@@ -5644,7 +5659,7 @@ function saveIREDESPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([xmlContent], {
-					type: "text/xml;charset=utf-8",
+					type: "text/xml;charset=utf-8"
 				});
 
 				// Create a URL for the Blob
@@ -5718,7 +5733,7 @@ function convertPointsToIREDESXML(points, filename, planID, siteID, holeOptions,
 			endYLocation: point.endYLocation,
 			endZLocation: point.endZLocation,
 			holeDiameter: point.holeDiameter,
-			holeType: point.holeType,
+			holeType: point.holeType
 		});
 	});
 	iredesPoints.sort((a, b) => a.holeID.localeCompare(b.holeID));
@@ -5912,7 +5927,7 @@ function validateIREDESXML(xmlContent) {
 		valid: isValid,
 		originalChecksum: originalChecksum,
 		calculatedChecksum: calculatedChecksum,
-		error: isValid ? null : "Checksum validation failed",
+		error: isValid ? null : "Checksum validation failed"
 	};
 }
 
@@ -5965,7 +5980,7 @@ function calculateTimes(points) {
 				const combinedFromHoleID = point.fromHoleID;
 				surfaces[combinedFromHoleID + ">=|=<" + combinedHoleID] = {
 					time: 0,
-					delay: point.timingDelayMilliseconds,
+					delay: point.timingDelayMilliseconds
 				};
 
 				holeTimes[combinedHoleID] = null;
@@ -6217,7 +6232,7 @@ function interpolate(p1, p2, contourLevel) {
 	const t = (contourLevel - p1.z) / (p2.z - p1.z);
 	return {
 		x: p1.x + t * (p2.x - p1.x),
-		y: p1.y + t * (p2.y - p1.y),
+		y: p1.y + t * (p2.y - p1.y)
 	};
 }
 
@@ -6236,8 +6251,8 @@ function simplifyLine(line, epsilon) {
 					maxDist: distSq,
 					maxDistPoint: {
 						index: i + 1,
-						point,
-					},
+						point
+					}
 				};
 			}
 			return result;
@@ -6246,8 +6261,8 @@ function simplifyLine(line, epsilon) {
 			maxDist: 0,
 			maxDistPoint: {
 				index: 0,
-				point: null,
-			},
+				point: null
+			}
 		}
 	);
 
@@ -6480,13 +6495,13 @@ function delaunayTriangles(points, maxEdgeLength) {
 					resultTriangles.push([
 						[getX(p1), getY(p1), p1.startZLocation], // [x, y, z] of point 1
 						[getX(p2), getY(p2), p2.startZLocation], // [x, y, z] of point 2
-						[getX(p3), getY(p3), p3.startZLocation], // [x, y, z] of point 3
+						[getX(p3), getY(p3), p3.startZLocation] // [x, y, z] of point 3
 					]);
 
 					reliefTriangles.push([
 						[getX(p1), getY(p1), p1.holeTime], // [x, y, z] of point 1
 						[getX(p2), getY(p2), p2.holeTime], // [x, y, z] of point 2
-						[getX(p3), getY(p3), p3.holeTime], // [x, y, z] of point 3
+						[getX(p3), getY(p3), p3.holeTime] // [x, y, z] of point 3
 					]);
 				}
 			}
@@ -6632,7 +6647,7 @@ function getVoronoiMetrics(points, useToeLocation) {
 				holeFiringTime: holeFiringTime,
 				volume: volume,
 				mass: mass,
-				powderFactor: powderFactor,
+				powderFactor: powderFactor
 				//add a scaled heelan vibration calculation here
 			});
 		}
@@ -6897,7 +6912,7 @@ function drawVoronoiMetric(metrics, metricName, getColorForMetric) {
 	}
 }
 
-//using resultTriangles from delaunayTriangles function create a boundingpolygon
+//using resultTriangles from delaunayTriangles function create a bounding polygon
 function createBlastBoundaryPolygon(triangles) {
 	let blastBoundaryPolygon = [];
 
@@ -6970,8 +6985,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 						lineWidth: 5,
 						color: 1,
 						closed: true,
-						entityType: "poly",
-					})),
+						entityType: "poly"
+					}))
 				});
 			});
 		}
@@ -6982,7 +6997,7 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 	const clipperPolys = rawPolygons.map((poly) =>
 		poly.map((pt) => ({
 			X: Math.round(pt.x * scale),
-			Y: Math.round(pt.y * scale),
+			Y: Math.round(pt.y * scale)
 		}))
 	);
 
@@ -7042,8 +7057,8 @@ function getRadiiPolygons(points, steps, radius, union, addToMaps, color, lineWi
 					lineWidth: lineWidth || 5,
 					color: color || 1,
 					closed: true,
-					entityType: "poly",
-				})),
+					entityType: "poly"
+				}))
 			});
 		});
 	}
@@ -7082,7 +7097,7 @@ function clipVoronoiCells(voronoiMetrics) {
 
 		const subjPath = cell.polygon.map((p) => ({
 			X: Math.round((p.x || p[0]) * scale),
-			Y: Math.round((p.y || p[1]) * scale),
+			Y: Math.round((p.y || p[1]) * scale)
 		}));
 
 		let cellSuccessfullyClippedAndAdded = false;
@@ -7093,7 +7108,7 @@ function clipVoronoiCells(voronoiMetrics) {
 			// Convert the current boundary polygon to Clipper format
 			const clipperSingleClipPath = currentBoundaryPolygon.map((p) => ({
 				X: Math.round(p.x * scale),
-				Y: Math.round(p.y * scale),
+				Y: Math.round(p.y * scale)
 			}));
 
 			const clipper = new ClipperLib.Clipper();
@@ -7107,7 +7122,7 @@ function clipVoronoiCells(voronoiMetrics) {
 				// Check solution[0] for valid polygon
 				const clippedResultPolygon = solution[0].map((pt) => ({
 					x: pt.X / scale,
-					y: pt.Y / scale,
+					y: pt.Y / scale
 				}));
 
 				const area = Math.abs(
@@ -7124,7 +7139,7 @@ function clipVoronoiCells(voronoiMetrics) {
 					polygon: clippedResultPolygon,
 					area,
 					volume,
-					powderFactor,
+					powderFactor
 				});
 				cellSuccessfullyClippedAndAdded = true;
 				break; // Important: Cell is clipped by this boundary, no need to check others
@@ -7141,7 +7156,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 	const scale = 100000;
 	const scaledPath = polygon.map((p) => ({
 		X: Math.round((p.x || p[0]) * scale),
-		Y: Math.round((p.y || p[1]) * scale),
+		Y: Math.round((p.y || p[1]) * scale)
 	}));
 
 	const c = new ClipperLib.Clipper();
@@ -7151,7 +7166,7 @@ function simplifyPolygon(polygon, tolerance, forceClose) {
 
 	const simplified = cleaned.map((p) => ({
 		x: p.X / scale,
-		y: p.Y / scale,
+		y: p.Y / scale
 	}));
 
 	if (forceClose && simplified.length > 0) {
@@ -7169,7 +7184,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
 	// Convert to Clipper path format
 	const path = polygon.map((p) => ({
 		X: Math.round(p.x * scale),
-		Y: Math.round(p.y * scale),
+		Y: Math.round(p.y * scale)
 	}));
 
 	// Initialize and execute offset
@@ -7183,7 +7198,7 @@ function offsetPolygonClipper(polygon, offsetMeters) {
 	if (offsetPaths.length === 0) return [];
 	return offsetPaths[0].map((p) => ({
 		x: p.X / scale,
-		y: p.Y / scale,
+		y: p.Y / scale
 	}));
 }
 
@@ -7239,11 +7254,11 @@ function offsetPolygonMathematical(polygon, offset) {
 
 		const p1 = {
 			x: polygon[i].x + dx,
-			y: polygon[i].y + dy,
+			y: polygon[i].y + dy
 		};
 		const p2 = {
 			x: polygon[(i + 1) % n].x + dx,
-			y: polygon[(i + 1) % n].y + dy,
+			y: polygon[(i + 1) % n].y + dy
 		};
 		offsetSegments.push([p1, p2]);
 	}
@@ -7335,7 +7350,7 @@ function drawKADPoints(x, y, z, lineWidth = 1, strokeColor) {
 	ctx.stroke();
 	ctx.fill();
 }
-//Draws an open polyline from the kadLinesArray
+//Draws an open poly line from the kadLinesArray
 function drawKADLines(sx, sy, ex, ey, sz, ez, lineWidth, strokeColor) {
 	ctx.beginPath();
 	ctx.moveTo(sx, sy);
@@ -8028,17 +8043,17 @@ function drawDelauanySlopeMap(triangles, centroid, strokeColor) {
 		const edge1 = {
 			x: tBX - tAX,
 			y: tBY - tAY,
-			z: tBZ - tAZ,
+			z: tBZ - tAZ
 		};
 		const edge2 = {
 			x: tCX - tAX,
 			y: tCY - tAY,
-			z: tCZ - tAZ,
+			z: tCZ - tAZ
 		};
 		const edge3 = {
 			x: tCX - tBX,
 			y: tCY - tBY,
-			z: tCZ - tBZ,
+			z: tCZ - tBZ
 		};
 
 		// Calculate the maximum absolute slope angle for this triangle
@@ -8319,7 +8334,7 @@ function calculateTriangleCentroid(triangle) {
 	const triangleCentroid = {
 		x: (tAX + tBX + tCX) / 3,
 		y: (tAY + tBY + tCY) / 3,
-		z: (tAZ + tBZ + tCZ) / 3,
+		z: (tAZ + tBZ + tCZ) / 3
 	};
 	return triangleCentroid;
 }
@@ -9077,7 +9092,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 		const newEntity = {
 			entityName: `${entityName}_offset`, // Modify this as needed
 			entityType: entityType,
-			data: [],
+			data: []
 		};
 
 		let prevPoint = null;
@@ -9117,7 +9132,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 				pointYLocation: offsetY,
 				pointZLocation: point.pointZLocation,
 				lineWidth: point.lineWidth,
-				color: point.color,
+				color: point.color
 			});
 
 			if (extendIfNecessary && prevPoint) {
@@ -9133,7 +9148,7 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 						pointYLocation: offsetY,
 						pointZLocation: point.pointZLocation,
 						lineWidth: point.lineWidth,
-						color: point.color,
+						color: point.color
 					});
 				}
 			}
@@ -9962,6 +9977,7 @@ function addKADPoint() {
 			color: color,
 			connected: false,
 			closed: false,
+			visible: true
 		};
 
 		// Create the entity if it doesn't exist
@@ -9970,6 +9986,7 @@ function addKADPoint() {
 				entityName: entityName,
 				entityType: entityType,
 				data: [],
+				visible: true
 			});
 		}
 
@@ -10017,7 +10034,7 @@ function handleKADLineClick(event) {
 		debouncedSaveKAD();
 	}
 }
-// Around line 8361, replace addKADLine:
+
 function addKADLine() {
 	if (isDrawingLine) {
 		const entityType = "line";
@@ -10043,6 +10060,7 @@ function addKADLine() {
 			lineWidth: lineWidth,
 			color: color,
 			closed: false, // Added: lines are open
+			visible: true
 		};
 
 		// Add to allKADDrawingsMap instead
@@ -10051,6 +10069,7 @@ function addKADLine() {
 				name: entityName,
 				entityType: entityType,
 				data: [],
+				visible: true
 			});
 		}
 		allKADDrawingsMap.get(entityName).data.push(lineObject); // Changed map
@@ -10125,6 +10144,7 @@ function addKADPoly() {
 			lineWidth: lineWidth,
 			color: color,
 			closed: closed, // Set to true if the polygon is closed
+			visible: true
 		};
 
 		// Add the point to allKADDrawingsMap
@@ -10133,6 +10153,7 @@ function addKADPoly() {
 				name: entityName,
 				entityType: entityType,
 				data: [],
+				visible: true
 			});
 		}
 		allKADDrawingsMap.get(entityName).data.push(polyObject);
@@ -10211,6 +10232,7 @@ function addKADCircle() {
 			color: color,
 			connected: false,
 			closed: false,
+			visible: true
 		};
 
 		// Create the entity if it doesn't exist
@@ -10219,6 +10241,7 @@ function addKADCircle() {
 				entityName: entityName,
 				entityType: entityType,
 				data: [],
+				visible: true
 			});
 		}
 		allKADDrawingsMap.get(entityName).data.push(circleObject);
@@ -10337,8 +10360,8 @@ function showCalculationErrorPopup(originalText, errorMessage) {
 				cancelButton: "cancel",
 				content: "swal2-content",
 				htmlContainer: "swal2-html-container",
-				icon: "swal2-icon",
-			},
+				icon: "swal2-icon"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// User wants to fix it - keep the text field focused for editing
@@ -10372,7 +10395,7 @@ async function addKADText() {
 				html: `<div style="text-align: left;">Please enter some text before placing it on the canvas.</div>`,
 				showCancelButton: true,
 				confirmButtonText: "Enter Text",
-				cancelButtonText: "Cancel",
+				cancelButtonText: "Cancel"
 			});
 
 			if (result.isConfirmed) {
@@ -10431,6 +10454,7 @@ async function addKADText() {
 			color: color,
 			connected: false,
 			closed: false,
+			visible: true
 		};
 
 		// Create the entity if it doesn't exist
@@ -10440,6 +10464,7 @@ async function addKADText() {
 				entityName: entityName,
 				entityType: entityType,
 				data: [],
+				visible: true
 			});
 		} else {
 			console.log("Using existing map entry for:", entityName);
@@ -10661,7 +10686,7 @@ function saveAQMPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		preConfirm: () => {
 			// Get user input values
@@ -10716,7 +10741,7 @@ function saveAQMPopup() {
 			savedAQMPopupSettings.writeIgnoreColumn = writeIgnoreColumn;
 			savedAQMPopupSettings.columnOrderArray = columnOrderArray;
 			localStorage.setItem("savedAQMPopupSettings", JSON.stringify(savedAQMPopupSettings));
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Get user input values
@@ -10743,8 +10768,8 @@ function saveAQMPopup() {
 						confirmButton: "cancel",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "swal2-icon",
-					},
+						icon: "swal2-icon"
+					}
 				});
 				return; // Exit the function
 			}
@@ -10780,7 +10805,7 @@ function saveAQMPopup() {
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([aqm], {
-					type: "text/csv;charset=utf-8",
+					type: "text/csv;charset=utf-8"
 				});
 				// Create a URL for the Blob
 				const url = URL.createObjectURL(blob);
@@ -10875,7 +10900,7 @@ function addHolePopup() {
 		length: savedAddHolePopupSettings.length || 0,
 		subdrill: savedAddHolePopupSettings.subdrill || 0,
 		angle: savedAddHolePopupSettings.angle || 0,
-		bearing: savedAddHolePopupSettings.bearing || 0,
+		bearing: savedAddHolePopupSettings.bearing || 0
 	};
 
 	// Calculate default length if using grade Z
@@ -10924,7 +10949,7 @@ function addHolePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -10977,7 +11002,7 @@ function addHolePopup() {
 
 			// Initial update
 			updateFieldsBasedOnUseGradeZ();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const useCustomHoleID = document.getElementById("useCustomHoleID").checked;
@@ -10999,8 +11024,8 @@ function addHolePopup() {
 						cancelButton: "Try Again",
 						content: "swal2-content",
 						htmlContainer: "swal2-html-container",
-						icon: "error",
-					},
+						icon: "error"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11016,8 +11041,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11032,8 +11057,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11047,8 +11072,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11062,8 +11087,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11077,8 +11102,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11093,8 +11118,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11110,8 +11135,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11126,8 +11151,8 @@ function addHolePopup() {
 					icon: "error",
 					customClass: {
 						container: "custom-popup-container",
-						popup: "custom-popup-container",
-					},
+						popup: "custom-popup-container"
+					}
 				});
 				return; // Exit the function
 			}
@@ -11144,7 +11169,7 @@ function addHolePopup() {
 				length: lengthValue,
 				subdrill: subdrillValue,
 				angle: angleValue,
-				bearing: bearingValue,
+				bearing: bearingValue
 			};
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
@@ -11157,7 +11182,7 @@ function addHolePopup() {
 					holeID: useCustomHoleID ? customHoleID : (points.length + 1).toString(),
 					x: parseFloat(worldX),
 					y: parseFloat(worldY),
-					diameter: parseFloat(diameterValue),
+					diameter: parseFloat(diameterValue)
 				};
 
 				showProximityWarning(proximityHoles, newHoleInfo).then((proximityResult) => {
@@ -11239,7 +11264,7 @@ function addPatternPopup(worldX, worldY) {
 		burden: savedAddPatternPopupSettings.burden || 3.0,
 		spacing: savedAddPatternPopupSettings.spacing || 3.3,
 		rows: savedAddPatternPopupSettings.rows || 6,
-		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10,
+		holesPerRow: savedAddPatternPopupSettings.holesPerRow || 10
 	};
 
 	// Show loading spinner while the popup is created
@@ -11308,7 +11333,7 @@ function addPatternPopup(worldX, worldY) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Get references to form elements
@@ -11361,7 +11386,7 @@ function addPatternPopup(worldX, worldY) {
 
 			// Initial update
 			updateFieldsBasedOnUseGradeZ();
-		},
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -11397,7 +11422,7 @@ function addPatternPopup(worldX, worldY) {
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
-						icon: "error",
+						icon: "error"
 					});
 					return; // Stop execution if validation fails
 				}
@@ -11423,7 +11448,7 @@ function addPatternPopup(worldX, worldY) {
 					burden: burden,
 					spacing: spacing,
 					rows: rows,
-					holesPerRow: holesPerRow,
+					holesPerRow: holesPerRow
 				};
 				localStorage.setItem("savedAddPatternPopupSettings", JSON.stringify(lastValues));
 
@@ -11466,7 +11491,7 @@ function checkHoleProximity(newX, newY, newDiameter, existingPoints) {
 			proximityHoles.push({
 				hole: existingHole,
 				distance: distance,
-				requiredDistance: combinedMinDistance,
+				requiredDistance: combinedMinDistance
 			});
 		}
 	}
@@ -11509,8 +11534,8 @@ function showProximityWarning(proximityHoles, newHoleInfo) {
 			denyButton: "deny",
 			cancelButton: "cancel",
 			content: "swal2-content",
-			htmlContainer: "swal2-html-container",
-		},
+			htmlContainer: "swal2-html-container"
+		}
 	});
 }
 
@@ -11649,8 +11674,8 @@ function editHoleLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
@@ -11660,7 +11685,7 @@ function editHoleLengthPopup() {
 				Swal.fire({
 					title: "Invalid length",
 					text: "Please enter an length between 0 and 100 meters.",
-					icon: "error",
+					icon: "error"
 				});
 				return; // Exit the function
 			} else if (selectedHole) {
@@ -11711,8 +11736,8 @@ function measuredLengthPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const lengthInput = document.getElementById("length");
@@ -11754,8 +11779,8 @@ function measuredMassPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const massInput = document.getElementById("mass");
@@ -11807,8 +11832,8 @@ function measuredCommentPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const commentInput = document.getElementById("comment");
@@ -11890,8 +11915,8 @@ function editBlastNamePopup(selectedHole) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const blastNameInput = document.getElementById("blastName");
@@ -11989,8 +12014,8 @@ function editHoleTypePopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			const typeInput = document.getElementById("type");
@@ -12154,7 +12179,7 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
 			holeID: newHoleID.toString(),
 			x: startXLocation,
 			y: startYLocation,
-			diameter: holeDiameter,
+			diameter: holeDiameter
 		};
 
 		showProximityWarning(proximityHoles, newHoleInfo).then((result) => {
@@ -12242,6 +12267,7 @@ function addHoleToPoints(entityName, entityType, newHoleID, startXLocation, star
 		measuredMassTimeStamp: measuredMassTimeStamp,
 		measuredComment: measuredComment,
 		measuredCommentTimeStamp: measuredCommentTimeStamp,
+		visible: true
 	});
 
 	//console.log("Added Hole: " + newHoleID);
@@ -12506,7 +12532,7 @@ function recalculateContours(points, deltaX, deltaY) {
 				contourData.push({
 					x: point.startXLocation,
 					y: point.startYLocation,
-					z: time,
+					z: time
 				});
 			}
 		}
@@ -12679,7 +12705,7 @@ function timeChart() {
 			title: {
 				text: "Time Window Chart - No Data",
 				xanchor: "right",
-				font: { size: 10 },
+				font: { size: 10 }
 			},
 			plot_bgcolor: noneColor,
 			paper_bgcolor: noneColor,
@@ -12689,18 +12715,18 @@ function timeChart() {
 				bgcolor: noneColor,
 				color: "rgba(255, 0, 0, 0.4)",
 				activecolor: "red",
-				position: "left",
+				position: "left"
 			},
 			margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
 			xaxis: {
 				title: { text: "milliseconds (ms)", font: { size: 10 } },
 				showgrid: true,
-				range: [0, 100],
+				range: [0, 100]
 			},
 			yaxis: {
 				title: { text: "Holes Firing", font: { size: 10 } },
 				showgrid: true,
-				range: [0, 10],
+				range: [0, 10]
 			},
 			height: 380,
 			width: chart.offsetWidth - 50,
@@ -12714,16 +12740,16 @@ function timeChart() {
 					xanchor: "center",
 					yanchor: "middle",
 					showarrow: false,
-					font: { size: 12, color: textFillColor },
-				},
-			],
+					font: { size: 12, color: textFillColor }
+				}
+			]
 		};
 
 		Plotly.react("timeChart", [], layout, {
 			responsive: true,
 			displayModeBar: true,
 			modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+			modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
 		});
 
 		return; // Exit early after creating blank chart
@@ -12809,7 +12835,7 @@ function timeChart() {
 		title: {
 			text: "Time Window Chart",
 			xanchor: "right",
-			font: { size: 10 },
+			font: { size: 10 }
 		},
 		plot_bgcolor: noneColor,
 		paper_bgcolor: noneColor,
@@ -12819,7 +12845,7 @@ function timeChart() {
 			bgcolor: noneColor,
 			color: "rgba(255, 0, 0, 0.4)",
 			activecolor: "red",
-			position: "left",
+			position: "left"
 		},
 		margin: { l: 5, r: 50, b: 25, t: 25, pad: 2 },
 		xaxis: {
@@ -12827,16 +12853,16 @@ function timeChart() {
 			showgrid: true,
 			rangeslider: { visible: true, thickness: 0.1 },
 			tickvals: "auto", //tickvals, // if you want bin ranges
-			ticktext: "~s", //ticktext, //if you want bin ranges
+			ticktext: "~s" //ticktext, //if you want bin ranges
 		},
 		yaxis: {
 			title: { text: newYLabel, font: { size: 10 } },
 			showgrid: true,
 			automargin: true,
-			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5],
+			range: preserveYRange && currentLayout ? [...currentLayout.yaxis.range] : [0, maxYValue - 0.5]
 		},
 		height: 380,
-		width: chart.offsetWidth - 50, // ✅ dynamic width based on container,
+		width: chart.offsetWidth - 50 // ✅ dynamic width based on container,
 	};
 
 	const data = [
@@ -12849,15 +12875,15 @@ function timeChart() {
 			text: hoverText,
 			textposition: "none", // ✅ disables labels drawn on bars
 			//hoverinfo: "text+y",
-			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>",
-		},
+			hovertemplate: "Bin: %{x} ms<br>" + (useMass && !fallbackToCount ? "Mass" : "Value") + ": %{y}<extra></extra>"
+		}
 	];
 
 	Plotly.react("timeChart", data, layout, {
 		responsive: true,
 		displayModeBar: true,
 		modeBarButtonsToRemove: ["lasso2d", "hoverClosestCartesian", "hoverCompareCartesian", "toggleSpikelines"],
-		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]],
+		modeBarButtons: [["select2d", "zoomIn2d", "zoomOut2d", "autoScale2d", "resetScale2d", "toImage", "pan2d"]]
 	});
 
 	// ✅ Clear previously registered listeners
@@ -13048,7 +13074,7 @@ function getDisplayOptions() {
 		measuredLength: document.getElementById("display13").checked,
 		measuredMass: document.getElementById("display14").checked,
 		measuredComment: document.getElementById("display15").checked,
-		voronoiPF: document.getElementById("display16").checked,
+		voronoiPF: document.getElementById("display16").checked
 	};
 }
 
@@ -13125,113 +13151,139 @@ function drawData(points, selectedHole) {
 			drawHiHole(x, y, 10, "rgba(255, 102, 255, 0.3)", "rgba(255, 0, 255, 0.6)");
 		}
 
-		// In drawData function, replace the drawing logic with:
-		for (const [name, entity] of allKADDrawingsMap.entries()) {
-			if (developerModeEnabled && entity.entityType === "point") {
-				// Draw points - FIX: Remove extra parameters
-				entity.data.forEach((point) => {
-					const screenX = (point.pointXLocation - centroidX) * currentScale + canvas.width / 2;
-					const screenY = -(point.pointYLocation - centroidY) * currentScale + canvas.height / 2;
-					let lineWidthForDisplay = point.lineWidth;
-					if (point.lineWidth < 2) {
-						lineWidthForDisplay = 2;
+		// In drawData function, replace the drawing logic with hierarchical visibility:
+		if (drawingsGroupVisible) {
+			// ✅ ADD: Check overall drawings group visibility
+			for (const [name, entity] of allKADDrawingsMap.entries()) {
+				// ✅ Check entity visibility
+				if (entity.visible === false) continue;
+
+				// ✅ ADD: Check sub-group visibility based on entity type
+				let subGroupVisible = true;
+				switch (entity.entityType) {
+					case "point":
+						subGroupVisible = pointsGroupVisible;
+						break;
+					case "line":
+						subGroupVisible = linesGroupVisible;
+						break;
+					case "poly":
+						subGroupVisible = polygonsGroupVisible;
+						break;
+					case "circle":
+						subGroupVisible = circlesGroupVisible;
+						break;
+					case "text":
+						subGroupVisible = textsGroupVisible;
+						break;
+				}
+
+				if (!subGroupVisible) continue; // ✅ Skip if sub-group is hidden
+
+				if (developerModeEnabled && entity.entityType === "point") {
+					entity.data.forEach((point) => {
+						// ✅ Check individual element visibility
+						if (point.visible === false) return;
+						const screenX = (point.pointXLocation - centroidX) * currentScale + canvas.width / 2;
+						const screenY = -(point.pointYLocation - centroidY) * currentScale + canvas.height / 2;
+						let lineWidthForDisplay = point.lineWidth;
+						if (point.lineWidth < 2) {
+							lineWidthForDisplay = 2;
+						}
+						drawKADPoints(screenX, screenY, point.pointZLocation, lineWidthForDisplay, point.color);
+					});
+				} else if (entity.entityType === "point") {
+					// Apply pixel distance simplification to points for performance
+					const originalPoints = entity.data.filter((point) => point.visible !== false);
+					const simplifiedPoints = simplifyByPxDist(originalPoints, 3);
+
+					for (const pointData of simplifiedPoints) {
+						let lineWidthForDisplay = pointData.lineWidth;
+						if (pointData.lineWidth < 2) {
+							lineWidthForDisplay = 2;
+						}
+						const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
+						drawKADPoints(x, y, pointData.pointZLocation, lineWidthForDisplay, pointData.color);
 					}
-					drawKADPoints(screenX, screenY, point.pointZLocation, lineWidthForDisplay, point.color); // ← use lineWidth as a proxy for point diameter also for conversion.
-				});
-			} else if (entity.entityType === "point") {
-				// Apply pixel distance simplification to points for performance
-				const originalPoints = entity.data;
-				const simplifiedPoints = simplifyByPxDist(originalPoints, 3); // Slightly smaller threshold for points
-				//get the line width for each stored point in the simplified points and for display purposes if it is less than 2 then set it to 4
-				for (const pointData of simplifiedPoints) {
-					let lineWidthForDisplay = pointData.lineWidth;
-					if (pointData.lineWidth < 2) {
-						lineWidthForDisplay = 2;
+				} else if (entity.entityType === "circle") {
+					// ✅ FIXED: Move visibility check inside forEach loop
+					entity.data.forEach((circle) => {
+						if (circle.visible === false) return; // ✅ Check individual element visibility
+						const screenX = (circle.pointXLocation - centroidX) * currentScale + canvas.width / 2;
+						const screenY = -(circle.pointYLocation - centroidY) * currentScale + canvas.height / 2;
+						drawKADCircles(screenX, screenY, circle.pointZLocation, circle.radius, circle.lineWidth, circle.color);
+					});
+				} else if (entity.entityType === "text") {
+					entity.data.forEach((textData) => {
+						if (textData.visible === false) return; // ✅ Check individual element visibility
+						if (textData && textData.text) {
+							const screenX = (textData.pointXLocation - centroidX) * currentScale + canvas.width / 2;
+							const screenY = -(textData.pointYLocation - centroidY) * currentScale + canvas.height / 2;
+							drawKADTexts(screenX, screenY, textData.pointZLocation, textData.text, textData.color);
+						}
+					});
+				} else if (developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
+					// ✅ FIXED: Filter visible points first, then use filtered data
+					const visiblePoints = entity.data.filter((point) => point.visible !== false);
+					if (visiblePoints.length < 2) continue;
+
+					// Draw all segments without any simplification
+					for (let i = 0; i < visiblePoints.length - 1; i++) {
+						const currentPoint = visiblePoints[i];
+						const nextPoint = visiblePoints[i + 1];
+
+						const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+						const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
+
+						drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
 					}
-					const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
-					drawKADPoints(x, y, pointData.pointZLocation, lineWidthForDisplay, pointData.color);
-				}
-			} else if (entity.entityType === "circle") {
-				// Draw circles
-				entity.data.forEach((circle) => {
-					const screenX = (circle.pointXLocation - centroidX) * currentScale + canvas.width / 2;
-					const screenY = -(circle.pointYLocation - centroidY) * currentScale + canvas.height / 2;
-					drawKADCircles(screenX, screenY, circle.pointZLocation, circle.radius, circle.lineWidth, circle.color);
-				});
-			} else if (entity.entityType === "text") {
-				// Draw text - Fix the property name
-				entity.data.forEach((textData) => {
-					if (textData && textData.text) {
-						const screenX = (textData.pointXLocation - centroidX) * currentScale + canvas.width / 2;
-						const screenY = -(textData.pointYLocation - centroidY) * currentScale + canvas.height / 2;
-						drawKADTexts(screenX, screenY, textData.pointZLocation, textData.text, textData.color); // ← Change textValue to text and strokeColor to color
+
+					// Handle closing segment for polygons
+					const isClosed = entity.entityType === "poly";
+					if (isClosed && visiblePoints.length > 2) {
+						const firstPoint = visiblePoints[0];
+						const lastPoint = visiblePoints[visiblePoints.length - 1];
+						const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
+						const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+
+						drawKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
 					}
-				});
-			} else if (developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
-				// --- Developer Mode: Full quality, no simplification ---
-				const points = entity.data;
-				if (points.length < 2) continue;
+				} else if (!developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
+					// --- Pixel-distance simplification for performance ---
+					const originalPoints = entity.data.filter((point) => point.visible !== false);
+					if (originalPoints.length < 2) continue;
 
-				// Draw all segments without any simplification
-				for (let i = 0; i < points.length - 1; i++) {
-					const currentPoint = points[i]; // FIRST point of segment
-					const nextPoint = points[i + 1]; // SECOND point of segment
+					// Simplify by pixel distance
+					let pointThreshold = 2;
+					if (currentScale > 1) {
+						pointThreshold = 2;
+					} else {
+						pointThreshold = 1;
+					}
 
-					const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
-					const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
+					const simplifiedPoints = simplifyByPxDist(originalPoints, pointThreshold);
 
-					// Use FIRST point properties
-					drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
-				}
+					// Draw the simplified line/polygon
+					for (let i = 0; i < simplifiedPoints.length - 1; i++) {
+						const currentPoint = simplifiedPoints[i];
+						const nextPoint = simplifiedPoints[i + 1];
 
-				// Handle closing segment for polygons
-				const isClosed = entity.entityType === "poly";
-				if (isClosed && points.length > 2) {
-					const firstPoint = points[0];
-					const lastPoint = points[points.length - 1];
-					const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
-					const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
+						const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
+						const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
 
-					// Use last point properties for closing segment
-					drawKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
-				}
-			} else if (!developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
-				// --- Pixel-distance simplification for performance ---
-				const originalPoints = entity.data;
-				if (originalPoints.length < 2) continue;
+						drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
+					}
 
-				// Simplify by pixel distance
-				let pointThreshold = 2;
-				if (currentScale > 1) {
-					pointThreshold = 2;
-				} else {
-					pointThreshold = 1;
-				}
+					// Handle closing segment for polygons
+					const isClosed = entity.entityType === "poly";
+					if (isClosed && simplifiedPoints.length > 2) {
+						const firstPoint = simplifiedPoints[0];
+						const lastPoint = simplifiedPoints[simplifiedPoints.length - 1];
+						const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
+						const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
 
-				const simplifiedPoints = simplifyByPxDist(originalPoints, pointThreshold);
-
-				// Draw the simplified line/polygon
-				for (let i = 0; i < simplifiedPoints.length - 1; i++) {
-					const currentPoint = simplifiedPoints[i];
-					const nextPoint = simplifiedPoints[i + 1];
-
-					const [sx, sy] = worldToCanvas(currentPoint.pointXLocation, currentPoint.pointYLocation);
-					const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
-
-					// Use FIRST point properties
-					drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
-				}
-
-				// Handle closing segment for polygons
-				const isClosed = entity.entityType === "poly";
-				if (isClosed && simplifiedPoints.length > 2) {
-					const firstPoint = simplifiedPoints[0];
-					const lastPoint = simplifiedPoints[simplifiedPoints.length - 1];
-					const [sx, sy] = worldToCanvas(lastPoint.pointXLocation, lastPoint.pointYLocation);
-					const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
-
-					// Use last point properties for closing segment
-					drawKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
+						drawKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
+					}
 				}
 			}
 		}
@@ -13549,8 +13601,10 @@ function drawData(points, selectedHole) {
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = strokeColor;
 		ctx.font = parseInt(currentFontSize) + "px Arial";
-		if (points && Array.isArray(points) && points.length > 0) {
+		if (blastGroupVisible && points && Array.isArray(points) && points.length > 0) {
+			// ✅ ADD: Check blast group visibility
 			for (const point of points) {
+				if (point.visible === false) continue;
 				const [x, y] = worldToCanvas(point.startXLocation, point.startYLocation);
 				const [gradeX, gradeY] = worldToCanvas(point.gradeXLocation, point.gradeYLocation);
 				const [lineEndX, lineEndY] = worldToCanvas(point.endXLocation, point.endYLocation);
@@ -13598,7 +13652,7 @@ function drawData(points, selectedHole) {
 					middleSideCollar,
 					bottomSideCollar,
 					holeMap,
-					displayOptions,
+					displayOptions
 				});
 
 				// Draw main hole geometry, with selection highlight logic
@@ -13979,7 +14033,7 @@ function getMousePos(canvas, evt) {
 
 	return {
 		x: canvasX,
-		y: canvasY,
+		y: canvasY
 	};
 }
 
@@ -14453,7 +14507,7 @@ async function saveSurfaceToDB(surfaceId) {
 				visible: surface.visible,
 				gradient: surface.gradient,
 				transparency: surface.transparency ?? 1.0, // Add this line
-				savedAt: new Date().toISOString(),
+				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(surfaceRecord);
@@ -14491,7 +14545,7 @@ async function loadSurfaceIntoMemory(surfaceId) {
 						triangles: surfaceData.triangles,
 						visible: surfaceData.visible !== false,
 						gradient: surfaceData.gradient || "default",
-						transparency: surfaceData.transparency ?? 1.0, // Add this line
+						transparency: surfaceData.transparency ?? 1.0 // Add this line
 					});
 					console.log("✅ Surface " + surfaceData.name + " loaded into memory");
 				}
@@ -14524,7 +14578,7 @@ async function loadAllSurfacesIntoMemory() {
 						triangles: surfaceData.triangles,
 						visible: surfaceData.visible !== false,
 						gradient: surfaceData.gradient || "default",
-						transparency: surfaceData.transparency ?? 1.0, // Add this line
+						transparency: surfaceData.transparency ?? 1.0 // Add this line
 					});
 				});
 				console.log("📊 Loaded " + loadedSurfaces.size + " surfaces into memory");
@@ -14553,6 +14607,118 @@ function toggleSurfaceVisibility(surfaceId) {
 		surface.visible = !surface.visible;
 		setSurfaceVisibility(surfaceId, surface.visible);
 	}
+}
+
+//=== KAD Drawing Visibility Management ===
+function setKADEntityVisibility(entityName, visible) {
+	const entity = allKADDrawingsMap.get(entityName);
+	if (entity) {
+		entity.visible = visible;
+		console.log("👁️ KAD Entity " + entityName + " visibility: " + visible);
+		drawData(points, selectedHole);
+	}
+}
+
+function setKADElementVisibility(entityName, pointID, visible) {
+	const entity = allKADDrawingsMap.get(entityName);
+	if (entity && entity.data) {
+		const element = entity.data.find((el) => el.pointID == pointID);
+		if (element) {
+			element.visible = visible;
+			console.log("👁️ KAD Element " + entityName + ":" + pointID + " visibility: " + visible);
+			drawData(points, selectedHole);
+		}
+	}
+}
+
+function toggleKADEntityVisibility(entityName) {
+	const entity = allKADDrawingsMap.get(entityName);
+	if (entity) {
+		entity.visible = !entity.visible;
+		setKADEntityVisibility(entityName, entity.visible);
+	}
+}
+
+//=== Blast Hole Visibility Management ===
+function setHoleVisibility(holeID, visible) {
+	const hole = points.find((h) => h.holeID === holeID);
+	if (hole) {
+		hole.visible = visible;
+		console.log("👁️ Hole " + holeID + " visibility: " + visible);
+		drawData(points, selectedHole);
+	}
+}
+
+function setEntityVisibility(entityName, visible) {
+	const entityHoles = points.filter((h) => h.entityName === entityName);
+	entityHoles.forEach((hole) => {
+		hole.visible = visible;
+	});
+	console.log("👁️ Entity " + entityName + " visibility: " + visible + " (affecting " + entityHoles.length + " holes)");
+	drawData(points, selectedHole);
+}
+
+function toggleHoleVisibility(holeID) {
+	const hole = points.find((h) => h.holeID === holeID);
+	if (hole) {
+		hole.visible = !hole.visible;
+		setHoleVisibility(holeID, hole.visible);
+	}
+}
+//=== Group Visibility Management ===
+function setBlastGroupVisibility(visible) {
+	blastGroupVisible = visible;
+	console.log("👁️ Blast Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setDrawingsGroupVisibility(visible) {
+	drawingsGroupVisible = visible;
+	console.log("👁️ Drawings Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setSurfacesGroupVisibility(visible) {
+	surfacesGroupVisible = visible;
+	console.log("👁️ Surfaces Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setImagesGroupVisibility(visible) {
+	imagesGroupVisible = visible;
+	console.log("👁️ Images Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+// Drawing sub-group visibility
+function setPointsGroupVisibility(visible) {
+	pointsGroupVisible = visible;
+	console.log("👁️ Points Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setLinesGroupVisibility(visible) {
+	linesGroupVisible = visible;
+	console.log("👁️ Lines Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setPolygonsGroupVisibility(visible) {
+	polygonsGroupVisible = visible;
+	console.log("👁️ Polygons Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setCirclesGroupVisibility(visible) {
+	circlesGroupVisible = visible;
+	console.log("👁️ Circles Group visibility: " + visible);
+	drawData(points, selectedHole);
+}
+
+function setTextsGroupVisibility(visible) {
+	textsGroupVisible = visible;
+	console.log("👁️ Texts Group visibility: " + visible);
+	drawData(points, selectedHole);
 }
 
 // Delete surface from IndexedDB
@@ -14675,7 +14841,7 @@ async function saveImageToDB(imageId) {
 				blob: blob,
 				visible: image.visible,
 				transparency: image.transparency,
-				savedAt: new Date().toISOString(),
+				savedAt: new Date().toISOString()
 			};
 
 			const request = store.put(imageRecord);
@@ -14724,7 +14890,7 @@ async function loadImageIntoMemory(imageId) {
 							bbox: imageData.bbox,
 							type: imageData.type,
 							visible: imageData.visible !== false,
-							transparency: imageData.transparency || 1.0,
+							transparency: imageData.transparency || 1.0
 						});
 
 						console.log("✅ Image " + imageData.name + " loaded into memory");
@@ -14776,7 +14942,7 @@ async function loadAllImagesIntoMemory() {
 								bbox: imageData.bbox,
 								type: imageData.type,
 								visible: imageData.visible !== false,
-								transparency: imageData.transparency || 1.0,
+								transparency: imageData.transparency || 1.0
 							});
 
 							imgResolve();
@@ -15126,7 +15292,7 @@ function findClosestKadPoint(worldPoint, snapDistance) {
 					closestPoint = {
 						entityName: name,
 						pointIndex: i,
-						point: pt,
+						point: pt
 					};
 				}
 			}
@@ -15160,7 +15326,7 @@ function handleKADModificationClick(event) {
 			pointXLocation: selectedKADPoint.clickedX,
 			pointYLocation: selectedKADPoint.clickedY,
 			// Add other properties as needed by existing code
-			...entity.data[0], // Copy properties from first point
+			...entity.data[0] // Copy properties from first point
 		};
 		console.log("DEBUG: selectedKADObject created:", selectedKADObject);
 		//selectedKADPolygon = null; // Clear the other variable
@@ -15464,7 +15630,7 @@ function openNavRight() {
 		sidenavRight.style.height = "350px";
 		//resize the timechart
 		Plotly.relayout("timeChart", {
-			width: 280,
+			width: 280
 		});
 	} else {
 		body.style.marginRight = "315px"; // Push body to the left
@@ -15553,7 +15719,7 @@ let dragInitialPositions = [];
 let previousToolState = {
 	isSelectionPointerActive: false,
 	isPolygonSelectionActive: false,
-	selectionMode: false,
+	selectionMode: false
 };
 // Helper function to remove all canvas listeners
 function removeAllCanvasListenersKeepDefault() {
@@ -15598,7 +15764,7 @@ moveToTool.addEventListener("change", function () {
 		previousToolState = {
 			isSelectionPointerActive: isSelectionPointerActive,
 			isPolygonSelectionActive: isPolygonSelectionActive,
-			selectionMode: isMultiHoleSelectionEnabled,
+			selectionMode: isMultiHoleSelectionEnabled
 		};
 
 		// Disable other tools
@@ -15699,7 +15865,7 @@ function handleMoveToolMouseDown(event) {
 		dragInitialPositions = selectedMultipleHoles.map((hole) => ({
 			hole: hole,
 			x: hole.startXLocation,
-			y: hole.startYLocation,
+			y: hole.startYLocation
 		}));
 		canvas.addEventListener("mousemove", handleMoveToolMouseMove);
 		canvas.addEventListener("touchmove", handleMoveToolMouseMove);
@@ -16224,7 +16390,7 @@ function isClickOnSelectedPolygon(worldX, worldY, selectedPolygon) {
 				...point,
 				mapType: "allKADDrawingsMap", // ← Use unified map name
 				entityType: entity.entityType, // ← Use actual entity type from data
-				entityName: entity.entityName, // ← Add entity name for consistency
+				entityName: entity.entityName // ← Add entity name for consistency
 			};
 		}
 	}
@@ -16243,7 +16409,7 @@ function isClickOnSelectedPolygon(worldX, worldY, selectedPolygon) {
 				...point1,
 				mapType: "allKADDrawingsMap", // ← Use unified map name
 				entityType: entity.entityType, // ← Use actual entity type from data
-				entityName: entity.entityName, // ← Add entity name for consistency
+				entityName: entity.entityName // ← Add entity name for consistency
 			};
 		}
 	}
@@ -16303,7 +16469,7 @@ function getClickedKADObject(clickX, clickY) {
 							entityType: entity.entityType,
 							elementIndex: i,
 							segmentIndex: i,
-							selectionType: "point",
+							selectionType: "point"
 						};
 						minDistance = distance;
 					}
@@ -16337,7 +16503,7 @@ function getClickedKADObject(clickX, clickY) {
 							segmentIndex: i, // This is the specific segment clicked
 							selectionType: "segment",
 							clickedX: closestPoint.x,
-							clickedY: closestPoint.y,
+							clickedY: closestPoint.y
 						};
 						minDistance = segmentDistance;
 					}
@@ -16357,7 +16523,7 @@ function getClickedKADObject(clickX, clickY) {
 								entityType: entity.entityType,
 								elementIndex: i,
 								segmentIndex: i,
-								selectionType: "vertex",
+								selectionType: "vertex"
 							};
 							minDistance = distance;
 						}
@@ -16450,12 +16616,12 @@ function showMultipleHolePropertyEditor(holes) {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the dialog opens
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		// Clear any dragging states when dialog closes
 		isDragging = false;
@@ -16524,7 +16690,7 @@ function jsColorPaletteForPicker() {
 	// This function sets the default color palette for the color picker
 	jscolor.presets.default = {
 		format: "rgb",
-		palette: ["#990000", "#FF0000", "#FFAA00", "#CCCC00", "#FFF000", "#00ff00", "#00bb00", "#00bbff", "#0055FF", "#aa00ff", "#F1F1F1", "#E3E3E3", "#C6C6C6", "#7F7F7F", "#555555", "#393939", "#1C1C1C", "#00FFFF", "#006699", "#FF00FF"],
+		palette: ["#990000", "#FF0000", "#FFAA00", "#CCCC00", "#FFF000", "#00ff00", "#00bb00", "#00bbff", "#0055FF", "#aa00ff", "#F1F1F1", "#E3E3E3", "#C6C6C6", "#7F7F7F", "#555555", "#393939", "#1C1C1C", "#00FFFF", "#006699", "#FF00FF"]
 	};
 }
 
@@ -16562,12 +16728,12 @@ function showHolePropertyEditor(hole) {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the dialog opens
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		// Clear any dragging states when dialog closes
 		isDragging = false;
@@ -16708,13 +16874,13 @@ function showKADPropertyEditorPopup(kadObject) {
 			content: "swal2-content",
 			confirmButton: "confirm",
 			denyButton: "deny",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Initialize JSColor after the popup opens
 			jsColorPaletteForPicker();
 			jscolor.install();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed || result.isDenied) {
 			const colorElement = document.getElementById("editKADColor");
@@ -16732,7 +16898,7 @@ function showKADPropertyEditorPopup(kadObject) {
 				lineWidth: document.getElementById("editLineWidth")?.value,
 				radius: document.getElementById("editRadius")?.value,
 				text: document.getElementById("editText")?.value,
-				onlyZ: onlyZ,
+				onlyZ: onlyZ
 			};
 
 			// Handle line/poly conversion
@@ -17027,7 +17193,7 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
 		{ name: "Turbo 🔥", value: "turbo" },
 		{ name: "Parula 🔵", value: "parula" },
 		{ name: "Cividis 🔵", value: "cividis" },
-		{ name: "Terrain 🟢", value: "terrain" },
+		{ name: "Terrain 🟢", value: "terrain" }
 	];
 	gradients.forEach((gradient) => {
 		const gradientItem = document.createElement("div");
@@ -17369,7 +17535,7 @@ fileInputCustomCSV.addEventListener("change", function () {
 		Papa.parse(file, {
 			skipEmptyLines: true,
 			complete: (results) => showCsvImportModal(results.data, file.name),
-			error: (error) => Swal.fire("Error", "Could not parse the CSV file: " + error.message, "error"),
+			error: (error) => Swal.fire("Error", "Could not parse the CSV file: " + error.message, "error")
 		});
 	} else if (file) {
 		Swal.fire("Invalid File", "Please select a valid .csv file.", "warning");
@@ -17421,7 +17587,7 @@ function showCsvImportModal(csvData, fileName) {
 		{ name: "colorHexDecimal", label: "Tie color" },
 		{ name: "measuredLength", label: "Measured Length" },
 		{ name: "measuredMass", label: "Measured Mass" },
-		{ name: "measuredComment", label: "Measured Comment" },
+		{ name: "measuredComment", label: "Measured Comment" }
 	];
 
 	const mappingHtml = modalFields.map((field) => '<label class="labelWhite12" for="swal-col-' + field.name + '">' + field.label + '</label><select id="swal-col-' + field.name + '" style="font-size: 12px; height: 26px; padding: 3px 6px; width: 120px; border-radius: 4px; background-color: #fff; color: #000; border: 1px solid #999; appearance: none; box-sizing: border-box;">' + ignoreOption + columnOptions + "</select>").join("");
@@ -17499,7 +17665,7 @@ function showCsvImportModal(csvData, fileName) {
 			title: "swal2-title",
 			confirmButton: "confirm",
 			cancelButton: "cancel",
-			htmlContainer: "swal2-html-container",
+			htmlContainer: "swal2-html-container"
 		},
 		width: "800px",
 		showCancelButton: true,
@@ -17531,7 +17697,7 @@ function showCsvImportModal(csvData, fileName) {
 				holeLengthCalculated: ["length", "holelength", "hole length"],
 				holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
 				holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
-				initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"],
+				initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"]
 			};
 
 			const headerRow = headerRowForPreview.map((h) =>
@@ -17720,7 +17886,7 @@ function showCsvImportModal(csvData, fileName) {
 			}
 
 			return order;
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			try {
@@ -17748,8 +17914,8 @@ function showCsvImportModal(csvData, fileName) {
 						customClass: {
 							container: "custom-popup-container",
 							confirmButton: "confirm",
-							confirmButtonText: "OK",
-						},
+							confirmButtonText: "OK"
+						}
 					});
 				} else {
 					Swal.fire({
@@ -17760,8 +17926,8 @@ function showCsvImportModal(csvData, fileName) {
 							container: "custom-popup-container",
 							showCancelButton: true,
 							showConfirmButton: false,
-							cancelButton: "cancel",
-						},
+							cancelButton: "cancel"
+						}
 					});
 				}
 			} catch (error) {
@@ -17774,8 +17940,8 @@ function showCsvImportModal(csvData, fileName) {
 						container: "custom-popup-container",
 						showCancelButton: true,
 						showConfirmButton: false,
-						cancelButton: "cancel",
-					},
+						cancelButton: "cancel"
+					}
 				});
 			}
 		}
@@ -17848,7 +18014,7 @@ function processCsvData(data, columnOrder, fileName) {
 					holeID: holeID,
 					entityName: holeEntityName,
 					type: blastHoleDupe !== -1 ? "Blast Name + Hole ID" : "Location",
-					action: "Skipped",
+					action: "Skipped"
 				});
 				return; // Skip this hole
 			}
@@ -17896,7 +18062,7 @@ function processCsvData(data, columnOrder, fileName) {
 				holeID: holeID,
 				entityName: holeEntityName,
 				type: duplicateType,
-				action: "Updated",
+				action: "Updated"
 			});
 		} else {
 			// Create new hole
@@ -17930,7 +18096,7 @@ function processCsvData(data, columnOrder, fileName) {
 				measuredMass: parseFloat(getValue("measuredMass")) || 0,
 				measuredMassTimeStamp: "09/05/1975 00:00:00",
 				measuredComment: getValue("measuredComment") || "None",
-				measuredCommentTimeStamp: "09/05/1975 00:00:00",
+				measuredCommentTimeStamp: "09/05/1975 00:00:00"
 			};
 		}
 
@@ -18120,8 +18286,8 @@ function processCsvData(data, columnOrder, fileName) {
 			text: "Found " + duplicateWarnings.length + " duplicate holes. Check console for details.",
 			icon: "warning",
 			customClass: {
-				container: "custom-popup-container",
-			},
+				container: "custom-popup-container"
+			}
 		});
 	}
 
@@ -18719,9 +18885,9 @@ function handleHolesAlongPolyLineClick(event) {
 					type: "line",
 					vertices: clickedLine.points.map((point) => ({
 						x: point.pointXLocation,
-						y: point.pointYLocation,
+						y: point.pointYLocation
 					})),
-					entity: clickedLine.entity,
+					entity: clickedLine.entity
 				};
 				polylineStep = 1;
 				updateStatusMessage("Step 2: Click on a vertex or point along the line to set the start point.");
@@ -18738,9 +18904,9 @@ function handleHolesAlongPolyLineClick(event) {
 					type: "polygon",
 					vertices: clickedPolygon.entity.data.map((point) => ({
 						x: point.pointXLocation,
-						y: point.pointYLocation,
+						y: point.pointYLocation
 					})),
-					entity: clickedPolygon.entity,
+					entity: clickedPolygon.entity
 				};
 				polylineStep = 1;
 				updateStatusMessage("Step 2: Click on a vertex of the polygon to set the start point.");
@@ -19085,7 +19251,7 @@ function createPathBetweenVertices(vertices, startVertex, endVertex, isPolygon =
 			forwardDistance: forwardDistance,
 			backwardDistance: backwardDistance,
 			usedForwardPath: useForwardPath,
-			pathLength: pathVertices.length,
+			pathLength: pathVertices.length
 		});
 	}
 
@@ -19129,7 +19295,7 @@ function generatePatternInPolygon(patternSettings) {
 	// Get polygon vertices - FIX: Convert from entity.data to vertices format
 	const polygonVertices = selectedPolygon.data.map((point) => ({
 		x: point.pointXLocation,
-		y: point.pointYLocation,
+		y: point.pointYLocation
 	}));
 
 	console.log("Polygon vertices:", polygonVertices.length); // Debug log
@@ -19259,7 +19425,7 @@ function generatePatternInPolygon(patternSettings) {
 					y: holeY,
 					originalGridRow: i, // Keep original grid coordinates
 					originalGridCol: k, // Keep original grid coordinates
-					isStaggered: isStaggered && i % 2 !== 0,
+					isStaggered: isStaggered && i % 2 !== 0
 				});
 			}
 		}
@@ -19377,8 +19543,8 @@ function generatePatternInPolygon(patternSettings) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -19395,8 +19561,8 @@ function generatePatternInPolygon(patternSettings) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 
@@ -19423,7 +19589,7 @@ function showHolesAlongLinePopup() {
 		nameTypeIsNumerical: savedHolesAlongLineSettings.nameTypeIsNumerical !== undefined ? savedHolesAlongLineSettings.nameTypeIsNumerical : true,
 		useGradeZ: savedHolesAlongLineSettings.useGradeZ !== undefined ? savedHolesAlongLineSettings.useGradeZ : true,
 		useLineBearing: savedHolesAlongLineSettings.useLineBearing !== undefined ? savedHolesAlongLineSettings.useLineBearing : true,
-		length: savedHolesAlongLineSettings.length || 10,
+		length: savedHolesAlongLineSettings.length || 10
 	};
 
 	// Calculate default length if using grade Z
@@ -19495,7 +19661,7 @@ function showHolesAlongLinePopup() {
 			title: "swal2-title",
 			content: "swal2-content",
 			confirmButton: "confirm",
-			cancelButton: "cancel",
+			cancelButton: "cancel"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -19560,7 +19726,7 @@ function showHolesAlongLinePopup() {
 
 			// Hide the loading spinner when the popup is ready
 			Swal.hideLoading();
-		},
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -19588,8 +19754,8 @@ function showHolesAlongLinePopup() {
 						icon: "error",
 						customClass: {
 							container: "custom-popup-container",
-							popup: "custom-popup-container",
-						},
+							popup: "custom-popup-container"
+						}
 					});
 					return;
 				}
@@ -19601,8 +19767,8 @@ function showHolesAlongLinePopup() {
 						icon: "error",
 						customClass: {
 							container: "custom-popup-container",
-							popup: "custom-popup-container",
-						},
+							popup: "custom-popup-container"
+						}
 					});
 					return;
 				}
@@ -19622,7 +19788,7 @@ function showHolesAlongLinePopup() {
 					diameter: diameter,
 					type: type,
 					useGradeZ: useGradeZ,
-					useLineBearing: useLineBearing,
+					useLineBearing: useLineBearing
 				};
 				localStorage.setItem("savedHolesAlongLineSettings", JSON.stringify(newValues));
 
@@ -19641,7 +19807,7 @@ function showHolesAlongLinePopup() {
 					angle: angle,
 					bearing: bearing - 90,
 					diameter: diameter,
-					type: type,
+					type: type
 				});
 			}
 		})
@@ -19753,8 +19919,8 @@ function generateHolesAlongLine(params) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -19770,8 +19936,8 @@ function generateHolesAlongLine(params) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 }
@@ -19812,9 +19978,9 @@ function getClickedKADEntity(worldX, worldY) {
 						index: 0,
 						x: point.pointXLocation,
 						y: point.pointYLocation,
-						distance: distance,
+						distance: distance
 					},
-					clickedSegment: null,
+					clickedSegment: null
 				});
 			}
 			continue; // Skip to next entity
@@ -19850,7 +20016,7 @@ function getClickedKADEntity(worldX, worldY) {
 						endIndex: (i + 1) % points.length,
 						startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
 						endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
-						distance: distance,
+						distance: distance
 					};
 				}
 			}
@@ -19863,7 +20029,7 @@ function getClickedKADEntity(worldX, worldY) {
 				minDistance: minDistance,
 				selectionType: clickedVertex ? "vertex" : "segment",
 				clickedVertex: clickedVertex,
-				clickedSegment: clickedSegment,
+				clickedSegment: clickedSegment
 			});
 		}
 	}
@@ -19900,7 +20066,7 @@ function getClickedKADEntity(worldX, worldY) {
 		clickedY: snappedY,
 		selectionType: selected.selectionType,
 		clickedVertex: selected.clickedVertex,
-		clickedSegment: selected.clickedSegment,
+		clickedSegment: selected.clickedSegment
 	};
 }
 // Helper function to get closest point on line segment (add if not exists)
@@ -19922,7 +20088,7 @@ function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2) {
 
 	return {
 		x: x1 + t * C,
-		y: y1 + t * D,
+		y: y1 + t * D
 	};
 }
 //Add this helper function for point-in-polygon detection
@@ -19959,7 +20125,7 @@ function getClickedLine(worldX, worldY, tolerance = getSnapToleranceInWorldUnits
 					points: linePoints,
 					segmentIndex: i,
 					startPoint: { x: p1.pointXLocation, y: p1.pointYLocation },
-					endPoint: { x: p2.pointXLocation, y: p2.pointYLocation },
+					endPoint: { x: p2.pointXLocation, y: p2.pointYLocation }
 				};
 			}
 		}
@@ -20016,7 +20182,7 @@ function showPatternInPolygonPopup() {
 		startNumber: savedPatternInPolygonSettings.startNumber || 1,
 		nameTypeIsNumerical: savedPatternInPolygonSettings.nameTypeIsNumerical || true,
 		useGradeZ: savedPatternInPolygonSettings.useGradeZ !== undefined ? savedPatternInPolygonSettings.useGradeZ : true,
-		length: savedPatternInPolygonSettings.length || 10,
+		length: savedPatternInPolygonSettings.length || 10
 	};
 
 	// Calculate default length if using grade Z
@@ -20077,7 +20243,7 @@ function showPatternInPolygonPopup() {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -20130,7 +20296,7 @@ function showPatternInPolygonPopup() {
 
 			// Initial update
 			updateFieldsBasedOnUseGradeZ();
-		},
+		}
 	})
 		.then((result) => {
 			if (result.isConfirmed) {
@@ -20156,7 +20322,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Blast Name",
 						text: "Please enter a Blast Name.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -20165,7 +20331,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Offset",
 						text: "Please enter an offset between -1 and 1.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -20174,7 +20340,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Burden",
 						text: "Please enter burden between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -20183,7 +20349,7 @@ function showPatternInPolygonPopup() {
 					Swal.fire({
 						title: "Invalid Spacing",
 						text: "Please enter spacing between 0.1 and 50 meters.",
-						icon: "error",
+						icon: "error"
 					});
 					return;
 				}
@@ -20204,7 +20370,7 @@ function showPatternInPolygonPopup() {
 					bearing: bearing,
 					diameter: diameter,
 					type: type,
-					useGradeZ: useGradeZ,
+					useGradeZ: useGradeZ
 				};
 				localStorage.setItem("savedPatternInPolygonSettings", JSON.stringify(newValues));
 
@@ -20230,7 +20396,7 @@ function showPatternInPolygonPopup() {
 					bearing: bearing,
 					diameter: diameter,
 					type: type,
-					patternType: spacingOffset === 0 ? "square" : "staggered",
+					patternType: spacingOffset === 0 ? "square" : "staggered"
 				});
 			}
 		})
@@ -20593,7 +20759,7 @@ function calculateTextDimensions(text) {
 		height: totalHeight,
 		lineHeight: lineHeight,
 		lines: lines,
-		numLines: lines.length,
+		numLines: lines.length
 	};
 }
 // ENHANCED: Fix segment highlighting to show only the clicked segment
@@ -21030,8 +21196,8 @@ function generateHolesAlongPolyline(params, vertices) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		Swal.fire({
@@ -21047,8 +21213,8 @@ function generateHolesAlongPolyline(params, vertices) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	}
 }
@@ -21073,7 +21239,7 @@ function showHolesAlongPolylinePopup(vertices) {
 		useGradeZ: savedHolesAlongPolylineSettings.useGradeZ !== undefined ? savedHolesAlongPolylineSettings.useGradeZ : true,
 		useLineBearing: savedHolesAlongPolylineSettings.useLineBearing !== undefined ? savedHolesAlongPolylineSettings.useLineBearing : true,
 		length: savedHolesAlongPolylineSettings.length || 10,
-		reverseDirection: savedHolesAlongPolylineSettings.reverseDirection !== undefined ? savedHolesAlongPolylineSettings.reverseDirection : false,
+		reverseDirection: savedHolesAlongPolylineSettings.reverseDirection !== undefined ? savedHolesAlongPolylineSettings.reverseDirection : false
 	};
 
 	// Calculate default length if using grade Z
@@ -21135,7 +21301,7 @@ function showHolesAlongPolylinePopup(vertices) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
+			icon: "swal2-icon"
 		},
 		didOpen: () => {
 			// Add event listeners after the popup is opened
@@ -21200,7 +21366,7 @@ function showHolesAlongPolylinePopup(vertices) {
 
 			// Hide the loading spinner when the popup is ready
 			Swal.hideLoading();
-		},
+		}
 	}).then((result) => {
 		if (result.isConfirmed) {
 			// Retrieve values from the input fields
@@ -21219,7 +21385,7 @@ function showHolesAlongPolylinePopup(vertices) {
 				bearing: parseFloat(document.getElementById("bearing").value),
 				diameter: parseFloat(document.getElementById("diameter").value),
 				type: document.getElementById("type").value,
-				reverseDirection: document.getElementById("reverseDirection").checked,
+				reverseDirection: document.getElementById("reverseDirection").checked
 			};
 			// Reverse the vertices if checkbox is checked
 			let finalVertices = vertices;
@@ -21661,7 +21827,7 @@ function createSurfaceFromPoints(points, surfaceName = null, autoSave = true) {
 		triangles.push({
 			vertices: [p1, p2, p3],
 			minZ: Math.min(p1.z, p2.z, p3.z),
-			maxZ: Math.max(p1.z, p2.z, p3.z),
+			maxZ: Math.max(p1.z, p2.z, p3.z)
 		});
 	}
 
@@ -21672,7 +21838,7 @@ function createSurfaceFromPoints(points, surfaceName = null, autoSave = true) {
 		points: points,
 		triangles: triangles,
 		visible: true,
-		gradient: "default",
+		gradient: "default"
 	});
 
 	updateCentroids();
@@ -21707,8 +21873,8 @@ function showDecimationWarning(points, fileName) {
 			cancelButton: "cancel",
 			content: "swal2-content",
 			htmlContainer: "swal2-html-container",
-			icon: "swal2-icon",
-		},
+			icon: "swal2-icon"
+		}
 	}).then(async (result) => {
 		// Make this async
 		if (result.isConfirmed) {
@@ -21783,7 +21949,7 @@ async function loadImageIntoMemory(imageId) {
 							bbox: imageData.bbox,
 							type: imageData.type,
 							visible: imageData.visible !== false,
-							transparency: imageData.transparency || 1.0,
+							transparency: imageData.transparency || 1.0
 						});
 
 						// console.log("✅ Image " + imageData.name + " loaded into memory");
@@ -21821,6 +21987,7 @@ function toggleImageVisibility(imageId) {
 	}
 }
 function drawSurface() {
+	if (!surfacesGroupVisible) return; // ✅ ADD: Check surfaces group visibility
 	if (loadedSurfaces.size === 0) return;
 
 	loadedSurfaces.forEach((surface) => {
@@ -21934,7 +22101,7 @@ function drawSurfaceLegend() {
 			turbo: "Turbo",
 			parula: "Parula",
 			cividis: "Cividis",
-			terrain: "Terrain",
+			terrain: "Terrain"
 		};
 
 		// FIXED: Use the surface's gradient instead of global currentGradient
@@ -21963,7 +22130,7 @@ function getViridisColor(ratio) {
 		[59, 82, 139], // Blue-purple
 		[33, 144, 140], // Teal
 		[92, 200, 99], // Green
-		[253, 231, 37], // Yellow
+		[253, 231, 37] // Yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -21974,7 +22141,7 @@ function getTurboColor(ratio) {
 		[50, 136, 189], // Blue
 		[94, 201, 98], // Green
 		[253, 231, 37], // Yellow
-		[240, 21, 22], // Red
+		[240, 21, 22] // Red
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -21988,7 +22155,7 @@ function getParulaColor(ratio) {
 		[21, 177, 180], // Teal
 		[89, 189, 140], // Green
 		[170, 194, 97], // Yellow-green
-		[249, 251, 14], // Yellow
+		[249, 251, 14] // Yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -22001,7 +22168,7 @@ function getCividisColor(ratio) {
 		[92, 125, 147], // Gray-blue
 		[150, 159, 157], // Gray
 		[206, 187, 158], // Beige
-		[254, 230, 206], // Light yellow
+		[254, 230, 206] // Light yellow
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -22016,7 +22183,7 @@ function getTerrainColor(ratio) {
 		[120, 85, 45], // Brown (mid elevation)
 		[160, 118, 74], // Light brown
 		[200, 200, 200], // Gray (high elevation)
-		[255, 255, 255], // White (peaks)
+		[255, 255, 255] // White (peaks)
 	];
 	return interpolateColors(colors, ratio);
 }
@@ -22178,7 +22345,7 @@ function getAllVisibleSurfaces() {
 			if (surface.visible && surface.triangles && surface.triangles.length > 0) {
 				visibleSurfaces.push({
 					id: surfaceId,
-					name: surface.name || `Surface ${surfaceId}`,
+					name: surface.name || `Surface ${surfaceId}`
 				});
 			}
 		}
@@ -22254,7 +22421,7 @@ assignSurfaceTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					const elevation = parseFloat(document.getElementById("surfaceElevation").value);
@@ -22263,7 +22430,7 @@ assignSurfaceTool.addEventListener("change", function () {
 						return false;
 					}
 					return elevation;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					assignHolesToFixedElevation(result.value, "collar");
@@ -22300,11 +22467,11 @@ assignSurfaceTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					return document.getElementById("surfaceSelect").value;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					const selectedSurfaceId = result.value;
@@ -22337,8 +22504,8 @@ assignSurfaceTool.addEventListener("change", function () {
 								title: "swal2-title",
 								content: "swal2-content",
 								confirmButton: "confirm",
-								cancelButton: "cancel",
-							},
+								cancelButton: "cancel"
+							}
 						});
 
 						updateStatusMessage("Select next tool\n to continue");
@@ -22380,8 +22547,8 @@ assignSurfaceTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			});
 
 			// Deselect tool
@@ -22425,7 +22592,7 @@ assignGradeTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					const elevation = parseFloat(document.getElementById("gradeElevation").value);
@@ -22434,7 +22601,7 @@ assignGradeTool.addEventListener("change", function () {
 						return false;
 					}
 					return elevation;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					assignHolesToFixedElevation(result.value, "grade");
@@ -22471,11 +22638,11 @@ assignGradeTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				preConfirm: () => {
 					return document.getElementById("surfaceSelect").value;
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					const selectedSurfaceId = result.value;
@@ -22503,8 +22670,8 @@ assignGradeTool.addEventListener("change", function () {
 								title: "swal2-title",
 								content: "swal2-content",
 								confirmButton: "confirm",
-								cancelButton: "cancel",
-							},
+								cancelButton: "cancel"
+							}
 						});
 						updateStatusMessage("Select next tool\n to continue");
 					} else {
@@ -22542,8 +22709,8 @@ assignGradeTool.addEventListener("change", function () {
 					title: "swal2-title",
 					content: "swal2-content",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			});
 			this.checked = false;
 			resetFloatingToolbarButtons("none");
@@ -22582,8 +22749,8 @@ function assignHolesToFixedElevation(elevation, type) {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		});
 	} else {
 		updateStatusMessage("No holes selected for elevation assignment.");
@@ -22786,7 +22953,7 @@ const SNAP_PRIORITIES = {
 	KAD_POLYGON_VERTEX: 6,
 	KAD_CIRCLE_CENTER: 7,
 	KAD_TEXT_POSITION: 8,
-	SURFACE_POINT: 9, // Lowest priority
+	SURFACE_POINT: 9 // Lowest priority
 };
 
 // Enhanced global snapping function
@@ -22797,7 +22964,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 			worldY: rawWorldY,
 			worldZ: drawingZValue || document.getElementById("drawingElevation")?.value || 0, // Use current drawing elevation
 			snapped: false,
-			snapTarget: null,
+			snapTarget: null
 		};
 	}
 
@@ -22815,7 +22982,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.startXLocation, y: hole.startYLocation, z: hole.startZLocation },
 					type: "HOLE_COLLAR",
 					priority: SNAP_PRIORITIES.HOLE_COLLAR,
-					description: `Hole ${hole.holeID} collar`,
+					description: `Hole ${hole.holeID} collar`
 				});
 			}
 
@@ -22827,7 +22994,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.gradeXLocation, y: hole.gradeYLocation, z: hole.gradeZLocation },
 					type: "HOLE_GRADE",
 					priority: SNAP_PRIORITIES.HOLE_GRADE,
-					description: `Hole ${hole.holeID} grade`,
+					description: `Hole ${hole.holeID} grade`
 				});
 			}
 
@@ -22839,7 +23006,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 					point: { x: hole.endXLocation, y: hole.endYLocation, z: hole.endZLocation },
 					type: "HOLE_TOE",
 					priority: SNAP_PRIORITIES.HOLE_TOE,
-					description: `Hole ${hole.holeID} toe`,
+					description: `Hole ${hole.holeID} toe`
 				});
 			}
 		});
@@ -22874,7 +23041,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 						point: { x: dataPoint.pointXLocation, y: dataPoint.pointYLocation, z: dataPoint.pointZLocation },
 						type: snapType,
 						priority: priority,
-						description: `${entity.entityType} ${dataPoint.pointID || "item"}`,
+						description: `${entity.entityType} ${dataPoint.pointID || "item"}`
 					});
 				}
 			});
@@ -22893,7 +23060,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 							point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
 							type: "SURFACE_POINT",
 							priority: SNAP_PRIORITIES.SURFACE_POINT,
-							description: `${surface.name} point ${index}`,
+							description: `${surface.name} point ${index}`
 						});
 					}
 				});
@@ -22913,7 +23080,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 							point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
 							type: "SURFACE_POINT",
 							priority: SNAP_PRIORITIES.SURFACE_POINT,
-							description: `${surface.name} point ${index}`,
+							description: `${surface.name} point ${index}`
 						});
 					}
 				});
@@ -22937,7 +23104,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 			worldY: bestCandidate.point.y,
 			worldZ: bestCandidate.point.z || drawingElevation || 0, // Use snapped point's Z or fallback
 			snapped: true,
-			snapTarget: bestCandidate,
+			snapTarget: bestCandidate
 		};
 	}
 
@@ -22947,7 +23114,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
 		worldY: rawWorldY,
 		worldZ: drawingZValue || document.getElementById("drawingElevation").value || 0,
 		snapped: false,
-		snapTarget: null,
+		snapTarget: null
 	};
 }
 
@@ -23176,7 +23343,7 @@ async function createElevationSurface(elevationData, bbox, width, height, surfac
 			bbox: bbox,
 			type: "elevation", // or whatever type
 			visible: true,
-			transparency: 0.7,
+			transparency: 0.7
 		});
 
 		// Then save to DB:
@@ -23196,7 +23363,7 @@ async function createElevationSurface(elevationData, bbox, width, height, surfac
 					points.push({
 						x: worldX,
 						y: worldY,
-						z: elevation,
+						z: elevation
 					});
 				}
 			}
@@ -23251,7 +23418,7 @@ async function createImageSurface(rasters, bbox, width, height, bandCount, surfa
 			bbox: bbox,
 			type: "imagery",
 			visible: true,
-			transparency: 1.0,
+			transparency: 1.0
 		});
 
 		// CRITICAL: Update centroids to include GeoTIFF extents
@@ -23301,6 +23468,7 @@ function updateCentroidsWithBBox(bbox) {
 let loadedImages = new Map(); // Map<imageId, {id, name, canvas, bbox, type, visible, transparency}>
 
 function drawBackgroundImage() {
+	if (!imagesGroupVisible) return; // ✅ ADD: Check images group visibility
 	if (loadedImages.size === 0) return;
 
 	loadedImages.forEach((image) => {
@@ -23670,7 +23838,7 @@ const top100EPSGCodes = [
 	{ code: "28992", name: "Amersfoort / RD New" },
 	{ code: "2056", name: "CH1903+ / LV95" },
 	{ code: "5514", name: "S-JTSK / Krovak East North" },
-	{ code: "102100", name: "WGS 1984 Web Mercator Auxiliary Sphere" },
+	{ code: "102100", name: "WGS 1984 Web Mercator Auxiliary Sphere" }
 ];
 //function to cache a list of common world EPSG codes.
 // NOT IN USE - USE THE TOP100EPSGCodes ARRAY ABOVE
@@ -23775,7 +23943,7 @@ async function promptForProjection(bbox) {
 				confirmButton: "confirm",
 				cancelButton: "cancel",
 				content: "swal2-content",
-				htmlContainer: "swal2-html-container",
+				htmlContainer: "swal2-html-container"
 			},
 			preConfirm: async () => {
 				const epsgCode = document.getElementById("epsgCode").value;
@@ -23805,13 +23973,13 @@ async function promptForProjection(bbox) {
 						transformed: true,
 						bbox: [ll[0], ll[1], ur[0], ur[1]],
 						epsgCode: epsgCode || null,
-						customProj4: customProj4 || null,
+						customProj4: customProj4 || null
 					};
 				} catch (error) {
 					Swal.showValidationMessage(`Transformation error: ${error.message}`);
 					return false;
 				}
-			},
+			}
 		}).then((result) => {
 			if (result.isConfirmed && result.value) {
 				resolve(result.value);
@@ -23842,7 +24010,7 @@ const paperRatios = {
 	A3: { width: 420, height: 297 },
 	A2: { width: 594, height: 420 },
 	A1: { width: 841, height: 594 },
-	A0: { width: 1189, height: 841 },
+	A0: { width: 1189, height: 841 }
 };
 //KEEP
 // Add this with your other event listeners
@@ -23916,7 +24084,7 @@ function getPrintBoundary() {
 		y: (canvas.height - boundaryHeight) / 2,
 		width: boundaryWidth,
 		height: boundaryHeight,
-		marginPercent: 0.02, // 2% margin inside boundary
+		marginPercent: 0.02 // 2% margin inside boundary
 	};
 }
 //KEEP
@@ -23969,7 +24137,7 @@ function printCanvasHiRes() {
 		allowOutsideClick: false,
 		didOpen: () => {
 			Swal.showLoading();
-		},
+		}
 	});
 
 	// Use a short delay to ensure the browser has time to process before we
@@ -23984,7 +24152,7 @@ function printCanvasHiRes() {
 				A3: { width: 297, height: 420 },
 				A2: { width: 420, height: 594 },
 				A1: { width: 594, height: 841 },
-				A0: { width: 841, height: 1189 },
+				A0: { width: 841, height: 1189 }
 			};
 
 			const paperSize = paperSizes[printPaperSize] || paperSizes["A4"];
@@ -24018,7 +24186,7 @@ function printCanvasHiRes() {
 				x: 0, // + margin,
 				y: 0, // + margin,
 				width: printCanvas.width, // - margin / 2,
-				height: printCanvas.height, // - margin / 2
+				height: printCanvas.height // - margin / 2
 			};
 
 			// const printArea = {
@@ -24054,7 +24222,7 @@ function printCanvasHiRes() {
 			Swal.fire({
 				icon: "error",
 				title: "PDF Creation Failed",
-				html: `Could not generate the PDF. This usually happens if the paper size is too large for the browser.<br><br><b>Suggestion:</b> Try a smaller paper size (like A4 or A3).<br><br><small>Error: ${error.message}</small>`,
+				html: `Could not generate the PDF. This usually happens if the paper size is too large for the browser.<br><br><b>Suggestion:</b> Try a smaller paper size (like A4 or A3).<br><br><small>Error: ${error.message}</small>`
 			});
 		}
 	}, 250); // 250ms delay
@@ -24078,7 +24246,7 @@ function drawDataForPrinting(printCtx, printArea) {
 		x: screenBoundary.x + margin,
 		y: screenBoundary.y + margin,
 		width: screenBoundary.width - margin * 2,
-		height: screenBoundary.height - margin * 2,
+		height: screenBoundary.height - margin * 2
 	};
 
 	// 3. Convert the BLUE boundary (inner boundary) to world coordinates
@@ -25251,7 +25419,7 @@ function printData(points, selectedHole) {
 					middleSideCollar,
 					bottomSideCollar,
 					holeMap,
-					displayOptions,
+					displayOptions
 				});
 
 				// Draw main hole geometry, with selection highlight logic
@@ -25579,7 +25747,7 @@ function printSurfaceLegend() {
 		turbo: "Turbo",
 		parula: "Parula",
 		cividis: "Cividis",
-		terrain: "Terrain",
+		terrain: "Terrain"
 	};
 	printCtx.fillText(gradientNames[currentGradient] || "Default", legendX + legendWidth / 2, legendY + legendHeight + 30);
 
@@ -25980,7 +26148,7 @@ function getBlastStatistics() {
 		totalLength: points.reduce((sum, point) => sum + (point.length || 0), 0),
 		avgBurden: calculateAverageBurden(), // Implement if you have burden data
 		avgSpacing: calculateAverageSpacing(), // Implement if you have spacing data
-		powderFactor: calculatePowderFactor(), // Implement if you have powder factor data
+		powderFactor: calculatePowderFactor() // Implement if you have powder factor data
 	};
 }
 function detectRowsAndCalculateMetrics() {
@@ -26049,7 +26217,7 @@ function calculateMetricsFromRows(rows) {
 		rowCount: rows.length,
 		totalHoles: points.length,
 		spacingVariations: spacings,
-		burdenVariations: burdens,
+		burdenVariations: burdens
 	};
 }
 function detectRowsWithClustering() {
@@ -26125,7 +26293,7 @@ function calculateBlastMetrics() {
 		rowCount: metrics.rowCount,
 		holesPerRow: Math.round(metrics.totalHoles / metrics.rowCount),
 		totalHoles: metrics.totalHoles,
-		patternType: detectPatternType(metrics),
+		patternType: detectPatternType(metrics)
 	};
 }
 
@@ -26430,6 +26598,8 @@ class TreeView {
 		// Determine what type of nodes are selected
 		const hasHoles = selectedNodeIds.some((nodeId) => nodeId.startsWith("hole⣿"));
 
+		const isSubGroup = selectedNodeIds.some((nodeId) => nodeId.startsWith("drawings⣿") && nodeId.split("⣿").length === 2);
+
 		// Show/hide menu items based on selection
 		const renameItem = menu.querySelector('[data-action="rename"]');
 		const resetConnectionsItem = menu.querySelector('[data-action="reset-connections"]');
@@ -26442,11 +26612,11 @@ class TreeView {
 		}
 
 		if (deleteItem) {
-			deleteItem.style.display = isTopLevelParent ? "none" : "flex";
+			deleteItem.style.display = isTopLevelParent || isSubGroup ? "none" : "flex";
 		}
 
 		if (propertiesItem) {
-			propertiesItem.style.display = isTopLevelParent ? "none" : "flex";
+			propertiesItem.style.display = isTopLevelParent || isSubGroup ? "none" : "flex";
 		}
 		// Only show "Rename" for entity/group nodes (not for elements or folders)
 		let showRename = false;
@@ -26626,8 +26796,8 @@ class TreeView {
 				title: "swal2-title",
 				content: "swal2-content",
 				confirmButton: "confirm",
-				cancelButton: "cancel",
-			},
+				cancelButton: "cancel"
+			}
 		}).then((result) => {
 			if (result.isConfirmed) {
 				// Reset connections for each hole
@@ -26656,8 +26826,8 @@ class TreeView {
 						container: "custom-popup-container",
 						popup: "custom-popup-container",
 						title: "swal2-title",
-						content: "swal2-content",
-					},
+						content: "swal2-content"
+					}
 				});
 			}
 		});
@@ -26687,8 +26857,8 @@ class TreeView {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					const entitiesToRenumber = new Set(); // Track entities that need renumbering
@@ -26751,8 +26921,8 @@ class TreeView {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					nodeIds.forEach((nodeId) => {
@@ -26806,7 +26976,7 @@ class TreeView {
 					title: "swal2-title",
 					confirmButton: "confirm",
 					denyButton: "deny",
-					cancelButton: "cancel",
+					cancelButton: "cancel"
 				},
 				didOpen: () => {
 					// Show/hide renumber section based on button clicks
@@ -26841,7 +27011,7 @@ class TreeView {
 						return false;
 					}
 					return startValue.trim();
-				},
+				}
 			}).then((result) => {
 				if (result.isConfirmed || result.isDenied) {
 					const shouldRenumber = result.isDenied;
@@ -26903,7 +27073,7 @@ class TreeView {
 							text: "Deleted holes and renumbered starting from " + newStartValue,
 							icon: "success",
 							timer: 3000,
-							showConfirmButton: false,
+							showConfirmButton: false
 						});
 					}
 				}
@@ -26922,8 +27092,8 @@ class TreeView {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					nodeIds.forEach((nodeId) => {
@@ -26962,6 +27132,7 @@ class TreeView {
 		}
 	}
 
+	// Update TreeView hideSelected() function around line 26970
 	hideSelected() {
 		this.selectedNodes.forEach((nodeId) => {
 			const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
@@ -26972,16 +27143,53 @@ class TreeView {
 				const type = nodeId.split("⣿")[0];
 				const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
-				if (type === "surface") {
+				// ✅ ADD: Handle main group nodes
+				if (nodeId === "blast") {
+					setBlastGroupVisibility(false);
+				} else if (nodeId === "drawings") {
+					setDrawingsGroupVisibility(false);
+				} else if (nodeId === "surfaces") {
+					setSurfacesGroupVisibility(false);
+				} else if (nodeId === "images") {
+					setImagesGroupVisibility(false);
+				}
+				// ✅ ADD: Handle drawing sub-group nodes
+				else if (nodeId === "drawings⣿points") {
+					setPointsGroupVisibility(false);
+				} else if (nodeId === "drawings⣿lines") {
+					setLinesGroupVisibility(false);
+				} else if (nodeId === "drawings⣿polygons") {
+					setPolygonsGroupVisibility(false);
+				} else if (nodeId === "drawings⣿circles") {
+					setCirclesGroupVisibility(false);
+				} else if (nodeId === "drawings⣿texts") {
+					setTextsGroupVisibility(false);
+				}
+				// Existing individual item handling
+				else if (type === "surface") {
 					setSurfaceVisibility(itemId, false);
 				} else if (type === "image") {
 					setImageVisibility(itemId, false);
+				} else if (type === "hole") {
+					setHoleVisibility(itemId, false);
+				} else if (type === "entity") {
+					setEntityVisibility(itemId, false);
+				} else if (type === "points" || type === "line" || type === "poly" || type === "circle" || type === "text") {
+					setKADEntityVisibility(itemId, false);
+				} else if (nodeId.includes("⣿element⣿")) {
+					const parts = nodeId.split("⣿");
+					if (parts.length >= 4 && parts[2] === "element") {
+						const entityName = parts[1];
+						const elementId = parts[3];
+						setKADElementVisibility(entityName, elementId, false);
+					}
 				}
 			}
 		});
 
 		this.clearSelection();
 	}
+
 	showSelected() {
 		this.selectedNodes.forEach((nodeId) => {
 			const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
@@ -26992,16 +27200,53 @@ class TreeView {
 				const type = nodeId.split("⣿")[0];
 				const itemId = nodeId.split("⣿").slice(1).join("⣿");
 
-				if (type === "surface") {
+				// ✅ ADD: Handle main group nodes
+				if (nodeId === "blast") {
+					setBlastGroupVisibility(true);
+				} else if (nodeId === "drawings") {
+					setDrawingsGroupVisibility(true);
+				} else if (nodeId === "surfaces") {
+					setSurfacesGroupVisibility(true);
+				} else if (nodeId === "images") {
+					setImagesGroupVisibility(true);
+				}
+				// ✅ ADD: Handle drawing sub-group nodes
+				else if (nodeId === "drawings⣿points") {
+					setPointsGroupVisibility(true);
+				} else if (nodeId === "drawings⣿lines") {
+					setLinesGroupVisibility(true);
+				} else if (nodeId === "drawings⣿polygons") {
+					setPolygonsGroupVisibility(true);
+				} else if (nodeId === "drawings⣿circles") {
+					setCirclesGroupVisibility(true);
+				} else if (nodeId === "drawings⣿texts") {
+					setTextsGroupVisibility(true);
+				}
+				// Existing individual item handling
+				else if (type === "surface") {
 					setSurfaceVisibility(itemId, true);
 				} else if (type === "image") {
 					setImageVisibility(itemId, true);
+				} else if (type === "hole") {
+					setHoleVisibility(itemId, true);
+				} else if (type === "entity") {
+					setEntityVisibility(itemId, true);
+				} else if (type === "points" || type === "line" || type === "poly" || type === "circle" || type === "text") {
+					setKADEntityVisibility(itemId, true);
+				} else if (nodeId.includes("⣿element⣿")) {
+					const parts = nodeId.split("⣿");
+					if (parts.length >= 4 && parts[2] === "element") {
+						const entityName = parts[1];
+						const elementId = parts[3];
+						setKADElementVisibility(entityName, elementId, true);
+					}
 				}
 			}
 		});
 
 		this.clearSelection();
 	}
+
 	showProperties() {
 		if (this.selectedNodes.size === 1) {
 			const nodeId = Array.from(this.selectedNodes)[0];
@@ -27084,29 +27329,29 @@ class TreeView {
 				type: "blast",
 				label: "Blast",
 				expanded: true,
-				children: this.buildBlastData(),
+				children: this.buildBlastData()
 			},
 			{
 				id: "drawings",
 				type: "drawing",
 				label: "Drawings",
 				expanded: true,
-				children: this.buildDrawingData(),
+				children: this.buildDrawingData()
 			},
 			{
 				id: "surfaces",
 				type: "surface",
 				label: "Surfaces",
 				expanded: true,
-				children: this.buildSurfaceData(),
+				children: this.buildSurfaceData()
 			},
 			{
 				id: "images",
 				type: "image",
 				label: "Images",
 				expanded: true,
-				children: this.buildImageData(),
-			},
+				children: this.buildImageData()
+			}
 		];
 
 		return tree;
@@ -27153,9 +27398,9 @@ class TreeView {
 						{ id: hole.holeID + "⣿bearing", type: "property", label: "Bearing", meta: hole.holeBearing.toFixed(2) || 0 + "°" },
 						{ id: hole.holeID + "⣿length", type: "property", label: "Length", meta: hole.holeLengthCalculated.toFixed(2) || 0 + "m" },
 						{ id: hole.holeID + "⣿subdrill", type: "property", label: "Subdrill", meta: hole.subdrillAmount.toFixed(2) || 0 + "m" },
-						{ id: hole.holeID + "⣿type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" },
-					],
-				})),
+						{ id: hole.holeID + "⣿type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" }
+					]
+				}))
 			};
 		});
 	}
@@ -27182,8 +27427,8 @@ class TreeView {
 					// FIX: Add entityName to the elementData object
 					elementData: {
 						...element,
-						entityName: entityName, // ✅ Add the entityName here!
-					},
+						entityName: entityName // ✅ Add the entityName here!
+					}
 				}));
 
 				// Group by entity type with children
@@ -27194,7 +27439,7 @@ class TreeView {
 							type: "points-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
-							children: elementChildren,
+							children: elementChildren
 						});
 						break;
 					case "line":
@@ -27203,7 +27448,7 @@ class TreeView {
 							type: "line-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
-							children: elementChildren,
+							children: elementChildren
 						});
 						break;
 					case "poly":
@@ -27212,7 +27457,7 @@ class TreeView {
 							type: "polygon-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
-							children: elementChildren,
+							children: elementChildren
 						});
 						break;
 					case "circle":
@@ -27221,7 +27466,7 @@ class TreeView {
 							type: "circle-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
-							children: elementChildren,
+							children: elementChildren
 						});
 						break;
 					case "text":
@@ -27230,7 +27475,7 @@ class TreeView {
 							type: "text-group",
 							label: entityName,
 							meta: "(" + entity.data?.length || 0 + ")",
-							children: elementChildren,
+							children: elementChildren
 						});
 						break;
 				}
@@ -27243,7 +27488,7 @@ class TreeView {
 				id: "drawings⣿points",
 				type: "points-folder",
 				label: "Points",
-				children: pointsChildren,
+				children: pointsChildren
 			});
 		}
 
@@ -27252,7 +27497,7 @@ class TreeView {
 				id: "drawings⣿lines",
 				type: "lines-folder",
 				label: "Lines",
-				children: linesChildren,
+				children: linesChildren
 			});
 		}
 
@@ -27261,7 +27506,7 @@ class TreeView {
 				id: "drawings⣿polygons",
 				type: "polygons-folder",
 				label: "Polygons",
-				children: polysChildren,
+				children: polysChildren
 			});
 		}
 
@@ -27270,7 +27515,7 @@ class TreeView {
 				id: "drawings⣿circles",
 				type: "circle-folder",
 				label: "Circles",
-				children: circlesChildren,
+				children: circlesChildren
 			});
 		}
 
@@ -27279,7 +27524,7 @@ class TreeView {
 				id: "drawings⣿texts",
 				type: "text-folder",
 				label: "Texts",
-				children: textsChildren,
+				children: textsChildren
 			});
 		}
 
@@ -27296,7 +27541,7 @@ class TreeView {
 				id: "surface⣿" + surfaceId,
 				type: "surface",
 				label: surface.name,
-				meta: "(" + (surface.points?.length || 0) + " points)",
+				meta: "(" + (surface.points?.length || 0) + " points)"
 			});
 		});
 
@@ -27312,7 +27557,7 @@ class TreeView {
 				id: "image⣿" + imageId,
 				type: "image",
 				label: image.name,
-				meta: image.type || "image",
+				meta: image.type || "image"
 			});
 		});
 
@@ -27407,8 +27652,8 @@ class TreeView {
 					container: "custom-popup-container",
 					title: "swal2-title",
 					confirmButton: "confirm",
-					cancelButton: "cancel",
-				},
+					cancelButton: "cancel"
+				}
 			}).then((result) => {
 				if (result.isConfirmed) {
 					const newEntityName = result.value.trim();
@@ -27433,7 +27678,7 @@ class TreeView {
 					allKADDrawingsMap.set(newEntityName, {
 						...entity,
 						entityName: newEntityName,
-						data: entity.data.map((el) => ({ ...el, entityName: newEntityName })),
+						data: entity.data.map((el) => ({ ...el, entityName: newEntityName }))
 					});
 					allKADDrawingsMap.delete(oldEntityName);
 
@@ -27470,7 +27715,7 @@ class TreeView {
 							...element,
 							entityName: entityName,
 							entityType: entity.entityType,
-							elementIndex: entity.data.indexOf(element),
+							elementIndex: entity.data.indexOf(element)
 						};
 						showKADPropertyEditorPopup(kadObject);
 					}
@@ -27583,7 +27828,7 @@ function openColorPickerForElement(swatchElement, entityName, pointID) {
 			debouncedUpdateTreeView();
 
 			console.log("✅ Updated " + entityName + " point " + pointID + " color to:", newColor);
-		},
+		}
 	});
 
 	// Show the picker
