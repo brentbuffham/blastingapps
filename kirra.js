@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250711.1740AWST"
-const buildVersion = "20250711.1740AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250713.1430AWST"
+const buildVersion = "20250713.1430AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -53,9 +53,11 @@ function updatePopup() {
 				    <label class="labelWhite18">Update - NEW FEATURES:                           </label>
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
-					<label     class="labelWhite12c">July 2025                                                       </label>
+					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
 					<br><label class="labelWhite12c">✅ Implemented Show/Hide for Blasts, Blast holes, KAD Drawings  </label>
-					<br><label class="labelWhite12c">May, June and July 2025                                         </label>
+					<br><label class="labelWhite12c">✅ Clear Database correctly and reordered the Popups            </label>
+					<br><label class="labelWhite12c">✅ Increased Colour Swatches in the jsColor picker              </label>
+					<br><label class="labelWhite12c">⭐ ⭐ May, June and July 2025 ⭐ ⭐                              </label>
 					<br><label class="labelWhite12c">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
 					<br><label class="labelWhite12c">✅ Added a radii warning dialog                                 </label>
 					<br><label class="labelWhite12c">✅ Move and Z Leveling for KAD Drawings in Edit Popup           </label>
@@ -63,7 +65,7 @@ function updatePopup() {
 					<br><label class="labelWhite12c">✅ Improved user interaction for drawing tools                  </label>
 					<br><label class="labelWhite12c">✅ Added support for OBJ and other surface formats              </label>
 					<br><label class="labelWhite12c">✅ Critical bug fix to restore loading from local files         </label>
-					<br><label class="labelWhite12c">⭐ ⭐ Proximity Duplicate hole check and resolve                </label>
+					<br><label class="labelWhite12c">✅ Proximity Duplicate hole check and resolve                   </label>
 					<br><label class="labelWhite12c">✅ Tree View - Color Change                                     </label>
 					<br><label class="labelWhite12c">✅ Tree View - Context Menu - Delete & Properties               </label>
 					<br><label class="labelWhite12c">✅ Fixed State UI/UX issues                                     </label>
@@ -107,6 +109,7 @@ function updatePopup() {
 		customClass: { container: "custom-popup-container", title: "swal2-title", confirmButton: "confirm", content: "swal2-content", htmlContainer: "swal2-html-container", icon: "swal2-icon" }
 	}).then((result) => {
 		if (result.isConfirmed) {
+			checkAndPromptForStoredData();
 		}
 	});
 }
@@ -15107,31 +15110,80 @@ function checkAndPromptForStoredData() {
 		if (pointsData) showPopup(false); // Fallback to just loading points
 	};
 }
-
 async function showPopup(isDBReady) {
-	const userDecision = confirm("Do you want to pick up from where you left off?\n\nPress OK to continue or Cancel to start fresh.");
+	console.log("showPopup called with isDBReady:", isDBReady);
+	console.log("Swal available:", typeof Swal);
+	try {
+		const result = await Swal.fire({
+			title: "Welcome back to Kirra 2D!",
+			html: `
+				<div class="labelWhite18" style="margin-bottom: 15px;">
+					Do you want to pick up from where you left off?
+				</div>
+				<div class="labelWhite15" style="margin-bottom: 15px;">
+					Your previous work is still available.
+				</div>
+			`,
+			icon: "question",
+			showDenyButton: true,
+			showCancelButton: false,
+			confirmButtonText: "Continue Previous Work",
+			denyButtonText: "Start Fresh",
+			reverseButtons: false,
+			width: "450px",
+			customClass: {
+				popup: "custom-popup-container",
+				confirmButton: "confirm",
+				denyButton: "deny"
+			},
+			buttonsStyling: false
+		});
 
-	if (userDecision === true) {
-		points = loadHolesFromLocalStorage();
+		if (result.isConfirmed) {
+			// User chose to continue previous work
+			points = loadHolesFromLocalStorage();
 
-		if (isDBReady) {
-			try {
-				await loadKADFromDB();
-				await loadAllSurfacesIntoMemory(); // Just this one call
-				await loadAllImagesIntoMemory(); // Just this one call
-			} catch (err) {
-				console.error("Failed to load data from DB.", err);
+			if (isDBReady) {
+				try {
+					await loadKADFromDB();
+					await loadAllSurfacesIntoMemory();
+					await loadAllImagesIntoMemory();
+				} catch (err) {
+					console.error("Failed to load data from DB.", err);
+				}
 			}
-		}
 
-		zoomToFitAll();
-		debouncedUpdateTreeView();
-	} else {
-		clearLoadedData();
-		loadedSurfaces.clear();
-		loadedImages.clear();
-		debouncedUpdateTreeView();
-		zoomToFitAll();
+			zoomToFitAll();
+			debouncedUpdateTreeView();
+		} else if (result.isDenied) {
+			// User chose to start fresh
+			await clearLoadedData();
+			debouncedUpdateTreeView();
+			zoomToFitAll();
+		}
+	} catch (error) {
+		console.error("Error with Swal2 popup:", error);
+		// Fallback to simple confirm
+		const userDecision = confirm("Do you want to pick up from where you left off?\n\nPress OK to continue or Cancel to start fresh.");
+
+		if (userDecision === true) {
+			points = loadHolesFromLocalStorage();
+			if (isDBReady) {
+				try {
+					await loadKADFromDB();
+					await loadAllSurfacesIntoMemory();
+					await loadAllImagesIntoMemory();
+				} catch (err) {
+					console.error("Failed to load data from DB.", err);
+				}
+			}
+			zoomToFitAll();
+			debouncedUpdateTreeView();
+		} else {
+			await clearLoadedData();
+			debouncedUpdateTreeView();
+			zoomToFitAll();
+		}
 	}
 }
 
@@ -15440,12 +15492,12 @@ window.onload = function () {
 		.then((database) => {
 			db = database; // ✅ Set the global db variable
 			console.log("✅ Database initialized successfully");
-			checkAndPromptForStoredData();
+			updatePopup();
 		})
 		.catch((err) => {
 			console.error("Failed to initialize database. Falling back to Local Storage.", err);
 			if (localStorage.getItem("kirraDataPoints")) {
-				showPopup(false);
+				updatePopup();
 			}
 		});
 
@@ -15508,23 +15560,43 @@ function getKADBoundaries() {
 	return { minX, maxX, minY, maxY };
 }
 
-function clearLoadedData() {
+async function clearLoadedData() {
 	// Clear hole data
 	localStorage.removeItem("kirraDataPoints");
 	points = [];
 
-	// Clear KAD data from IndexedDB
+	// Clear ALL data from IndexedDB - not just KAD data
 	if (db) {
-		const transaction = db.transaction([STORE_NAME], "readwrite");
-		const store = transaction.objectStore(STORE_NAME);
-		store.clear(); // Clears all data in the object store
+		try {
+			// Clear KAD data
+			const kadTransaction = db.transaction([STORE_NAME], "readwrite");
+			const kadStore = kadTransaction.objectStore(STORE_NAME);
+			await new Promise((resolve, reject) => {
+				const request = kadStore.clear();
+				request.onsuccess = () => resolve();
+				request.onerror = () => reject(request.error);
+			});
+
+			// Clear surface data
+			await deleteAllSurfacesFromDB();
+
+			// Clear image data
+			await deleteAllImagesFromDB();
+
+			console.log("✅ All database data cleared");
+		} catch (error) {
+			console.error("❌ Error clearing database:", error);
+		}
 	}
+
+	// Clear memory maps
 	allKADDrawingsMap.clear();
+	loadedSurfaces.clear();
+	loadedImages.clear();
 
 	// Reset other states if necessary
 	selectedHole = null;
 	selectedPoint = null;
-	//...
 
 	// Redraw the empty canvas
 	drawData(points, selectedHole);
@@ -16687,10 +16759,41 @@ function showMultipleHolePropertyEditor(holes) {
 }
 
 function jsColorPaletteForPicker() {
-	// This function sets the default color palette for the color picker
+	// These options apply to all color pickers on the page
 	jscolor.presets.default = {
 		format: "rgb",
-		palette: ["#990000", "#FF0000", "#FFAA00", "#CCCC00", "#FFF000", "#00ff00", "#00bb00", "#00bbff", "#0055FF", "#aa00ff", "#F1F1F1", "#E3E3E3", "#C6C6C6", "#7F7F7F", "#555555", "#393939", "#1C1C1C", "#00FFFF", "#006699", "#FF00FF"]
+		palette: [
+			"#770000",
+			"#FF0000",
+			"#FF5500",
+			"#FFFF00",
+			"#00ff00",
+			"#009900",
+			"#00AAFF",
+			"#0055CC",
+			"#0000FF",
+			"#FF00FF", //10 per row
+			"#550000",
+			"#AA0000",
+			"#883300",
+			"#999900",
+			"#33AA00",
+			"#006600",
+			"#007F7F",
+			"#002288",
+			"#000099",
+			"#7F007F", //10 per row
+			"#010101",
+			"#222222",
+			"#333333",
+			"#444444",
+			"#555555",
+			"#777777",
+			"#888888",
+			"#AAAAAA",
+			"#cccccc",
+			"#FEFEFE"
+		]
 	};
 }
 
@@ -27912,7 +28015,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	// The rest of your initialization code...
 	setTimeout(function () {
 		getDarkModeSettings();
-		updatePopup();
+		// updatePopup(); // remove and call from the initDB function
 		initializeVoronoiControls();
 
 		// Longer delay for jscolor
