@@ -331,7 +331,7 @@ body.dark-mode #dark-mode-toggle::after {
 }
 
 /* Checked/Selected state for the icon buttons within the toolbar */
-#floating-toolbar input[type="checkbox"]:checked+label.icon-button {
+#floating-toolbar input[type="checkbox"]:checked + label.icon-button {
     background-color: red;
     /* Your desired selected color */
     border-color: #440000;
@@ -363,7 +363,7 @@ body.dark-mode #floating-toolbar label.icon-button:hover {
     /* Consider if text/icon color needs to change on hover in dark mode */
 }
 
-body.dark-mode #floating-toolbar input[type="checkbox"]:checked+label.icon-button {
+body.dark-mode #floating-toolbar input[type="checkbox"]:checked + label.icon-button {
     background-color: red;
     /* Selected color can be the same */
     border-color: darkred;
@@ -697,11 +697,11 @@ body.dark-mode .menu-content a:hover {
     margin-left: 2px;
 }
 
-.dark-mode-toggle input:checked+label {
+.dark-mode-toggle input:checked + label {
     background-color: #666;
 }
 
-.dark-mode-toggle input:checked+label:after {
+.dark-mode-toggle input:checked + label:after {
     transform: translateX(24px);
 }
 
@@ -914,11 +914,11 @@ input[type="file"] {
     transition: 0.4s;
 }
 
-input:checked+.slider {
+input:checked + .slider {
     background-color: #00a91c;
 }
 
-input:checked+.slider:before {
+input:checked + .slider:before {
     -webkit-transform: translateX(26px);
     -ms-transform: translateX(26px);
     transform: translateX(26px);
@@ -1397,13 +1397,13 @@ body.dark-mode .file-import-btn:hover {
 }
 
 /* Style the selected (checked) button */
-.radio-buttons-custom input[type="radio"]:checked+.icon-button {
+.radio-buttons-custom input[type="radio"]:checked + .icon-button {
     background-color: red;
     /* Set the selected color */
 }
 
 /* Style the selected (checked) button */
-.toggle-buttons-custom input[type="checkbox"]:checked+.icon-button {
+.toggle-buttons-custom input[type="checkbox"]:checked + .icon-button {
     /* display: none; */
     background-color: red;
     border-color: red;
@@ -1713,6 +1713,20 @@ body.dark-mode .file-import-btn:hover {
     background-color: #ff9d00;
     text-align: center;
 }
+.option1[type="button"] {
+    width: 100px;
+    height: 40px;
+    color: #1f1f1f;
+    background-color: #42a4bf;
+    text-align: center;
+}
+.option2[type="button"] {
+    width: 100px;
+    height: 40px;
+    color: #1f1f1f;
+    background-color: #6c52a5;
+    text-align: center;
+}
 
 .custom-popup-container {
     background-color: #333;
@@ -1728,7 +1742,6 @@ body.dark-mode .file-import-btn:hover {
     margin: 4px;
     width: 100%;
     box-sizing: border-box;
-
 }
 
 .slider-container {
@@ -2194,12 +2207,10 @@ body.dark-mode .tree-expand {
 .tree-expand:before {
     content: "▶";
     transition: transform 0.2s;
-
 }
 
 .tree-expand.expanded:before {
     transform: rotate(90deg);
-
 }
 
 /* Reduce expand button size for leaf nodes to save space */
@@ -2409,7 +2420,6 @@ body.dark-mode .tree-meta {
     background-image: url("icons/TIF-image.png");
 }
 
-
 /* Context Menu */
 .tree-context-menu {
     position: fixed;
@@ -2532,12 +2542,9 @@ body.dark-mode .color-swatch:hover {
     border-color: #bbb !important;
 }
 
-
-
 /* STRICT MOBILE CONSTRAINTS */
 /* Universal mobile support */
 @media (max-width: 1024px) {
-
     html,
     body {
         margin: 0;

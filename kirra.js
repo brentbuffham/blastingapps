@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250714.2150AWSTAWST"
-const buildVersion = "20250714.2150AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250716.1100AWSTAWST"
+const buildVersion = "20250716.1100AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,6 +54,8 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
+					<br><label class="labelWhite12c">✅ Row and Position for holes added assists renaming            </label>
+					<br><label class="labelWhite12c">✅ Row detection for imported holes without row ids             </label>
 					<br><label class="labelWhite12c">✅ Holes along Lines/Polylines uses more reliable selection     </label>
 					<br><label class="labelWhite12c">✅ Implemented Show/Hide for Blasts, Blast holes, KAD Drawings  </label>
 					<br><label class="labelWhite12c">✅ Clear Database correctly and reordered the Popups            </label>
@@ -3468,7 +3470,7 @@ let randomHex = Math.floor(Math.random() * 16777215).toString(16);
 
 // DUPLICATE ID DETECTION AND RESOLUTION SYSTEM
 // Enhanced duplicate checking that handles all ID formats
-function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
+async function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
     const duplicateReport = {
         hasDuplicates: false,
         duplicates: [],
@@ -3517,7 +3519,7 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
         console.warn("🚨 DUPLICATE HOLE IDs DETECTED:", duplicateReport.duplicates.length, "conflicts found");
 
         // Show user dialog for resolution strategy
-        const resolution = showDuplicateResolutionDialog(duplicateReport, actionType);
+        const resolution = await showDuplicateResolutionDialog(duplicateReport, actionType);
 
         switch (resolution.strategy) {
             case "auto-renumber":
@@ -3540,38 +3542,87 @@ function checkAndResolveDuplicateHoleIDs(points, actionType = "import") {
     return duplicateReport;
 }
 
-//Keep this function as it is, it is used to show the duplicate resolution dialog
+// Enhanced Swal2 duplicate resolution dialog using existing styles
 function showDuplicateResolutionDialog(duplicateReport, actionType) {
     const duplicateCount = duplicateReport.duplicates.length;
     const entitiesAffected = [...new Set(duplicateReport.duplicates.map((d) => d.entityName))];
 
-    let message = "🚨 CRITICAL: Duplicate Hole IDs Detected!\n\n";
-    message += "Found " + duplicateCount + " duplicate hole ID conflicts\n";
-    message += "Affected blasts: " + entitiesAffected.join(", ") + "\n\n";
-    message += "Duplicate holes can cause data corruption and calculation errors.\n\n";
-    message += "Resolution options:\n";
-    message += "1. AUTO-RENUMBER: Auto-assign new unique IDs\n";
-    message += "2. KEEP FIRST: Remove duplicate holes, keep original\n";
-    message += "3. KEEP LAST: Remove original holes, keep duplicates\n";
-    message += "4. ABORT: Cancel " + actionType + " operation\n\n";
-    message += "Choose resolution (1-4):";
+    // Build simple report
+    let htmlContent = '<div class="button-container-2col">';
+    htmlContent += '<label class="labelWhite18" style="grid-column: 1 / -1; text-align: center;">⚠️ Duplicate Hole IDs Detected</label>';
+    htmlContent += '<label class="labelWhite15" style="grid-column: 1 / -1;">Found: ' + duplicateCount + " conflicts</label>";
+    htmlContent += '<label class="labelWhite15" style="grid-column: 1 / -1;">Blasts: ' + entitiesAffected.join(", ") + "</label>";
 
-    const choice = prompt(message);
-
-    switch (choice) {
-        case "1":
-            return { strategy: "auto-renumber" };
-        case "2":
-            return { strategy: "keep-first" };
-        case "3":
-            return { strategy: "keep-last" };
-        case "4":
-        case null:
-            return { strategy: "abort" };
-        default:
-            alert("Invalid choice. Aborting operation.");
-            return { strategy: "abort" };
+    // Show a few examples
+    htmlContent += '<label class="labelWhite12" style="grid-column: 1 / -1; margin-top: 10px;">Examples:</label>';
+    duplicateReport.duplicates.slice(0, 3).forEach((dup) => {
+        htmlContent += '<label class="labelWhite12" style="grid-column: 1 / -1;">• ' + dup.entityName + " - ID: " + dup.holeID + "</label>";
+    });
+    if (duplicateReport.duplicates.length > 3) {
+        htmlContent += '<label class="labelWhite12" style="grid-column: 1 / -1;">... and ' + (duplicateReport.duplicates.length - 3) + " more</label>";
     }
+    htmlContent += "</div>";
+
+    return new Promise((resolve) => {
+        Swal.fire({
+            title: "Duplicate Resolution",
+            html: htmlContent,
+            icon: "warning",
+            showCancelButton: true,
+            showDenyButton: false, // Don't use deny button
+            showConfirmButton: true,
+            confirmButtonText: "Renumber",
+            confirmButtonColor: "#00a91c",
+            cancelButtonText: "Cancel ", //+ actionType,
+            cancelButtonColor: "#980000",
+            customClass: {
+                container: "custom-popup-container",
+                title: "swal2-title",
+                confirmButton: "confirm",
+                cancelButton: "cancel",
+                htmlContainer: "swal2-html-container"
+            },
+            // Add custom buttons for Keep First and Keep Last
+            didOpen: () => {
+                // Get the actions container
+                const actionsContainer = Swal.getActions();
+
+                // Create Option1 button for "Keep First"
+                const keepFirstBtn = document.createElement("button");
+                keepFirstBtn.type = "button";
+                keepFirstBtn.className = "option1";
+                keepFirstBtn.textContent = "Keep First";
+                keepFirstBtn.onclick = () => {
+                    Swal.close({ isOption1: true });
+                };
+
+                // Create Option2 button for "Keep Last"
+                const keepLastBtn = document.createElement("button");
+                keepLastBtn.type = "button";
+                keepLastBtn.className = "option2";
+                keepLastBtn.textContent = "Keep Last";
+                keepLastBtn.onclick = () => {
+                    Swal.close({ isOption2: true });
+                };
+
+                // Insert before Cancel button
+                const cancelBtn = Swal.getCancelButton();
+                actionsContainer.insertBefore(keepFirstBtn, cancelBtn);
+                actionsContainer.insertBefore(keepLastBtn, cancelBtn);
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                resolve({ strategy: "auto-renumber" });
+            } else if (result.isOption1) {
+                resolve({ strategy: "keep-first" });
+            } else if (result.isOption2) {
+                resolve({ strategy: "keep-last" });
+            } else {
+                resolve({ strategy: "abort" });
+            }
+        });
+        Data(points, selectedHole);
+    });
 }
 
 // Enhanced auto-renumbering that handles all ID formats
@@ -3636,9 +3687,19 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
             // Generate new numeric ID
             newID = (++entity.maxNumeric).toString();
         } else if (alphaMatch) {
-            // Generate new alphanumeric ID
-            entity.maxAlphaNum++;
-            newID = entity.maxAlphaRow + entity.maxAlphaNum;
+            // For true alphanumeric (A1, B2 style), maintain the letter prefix
+            const letters = alphaMatch[1];
+
+            // Find max number for this specific letter prefix
+            let maxNumForPrefix = 0;
+            entity.holes.forEach((h) => {
+                const match = h.holeID.toString().match(/^([A-Z]+)(\d+)$/);
+                if (match && match[1] === letters) {
+                    maxNumForPrefix = Math.max(maxNumForPrefix, parseInt(match[2]));
+                }
+            });
+
+            newID = letters + (maxNumForPrefix + 1);
         } else {
             // Fallback: use numeric
             newID = (++entity.maxNumeric).toString();
@@ -3664,7 +3725,6 @@ function resolveDuplicatesAutoRenumber(points, duplicateReport) {
         console.log("🔧 Renumbered duplicate hole:", duplicate.entityName + ":" + oldID, "→", newID);
     });
 }
-
 function resolveDuplicatesKeepFirst(points, duplicateReport) {
     // Remove duplicate holes (keep the first occurrence)
     const indicesToRemove = [];
@@ -3801,8 +3861,9 @@ function parseCSV(data) {
     let minX = Infinity;
     let minY = Infinity;
 
-    const supportedLengths = [4, 7, 9, 12, 14, 20, 25, 30];
+    const supportedLengths = [4, 7, 9, 12, 14, 20, 25, 30, 32];
     const warnings = [];
+    const newHolesForRowDetection = []; // Track holes that need row detection
 
     let blastNameValue = "BLAST_" + randomHex;
 
@@ -3833,8 +3894,33 @@ function parseCSV(data) {
         let measuredComment = "None",
             measuredCommentTimeStamp = "09/05/1975 00:00:00";
         let subdrill = 0;
-
-        if (len === 30) {
+        let rowID = 0;
+        let posID = 0;
+        if (len === 32) {
+            entityName = values[0];
+            holeID = values[2];
+            startX = parseFloat(values[3]);
+            startY = parseFloat(values[4]);
+            startZ = parseFloat(values[5]);
+            endX = parseFloat(values[6]);
+            endY = parseFloat(values[7]);
+            endZ = parseFloat(values[8]);
+            // Note: We'll ignore the saved calculated values and recalculate using calculateHoleGeometry
+            subdrill = parseFloat(values[12]);
+            holeDiameter = parseFloat(values[15]);
+            holeType = values[16];
+            fromHoleID = values[17];
+            delay = parseInt(values[18]);
+            color = values[19].replace(/\r$/, "");
+            measuredLength = parseFloat(values[24]);
+            measuredLengthTimeStamp = values[25];
+            measuredMass = parseFloat(values[26]);
+            measuredMassTimeStamp = values[27];
+            measuredComment = values[28];
+            measuredCommentTimeStamp = values[29];
+            rowID = values[30] && values[30].trim() !== "" ? parseInt(values[30]) : null;
+            posID = values[31] && values[31].trim() !== "" ? parseInt(values[31]) : null;
+        } else if (len === 30) {
             entityName = values[0];
             holeID = values[2];
             startX = parseFloat(values[3]);
@@ -3960,11 +4046,17 @@ function parseCSV(data) {
                 measuredMassTimeStamp,
                 measuredComment,
                 measuredCommentTimeStamp,
+                rowID,
+                posID,
                 visible: true
             };
 
             // Add to points array first
             points.push(hole);
+            // If this hole needs row detection, add to list
+            if (rowID === null || rowID === 0 || posID === null || posID === 0) {
+                newHolesForRowDetection.push(hole);
+            }
 
             // Calculate proper benchHeight and grade positions for ALL holes (not just when subdrill !== 0)
             if (len !== 4) {
@@ -3995,6 +4087,30 @@ function parseCSV(data) {
             minY = Math.min(minY, startY);
         }
     }
+    // Group holes by entity for row detection
+    const entitiesForRowDetection = new Map();
+    newHolesForRowDetection.forEach((hole) => {
+        if (!entitiesForRowDetection.has(hole.entityName)) {
+            entitiesForRowDetection.set(hole.entityName, []);
+        }
+        entitiesForRowDetection.get(hole.entityName).push(hole);
+    });
+
+    // In parseCSV and processCsvData:
+    entitiesForRowDetection.forEach((holes, entityName) => {
+        smartRowDetection(holes, entityName); // Changed from autoDetectRowsAndPositions
+    });
+
+    // Auto-assign rowID/posID for holes that still don't have them
+    const unassignedHoles = points.filter((hole) => hole.rowID === null || hole.rowID === 0 || hole.posID === null || hole.posID === 0);
+    unassignedHoles.forEach((hole) => {
+        if (!hole.rowID || hole.rowID === 0) {
+            hole.rowID = getNextRowID(hole.entityName);
+        }
+        if (!hole.posID || hole.posID === 0) {
+            hole.posID = getNextPosID(hole.entityName, hole.rowID);
+        }
+    });
 
     if (warnings.length > 0) {
         console.warn("parseCSV warnings:\n" + warnings.join("\n"));
@@ -5487,11 +5603,11 @@ function convertPointsToAllDataCSV() {
     let csv = "";
     /* STRUCTURE OF THE POINTS ARRAY
         0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
-        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID
     */
     // Add the CSV header if needed
     const header =
-        "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
+        "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID";
     csv += header + "\n";
     const decimalPlaces = 4;
     // Iterate over the points array and convert each object to a CSV row
@@ -5503,7 +5619,7 @@ function convertPointsToAllDataCSV() {
             point.holeType
         },${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal},${point.holeLengthCalculated.toFixed(decimalPlaces)},${point.holeAngle.toFixed(decimalPlaces)},${point.holeBearing.toFixed(decimalPlaces)},${point.holeTime},${point.measuredLength.toFixed(decimalPlaces)},${
             point.measuredLengthTimeStamp
-        },${point.measuredMass.toFixed(decimalPlaces)},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
+        },${point.measuredMass.toFixed(decimalPlaces)},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp},${point.rowID},${point.posID}`;
         csv += row + "\n";
     }
 
@@ -8968,12 +9084,13 @@ function handleConnectorClick(event) {
                     points[clickedHoleIndex].colorHexDecimal = getJSColorHex();
                 }
                 fromHoleStore = null;
+                holeTimes = calculateTimes(points);
                 const result = recalculateContours(points, deltaX, deltaY);
                 contourLinesArray = result.contourLinesArray;
                 directionArrows = result.directionArrows;
 
                 // directionArrows now contains the arrow data for later drawing
-
+                timeChart();
                 drawData(points, selectedHole);
             }
         }
@@ -8993,12 +9110,14 @@ function handleConnectorClick(event) {
                 }
                 // Reset the fromHole and exit add connector mode
                 fromHoleStore = null;
-
+                // RECALCULATE TIMING, CONTOURS AND DIRECTION ARROWS
+                holeTimes = calculateTimes(points);
                 const result = recalculateContours(points, deltaX, deltaY);
                 contourLinesArray = result.contourLinesArray;
                 directionArrows = result.directionArrows;
 
-                // directionArrows now contains the arrow data for later drawing
+                // Update timing chart display
+                timeChart();
 
                 drawData(points, selectedHole);
                 //console.log("centroidX: " + centroidX + " centroidY: " + centroidY);
@@ -9060,6 +9179,12 @@ function connectPointsInLine(pointsInLine) {
 
         previousHoleID = `${point.entityName}:::${point.holeID}`;
     }
+    holeTimes = calculateTimes(points);
+    const result = recalculateContours(points, deltaX, deltaY);
+    contourLinesArray = result.contourLinesArray;
+    directionArrows = result.directionArrows;
+    timeChart();
+    drawData(points, selectedHole);
 }
 
 // Function to calculate the distance between two points
@@ -9559,6 +9684,7 @@ function handleHoleDeletingClick(event) {
     }
 }
 
+// Update renumberHolesFunction to preserve rowID/posID structure
 function renumberHolesFunction(startNumber, selectedEntityName) {
     console.log("Renumbering holes for Entity:", selectedEntityName, "Starting at:", startNumber);
 
@@ -9567,118 +9693,57 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
     // Get all holes for this entity
     const entityHoles = points.filter((point) => point.entityName === selectedEntityName);
 
-    // ⭐ NEW: Determine renumbering mode based on deleteRenumberStart
+    // Sort holes by rowID first, then by posID within each row
+    entityHoles.sort((a, b) => {
+        // First sort by rowID
+        const rowDiff = (a.rowID || 0) - (b.rowID || 0);
+        if (rowDiff !== 0) return rowDiff;
+
+        // Then sort by posID within the same row
+        return (a.posID || 0) - (b.posID || 0);
+    });
+
     const startValue = startNumber.toString();
     const alphaMatch = startValue.match(/^([A-Z]+)(\d+)$/);
     const isAlphaNumerical = alphaMatch !== null;
     const canParseAsInt = !isNaN(parseInt(startValue)) && isFinite(startValue);
 
     if (isAlphaNumerical) {
-        // ALPHA-NUMERICAL RENUMBERING BY ROW - Use orientation-based grouping
-        console.log("Using alpha-numerical renumbering starting at:", startValue);
+        // ALPHA-NUMERICAL RENUMBERING BY ROW - Use rowID/posID structure
+        console.log("Using alpha-numerical renumbering with rowID/posID structure starting at:", startValue);
 
         const startRowLetter = alphaMatch[1];
         const startHoleNumber = parseInt(alphaMatch[2]);
 
-        // Step 1: Detect row orientation (same as renumberPatternAfterClipping)
-        let rowOrientation = 90; // Default to East (90°) if can't determine
-
-        if (entityHoles.length >= 2) {
-            // Sort holes by Y coordinate to find potential row mates
-            const sortedByY = [...entityHoles].sort((a, b) => b.startYLocation - a.startYLocation);
-
-            // Find the first two holes that are likely in the same row (similar Y coordinates)
-            const tolerance = 2.0; // 2 meter tolerance for same row
-            let firstRowHoles = [sortedByY[0]];
-
-            for (let i = 1; i < sortedByY.length; i++) {
-                if (Math.abs(sortedByY[i].startYLocation - sortedByY[0].startYLocation) <= tolerance) {
-                    firstRowHoles.push(sortedByY[i]);
-                } else {
-                    break; // Found different row
-                }
-            }
-
-            // If we have at least 2 holes in the same row, calculate row orientation
-            if (firstRowHoles.length >= 2) {
-                // Sort by X coordinate to get leftmost and rightmost holes in the row
-                firstRowHoles.sort((a, b) => a.startXLocation - b.startXLocation);
-                const leftHole = firstRowHoles[0];
-                const rightHole = firstRowHoles[firstRowHoles.length - 1];
-
-                // Calculate bearing from left to right hole using your protractor formula
-                const deltaX = rightHole.startXLocation - leftHole.startXLocation;
-                const deltaY = rightHole.startYLocation - leftHole.startYLocation;
-
-                // Use the same bearing calculation as your protractor tool
-                rowOrientation = (90 - (Math.atan2(deltaY, deltaX) * 180) / Math.PI + 360) % 360;
-            }
-        }
-
-        // Step 2: Convert compass bearing to math radians for projections
-        const rowBearingRadians = (90 - rowOrientation) * (Math.PI / 180);
-        const burdenBearingRadians = rowBearingRadians - Math.PI / 2; // Perpendicular to row direction
-
-        // Step 3: Project each hole onto the burden axis (perpendicular to rows) and spacing axis (along rows)
+        // Group holes by rowID
+        const rowGroups = new Map();
         entityHoles.forEach((hole) => {
-            // Project onto burden direction (perpendicular to rows) - this determines which row
-            hole.burdenProjection = hole.startXLocation * Math.cos(burdenBearingRadians) + hole.startYLocation * Math.sin(burdenBearingRadians);
-            // Project onto spacing direction (along rows) - this determines position within row
-            hole.spacingProjection = hole.startXLocation * Math.cos(rowBearingRadians) + hole.startYLocation * Math.sin(rowBearingRadians);
+            const rowID = hole.rowID || 1;
+            if (!rowGroups.has(rowID)) {
+                rowGroups.set(rowID, []);
+            }
+            rowGroups.get(rowID).push(hole);
         });
 
-        // Step 4-5: Project and sort holes (existing code stays the same)
-        entityHoles.forEach((hole) => {
-            hole.burdenProjection = hole.startXLocation * Math.cos(burdenBearingRadians) + hole.startYLocation * Math.sin(burdenBearingRadians);
-            hole.spacingProjection = hole.startXLocation * Math.cos(rowBearingRadians) + hole.startYLocation * Math.sin(rowBearingRadians);
+        // Sort each row by posID
+        rowGroups.forEach((holes) => {
+            holes.sort((a, b) => (a.posID || 0) - (b.posID || 0));
         });
 
-        entityHoles.sort((a, b) => {
-            const burdenDiff = Math.abs(a.burdenProjection - b.burdenProjection);
-            if (burdenDiff > 1.5) {
-                return b.burdenProjection - a.burdenProjection; // Sort rows (highest burden first)
-            }
-            return a.spacingProjection - b.spacingProjection; // Sort within row (left to right along row)
-        });
+        // Get sorted rowIDs
+        const sortedRowIDs = Array.from(rowGroups.keys()).sort((a, b) => a - b);
 
-        // Group holes by rows using burden projection
-        const tolerance = 2.0;
-        const rows = [];
-
-        if (entityHoles.length > 0) {
-            let currentRow = [entityHoles[0]];
-            let currentBurdenPos = entityHoles[0].burdenProjection;
-
-            for (let i = 1; i < entityHoles.length; i++) {
-                const hole = entityHoles[i];
-                if (Math.abs(hole.burdenProjection - currentBurdenPos) <= tolerance) {
-                    currentRow.push(hole);
-                } else {
-                    currentRow.sort((a, b) => a.spacingProjection - b.spacingProjection);
-                    rows.push(currentRow);
-                    currentRow = [hole];
-                    currentBurdenPos = hole.burdenProjection;
-                }
-            }
-
-            if (currentRow.length > 0) {
-                currentRow.sort((a, b) => a.spacingProjection - b.spacingProjection);
-                rows.push(currentRow);
-            }
-        }
-
-        // Step 6: Renumber alpha-numerically starting from specified value
         let currentRowLetter = startRowLetter;
 
-        // FIX: Process rows from 0 to rows.length-1 (bottom to top) so A is bottom row
-        for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
-            const row = rows[rowIndex];
-            for (let pos = 0; pos < row.length; pos++) {
-                const hole = row[pos];
-                const newHoleID = currentRowLetter + (startHoleNumber + pos);
+        // Renumber each row
+        sortedRowIDs.forEach((rowID) => {
+            const rowHoles = rowGroups.get(rowID);
+            rowHoles.forEach((hole, posIndex) => {
+                const newHoleID = currentRowLetter + (startHoleNumber + posIndex);
                 oldToNewHoleIDMap.set(hole.holeID, newHoleID);
                 hole.holeID = newHoleID;
-            }
+            });
+
             // Move to next row letter
             if (currentRowLetter === "Z") {
                 currentRowLetter = "AA";
@@ -9687,59 +9752,10 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
             } else {
                 currentRowLetter = incrementLetter(currentRowLetter);
             }
-        }
-
-        // Step 7: Clean up temporary projection properties
-        entityHoles.forEach((hole) => {
-            delete hole.burdenProjection;
-            delete hole.spacingProjection;
         });
     } else {
-        // NUMERICAL RENUMBERING - FIX: Use same orientation-based sorting as alpha
-        console.log("Using numerical renumbering starting at:", startValue);
-
-        // Use the same row detection logic as alpha-numerical
-        let rowOrientation = 90; // Default to East (90°) if can't determine
-
-        if (entityHoles.length >= 2) {
-            const sortedByY = [...entityHoles].sort((a, b) => b.startYLocation - a.startYLocation);
-            const tolerance = 2.0;
-            let firstRowHoles = [sortedByY[0]];
-
-            for (let i = 1; i < sortedByY.length; i++) {
-                if (Math.abs(sortedByY[i].startYLocation - sortedByY[0].startYLocation) <= tolerance) {
-                    firstRowHoles.push(sortedByY[i]);
-                } else {
-                    break;
-                }
-            }
-
-            if (firstRowHoles.length >= 2) {
-                firstRowHoles.sort((a, b) => a.startXLocation - b.startXLocation);
-                const leftHole = firstRowHoles[0];
-                const rightHole = firstRowHoles[firstRowHoles.length - 1];
-                const deltaX = rightHole.startXLocation - leftHole.startXLocation;
-                const deltaY = rightHole.startYLocation - leftHole.startYLocation;
-                rowOrientation = (90 - (Math.atan2(deltaY, deltaX) * 180) / Math.PI + 360) % 360;
-            }
-        }
-
-        // Use same projection-based sorting as alpha-numerical
-        const rowBearingRadians = (90 - rowOrientation) * (Math.PI / 180);
-        const burdenBearingRadians = rowBearingRadians - Math.PI / 2;
-
-        entityHoles.forEach((hole) => {
-            hole.burdenProjection = hole.startXLocation * Math.cos(burdenBearingRadians) + hole.startYLocation * Math.sin(burdenBearingRadians);
-            hole.spacingProjection = hole.startXLocation * Math.cos(rowBearingRadians) + hole.startYLocation * Math.sin(rowBearingRadians);
-        });
-
-        entityHoles.sort((a, b) => {
-            const burdenDiff = Math.abs(a.burdenProjection - b.burdenProjection);
-            if (burdenDiff > 1.5) {
-                return b.burdenProjection - a.burdenProjection; // Sort rows (highest burden first)
-            }
-            return a.spacingProjection - b.spacingProjection; // Sort within row (left to right along row)
-        });
+        // NUMERICAL RENUMBERING - Respect rowID/posID order
+        console.log("Using numerical renumbering with rowID/posID structure starting at:", startValue);
 
         const startNum = canParseAsInt ? parseInt(startValue) : 1;
         let currentNumber = startNum;
@@ -9748,12 +9764,6 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
             oldToNewHoleIDMap.set(hole.holeID, currentNumber.toString());
             hole.holeID = currentNumber.toString();
             currentNumber++;
-        });
-
-        // Clean up temporary projection properties
-        entityHoles.forEach((hole) => {
-            delete hole.burdenProjection;
-            delete hole.spacingProjection;
         });
     }
 
@@ -9769,6 +9779,44 @@ function renumberHolesFunction(startNumber, selectedEntityName) {
 
     refreshPoints();
     drawData(points, selectedHole);
+    console.log("Renumbered", entityHoles.length, "holes respecting rowID/posID structure");
+}
+
+// Update deleteHoleAndRenumber to handle rowID/posID
+function deleteHoleAndRenumber(holeToDelete) {
+    const entityName = holeToDelete.entityName;
+    const holeID = holeToDelete.holeID;
+    const rowID = holeToDelete.rowID;
+    const posID = holeToDelete.posID;
+
+    console.log("Deleting hole", holeID, "from row", rowID, "position", posID);
+
+    // Remove the hole from points array
+    const holeIndex = points.indexOf(holeToDelete);
+    if (holeIndex > -1) {
+        points.splice(holeIndex, 1);
+    }
+
+    // If we have rowID/posID, renumber only the affected row
+    if (rowID && posID) {
+        // Get all holes in the same row that come after the deleted hole
+        const sameRowHoles = points.filter((hole) => hole.entityName === entityName && hole.rowID === rowID && hole.posID > posID);
+
+        // Renumber positions in this row
+        sameRowHoles.forEach((hole) => {
+            const oldHoleID = hole.holeID;
+            hole.posID = hole.posID - 1; // Shift position down by 1
+
+            // Update fromHoleID references if needed
+            points.forEach((point) => {
+                if (point.fromHoleID === entityName + ":::" + oldHoleID) {
+                    point.fromHoleID = entityName + ":::" + hole.holeID;
+                }
+            });
+        });
+
+        console.log("Renumbered", sameRowHoles.length, "holes in row", rowID);
+    }
 }
 function renumberPatternAfterClipping(entityName) {
     const entityHoles = points.filter((point) => point.entityName === entityName);
@@ -11648,6 +11696,7 @@ function showProximityWarning(proximityHoles, newHoleInfo) {
 }
 
 // Function to generate the pattern of holes
+// added rowid and posid 14 july 2025
 function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrientation, x, y, z, gradeZ, diameter, type, angle, bearing, length, subdrill, burden, spacing, rows, holesPerRow) {
     let entityType = "hole";
     let useGradeToCalcLength = useGradeZ;
@@ -11666,24 +11715,29 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
     let patternrows = parseInt(rows);
     let patternholesPerRow = parseInt(holesPerRow);
     let patternoffset = parseFloat(offset);
-    let patternnameTypeIsNumerical = nameTypeIsNumerical; // This flag determines naming style
+    let patternnameTypeIsNumerical = nameTypeIsNumerical;
     let patternrowOrientation = parseFloat((90 - rowOrientation) * (Math.PI / 180));
 
     let referenceX = startXLocation;
     let referenceY = startYLocation;
 
-    let currentLetter = "A"; // Initialize the current row letter (for alphanumeric)
-    // Use a global counter for purely numerical IDs to ensure uniqueness across all existing points
-    let globalHoleCounter = points.length > 0 ? Math.max(...points.map((h) => parseInt(h.holeID) || 0)) + 1 : 1; // Find max existing ID + 1
+    let currentLetter = "A";
+    let globalHoleCounter = points.length > 0 ? Math.max(...points.map((h) => parseInt(h.holeID) || 0)) + 1 : 1;
+
+    // Get the starting rowID for this pattern
+    const startingRowID = getNextRowID(entityName);
+    console.log("Starting rowID for addPattern:", startingRowID);
 
     for (let i = 0; i < patternrows; i++) {
+        // Each pattern row gets its own rowID
+        const currentRowID = startingRowID + i;
+
         for (let j = 0; j < patternholesPerRow; j++) {
             const relativeX = j * patternspacing;
             const relativeY = i * patternburden;
 
             let offsetX = 0;
             if (i % 2 === 1) {
-                // Odd rows get offset for staggering
                 offsetX = patternoffset * patternspacing;
             }
 
@@ -11694,18 +11748,19 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
             const finalY = referenceY + rotatedY;
 
             let holeID;
-            const useCustomHoleID = true; // Always false for generated patterns
+            const useCustomHoleID = true;
 
             if (!patternnameTypeIsNumerical) {
-                // User wants alphanumeric (A1, A2, B1, B2...)
-                holeID = currentLetter + (j + 1); // j+1 for hole number in current row (1, 2, 3...)
+                holeID = currentLetter + (j + 1);
             } else {
-                // User wants purely numerical (1, 2, 3...)
-                holeID = globalHoleCounter.toString(); // Ensure it's a string if other IDs are strings
+                holeID = globalHoleCounter.toString();
                 globalHoleCounter++;
             }
 
-            addHole(useCustomHoleID, useGradeZ, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(gradeZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing));
+            // Position ID is sequential for each hole in this row (j + 1)
+            const posID = j + 1;
+
+            addHole(useCustomHoleID, useGradeZ, entityName, holeID, parseFloat(finalX), parseFloat(finalY), parseFloat(startZLocation), parseFloat(gradeZLocation), parseFloat(holeDiameter), holeType, parseFloat(holeLength), parseFloat(subdrillAmount), parseFloat(holeAngle), parseFloat(holeBearing), currentRowID, posID);
         }
 
         // Increment the current letter for the next row ONLY IF alphanumeric naming is used
@@ -11713,7 +11768,7 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
             if (currentLetter === "Z") {
                 currentLetter = "AA";
             } else if (currentLetter === "ZZ") {
-                currentLetter = "AAA"; // Assuming you have logic for AAA, AAB etc.
+                currentLetter = "AAA";
             } else {
                 currentLetter = incrementLetter(currentLetter);
             }
@@ -11722,17 +11777,17 @@ function addPattern(offset, entityName, nameTypeIsNumerical, useGradeZ, rowOrien
 
     // Reset the pattern adding state
     isAddingPattern = false;
-    // Make the switch off
     addPatternSwitch.checked = false;
-    //updateCentroids(); // You might want to re-enable or ensure this runs
-    resetZoom(); // Reset zoom as part of pattern addition
-    drawData(points, selectedHole); // Redraw the canvas with new holes
-    // ⭐ Trigger TreeView update here
+    resetZoom();
+    drawData(points, selectedHole);
+
     if (typeof debouncedUpdateTreeView === "function") {
         debouncedUpdateTreeView();
     } else if (typeof updateTreeView === "function") {
         updateTreeView();
     }
+
+    console.log("Generated pattern with " + patternrows + " rows (rowIDs " + startingRowID + "-" + (startingRowID + patternrows - 1) + ")");
 }
 
 function incrementLetter(str) {
@@ -12072,10 +12127,49 @@ function editBlastNamePopup(selectedHole) {
                     });
                 }
 
-                // ADD THIS: Check for duplicate hole IDs after renaming
+                // Check for duplicate hole IDs and adjust rowIDs when merging blasts
+                if (allHoleBlastNamesValue === true && blastNameValue !== currentEntityName) {
+                    // Get the max rowID in the target blast (if it exists)
+                    let maxRowID = 0;
+                    points.forEach((point) => {
+                        if (point.entityName === blastNameValue && point.rowID) {
+                            maxRowID = Math.max(maxRowID, parseInt(point.rowID) || 0);
+                        }
+                    });
+
+                    // If merging into an existing blast, adjust rowIDs of the renamed holes
+                    if (maxRowID > 0) {
+                        console.log("Merging blast - adjusting rowIDs. Current max rowID in " + blastNameValue + ": " + maxRowID);
+
+                        // Group renamed holes by their current rowID
+                        const rowGroups = new Map();
+                        points.forEach((point) => {
+                            if (point.entityName === blastNameValue && point.fromHoleID && point.fromHoleID.startsWith(currentEntityName + ":::")) {
+                                const currentRow = point.rowID || 1;
+                                if (!rowGroups.has(currentRow)) {
+                                    rowGroups.set(currentRow, []);
+                                }
+                                rowGroups.get(currentRow).push(point);
+                            }
+                        });
+
+                        // Adjust rowIDs sequentially
+                        let newRowID = maxRowID;
+                        Array.from(rowGroups.keys())
+                            .sort((a, b) => a - b)
+                            .forEach((oldRowID) => {
+                                newRowID++;
+                                rowGroups.get(oldRowID).forEach((point) => {
+                                    console.log("Adjusting hole " + point.holeID + " from row " + oldRowID + " to row " + newRowID);
+                                    point.rowID = newRowID;
+                                });
+                            });
+                    }
+                }
+
+                // Check for duplicate hole IDs after renaming
                 if (typeof checkAndResolveDuplicateHoleIDs === "function") {
-                    checkAndResolveDuplicateHoleIDs(points);
-                    console.log("Checked and resolved any duplicate hole IDs");
+                    checkAndResolveDuplicateHoleIDs(points, "rename");
                 }
 
                 // Update tree view if available
@@ -12143,6 +12237,51 @@ function editHoleTypePopup() {
         }
     });
 }
+// IMPORTANT IMPLEMENTING A ROW ID AND POS ID FOR BLASTHOLES THIS WILL HELP WITH ORDERING
+// Helper function to get the next rowID for a given entityName
+function getNextRowID(entityName) {
+    if (!points || points.length === 0) {
+        return 1;
+    }
+
+    // Find the highest rowID for this entityName
+    const entityHoles = points.filter((hole) => hole.entityName === entityName);
+    if (entityHoles.length === 0) {
+        return 1;
+    }
+
+    let maxRowID = 0;
+    entityHoles.forEach((hole) => {
+        if (hole.rowID && !isNaN(hole.rowID)) {
+            maxRowID = Math.max(maxRowID, parseInt(hole.rowID));
+        }
+    });
+
+    return maxRowID + 1;
+}
+
+// Helper function to get the next posID for a given entityName and rowID
+function getNextPosID(entityName, rowID) {
+    if (!points || points.length === 0) {
+        return 1;
+    }
+
+    // Find the highest posID for this entityName and rowID
+    const rowHoles = points.filter((hole) => hole.entityName === entityName && hole.rowID === rowID);
+
+    if (rowHoles.length === 0) {
+        return 1;
+    }
+
+    let maxPosID = 0;
+    rowHoles.forEach((hole) => {
+        if (hole.posID && !isNaN(hole.posID)) {
+            maxPosID = Math.max(maxPosID, parseInt(hole.posID));
+        }
+    });
+
+    return maxPosID + 1;
+}
 
 /**
  * Add hole to the points array popup using sweetalert and then draw the points
@@ -12159,8 +12298,11 @@ function editHoleTypePopup() {
  * @param {number} length - The length of the hole
  * @param {number} subdrill - The subdrill of the hole
  * @param {number} angle - The angle of the hole
+ * @param {number} bearing - The bearing of the hole
+ * @param {number} rowID - The row ID (Vulcan-style organization)
+ * @param {number} posID - The position ID within the row (Vulcan-style organization)
  */
-function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation, startYLocation, startZLocation, gradeZLocation, diameter, type, length, subdrill, angle, bearing) {
+function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation, startYLocation, startZLocation, gradeZLocation, diameter, type, length, subdrill, angle, bearing, rowID = null, posID = null) {
     if (typeof entityName === "string" && entityName.trim() !== "") {
         entityName = entityName.trim();
     } else {
@@ -12171,6 +12313,14 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
     // Initialize points as an empty array if it's null
     if (points === null) {
         points = [];
+    }
+
+    // Auto-assign rowID and posID if not provided (for individual hole creation)
+    if (rowID === null) {
+        rowID = getNextRowID(entityName);
+    }
+    if (posID === null) {
+        posID = getNextPosID(entityName, rowID);
     }
 
     let newHoleID = null;
@@ -12322,7 +12472,9 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
                     measuredMass,
                     measuredMassTimeStamp,
                     measuredComment,
-                    measuredCommentTimeStamp
+                    measuredCommentTimeStamp,
+                    rowID,
+                    posID
                 );
             } else if (result.isDenied) {
                 // User chose to skip - don't add this hole but continue
@@ -12364,7 +12516,9 @@ function addHole(useCustomHoleID, useGradeZ, entityName, holeID, startXLocation,
         measuredMass,
         measuredMassTimeStamp,
         measuredComment,
-        measuredCommentTimeStamp
+        measuredCommentTimeStamp,
+        rowID,
+        posID
     );
 
     if (isAddingHole && !isAddingPattern) {
@@ -12403,7 +12557,9 @@ function addHoleToPoints(
     measuredMass,
     measuredMassTimeStamp,
     measuredComment,
-    measuredCommentTimeStamp
+    measuredCommentTimeStamp,
+    rowID,
+    posID
 ) {
     points.push({
         entityName: entityName,
@@ -12435,10 +12591,12 @@ function addHoleToPoints(
         measuredMassTimeStamp: measuredMassTimeStamp,
         measuredComment: measuredComment,
         measuredCommentTimeStamp: measuredCommentTimeStamp,
-        visible: true
+        visible: true,
+        rowID: parseInt(rowID),
+        posID: parseInt(posID)
     });
 
-    //console.log("Added Hole: " + newHoleID);
+    //console.log("Added Hole: " + newHoleID + " (Row: " + rowID + ", Pos: " + posID + ")");
 }
 
 function handleMeasuredLengthClick(event) {
@@ -14389,10 +14547,10 @@ function saveHolesToLocalStorage(points) {
     if (points !== null) {
         /* STRUCTURE OF THE POINTS ARRAY
         0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
-        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID
     */
         const lines = points.map((point) => {
-            return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.gradeXLocation},${point.gradeYLocation},${point.gradeZLocation},${point.subdrillAmount},${point.subdrillLength},${point.benchHeight},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.initiationTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}\n`;
+            return `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.gradeXLocation},${point.gradeYLocation},${point.gradeZLocation},${point.subdrillAmount},${point.subdrillLength},${point.benchHeight},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal},${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing},${point.initiationTime},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp},${point.rowID},${point.posID}\n`;
         });
 
         const csvString = lines.join("\n");
@@ -14473,7 +14631,7 @@ function loadHolesFromLocalStorage() {
     }
     /* STRUCTURE OF THE POINTS ARRAY
         0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
-        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp
+        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID
     */
     const csvString = localStorage.getItem("kirraDataPoints");
     //console.log(csvString);
@@ -17849,6 +18007,8 @@ function showCsvImportModal(csvData, fileName) {
         { name: "holeLengthCalculated", label: "Hole Length" },
         { name: "holeBearing", label: "Hole Bearing" },
         { name: "holeAngle", label: "Hole Angle/Dip" },
+        { name: "rowID", label: "Row ID (Vulcan)" }, // NEW
+        { name: "posID", label: "Position ID (Vulcan)" }, // NEW
         { name: "initiationTime", label: "Initiation Time" },
         { name: "fromHoleID", label: "From Hole ID" },
         { name: "timingDelayMilliseconds", label: "Timing Delay" },
@@ -17896,6 +18056,14 @@ function showCsvImportModal(csvData, fileName) {
 			</label>
 		</div><hr>
 		
+		<label class="labelWhite12">Row/Position Detection:</label><br>
+		<div style="text-align: left; margin: 10px 0;">
+			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
+				<input type="checkbox" id="auto-detect-rows" checked style="margin-right: 5px;">
+				Auto-detect rows based on spatial position (if rowID/posID not provided)
+			</label>
+		</div><hr>
+		
 		<label class="labelWhite12">Duplicate Handling:</label><br>
 		<div style="text-align: left; margin: 10px 0;">
 			<label style="color: #fff; font-size: 12px; margin-right: 15px;">
@@ -17915,43 +18083,43 @@ function showCsvImportModal(csvData, fileName) {
 		<label class="labelWhite12">Select the column order below:</label><hr>
 		<div class="button-container-6col">
 			${mappingHtml}
-		</div><hr>
-		<label class="labelWhite12">Angle convention:</label>
-		<select id="swal-col-angle_convention" class="swal2-select">
-			<option value="angle" selected>Angle (0° = vertical)</option>
-			<option value="dip">Dip (90° = vertical)</option>
+		</div>
+		
+		<hr><label class="labelWhite12">Angle Convention (for bearing):</label>
+		<select id="swal-col-angle_convention" style="font-size: 12px; height: 26px; padding: 3px 6px; width: 120px; border-radius: 4px; background-color: #fff; color: #000; border: 1px solid #999;">
+			<option value="angle">Angle(0° = vertical down)</option>
+			<option value="dip">Dip(-90° = vertical down)</option>
 		</select>
-        <br>
-		<label class="labelWhite12">Diameter is in:</label>
-		<select id="swal-col-diameter_unit" class="swal2-select">
-			<option value="mm" selected>mm</option>
+		
+		<label class="labelWhite12">Diameter Units:</label>
+		<select id="swal-col-diameter_unit" style="font-size: 12px; height: 26px; padding: 3px 6px; width: 120px; border-radius: 4px; background-color: #fff; color: #000; border: 1px solid #999;">
+			<option value="mm">mm</option>
 			<option value="m">m</option>
-			<option value="in">in</option>
-			<option value="ft">ft</option>
+			<option value="in">inches</option>
+			<option value="ft">feet</option>
 		</select>
-        <br>
-		<label class="labelWhite12">Data Preview</label>
-		<div id="csv-preview" style="text-align: left; width: 750px; height: 200px; font-family: monospace; font-size: 12px; overflow: auto; background-color: #333; border: 1px solid #555; border-radius: 4px; color: #ddd; margin-top: 5px;">
-			<table id="preview-table" style="width: 100%; border-collapse: collapse;">
+		
+		<hr><p class="labelWhite12">Data Preview:</p>
+		<div class="csv-preview-container" style="max-height: 200px; overflow: auto; border: 1px solid #666; margin: 10px 0;">
+			<table style="width: 100%; border-collapse: collapse;">
 				<thead>
-					<tr id="preview-headers" style="background-color: #444; position: sticky; top: 0;">
-					</tr>
+					<tr id="preview-headers" style="background-color: rgb(50,50,50);"></tr>
 				</thead>
-				<tbody id="preview-body">
-				</tbody>
+				<tbody id="preview-body"></tbody>
 			</table>
 		</div>
-		`,
+	`,
+        showCancelButton: true,
+        confirmButtonText: "Import",
+        cancelButtonText: "Cancel",
+        width: "90%",
         customClass: {
             container: "custom-popup-container",
             title: "swal2-title",
             confirmButton: "confirm",
             cancelButton: "cancel",
-            htmlContainer: "swal2-html-container"
+            content: "swal2-content"
         },
-        width: "800px",
-        showCancelButton: true,
-        confirmButtonText: "Import",
         didOpen: () => {
             // Get saved column order from localStorage (with error handling)
             let savedColumnOrder = {};
@@ -17962,7 +18130,7 @@ function showCsvImportModal(csvData, fileName) {
                 savedColumnOrder = {};
             }
 
-            // Auto-mapping keywords
+            // Auto-mapping keywords - UPDATED with rowID/posID
             const mappingKeywords = {
                 entityName: ["blast", "pattern", "blastname", "patternname"],
                 holeID: ["id", "holeid", "holeno", "name", "holename", "pointid", "no"],
@@ -17979,6 +18147,8 @@ function showCsvImportModal(csvData, fileName) {
                 holeLengthCalculated: ["length", "holelength", "hole length"],
                 holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
                 holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
+                rowID: ["rowid", "row id", "row", "echelon", "rowno", "row number"], // NEW
+                posID: ["posid", "pos id", "position", "pos", "position id", "pos number", "posno"], // NEW
                 initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"]
             };
 
@@ -17988,7 +18158,7 @@ function showCsvImportModal(csvData, fileName) {
                     .replace(/[^a-z0-9]/g, "")
             );
 
-            // Function to update the data preview
+            // Function to update the data preview...
             const updatePreview = () => {
                 const headerCount = parseInt(document.getElementById("swal-header-rows").value, 10) || 0;
                 const previewHeaders = document.getElementById("preview-headers");
@@ -18041,95 +18211,38 @@ function showCsvImportModal(csvData, fileName) {
 
             // Function to apply last used settings
             const applyLastUsed = () => {
-                if (Object.keys(savedColumnOrder).length > 0) {
-                    modalFields.forEach((field) => {
-                        const selectEl = document.getElementById("swal-col-" + field.name);
-                        if (!selectEl) return;
-
-                        if (savedColumnOrder[field.name]) {
-                            // Check if the saved column index is valid for current CSV
-                            const savedIndex = parseInt(savedColumnOrder[field.name], 10);
-                            if (savedIndex > 0 && savedIndex <= headerRowForPreview.length) {
-                                selectEl.value = savedColumnOrder[field.name];
-                            } else {
-                                selectEl.value = "0";
-                            }
-                        } else {
-                            selectEl.value = "0";
-                        }
-                    });
-
-                    // Apply saved settings
-                    const angleConventionEl = document.getElementById("swal-col-angle_convention");
-                    const diameterUnitEl = document.getElementById("swal-col-diameter_unit");
-                    const headerRowsEl = document.getElementById("swal-header-rows");
-
-                    if (savedColumnOrder.angle_convention && angleConventionEl) {
-                        angleConventionEl.value = savedColumnOrder.angle_convention;
-                    }
-                    if (savedColumnOrder.diameter_unit && diameterUnitEl) {
-                        diameterUnitEl.value = savedColumnOrder.diameter_unit;
-                    }
-                    if (savedColumnOrder.headerRows && headerRowsEl) {
-                        headerRowsEl.value = savedColumnOrder.headerRows;
-                        updatePreview(); // Update preview with new header count
-                    }
-                } else {
-                    // No saved settings, fall back to auto-detection
-                    applyAutoDetection();
-                }
-            };
-
-            // Function to reset all to manual (no detection)
-            const applyManual = () => {
                 modalFields.forEach((field) => {
                     const selectEl = document.getElementById("swal-col-" + field.name);
-                    if (selectEl) {
-                        selectEl.value = "0"; // Reset to "-- calculate --"
+                    if (!selectEl) return;
+
+                    if (savedColumnOrder[field.name]) {
+                        selectEl.value = savedColumnOrder[field.name];
                     }
                 });
+
+                // Apply saved settings for other fields
+                if (savedColumnOrder.angle_convention) {
+                    const angleEl = document.getElementById("swal-col-angle_convention");
+                    if (angleEl) angleEl.value = savedColumnOrder.angle_convention;
+                }
+
+                if (savedColumnOrder.diameter_unit) {
+                    const diameterEl = document.getElementById("swal-col-diameter_unit");
+                    if (diameterEl) diameterEl.value = savedColumnOrder.diameter_unit;
+                }
             };
 
-            // Set up radio button event listeners
-            const radioAuto = document.getElementById("radio-auto");
-            const radioLast = document.getElementById("radio-last");
-            const radioManual = document.getElementById("radio-manual");
-
-            if (radioAuto) {
-                radioAuto.addEventListener("change", function () {
-                    if (this.checked) {
+            // Set up radio button listeners
+            document.querySelectorAll('input[name="column-detection"]').forEach((radio) => {
+                radio.addEventListener("change", (e) => {
+                    if (e.target.value === "auto") {
                         applyAutoDetection();
-                    }
-                });
-            }
-
-            if (radioLast) {
-                radioLast.addEventListener("change", function () {
-                    if (this.checked) {
+                    } else if (e.target.value === "last") {
                         applyLastUsed();
                     }
+                    // For "manual", do nothing - let user set manually
                 });
-            }
-
-            if (radioManual) {
-                radioManual.addEventListener("change", function () {
-                    if (this.checked) {
-                        applyManual();
-                    }
-                });
-            }
-
-            // Check if we have saved settings to enable "last used" option
-            if (Object.keys(savedColumnOrder).length === 0) {
-                if (radioLast) {
-                    radioLast.disabled = true;
-                    const labelLast = document.querySelector('label[for="radio-last"]');
-                    if (labelLast) {
-                        labelLast.style.opacity = "0.5";
-                        labelLast.title = "No previous column mapping found";
-                    }
-                }
-            }
+            });
 
             // Set up header rows input listener
             const headerRowsEl = document.getElementById("swal-header-rows");
@@ -18146,10 +18259,12 @@ function showCsvImportModal(csvData, fileName) {
             const headerRowsEl = document.getElementById("swal-header-rows");
             const angleConventionEl = document.getElementById("swal-col-angle_convention");
             const diameterUnitEl = document.getElementById("swal-col-diameter_unit");
+            const autoDetectRowsEl = document.getElementById("auto-detect-rows");
 
             order.headerRows = headerRowsEl ? headerRowsEl.value : "1";
             order.angle_convention = angleConventionEl ? angleConventionEl.value : "angle";
             order.diameter_unit = diameterUnitEl ? diameterUnitEl.value : "mm";
+            order.auto_detect_rows = autoDetectRowsEl ? autoDetectRowsEl.checked : true; // NEW
 
             // Get duplicate handling option
             const duplicateHandling = document.querySelector('input[name="duplicate-handling"]:checked');
@@ -18231,17 +18346,562 @@ function showCsvImportModal(csvData, fileName) {
     });
 }
 
+// Consolidated smart row detection - replaces autoDetectRowsAndPositions
+function smartRowDetection(holesData, entityName) {
+    if (!holesData || holesData.length === 0) return;
+
+    console.log("Smart row detection for", holesData.length, "holes in entity:", entityName);
+
+    // Method 1: Try sequence-based detection for imported holes
+    if (trySequenceBasedDetection(holesData, entityName)) {
+        console.log("Used sequence-based row detection");
+        return;
+    }
+
+    // Method 2: Use bearing-based spatial detection
+    useBearingBasedDetection(holesData, entityName);
+    console.log("Used bearing-based spatial detection");
+}
+
+// Try to detect rows based on hole ID sequence (for imported holes)
+function trySequenceBasedDetection(holesData, entityName) {
+    // Count different hole ID patterns
+    let numericCount = 0;
+    let alphaNumericCount = 0;
+    let otherCount = 0;
+
+    holesData.forEach((hole) => {
+        if (/^\d+$/.test(hole.holeID)) {
+            numericCount++;
+        } else if (/^[A-Z]+\d+$/i.test(hole.holeID)) {
+            alphaNumericCount++;
+        } else {
+            otherCount++;
+        }
+    });
+
+    console.log("Hole ID pattern analysis:", {
+        numeric: numericCount,
+        alphaNumeric: alphaNumericCount,
+        other: otherCount
+    });
+
+    // CASE 1: All alphanumeric - might be rows (A1, B1) or types (I1, B1)
+    if (alphaNumericCount === holesData.length) {
+        console.log("All holes are alphanumeric - analyzing pattern");
+        return handleAlphaNumericHoles(holesData, entityName);
+    }
+
+    // CASE 2: Mixed numeric and alphanumeric - treat as single sequence
+    if (numericCount > 0 && alphaNumericCount > 0) {
+        console.log("Mixed numeric and alphanumeric pattern detected");
+
+        // Create a unified sequence for spatial detection
+        const allHoles = holesData
+            .map((hole, index) => ({ hole, num: index + 1 }))
+            .sort((a, b) => {
+                // Sort: pure numbers first, then alphanumeric
+                const aIsNum = /^\d+$/.test(a.hole.holeID);
+                const bIsNum = /^\d+$/.test(b.hole.holeID);
+
+                if (aIsNum && bIsNum) {
+                    return parseInt(a.hole.holeID) - parseInt(b.hole.holeID);
+                }
+                if (aIsNum && !bIsNum) return -1;
+                if (!aIsNum && bIsNum) return 1;
+                return a.hole.holeID.localeCompare(b.hole.holeID);
+            });
+
+        // Use spatial detection
+        if (developerModeEnabled) {
+            console.log("Using OPTION 2: Modified RDP Algorithm for mixed pattern");
+            return detectRowsUsingRDP(allHoles, entityName);
+        } else {
+            console.log("Using OPTION 1: Sequential Line Fitting Algorithm for mixed pattern");
+            return detectRowsUsingLineFitting(allHoles, entityName);
+        }
+    }
+
+    // CASE 3: Original pure numeric logic
+    const numericHoles = holesData
+        .map((hole) => ({ hole, num: parseInt(hole.holeID) }))
+        .filter((item) => !isNaN(item.num))
+        .sort((a, b) => a.num - b.num);
+
+    if (numericHoles.length !== holesData.length || numericHoles.length < 4) {
+        return false;
+    }
+
+    // Check if sequence is continuous
+    const firstNum = numericHoles[0].num;
+    const isSequential = numericHoles.every((item, index) => item.num === firstNum + index);
+
+    if (!isSequential) {
+        return false;
+    }
+
+    // Choose algorithm based on developer mode
+    if (developerModeEnabled) {
+        console.log("Using OPTION 2: Modified RDP Algorithm");
+        return detectRowsUsingRDP(numericHoles, entityName);
+    } else {
+        console.log("Using OPTION 1: Sequential Line Fitting Algorithm");
+        return detectRowsUsingLineFitting(numericHoles, entityName);
+    }
+}
+// Handle alphanumeric hole patterns - but check if letters represent rows or types
+function handleAlphaNumericHoles(holesData, entityName) {
+    const rowGroups = new Map();
+
+    // Parse all holes
+    const parsedHoles = [];
+    holesData.forEach((hole) => {
+        const match = hole.holeID.match(/^([A-Z]+)(\d+)$/i);
+        if (match) {
+            const letter = match[1].toUpperCase();
+            const number = parseInt(match[2]);
+            parsedHoles.push({
+                hole: hole,
+                letter: letter,
+                number: number
+            });
+
+            if (!rowGroups.has(letter)) {
+                rowGroups.set(letter, []);
+            }
+            rowGroups.get(letter).push({
+                hole: hole,
+                letter: letter,
+                number: number
+            });
+        }
+    });
+
+    // Check if letters likely represent rows or just hole types
+    const letterGroups = Array.from(rowGroups.keys());
+    console.log("Found letter groups:", letterGroups.join(", "));
+
+    // Heuristics to determine if letters are rows:
+    // 1. Single letters (A, B, C) are more likely rows
+    // 2. Multiple letters (INF, BUF) are more likely types
+    // 3. Sequential single letters (A, B, C, D) strongly suggest rows
+    const singleLetters = letterGroups.filter((l) => l.length === 1).sort();
+    const multiLetters = letterGroups.filter((l) => l.length > 1);
+
+    // Check if single letters are sequential (A, B, C or similar)
+    let isSequentialRows = false;
+    if (singleLetters.length >= 2) {
+        isSequentialRows = singleLetters.every((letter, index) => {
+            if (index === 0) return true;
+            return letter.charCodeAt(0) - singleLetters[index - 1].charCodeAt(0) === 1;
+        });
+    }
+
+    // Decision logic
+    const useLettersAsRows = isSequentialRows && singleLetters.length >= 3 && multiLetters.length === 0;
+
+    if (useLettersAsRows) {
+        console.log("Letters appear to represent rows (A, B, C pattern)");
+
+        // Original row-based logic
+        const startingRowID = getNextRowID(entityName);
+
+        singleLetters.forEach((rowLetter, rowIndex) => {
+            const row = rowGroups.get(rowLetter);
+            row.sort((a, b) => a.number - b.number);
+
+            const rowID = startingRowID + rowIndex;
+
+            row.forEach((item, index) => {
+                item.hole.rowID = rowID;
+                item.hole.posID = index + 1;
+            });
+
+            console.log("Row " + rowLetter + " → rowID " + rowID + " with " + row.length + " holes");
+        });
+
+        return true;
+    } else {
+        console.log("Letters appear to be hole type prefixes (I=infill, B=buffer, etc.)");
+        console.log("Falling back to spatial detection for mixed alphanumeric pattern");
+
+        // Convert to format expected by line fitting algorithm
+        const allHoles = [];
+        let counter = 1;
+
+        // Sort all holes by some logical order (letter groups, then numbers)
+        letterGroups.sort().forEach((letter) => {
+            const group = rowGroups.get(letter);
+            group.sort((a, b) => a.number - b.number);
+            group.forEach((item) => {
+                allHoles.push({
+                    hole: item.hole,
+                    num: counter++
+                });
+            });
+        });
+
+        // Use line fitting algorithm for spatial detection
+        if (developerModeEnabled) {
+            console.log("Using OPTION 2: Modified RDP Algorithm for mixed pattern");
+            return detectRowsUsingRDP(allHoles, entityName);
+        } else {
+            console.log("Using OPTION 1: Sequential Line Fitting Algorithm for mixed pattern");
+            return detectRowsUsingLineFitting(allHoles, entityName);
+        }
+    }
+}
+// OPTION 1: Sequential Line Fitting (Main Algorithm)
+function detectRowsUsingLineFitting(numericHoles, entityName) {
+    if (numericHoles.length < 2) return false;
+
+    const holeDiameter = numericHoles[0].hole.holeDiameter || 115; // mm
+    const tolerance = (holeDiameter * 2) / 1000; // Convert to meters (2x diameter)
+
+    console.log("Line fitting tolerance:", tolerance.toFixed(3) + "m (2x diameter)");
+
+    const rows = [];
+    const used = new Set();
+
+    // Try to build rows starting from each unused hole
+    for (let startIdx = 0; startIdx < numericHoles.length; startIdx++) {
+        if (used.has(startIdx)) continue;
+
+        const row = findLongestLineSequence(numericHoles, startIdx, tolerance, used);
+        if (row.length >= 2) {
+            // At least 2 holes make a row
+            rows.push(row);
+            row.forEach((hole) => used.add(numericHoles.indexOf(hole)));
+            console.log("Found row with", row.length, "holes:", row.map((h) => h.num).join(","));
+        }
+    }
+
+    // Handle single holes that didn't fit any row
+    for (let i = 0; i < numericHoles.length; i++) {
+        if (!used.has(i)) {
+            rows.push([numericHoles[i]]);
+            console.log("Single hole row:", numericHoles[i].num);
+        }
+    }
+
+    // Assign rowID and posID
+    const startingRowID = getNextRowID(entityName);
+    rows.forEach((row, rowIndex) => {
+        const rowID = startingRowID + rowIndex;
+        row.forEach((item, posIndex) => {
+            item.hole.rowID = rowID;
+            item.hole.posID = posIndex + 1;
+        });
+    });
+
+    console.log("Line fitting detected", rows.length, "rows");
+    return rows.length > 0;
+}
+
+function findLongestLineSequence(numericHoles, startIdx, tolerance, used) {
+    const sequence = [numericHoles[startIdx]];
+
+    // Try to extend the sequence by finding consecutive holes that fit the line
+    for (let nextIdx = startIdx + 1; nextIdx < numericHoles.length; nextIdx++) {
+        if (used.has(nextIdx)) continue;
+
+        const testSequence = [...sequence, numericHoles[nextIdx]];
+
+        if (sequenceFitsLine(testSequence, tolerance)) {
+            sequence.push(numericHoles[nextIdx]);
+        } else {
+            // Stop at first hole that doesn't fit - this keeps rows continuous
+            break;
+        }
+    }
+
+    return sequence;
+}
+
+function sequenceFitsLine(sequence, tolerance) {
+    if (sequence.length < 2) return true;
+
+    // Fit a line through the sequence and check if all points are within tolerance
+    const points = sequence.map((item) => ({
+        x: item.hole.startXLocation,
+        y: item.hole.startYLocation
+    }));
+
+    // Simple line fitting: use first and last points to define the line
+    const start = points[0];
+    const end = points[points.length - 1];
+
+    // Check if all intermediate points are within tolerance of the line
+    for (let i = 1; i < points.length - 1; i++) {
+        const distance = distancePointToLine(points[i], start, end);
+        if (distance > tolerance) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function distancePointToLine(point, lineStart, lineEnd) {
+    const dx = lineEnd.x - lineStart.x;
+    const dy = lineEnd.y - lineStart.y;
+    const lineLength = Math.sqrt(dx * dx + dy * dy);
+
+    if (lineLength === 0) return 0; // Start and end are the same point
+
+    // Calculate perpendicular distance from point to line
+    const distance = Math.abs((dy * point.x - dx * point.y + lineEnd.x * lineStart.y - lineEnd.y * lineStart.x) / lineLength);
+
+    return distance;
+}
+// OPTION 2: Modified Ramer-Douglas-Peucker
+function detectRowsUsingRDP(numericHoles, entityName) {
+    if (numericHoles.length < 2) return false;
+
+    const holeDiameter = numericHoles[0].hole.holeDiameter || 115;
+    const tolerance = (holeDiameter * 2) / 1000; // 2x diameter in meters
+
+    // Convert to points for RDP
+    const points = numericHoles.map((item) => ({
+        x: item.hole.startXLocation,
+        y: item.hole.startYLocation,
+        originalIndex: numericHoles.indexOf(item)
+    }));
+
+    // Apply RDP to find which points form straight lines
+    const rows = segmentIntoRows(points, tolerance);
+
+    // Apply row assignments
+    const startingRowID = getNextRowID(entityName);
+    rows.forEach((rowIndices, rowIndex) => {
+        const rowID = startingRowID + rowIndex;
+        rowIndices.forEach((index, posIndex) => {
+            numericHoles[index].hole.rowID = rowID;
+            numericHoles[index].hole.posID = posIndex + 1;
+        });
+    });
+
+    console.log("RDP assigned", rows.length, "rows");
+    return rows.length > 0;
+}
+function segmentIntoRows(points, tolerance) {
+    // Simple RDP-inspired row detection
+    // Group consecutive points that form straight lines within tolerance
+    const rows = [];
+    let currentRow = [0]; // Start with first point index
+
+    for (let i = 1; i < points.length; i++) {
+        // Check if adding this point keeps the row "straight"
+        if (currentRow.length >= 2) {
+            const lineStart = points[currentRow[0]];
+            const lineEnd = points[currentRow[currentRow.length - 1]];
+            const testPoint = points[i];
+
+            const distance = distancePointToLine(testPoint, lineStart, lineEnd);
+
+            if (distance <= tolerance) {
+                currentRow.push(i);
+            } else {
+                // Start new row
+                rows.push(currentRow);
+                currentRow = [i];
+            }
+        } else {
+            currentRow.push(i);
+        }
+    }
+
+    // Don't forget the last row
+    if (currentRow.length > 0) {
+        rows.push(currentRow);
+    }
+
+    console.log("RDP detected", rows.length, "rows");
+    return rows;
+}
+
+// OPTION 3: Direction Consistency (Developer Mode) - TERRIBLE //! IMPORTANT: DO NOT USE THIS ALGORITHM
+function detectRowsByDirection(numericHoles, entityName) {
+    if (numericHoles.length < 2) return false;
+
+    const rows = [];
+    let currentRow = [numericHoles[0]];
+
+    console.log("Using direction consistency algorithm...");
+
+    for (let i = 1; i < numericHoles.length; i++) {
+        const prev = currentRow[currentRow.length - 1].hole;
+        const curr = numericHoles[i].hole;
+
+        // Calculate direction from previous hole
+        const dx = curr.startXLocation - prev.startXLocation;
+        const dy = curr.startYLocation - prev.startYLocation;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const bearing = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
+
+        // If direction is consistent with row OR distance suggests new row
+        const holeDiameter = curr.holeDiameter || 115;
+        const maxSpacing = (holeDiameter * 20) / 1000; // 20x diameter for max spacing
+
+        const shouldStartNewRow = distance > maxSpacing || (currentRow.length > 1 && !directionConsistent(currentRow, bearing, 30)); // 30° tolerance
+
+        if (shouldStartNewRow) {
+            // Start new row
+            console.log("New row started at hole", curr.holeID, "- distance:", distance.toFixed(2) + "m or direction change");
+            rows.push(currentRow);
+            currentRow = [numericHoles[i]];
+        } else {
+            // Continue current row
+            currentRow.push(numericHoles[i]);
+        }
+    }
+
+    if (currentRow.length > 0) {
+        rows.push(currentRow);
+    }
+
+    // Apply assignments
+    const startingRowID = getNextRowID(entityName);
+    rows.forEach((row, rowIndex) => {
+        const rowID = startingRowID + rowIndex;
+        row.forEach((item, posIndex) => {
+            item.hole.rowID = rowID;
+            item.hole.posID = posIndex + 1;
+        });
+        console.log("Direction row", rowID + ":", row.map((h) => h.num).join(","));
+    });
+
+    console.log("Direction consistency detected", rows.length, "rows");
+    return true;
+}
+
+function directionConsistent(currentRow, newBearing, tolerance = 30) {
+    if (currentRow.length < 2) return true;
+
+    // Calculate the current row's direction
+    const first = currentRow[0].hole;
+    const last = currentRow[currentRow.length - 1].hole;
+    const dx = last.startXLocation - first.startXLocation;
+    const dy = last.startYLocation - first.startYLocation;
+    const rowBearing = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
+
+    // Check if new bearing is within tolerance of row bearing
+    let diff = Math.abs(newBearing - rowBearing);
+    if (diff > 180) diff = 360 - diff; // Handle wrap-around
+
+    return diff <= tolerance;
+}
+
+// Use bearing-based detection (adapted from renumberPatternAfterClipping)
+function useBearingBasedDetection(holesData, entityName) {
+    if (holesData.length < 2) {
+        // Single hole - assign default
+        holesData[0].rowID = getNextRowID(entityName);
+        holesData[0].posID = 1;
+        return;
+    }
+
+    // Detect row orientation from the pattern
+    let rowOrientation = detectRowBearing(holesData);
+    console.log("Detected row bearing:", rowOrientation + "°");
+
+    // Project holes onto row and burden axes
+    const rowBearingRadians = (90 - rowOrientation) * (Math.PI / 180);
+    const burdenBearingRadians = rowBearingRadians - Math.PI / 2;
+
+    holesData.forEach((hole) => {
+        hole.burdenProjection = hole.startXLocation * Math.cos(burdenBearingRadians) + hole.startYLocation * Math.sin(burdenBearingRadians);
+        hole.spacingProjection = hole.startXLocation * Math.cos(rowBearingRadians) + hole.startYLocation * Math.sin(rowBearingRadians);
+    });
+
+    // Group into rows by burden projection
+    const tolerance = 2.0;
+    const rows = [];
+    const sortedByBurden = [...holesData].sort((a, b) => b.burdenProjection - a.burdenProjection);
+
+    if (sortedByBurden.length > 0) {
+        let currentRow = [sortedByBurden[0]];
+        let currentBurden = sortedByBurden[0].burdenProjection;
+
+        for (let i = 1; i < sortedByBurden.length; i++) {
+            const hole = sortedByBurden[i];
+            if (Math.abs(hole.burdenProjection - currentBurden) <= tolerance) {
+                currentRow.push(hole);
+            } else {
+                currentRow.sort((a, b) => a.spacingProjection - b.spacingProjection);
+                rows.push(currentRow);
+                currentRow = [hole];
+                currentBurden = hole.burdenProjection;
+            }
+        }
+
+        if (currentRow.length > 0) {
+            currentRow.sort((a, b) => a.spacingProjection - b.spacingProjection);
+            rows.push(currentRow);
+        }
+    }
+
+    // Assign rowID and posID
+    const startingRowID = getNextRowID(entityName);
+    rows.forEach((row, rowIndex) => {
+        const rowID = startingRowID + rowIndex;
+        row.forEach((hole, posIndex) => {
+            hole.rowID = rowID;
+            hole.posID = posIndex + 1;
+        });
+    });
+}
+
+function detectRowBearing(holesData) {
+    // Try multiple approaches to detect row bearing
+
+    // Approach 1: Find the most common inter-hole bearing
+    const bearings = [];
+    for (let i = 0; i < holesData.length; i++) {
+        for (let j = i + 1; j < holesData.length; j++) {
+            const hole1 = holesData[i];
+            const hole2 = holesData[j];
+            const dx = hole2.startXLocation - hole1.startXLocation;
+            const dy = hole2.startYLocation - hole1.startYLocation;
+            const bearing = (90 - (Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Weight closer holes more heavily
+            if (distance < 50) {
+                // Within 50m
+                bearings.push(bearing);
+                bearings.push((bearing + 180) % 360); // Opposite direction too
+            }
+        }
+    }
+
+    if (bearings.length === 0) return 90; // Default to East
+
+    // Find most common bearing (group by 10° increments)
+    const bearingGroups = {};
+    bearings.forEach((bearing) => {
+        const group = Math.round(bearing / 10) * 10;
+        bearingGroups[group] = (bearingGroups[group] || 0) + 1;
+    });
+
+    const mostCommon = Object.keys(bearingGroups).reduce((a, b) => (bearingGroups[a] > bearingGroups[b] ? a : b));
+
+    return parseFloat(mostCommon);
+}
+
 function processCsvData(data, columnOrder, fileName) {
     const entityName = fileName.split(".")[0] || "Imported_Blast_" + Math.floor(Math.random() * 16777215).toString(16);
     const headerRows = parseInt(columnOrder.headerRows, 10) || 0;
     const angleConvention = columnOrder.angle_convention || "angle";
     const diameterUnit = columnOrder.diameter_unit || "mm";
     const duplicateHandling = columnOrder.duplicate_handling || "update-blast-hole";
+    const autoDetectRows = columnOrder.auto_detect_rows !== false; // Default true
 
     const addedHoles = [];
     const updatedHoles = [];
     const duplicateWarnings = [];
     const locationTolerance = 0.01; // 1cm tolerance for location matching
+    const newHolesForRowDetection = []; // Store holes that need row detection
 
     // Skip header rows and process data
     data.slice(headerRows).forEach((row, index) => {
@@ -18260,7 +18920,7 @@ function processCsvData(data, columnOrder, fileName) {
         const startY = parseFloat(getValue("startYLocation"));
         const startZ = parseFloat(getValue("startZLocation"));
 
-        // Validate mandatory fields (HoleID, Start X, Start Y, Start Z)
+        // Validate mandatory fields
         if (!holeID || isNaN(startX) || isNaN(startY) || isNaN(startZ)) {
             console.warn("Skipping row " + (index + headerRows + 1) + ": Missing mandatory fields (HoleID, Start X, Start Y, Start Z)");
             return;
@@ -18269,71 +18929,38 @@ function processCsvData(data, columnOrder, fileName) {
         // Get entity name for this hole
         const holeEntityName = getValue("entityName") || entityName;
 
+        // Get rowID and posID from CSV (if provided)
+        let rowID = getValue("rowID");
+        let posID = getValue("posID");
+
+        // Parse as integers if provided
+        if (rowID && !isNaN(rowID)) {
+            rowID = parseInt(rowID);
+        } else {
+            rowID = null; // Will be auto-assigned later
+        }
+
+        if (posID && !isNaN(posID)) {
+            posID = parseInt(posID);
+        } else {
+            posID = null; // Will be auto-assigned later
+        }
+
         // Check for duplicates in existing points array
         let existingHoleIndex = -1;
         let duplicateType = "";
+        let isUpdate = false;
+        let point = null;
 
         if (duplicateHandling === "update-blast-hole") {
-            // Check for duplicate by blast name + hole ID
+            // Find by blast name + hole ID
             existingHoleIndex = points.findIndex((p) => p.entityName === holeEntityName && p.holeID === holeID);
-            if (existingHoleIndex !== -1) {
-                duplicateType = "Blast Name + Hole ID";
-            }
+            duplicateType = "Blast+HoleID";
         } else if (duplicateHandling === "update-location") {
-            // Check for duplicate by location (within tolerance)
-            existingHoleIndex = points.findIndex((p) => Math.abs(p.startXLocation - startX) < locationTolerance && Math.abs(p.startYLocation - startY) < locationTolerance);
-            if (existingHoleIndex !== -1) {
-                duplicateType = "Location (X,Y)";
-            }
-        } else if (duplicateHandling === "skip") {
-            // Check for any type of duplicate to skip
-            const blastHoleDupe = points.findIndex((p) => p.entityName === holeEntityName && p.holeID === holeID);
-            const locationDupe = points.findIndex((p) => Math.abs(p.startXLocation - startX) < locationTolerance && Math.abs(p.startYLocation - startY) < locationTolerance);
-
-            if (blastHoleDupe !== -1 || locationDupe !== -1) {
-                duplicateWarnings.push({
-                    row: index + headerRows + 1,
-                    holeID: holeID,
-                    entityName: holeEntityName,
-                    type: blastHoleDupe !== -1 ? "Blast Name + Hole ID" : "Location",
-                    action: "Skipped"
-                });
-                return; // Skip this hole
-            }
+            // Find by location (within tolerance)
+            existingHoleIndex = points.findIndex((p) => Math.abs(p.startXLocation - startX) <= locationTolerance && Math.abs(p.startYLocation - startY) <= locationTolerance);
+            duplicateType = "Location";
         }
-
-        // Handle fromHoleID - default to entityName:::holeID format
-        let fromHoleID = getValue("fromHoleID");
-        if (!fromHoleID) {
-            fromHoleID = holeEntityName + ":::" + holeID;
-        } else if (!fromHoleID.includes(":::")) {
-            // If fromHoleID provided but doesn't have entity prefix, add it
-            fromHoleID = holeEntityName + ":::" + fromHoleID;
-        }
-
-        // Handle initiation time vs timing delay
-        const initiationTimeValue = parseFloat(getValue("initiationTime"));
-        const timingDelayValue = parseFloat(getValue("timingDelayMilliseconds"));
-        let finalTimingDelay = 0;
-        let finalFromHoleID = fromHoleID;
-
-        if (!isNaN(initiationTimeValue)) {
-            // If initiation time is provided
-            if (isNaN(timingDelayValue) && !getValue("fromHoleID")) {
-                // No connection details provided, set hole to connect to itself
-                finalFromHoleID = holeEntityName + ":::" + holeID;
-                finalTimingDelay = initiationTimeValue;
-            } else {
-                // Use timing delay if provided, otherwise use initiation time
-                finalTimingDelay = !isNaN(timingDelayValue) ? timingDelayValue : initiationTimeValue;
-            }
-        } else if (!isNaN(timingDelayValue)) {
-            finalTimingDelay = timingDelayValue;
-        }
-
-        // Create or update point object
-        let point;
-        let isUpdate = false;
 
         if (existingHoleIndex !== -1 && duplicateHandling !== "skip") {
             // Update existing hole
@@ -18366,19 +18993,22 @@ function processCsvData(data, columnOrder, fileName) {
                 benchHeight: 10, // Default bench height
                 holeDiameter: 0, // Default to 0 (will determine hole type)
                 holeType: getValue("holeType") || "Production",
-                fromHoleID: finalFromHoleID,
-                timingDelayMilliseconds: finalTimingDelay,
+                fromHoleID: holeEntityName + ":::" + holeID,
+                timingDelayMilliseconds: 0,
                 colorHexDecimal: getValue("colorHexDecimal") || "red",
                 holeLengthCalculated: 0,
                 holeAngle: 0, // Default to vertical
                 holeBearing: 0, // Default to North
-                initiationTime: !isNaN(initiationTimeValue) ? initiationTimeValue : 0,
+                initiationTime: 0,
                 measuredLength: parseFloat(getValue("measuredLength")) || 0,
                 measuredLengthTimeStamp: "09/05/1975 00:00:00",
                 measuredMass: parseFloat(getValue("measuredMass")) || 0,
                 measuredMassTimeStamp: "09/05/1975 00:00:00",
                 measuredComment: getValue("measuredComment") || "None",
-                measuredCommentTimeStamp: "09/05/1975 00:00:00"
+                measuredCommentTimeStamp: "09/05/1975 00:00:00",
+                visible: true,
+                rowID: rowID, // Set rowID from CSV or null
+                posID: posID // Set posID from CSV or null
             };
         }
 
@@ -18387,6 +19017,14 @@ function processCsvData(data, columnOrder, fileName) {
             point.startXLocation = startX;
             point.startYLocation = startY;
             point.startZLocation = startZ;
+        }
+
+        // Update rowID and posID if provided in CSV
+        if (rowID !== null) {
+            point.rowID = rowID;
+        }
+        if (posID !== null) {
+            point.posID = posID;
         }
 
         // Handle diameter with unit conversion
@@ -18427,164 +19065,85 @@ function processCsvData(data, columnOrder, fileName) {
         const providedAngle = getValue("holeAngle");
         const providedBearing = getValue("holeBearing");
 
-        // Check what data we have to determine hole type and calculations
-        const hasEndCoords = providedEndX !== undefined && providedEndY !== undefined && providedEndZ !== undefined;
-        const hasLengthAngleBearing = providedLength !== undefined && providedAngle !== undefined && providedBearing !== undefined;
-        const hasLength = providedLength !== undefined;
-        const hasDiameter = point.holeDiameter > 0;
-
-        if (hasEndCoords) {
-            // CASE: End coordinates provided - calculate everything from coordinates
+        // Handle end coordinates
+        if (providedEndX && !isNaN(parseFloat(providedEndX))) {
             point.endXLocation = parseFloat(providedEndX);
+        }
+        if (providedEndY && !isNaN(parseFloat(providedEndY))) {
             point.endYLocation = parseFloat(providedEndY);
+        }
+        if (providedEndZ && !isNaN(parseFloat(providedEndZ))) {
             point.endZLocation = parseFloat(providedEndZ);
+        }
 
-            const dx = point.endXLocation - point.startXLocation;
-            const dy = point.endYLocation - point.startYLocation;
-            const dz = point.endZLocation - point.startZLocation;
-            const magnitude = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-            point.holeLengthCalculated = magnitude;
-
-            if (magnitude > 1e-10) {
-                // Calculate angle (0° = vertical down)
-                point.holeAngle = Math.acos(-dz / magnitude) * (180 / Math.PI);
-                // Calculate bearing (0° = North, clockwise)
-                point.holeBearing = (450 - Math.atan2(dy, dx) * (180 / Math.PI)) % 360;
-            }
-
-            // Calculate bench height (vertical distance minus subdrill)
-            point.benchHeight = Math.abs(dz) - point.subdrillAmount;
-        } else if (hasLengthAngleBearing) {
-            // CASE: Length, Angle, and Bearing provided
-            const length = parseFloat(providedLength);
-            let angle = parseFloat(providedAngle);
-            const bearing = parseFloat(providedBearing);
-
-            // Handle angle convention conversion
+        // Handle hole geometry
+        if (providedLength && !isNaN(parseFloat(providedLength))) {
+            point.holeLengthCalculated = parseFloat(providedLength);
+        }
+        if (providedAngle && !isNaN(parseFloat(providedAngle))) {
             if (angleConvention === "dip") {
-                // Convert dip (90° = vertical) to angle (0° = vertical)
-                angle = 90 - angle;
-            }
-
-            point.holeLengthCalculated = length;
-            point.holeAngle = angle;
-            point.holeBearing = bearing;
-
-            // Calculate bench height if not provided
-            if (isNaN(benchHeightValue)) {
-                const radAngle = angle * (Math.PI / 180);
-                const cosAngle = Math.cos(radAngle);
-                point.benchHeight = length * Math.abs(cosAngle) - point.subdrillAmount;
-            }
-        } else if (hasLength) {
-            // CASE: Only length provided (angle defaults to vertical, bearing to North)
-            const length = parseFloat(providedLength);
-            let angle = parseFloat(providedAngle) || 0; // Default to vertical
-            const bearing = parseFloat(providedBearing) || 0; // Default to North
-
-            // Handle angle convention conversion
-            if (angleConvention === "dip" && !isNaN(parseFloat(providedAngle))) {
-                angle = 90 - angle;
-            }
-
-            point.holeLengthCalculated = length;
-            point.holeAngle = angle;
-            point.holeBearing = bearing;
-
-            // Calculate bench height if not provided
-            if (isNaN(benchHeightValue)) {
-                const radAngle = angle * (Math.PI / 180);
-                const cosAngle = Math.cos(radAngle);
-                point.benchHeight = length * Math.abs(cosAngle) - point.subdrillAmount;
-            }
-        } else {
-            // CASE: Only mandatory fields (4 columns) - DUMMY HOLE
-            // Keep defaults: length = 0, angle = 0, bearing = 0
-            // End coordinates same as start coordinates
-            point.holeLengthCalculated = 0;
-            point.holeAngle = 0;
-            point.holeBearing = 0;
-            point.benchHeight = 0;
-        }
-
-        // Calculate subdrillLength based on angle
-        // subdrillLength = subdrillAmount for vertical holes
-        // subdrillLength = subdrillAmount / cos(angle) for angled holes
-        if (point.subdrillAmount > 0) {
-            const radAngle = point.holeAngle * (Math.PI / 180);
-            const cosAngle = Math.cos(radAngle);
-            if (Math.abs(cosAngle) > 1e-9) {
-                point.subdrillLength = point.subdrillAmount / cosAngle;
+                // Convert dip to angle
+                point.holeAngle = -parseFloat(providedAngle);
             } else {
-                // Horizontal hole case
-                point.subdrillLength = point.subdrillAmount;
+                point.holeAngle = parseFloat(providedAngle);
             }
         }
-
-        // Determine hole drawing style based on available data:
-        // - If only 4 columns (ID, X, Y, Z): Dummy hole
-        // - If no diameter: No Diameter Hole
-        // - If has diameter: Regular Hole
-        let holeDrawStyle = "Dummy"; // Default for 4-column files
-
-        if (point.holeLengthCalculated > 0) {
-            if (hasDiameter) {
-                holeDrawStyle = "Hole"; // Regular hole with diameter
-            } else {
-                holeDrawStyle = "NoDiameterHole"; // Hole without diameter
-            }
+        if (providedBearing && !isNaN(parseFloat(providedBearing))) {
+            point.holeBearing = parseFloat(providedBearing);
         }
 
-        // Store the draw style for reference (not part of standard structure but useful)
-        point.drawStyle = holeDrawStyle;
+        // Calculate missing geometry if possible
+        if (point.endXLocation !== point.startXLocation || point.endYLocation !== point.startYLocation || point.endZLocation !== point.startZLocation) {
+            calculateHoleGeometry(point, null, 5); // Mode 5 = recalculate from end points
+        }
 
         if (isUpdate) {
             updatedHoles.push(point);
         } else {
-            addedHoles.push(point);
             points.push(point);
-        }
-    });
+            addedHoles.push(point);
 
-    // Calculate geometry for holes that have length/angle/bearing data
-    const allHolesToProcess = duplicateHandling !== "skip" ? points : addedHoles;
-    allHolesToProcess.forEach((point) => {
-        if (point.holeLengthCalculated > 0 && !isNaN(point.holeAngle) && !isNaN(point.holeBearing)) {
-            // Use calculateHoleGeometry to ensure consistent calculations
-            calculateHoleGeometry(point, point.holeLengthCalculated, 1); // Mode 1 = Length
-        }
-    });
-
-    // Show duplicate warnings if any
-    if (duplicateWarnings.length > 0) {
-        const warningMessage = duplicateWarnings.map((w) => "Row " + w.row + ": " + w.entityName + ":::" + w.holeID + " (" + w.type + ") - " + w.action).join("\n");
-
-        console.warn("Duplicate holes found:\n" + warningMessage);
-
-        // Show warning to user
-        Swal.fire({
-            title: "Duplicate Holes Detected",
-            text: "Found " + duplicateWarnings.length + " duplicate holes. Check console for details.",
-            icon: "warning",
-            customClass: {
-                container: "custom-popup-container"
+            // If this hole needs row detection, add to list
+            if ((rowID === null || posID === null) && autoDetectRows) {
+                newHolesForRowDetection.push(point);
             }
+        }
+    });
+
+    // Auto-detect rows for holes that don't have rowID/posID
+    if (newHolesForRowDetection.length > 0 && autoDetectRows) {
+        // Group by entity for row detection
+        const entitiesForRowDetection = new Map();
+        newHolesForRowDetection.forEach((hole) => {
+            if (!entitiesForRowDetection.has(hole.entityName)) {
+                entitiesForRowDetection.set(hole.entityName, []);
+            }
+            entitiesForRowDetection.get(hole.entityName).push(hole);
+        });
+
+        // In parseCSV and processCsvData:
+        entitiesForRowDetection.forEach((holes, entityName) => {
+            smartRowDetection(holes, entityName); // Changed from autoDetectRowsAndPositions
         });
     }
 
-    // Calculate total processed holes (new + updated)
-    const totalProcessedHoles = addedHoles.length + updatedHoles.length;
+    // Auto-assign rowID/posID for holes that still don't have them
+    const unassignedHoles = addedHoles.filter((hole) => hole.rowID === null || hole.posID === null);
+    unassignedHoles.forEach((hole) => {
+        if (hole.rowID === null) {
+            hole.rowID = getNextRowID(hole.entityName);
+        }
+        if (hole.posID === null) {
+            hole.posID = getNextPosID(hole.entityName, hole.rowID);
+        }
+    });
 
-    console.log("Imported " + totalProcessedHoles + " holes:");
-    console.log("- Dummy holes: " + addedHoles.filter((h) => h.drawStyle === "Dummy").length);
-    console.log("- No Diameter holes: " + addedHoles.filter((h) => h.drawStyle === "NoDiameterHole").length);
-    console.log("- Regular holes: " + addedHoles.filter((h) => h.drawStyle === "Hole").length);
-    console.log("- Updated existing holes: " + updatedHoles.length);
-    console.log("- Skipped duplicates: " + duplicateWarnings.filter((w) => w.action === "Skipped").length);
+    console.log("CSV Import completed:", addedHoles.length, "new holes,", updatedHoles.length, "updated holes");
+    if (autoDetectRows && newHolesForRowDetection.length > 0) {
+        console.log("Auto-detected rows for", newHolesForRowDetection.length, "holes");
+    }
 
-    // Return all processed holes (new + updated) so the success message shows correct count
-    return [...addedHoles, ...updatedHoles];
+    return addedHoles;
 }
 //---------------- END CUSTOM STRUCTURED CSV IMPORTER ----------------//
 
@@ -19529,6 +20088,7 @@ function toDegrees(radians) {
 function toBearing(degrees) {
     return (degrees + 90) % 360;
 }
+// ADDED ROWID AND POSID
 function generatePatternInPolygon(patternSettings) {
     if (!selectedPolygon || !patternStartPoint || !patternEndPoint || !patternReferencePoint) {
         console.error("Missing pattern data");
@@ -19550,18 +20110,17 @@ function generatePatternInPolygon(patternSettings) {
     const dy = patternEndPoint.y - patternStartPoint.y;
 
     // Calculate orientation (bearing from first to second point)
-    // Corrected for world coordinates where +Y is North
     let orientation = ((Math.atan2(dy, dx) * 180) / Math.PI + 360) % 360;
 
     console.log("Line bearing (Start to End):", orientation.toFixed(2) + "°");
 
-    // Get polygon vertices - FIX: Convert from entity.data to vertices format
+    // Get polygon vertices
     const polygonVertices = selectedPolygon.data.map((point) => ({
         x: point.pointXLocation,
         y: point.pointYLocation
     }));
 
-    console.log("Polygon vertices:", polygonVertices.length); // Debug log
+    console.log("Polygon vertices:", polygonVertices.length);
 
     // Find polygon bounds
     let minX = Infinity,
@@ -19577,7 +20136,6 @@ function generatePatternInPolygon(patternSettings) {
         maxY = Math.max(maxY, y);
     });
 
-    // Calculate polygon dimensions
     const polygonWidth = maxX - minX;
     const polygonHeight = maxY - minY;
     const polygonDiagonal = Math.sqrt(polygonWidth * polygonWidth + polygonHeight * polygonHeight);
@@ -19604,37 +20162,27 @@ function generatePatternInPolygon(patternSettings) {
     const bufferFactor = 10.0;
     const maxDistance = polygonDiagonal * bufferFactor;
 
-    // NEW APPROACH: Create a grid centered at (0,0) mathematically
-    // Calculate number of rows and columns - make sure they're odd numbers to have a center point
     const numRows = Math.ceil(maxDistance / burden);
     const numCols = Math.ceil(maxDistance / spacing);
 
     const halfRows = Math.floor(numRows / 2);
     const halfCols = Math.floor(numCols / 2);
 
-    // NEW: Find the grid point closest to (0,0)
-    // In a perfect grid with odd numbers of rows/columns, this would be (0,0)
-    // But with staggering or even numbers, we need to find it
-
+    // Find the grid point closest to (0,0)
     let centerGridX = 0;
     let centerGridY = 0;
     let minDistToCenter = Infinity;
 
-    // Iterate through a small section of the grid around the center to find the point closest to (0,0)
     for (let i = -1; i <= 1; i++) {
         for (let k = -1; k <= 1; k++) {
-            // Apply staggering if needed
             let colOffset = k * spacing;
             const isStaggered = patternType === "staggered" || (patternType === undefined && spacingOffset !== 0);
             if (isStaggered && i % 2 !== 0) {
                 colOffset += spacingOffset * spacing;
             }
 
-            // Calculate unrotated grid point
             const gridX = colOffset;
             const gridY = i * burden;
-
-            // Calculate distance to origin
             const distToCenter = Math.sqrt(gridX * gridX + gridY * gridY);
 
             if (distToCenter < minDistToCenter) {
@@ -19645,39 +20193,32 @@ function generatePatternInPolygon(patternSettings) {
         }
     }
 
-    // Calculate grid-to-ref translation
     const gridXOffset = -centerGridX;
     const gridYOffset = -centerGridY;
 
     console.log("Grid adjustment: Found center grid point at (" + centerGridX.toFixed(2) + ", " + centerGridY.toFixed(2) + "), applying offset (" + gridXOffset.toFixed(2) + ", " + gridYOffset.toFixed(2) + ")");
 
-    // ⭐ NEW: First pass - collect all holes that will be inside the polygon WITH their original grid coordinates
+    // Collect all holes that will be inside the polygon WITH their original grid coordinates
     const holesInPolygon = [];
 
     // Generate grid of holes - collect valid holes first
     for (let i = -halfRows; i <= halfRows; i++) {
         for (let k = -halfCols; k <= halfCols; k++) {
-            // Apply staggering if needed
             let colOffset = k * spacing;
             const isStaggered = patternType === "staggered" || (patternType === undefined && spacingOffset !== 0);
             if (isStaggered && i % 2 !== 0) {
                 colOffset += spacingOffset * spacing;
             }
 
-            // Apply grid adjustment to center properly
             const adjustedColOffset = colOffset + gridXOffset;
             const adjustedRowOffset = i * burden + gridYOffset;
 
             // Calculate position using row and column bearings
-            // Move along column direction (perpendicular to row)
             const yFromColumn = adjustedRowOffset * Math.sin(columnRadians);
             const xFromColumn = adjustedRowOffset * Math.cos(columnRadians);
-
-            // Move along row direction
             const yFromRow = adjustedColOffset * Math.sin(rowRadians);
             const xFromRow = adjustedColOffset * Math.cos(rowRadians);
 
-            // Combine both movements and translate to reference point
             const holeX = patternOriginX + xFromColumn + xFromRow;
             const holeY = patternOriginY + yFromColumn + yFromRow;
 
@@ -19686,51 +20227,39 @@ function generatePatternInPolygon(patternSettings) {
                 holesInPolygon.push({
                     x: holeX,
                     y: holeY,
-                    originalGridRow: i, // Keep original grid coordinates
-                    originalGridCol: k, // Keep original grid coordinates
+                    originalGridRow: i,
+                    originalGridCol: k,
                     isStaggered: isStaggered && i % 2 !== 0
                 });
             }
         }
     }
 
-    // ⭐ FIXED: Group holes by their ORIGINAL GRID ROW, not by projection grouping
-    // This ensures that holes that were generated in the same grid row stay in the same row
-
-    // First, find all unique original grid rows that exist
+    // Group holes by their ORIGINAL GRID ROW
     const uniqueGridRows = [...new Set(holesInPolygon.map((hole) => hole.originalGridRow))];
-    uniqueGridRows.sort((a, b) => a - b); // Sort grid rows from lowest to highest
+    uniqueGridRows.sort((a, b) => a - b);
 
     console.log("Unique grid rows found:", uniqueGridRows);
 
-    // ⭐ NEW: Create rows based on original grid rows, not projection grouping
     const rows = [];
-
-    // For each unique grid row, collect all holes that belong to it
     uniqueGridRows.forEach((gridRowIndex) => {
         const holesInThisGridRow = holesInPolygon.filter((hole) => hole.originalGridRow === gridRowIndex);
 
-        // Sort holes within this row by their spacing projection (left to right along the row)
         const rowBearingRadians = (90 - orientation) * (Math.PI / 180);
-
-        // Calculate spacing projection for sorting within the row
         holesInThisGridRow.forEach((hole) => {
             hole.spacingProjection = hole.x * Math.cos(rowBearingRadians) + hole.y * Math.sin(rowBearingRadians);
         });
 
-        // Sort by spacing projection (left to right along row direction)
         holesInThisGridRow.sort((a, b) => a.spacingProjection - b.spacingProjection);
-
         rows.push(holesInThisGridRow);
     });
 
-    // ⭐ NEW: Determine the actual row and column ranges that exist in the clipped pattern
+    // Determine the actual grid ranges
     let minActualRow = Math.min(...uniqueGridRows);
     let maxActualRow = Math.max(...uniqueGridRows);
     let minActualCol = Infinity;
     let maxActualCol = -Infinity;
 
-    // Find the range of original grid columns that are actually used
     holesInPolygon.forEach((hole) => {
         minActualCol = Math.min(minActualCol, hole.originalGridCol);
         maxActualCol = Math.max(maxActualCol, hole.originalGridCol);
@@ -19738,17 +20267,22 @@ function generatePatternInPolygon(patternSettings) {
 
     console.log("Actual grid range: rows " + minActualRow + " to " + maxActualRow + ", cols " + minActualCol + " to " + maxActualCol);
 
-    // ⭐ NEW: Create holes with naming based on actual position relative to the pattern grid
+    // Get the starting rowID for this pattern (first row will get this rowID)
+    const startingRowID = getNextRowID(blastName);
+    console.log("Starting rowID for polygon pattern:", startingRowID);
+
     let holeCounter = startNumber;
 
     // Process rows from first (lowest row letter) to last (highest row letter)
     for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
         const row = rows[rowIndex];
 
+        // Each row in the pattern gets its own rowID
+        const currentRowID = startingRowID + rowIndex;
+
         // Calculate actual row letter based on the row's original grid position
-        // The lowest grid row gets 'A', the next gets 'B', etc.
-        const actualRowGridIndex = row[0].originalGridRow; // All holes in this row have the same originalGridRow
-        const rowLetterIndex = actualRowGridIndex - minActualRow; // Normalize to start from 0
+        const actualRowGridIndex = row[0].originalGridRow;
+        const rowLetterIndex = actualRowGridIndex - minActualRow;
 
         let rowLetter = "A";
         for (let l = 0; l < rowLetterIndex; l++) {
@@ -19763,32 +20297,31 @@ function generatePatternInPolygon(patternSettings) {
             if (nameTypeIsNumerical) {
                 holeID = holeCounter++;
             } else {
-                // ⭐ Calculate actual column number based on original grid position
                 const actualColGridIndex = hole.originalGridCol;
-                let colNumber = actualColGridIndex - minActualCol + 1; // Normalize to start from 1
+                let colNumber = actualColGridIndex - minActualCol + 1;
 
                 // Apply offset logic based on spacingOffset value and row position
                 if (spacingOffset <= -1) {
-                    // -1 increment: A1, B2, C3, D4, etc.
                     colNumber = colNumber + rowLetterIndex;
                 } else if (spacingOffset > -1 && spacingOffset < 1) {
-                    // 0 increment: A4, B4, C4, D4, etc. (square pattern - same column numbers)
                     // colNumber stays the same
                 } else if (spacingOffset >= 1) {
-                    // +1 increment: A4, B4, C4, D4, etc. (all start at same number but staggered position)
                     // colNumber stays the same
                 }
 
                 holeID = rowLetter + colNumber;
             }
 
-            // Add hole using existing addHole function
-            addHole(true, useGradeZ, blastName, holeID, hole.x, hole.y, collarZ, gradeZ, diameter, type, length, subdrill, angle, bearing);
+            // Position ID is sequential for each hole in this row (starts at 1 for each row)
+            const posID = colIndex + 1;
+
+            // Add hole using existing addHole function with rowID and posID
+            addHole(true, useGradeZ, blastName, holeID, hole.x, hole.y, collarZ, gradeZ, diameter, type, length, subdrill, angle, bearing, currentRowID, posID);
         }
     }
 
     const holesAdded = points.length - originalPointsCount;
-    console.log("Generated pattern in polygon with " + holesAdded + " holes");
+    console.log("Generated pattern in polygon with " + holesAdded + " holes across " + rows.length + " rows (rowIDs " + startingRowID + "-" + (startingRowID + rows.length - 1) + ")");
 
     // Rest of the function remains unchanged
     if (holesAdded === 0) {
@@ -19812,12 +20345,12 @@ function generatePatternInPolygon(patternSettings) {
     } else {
         Swal.fire({
             title: "Pattern Generated",
-            text: "Successfully generated " + holesAdded + " holes in the polygon.",
+            text: "Successfully generated " + holesAdded + " holes in the polygon across " + rows.length + " rows (Rows " + startingRowID + "-" + (startingRowID + rows.length - 1) + ").",
             icon: "success",
             showCancelButton: false,
             showConfirmButton: true,
             confirmButtonText: "OK",
-            cancelButtonText: "Close",
+            cancelButton: "Close",
             customClass: {
                 container: "custom-popup-container",
                 popup: "custom-popup-container",
@@ -20082,6 +20615,7 @@ function showHolesAlongLinePopup() {
         });
 }
 // Update the generateHolesAlongLine function to correctly apply the bearing:
+// Update the generateHolesAlongLine function to use rowID/posID:
 function generateHolesAlongLine(params) {
     if (!lineStartPoint || !lineEndPoint) {
         console.error("Missing line points");
@@ -20107,8 +20641,6 @@ function generateHolesAlongLine(params) {
     const unitY = dy / lineLength;
 
     // Calculate line bearing in world coordinates
-    // In world coordinates: North = 0°, East = 90°, South = 180°, West = 270°
-    // Since +Y is North in world coordinates, we need to use atan2(dx, dy) not atan2(dy, dx)
     const lineBearing = ((Math.atan2(dx, dy) * 180) / Math.PI + 360) % 360;
     console.log("Line bearing:", lineBearing.toFixed(2) + "°");
 
@@ -20118,9 +20650,12 @@ function generateHolesAlongLine(params) {
     const originalPointsCount = points.length;
 
     // Calculate hole bearing based on user preference
-    // If "Bearing are 90° to Row" is checked, set bearing perpendicular to line
     const holeBearing = params.useLineBearing ? (lineBearing + 90) % 360 : params.bearing;
     console.log("Using hole bearing:", holeBearing.toFixed(2) + "°");
+
+    // Get the next row ID for this pattern
+    const rowID = getNextRowID(entityName);
+    console.log("Assigned rowID:", rowID, "for line pattern");
 
     // Generate holes starting from the first point
     for (let i = 0; i < numHoles; i++) {
@@ -20139,7 +20674,10 @@ function generateHolesAlongLine(params) {
             holeID = letter + number;
         }
 
-        // Add hole to points array with correct bearing
+        // Position ID is sequential for each hole in this row
+        const posID = i + 1;
+
+        // Add hole to points array with rowID and posID
         addHole(
             true, // useCustomHoleID - always true for pattern generation
             params.useGradeZ, // useGradeZ from params
@@ -20154,7 +20692,9 @@ function generateHolesAlongLine(params) {
             params.length, // length
             params.subdrill, // subdrill
             params.angle, // angle
-            holeBearing // bearing - use calculated bearing perpendicular to line if useLineBearing is true
+            holeBearing, // bearing - use calculated bearing perpendicular to line if useLineBearing is true
+            rowID, // rowID - all holes in this line get the same rowID
+            posID // posID - sequential position in the row
         );
     }
 
@@ -20164,7 +20704,7 @@ function generateHolesAlongLine(params) {
     saveHolesToLocalStorage(points);
 
     const holesAdded = points.length - originalPointsCount;
-    console.log("Generated " + holesAdded + " holes along line.");
+    console.log("Generated " + holesAdded + " holes along line with rowID " + rowID);
 
     // Show success/failure message with custom styling
     if (holesAdded === 0) {
@@ -20188,7 +20728,7 @@ function generateHolesAlongLine(params) {
     } else {
         Swal.fire({
             title: "Line Pattern Generated",
-            text: `Successfully generated ${holesAdded} holes along the line.`,
+            text: `Successfully generated ${holesAdded} holes along the line (Row ${rowID}).`,
             icon: "success",
             showCancelButton: false,
             showConfirmButton: true,
@@ -21330,6 +21870,7 @@ function drawHolesAlongLineVisuals() {
     }
 }
 // Add this new function to generate holes along a polyline or polygon edge
+// ADDED ROWID AND POSID
 function generateHolesAlongPolyline(params, vertices) {
     if (!vertices || vertices.length < 2) {
         console.error("Not enough vertices to generate holes");
@@ -21342,13 +21883,16 @@ function generateHolesAlongPolyline(params, vertices) {
     // Initialize points array if it's null
     if (points === null) {
         points = [];
-        // console.log("Initialized empty points array");
     }
 
     const entityName = params.blastName || "PolylinePattern_" + Date.now();
     const originalPointsCount = points.length;
     let holeCounter = params.startNumber || 1;
     let currentLetter = "A";
+
+    // Get the next row ID for this pattern
+    const rowID = getNextRowID(entityName);
+    console.log("Assigned rowID:", rowID, "for polyline pattern");
 
     // Calculate total length of the polyline for progress tracking
     let totalLength = 0;
@@ -21361,6 +21905,7 @@ function generateHolesAlongPolyline(params, vertices) {
     // Process each segment of the polyline
     let accumulatedLength = 0;
     let nextHoleDistance = 0;
+    let positionCounter = 1; // Track position within the row
 
     for (let i = 0; i < vertices.length - 1; i++) {
         const startPoint = vertices[i];
@@ -21374,7 +21919,6 @@ function generateHolesAlongPolyline(params, vertices) {
         const unitY = dy / segmentLength;
 
         // Calculate segment bearing in world coordinates
-        // In world coordinates: North = 0°, East = 90°, South = 180°, West = 270°
         const segmentBearing = ((Math.atan2(dx, dy) * 180) / Math.PI + 360) % 360;
 
         // Calculate hole bearing based on user preference
@@ -21409,7 +21953,7 @@ function generateHolesAlongPolyline(params, vertices) {
                 holeCounter++;
             }
 
-            // Add hole
+            // Add hole with rowID and posID
             addHole(
                 true, // useCustomHoleID
                 params.useGradeZ, // useGradeZ
@@ -21424,9 +21968,12 @@ function generateHolesAlongPolyline(params, vertices) {
                 params.length,
                 params.subdrill,
                 params.angle,
-                holeBearing
+                holeBearing,
+                rowID, // All holes in this polyline get the same rowID
+                positionCounter // Sequential position along the polyline
             );
 
+            positionCounter++; // Increment position counter
             // Move to next hole position
             distanceAlongSegment += params.spacing;
         }
@@ -21441,7 +21988,7 @@ function generateHolesAlongPolyline(params, vertices) {
     saveHolesToLocalStorage(points);
 
     const holesAdded = points.length - originalPointsCount;
-    // console.log("Generated " + holesAdded + " holes along polyline");
+    console.log("Generated " + holesAdded + " holes along polyline with rowID " + rowID);
 
     // Show success/failure message with custom styling
     if (holesAdded === 0) {
@@ -21465,7 +22012,7 @@ function generateHolesAlongPolyline(params, vertices) {
     } else {
         Swal.fire({
             title: "Polyline Pattern Generated",
-            text: `Successfully generated ${holesAdded} holes along the polyline.`,
+            text: `Successfully generated ${holesAdded} holes along the polyline (Row ${rowID}).`,
             icon: "success",
             showCancelButton: false,
             showConfirmButton: true,
@@ -26939,91 +27486,91 @@ class TreeView {
         document.getElementById("treeContextMenu").style.display = "none";
     }
     // TODO future Development
-    // renumberSelected() {
-    // 	if (this.selectedNodes.size === 0) return;
+    renumberSelected() {
+        if (this.selectedNodes.size === 0) return;
 
-    // 	const nodeIds = Array.from(this.selectedNodes);
-    // 	const entities = new Set();
+        const nodeIds = Array.from(this.selectedNodes);
+        const entities = new Set();
 
-    // 	// Collect all affected entities
-    // 	nodeIds.forEach((nodeId) => {
-    // 		const parts = nodeId.split("⣿");
-    // 		if (parts[0] === "hole") {
-    // 			const holeId = parts.slice(1).join("⣿");
-    // 			const hole = points.find((h) => h.holeID === holeId);
-    // 			if (hole) entities.add(hole.entityName);
-    // 		} else if (parts[0] === "entity") {
-    // 			const entityName = parts.slice(1).join("⣿");
-    // 			entities.add(entityName);
-    // 		}
-    // 	});
+        // Collect all affected entities
+        nodeIds.forEach((nodeId) => {
+            const parts = nodeId.split("⣿");
+            if (parts[0] === "hole") {
+                const holeId = parts.slice(1).join("⣿");
+                const hole = points.find((h) => h.holeID === holeId);
+                if (hole) entities.add(hole.entityName);
+            } else if (parts[0] === "entity") {
+                const entityName = parts.slice(1).join("⣿");
+                entities.add(entityName);
+            }
+        });
 
-    // 	if (entities.size === 0) return;
+        if (entities.size === 0) return;
 
-    // 	Swal.fire({
-    // 		title: "Renumber Holes",
-    // 		html: `
-    // 		<div style="text-align: left; margin-bottom: 15px;">
-    // 			<p>Renumber holes in ${entities.size} blast(s)?</p>
-    // 			<label for="renumberStart" style="display: block; margin-bottom: 5px; font-weight: bold;">Starting Number:</label>
-    // 			<input type="text" id="renumberStart" value="${deleteRenumberStart}"
-    // 				   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
-    // 				   placeholder="e.g. 1, A1, B5, 100">
-    // 			<small style="color: #666; display: block; margin-top: 5px;">
-    // 				Enter a number (e.g. 1, 100) for numerical naming<br>
-    // 				or letter+number (e.g. A1, B5) for row-based naming
-    // 			</small>
-    // 		</div>
-    // 	`,
-    // 		icon: "question",
-    // 		showCancelButton: true,
-    // 		confirmButtonText: "Renumber",
-    // 		cancelButtonText: "Cancel",
-    // 		focusConfirm: false,
-    // 		customClass: {
-    // 			container: "custom-popup-container",
-    // 			title: "swal2-title",
-    // 			confirmButton: "confirm",
-    // 			cancelButton: "cancel"
-    // 		},
-    // 		preConfirm: () => {
-    // 			const startValue = document.getElementById("renumberStart").value;
-    // 			if (!startValue || startValue.trim() === "") {
-    // 				Swal.showValidationMessage("Please enter a starting number");
-    // 				return false;
-    // 			}
-    // 			return startValue.trim();
-    // 		}
-    // 	}).then((result) => {
-    // 		if (result.isConfirmed) {
-    // 			const newStartValue = result.value;
+        Swal.fire({
+            title: "Renumber Holes",
+            html: `
+    		<div style="text-align: left; margin-bottom: 15px;">
+    			<p>Renumber holes in ${entities.size} blast(s)?</p>
+    			<label for="renumberStart" style="display: block; margin-bottom: 5px; font-weight: bold;">Starting Number:</label>
+    			<input type="text" id="renumberStart" value="${deleteRenumberStart}"
+    				   style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+    				   placeholder="e.g. 1, A1, B5, 100">
+    			<small style="color: #666; display: block; margin-top: 5px;">
+    				Enter a number (e.g. 1, 100) for numerical naming<br>
+    				or letter+number (e.g. A1, B5) for row-based naming
+    			</small>
+    		</div>
+    	`,
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonText: "Renumber",
+            cancelButtonText: "Cancel",
+            focusConfirm: false,
+            customClass: {
+                container: "custom-popup-container",
+                title: "swal2-title",
+                confirmButton: "confirm",
+                cancelButton: "cancel"
+            },
+            preConfirm: () => {
+                const startValue = document.getElementById("renumberStart").value;
+                if (!startValue || startValue.trim() === "") {
+                    Swal.showValidationMessage("Please enter a starting number");
+                    return false;
+                }
+                return startValue.trim();
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const newStartValue = result.value;
 
-    // 			// Update the global deleteRenumberStart value
-    // 			deleteRenumberStart = newStartValue;
+                // Update the global deleteRenumberStart value
+                deleteRenumberStart = newStartValue;
 
-    // 			// Also update the original input field if it exists
-    // 			const renumberStartInput = document.querySelector('#renumberStartListener, input[name="renumberStart"]');
-    // 			if (renumberStartInput) {
-    // 				renumberStartInput.value = newStartValue;
-    // 			}
+                // Also update the original input field if it exists
+                const renumberStartInput = document.querySelector('#renumberStartListener, input[name="renumberStart"]');
+                if (renumberStartInput) {
+                    renumberStartInput.value = newStartValue;
+                }
 
-    // 			entities.forEach((entityName) => {
-    // 				renumberHolesFunction(newStartValue, entityName);
-    // 			});
+                entities.forEach((entityName) => {
+                    renumberHolesFunction(newStartValue, entityName);
+                });
 
-    // 			this.updateTreeData();
-    // 			drawData(points, selectedHole);
+                this.updateTreeData();
+                drawData(points, selectedHole);
 
-    // 			Swal.fire({
-    // 				title: "Complete",
-    // 				text: "Renumbered holes in " + entities.size + " blast(s) starting from " + newStartValue,
-    // 				icon: "success",
-    // 				timer: 3000,
-    // 				showConfirmButton: false
-    // 			});
-    // 		}
-    // 	});
-    // }
+                Swal.fire({
+                    title: "Complete",
+                    text: "Renumbered holes in " + entities.size + " blast(s) starting from " + newStartValue,
+                    icon: "success",
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            }
+        });
+    }
 
     resetConnections() {
         if (this.selectedNodes.size === 0) return;
@@ -27635,10 +28182,27 @@ class TreeView {
 
         return Object.keys(entities).map((entityName) => {
             const holes = entities[entityName];
+
+            // Replace the sorting in buildBlastData
+            holes.sort((a, b) => {
+                // Convert null/undefined to large numbers so they sort last
+                const aRow = a.rowID && a.rowID > 0 ? a.rowID : 999999;
+                const bRow = b.rowID && b.rowID > 0 ? b.rowID : 999999;
+
+                if (aRow !== bRow) {
+                    return aRow - bRow; // Sort by row first
+                }
+
+                // Within same row, sort by position
+                const aPos = a.posID && a.posID > 0 ? a.posID : 999999;
+                const bPos = b.posID && b.posID > 0 ? b.posID : 999999;
+
+                return aPos - bPos;
+            });
+
             const totalLength = holes.reduce((sum, hole) => sum + (hole.holeLengthCalculated || 0), 0);
             const metrics = getVoronoiMetrics(holes);
             const stats = getBlastStatistics();
-
             const volume = metrics.totalVolume;
 
             return {
@@ -27647,21 +28211,23 @@ class TreeView {
                 label: entityName,
                 meta: "(" + holes.length + ", " + parseFloat(totalLength).toFixed(1) + "m, " + parseFloat(volume).toFixed(1) + "m³)",
                 children: holes.map((hole, index) => ({
-                    id: "hole⣿" + hole.holeID || index,
+                    id: "hole⣿" + (hole.holeID || index),
                     type: "hole",
-                    label: hole.holeID || "Hole " + index + 1,
-                    meta: "",
+                    label: hole.holeID || "Hole " + (index + 1),
+                    meta: "L:" + (hole.holeLengthCalculated || 0).toFixed(2) + "m, S:" + (hole.subdrillAmount || 0).toFixed(2) + "m, R:" + (hole.rowID || "?") + ", P:" + (hole.posID || "?"),
                     children: [
-                        { id: hole.holeID + "⣿startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
-                        { id: hole.holeID + "⣿starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
-                        { id: hole.holeID + "⣿startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
-                        { id: hole.holeID + "⣿gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
-                        { id: hole.holeID + "⣿diameter", type: "property", label: "Diameter", meta: hole.holeDiameter || 115 + "mm" },
-                        { id: hole.holeID + "⣿angle", type: "property", label: "Angle", meta: hole.holeAngle.toFixed(0) || 0 + "°" },
-                        { id: hole.holeID + "⣿bearing", type: "property", label: "Bearing", meta: hole.holeBearing.toFixed(2) || 0 + "°" },
-                        { id: hole.holeID + "⣿length", type: "property", label: "Length", meta: hole.holeLengthCalculated.toFixed(2) || 0 + "m" },
-                        { id: hole.holeID + "⣿subdrill", type: "property", label: "Subdrill", meta: hole.subdrillAmount.toFixed(2) || 0 + "m" },
-                        { id: hole.holeID + "⣿type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" }
+                        { id: (hole.holeID || index) + "⣿startx", type: "property", label: "Start X", meta: (hole.startXLocation || 0).toFixed(3) },
+                        { id: (hole.holeID || index) + "⣿starty", type: "property", label: "Start Y", meta: (hole.startYLocation || 0).toFixed(3) },
+                        { id: (hole.holeID || index) + "⣿startz", type: "property", label: "Start Z", meta: (hole.startZLocation || 0).toFixed(3) },
+                        { id: (hole.holeID || index) + "⣿gradez", type: "property", label: "Grade Z", meta: (hole.gradeZLocation || 0).toFixed(3) },
+                        { id: (hole.holeID || index) + "⣿diameter", type: "property", label: "Diameter", meta: (hole.holeDiameter || 115) + "mm" },
+                        { id: (hole.holeID || index) + "⣿angle", type: "property", label: "Angle", meta: (hole.holeAngle || 0).toFixed(0) + "°" },
+                        { id: (hole.holeID || index) + "⣿bearing", type: "property", label: "Bearing", meta: (hole.holeBearing || 0).toFixed(2) + "°" },
+                        { id: (hole.holeID || index) + "⣿length", type: "property", label: "Length", meta: (hole.holeLengthCalculated || 0).toFixed(2) + "m" },
+                        { id: (hole.holeID || index) + "⣿subdrill", type: "property", label: "Subdrill", meta: (hole.subdrillAmount || 0).toFixed(2) + "m" },
+                        { id: (hole.holeID || index) + "⣿type", type: "property", label: "Hole Type", meta: hole.holeType || "Undefined" },
+                        { id: (hole.holeID || index) + "⣿rowid", type: "property", label: "Row ID", meta: hole.rowID || "?" },
+                        { id: (hole.holeID || index) + "⣿posid", type: "property", label: "Position ID", meta: hole.posID || "?" }
                     ]
                 }))
             };
