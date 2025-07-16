@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250717.2040AWSTAWST"
-const buildVersion = "20250717.2040AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250717.2300AWST"
+const buildVersion = "20250717.2300AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,6 +54,7 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
+					<br><label class="labelWhite12c">✅ DXF 3DFace and Hillshade Gradient added                      </label>
 					<br><label class="labelWhite12c">✅ Selection and manipulation disabled on hidden entities       </label>
 					<br><label class="labelWhite12c">✅ Children Nodes inherit group node visibility                 </label>
 					<br><label class="labelWhite12c">✅ Export and Save only includes Visible holes all Entities     </label>
@@ -4198,6 +4199,9 @@ function parseDXFtoKadMaps(dxf) {
     // 2) kirra.js centroid offsets
     var offsetX = 0; //centroidX || 0;
     var offsetY = 0; //centroidY || 0;
+    // 3) Collections for surface data
+    var surfacePoints = [];
+    var surfaceTriangles = [];
 
     // 3) raw DXF color or bright-red fallback, but return as "#RRGGBB"
     function getColor(idx) {
@@ -4457,18 +4461,91 @@ function parseDXFtoKadMaps(dxf) {
                     ]
                 });
             }
+        } // NEW: 3DFACE handling for surfaces
+        else if (t === "3DFACE") {
+            // 3DFACE entities have vertices property with 4 points (last one often duplicates first for triangles)
+            var verts = ent.vertices;
+            if (!verts || verts.length < 3) {
+                console.warn("3DFACE missing vertices:", ent);
+            } else {
+                // Extract the three unique vertices for the triangle
+                var p1 = { x: verts[0].x - offsetX, y: verts[0].y - offsetY, z: verts[0].z || 0 };
+                var p2 = { x: verts[1].x - offsetX, y: verts[1].y - offsetY, z: verts[1].z || 0 };
+                var p3 = { x: verts[2].x - offsetX, y: verts[2].y - offsetY, z: verts[2].z || 0 };
+
+                // Add points to surface points collection (with deduplication)
+                var p1Index = addUniquePoint(surfacePoints, p1);
+                var p2Index = addUniquePoint(surfacePoints, p2);
+                var p3Index = addUniquePoint(surfacePoints, p3);
+
+                // Create triangle referencing the point indices
+                surfaceTriangles.push({
+                    vertices: [surfacePoints[p1Index], surfacePoints[p2Index], surfacePoints[p3Index]],
+                    minZ: Math.min(p1.z, p2.z, p3.z),
+                    maxZ: Math.max(p1.z, p2.z, p3.z)
+                });
+            }
         }
         // anything else → skip
         else {
             console.warn("Unsupported DXF entity:", ent.type);
         }
     });
+    // NEW: Create and SAVE surface from 3DFACE data if any triangles were found
+    if (surfaceTriangles.length > 0) {
+        var surfaceName = "DXF_Surface_" + Date.now();
+        var surfaceId = getUniqueEntityName(surfaceName, "surface");
+
+        console.log("Creating surface from DXF 3DFACE entities: " + surfaceTriangles.length + " triangles, " + surfacePoints.length + " points");
+
+        // Add to surfaces system (same as point cloud)
+        loadedSurfaces.set(surfaceId, {
+            id: surfaceId,
+            name: surfaceId,
+            points: surfacePoints,
+            triangles: surfaceTriangles,
+            visible: true,
+            gradient: "hillshade", // Could be "hillshade" for your lighting effect
+            transparency: 1.0
+        });
+
+        // Update display
+        updateCentroids();
+        drawData(points, selectedHole);
+
+        // CRITICAL: Save to database using async pattern like point cloud loader
+        setTimeout(async () => {
+            try {
+                await saveSurfaceToDB(surfaceId);
+                console.log("✅ DXF surface saved to database: " + surfaceId);
+                debouncedUpdateTreeView();
+            } catch (saveError) {
+                console.error("❌ Failed to save DXF surface:", saveError);
+            }
+        }, 100);
+    }
 
     console.log("Appended to KAD maps:", { drawings: allKADDrawingsMap });
     // Trigger a debounced save to persist the newly loaded data
     debouncedSaveKAD();
     // Frame the newly loaded data correctly on the canvas
     zoomToFitAll();
+}
+
+// Helper function to add unique points and return index
+function addUniquePoint(pointsArray, newPoint) {
+    var tolerance = 0.001; // Tolerance for coordinate comparison
+
+    for (var i = 0; i < pointsArray.length; i++) {
+        var existingPoint = pointsArray[i];
+        if (Math.abs(existingPoint.x - newPoint.x) < tolerance && Math.abs(existingPoint.y - newPoint.y) < tolerance && Math.abs(existingPoint.z - newPoint.z) < tolerance) {
+            return i; // Return existing point index
+        }
+    }
+
+    // Point doesn't exist, add it
+    pointsArray.push(newPoint);
+    return pointsArray.length - 1; // Return new point index
 }
 
 function handleGeotiffUpload(event) {
@@ -15633,22 +15710,33 @@ function checkAndPromptForStoredData() {
         return;
     }
 
-    const transaction = db.transaction([STORE_NAME], "readonly");
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.get("kadDrawingData");
+    // Check for KAD drawings
+    const kadTransaction = db.transaction([STORE_NAME], "readonly");
+    const kadStore = kadTransaction.objectStore(STORE_NAME);
+    const kadRequest = kadStore.get("kadDrawingData");
 
-    request.onsuccess = (event) => {
+    kadRequest.onsuccess = (event) => {
         const kadData = event.target.result;
-        // FIX: Check for kadData.data instead of kadData.length
-        if (pointsData || (kadData && kadData.data && kadData.data.length > 0)) {
-            showPopup(true); // Pass flag indicating DB is available
-            debouncedUpdateTreeView();
-        }
+
+        // ALSO check for surfaces
+        const surfaceTransaction = db.transaction([SURFACE_STORE_NAME], "readonly");
+        const surfaceStore = surfaceTransaction.objectStore(SURFACE_STORE_NAME);
+        const surfaceRequest = surfaceStore.getAll();
+
+        surfaceRequest.onsuccess = (surfaceEvent) => {
+            const surfaceData = surfaceEvent.target.result || [];
+
+            // Show popup if ANY data exists: points, drawings, OR surfaces
+            if (pointsData || (kadData && kadData.data && kadData.data.length > 0) || surfaceData.length > 0) {
+                showPopup(true);
+                debouncedUpdateTreeView();
+            }
+        };
     };
 
-    request.onerror = (event) => {
+    kadRequest.onerror = (event) => {
         console.error("Could not check for KAD data in IndexedDB.", event.target.error);
-        if (pointsData) showPopup(false); // Fallback to just loading points
+        if (pointsData) showPopup(false);
     };
 }
 async function showPopup(isDBReady) {
@@ -17896,6 +17984,7 @@ function showSurfaceContextMenu(x, y, surfaceId = null) {
     gradientSubmenu.style.display = "none";
     const gradients = [
         { name: "Default", value: "default" },
+        { name: "Hillshade 🌤️", value: "hillshade" },
         { name: "Viridis 🌈", value: "viridis" },
         { name: "Turbo 🔥", value: "turbo" },
         { name: "Parula 🔵", value: "parula" },
@@ -23314,6 +23403,10 @@ function elevationToColor(z, minZ, maxZ, gradient = "default") {
 
     // Apply selected gradient (now surface-specific)
     switch (gradient) {
+        case "hillshade":
+            // For hillshade, we'll handle coloring in drawTriangleWithGradient
+            // This is just a fallback
+            return "rgb(127, 127, 127)";
         case "viridis":
             return getViridisColor(ratio);
         case "turbo":
@@ -23338,8 +23431,76 @@ function elevationToColor(z, minZ, maxZ, gradient = "default") {
     }
 }
 
+// Add new hillshading functions
+function getTriangleAspect(triangle) {
+    const [p1, p2, p3] = triangle.vertices;
+
+    // Calculate two edge vectors
+    const v1X = p2.x - p1.x;
+    const v1Y = p2.y - p1.y;
+    const v1Z = p2.z - p1.z;
+
+    const v2X = p3.x - p1.x;
+    const v2Y = p3.y - p1.y;
+    const v2Z = p3.z - p1.z;
+
+    // Cross product to get surface normal
+    const normalX = v1Y * v2Z - v1Z * v2Y;
+    const normalY = v1Z * v2X - v1X * v2Z;
+    const normalZ = v1X * v2Y - v1Y * v2X;
+
+    // Handle flat triangles
+    const horizontalMagnitude = Math.sqrt(normalX * normalX + normalY * normalY);
+    if (horizontalMagnitude < 1e-6) {
+        return { aspect: 0, slope: 0, isFlat: true };
+    }
+
+    // Calculate aspect (direction the slope faces)
+    // 0° = North, 90° = East, 180° = South, 270° = West
+    const aspect = ((Math.atan2(normalX, normalY) * 180) / Math.PI + 360) % 360;
+
+    // Calculate slope angle (steepness)
+    const totalMagnitude = Math.sqrt(normalX * normalX + normalY * normalY + normalZ * normalZ);
+    const slope = (Math.acos(Math.abs(normalZ) / totalMagnitude) * 180) / Math.PI;
+
+    return { aspect, slope, isFlat: false };
+}
+function calculateHillshade(aspect, slope, lightBearing = 0, lightElevation = 45) {
+    // Convert to radians
+    const aspectRad = (aspect * Math.PI) / 180;
+    const slopeRad = (slope * Math.PI) / 180;
+    const lightBearingRad = (lightBearing * Math.PI) / 180;
+    const lightElevationRad = (lightElevation * Math.PI) / 180;
+
+    // Calculate illumination using standard hillshade formula
+    const illumination = Math.sin(lightElevationRad) * Math.sin(slopeRad) + Math.cos(lightElevationRad) * Math.cos(slopeRad) * Math.cos(lightBearingRad - aspectRad);
+
+    // Normalize to 0-1 range
+    return Math.max(0, Math.min(1, illumination));
+}
+function getHillshadeColor(aspect, slope, isFlat = false) {
+    if (isFlat) {
+        // Flat triangles = 50% grey
+        return "rgb(127, 127, 127)";
+    }
+
+    // Calculate illumination with light source from North (bearing 0°)
+    const illumination = calculateHillshade(aspect, slope, 0, 45);
+
+    // Your proposed color scheme:
+    // 30% grey (dark) to 70% grey (light)
+    const minGrey = 30; // 30% grey = rgb(76, 76, 76)
+    const maxGrey = 70; // 70% grey = rgb(178, 178, 178)
+
+    // Map illumination (0-1) to your grey range
+    const greyPercent = minGrey + (maxGrey - minGrey) * illumination;
+    const greyValue = Math.round((greyPercent * 255) / 100);
+
+    return "rgb(" + greyValue + ", " + greyValue + ", " + greyValue + ")";
+}
+
 // Updated drawTriangleWithGradient function to accept surface-specific gradient
-function drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, targetCtx = ctx, alpha = 1.0, gradient = "default") {
+function drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, targetCtx = ctx, alpha = 1.0, gradient = "hillshade") {
     const showWireFrame = false;
     const [p1, p2, p3] = triangle.vertices;
 
@@ -23369,14 +23530,35 @@ function drawTriangleWithGradient(triangle, surfaceMinZ, surfaceMaxZ, targetCtx 
         targetCtx.fill();
 
         if (showWireFrame) {
-            targetCtx.strokeStyle = "rgba(0, 0, 0, 0.05)";
-            targetCtx.lineWidth = 0.1;
+            targetCtx.strokeStyle = "rgba(0, 0, 0, 0.16)";
+            targetCtx.lineWidth = 0.051;
             targetCtx.stroke();
         }
         targetCtx.restore();
         return;
     }
+    // Handle hillshade gradient specially
+    if (gradient === "hillshade") {
+        const { aspect, slope, isFlat } = getTriangleAspect(triangle);
+        const hillshadeColor = getHillshadeColor(aspect, slope, isFlat);
 
+        targetCtx.beginPath();
+        targetCtx.moveTo(x1, y1);
+        targetCtx.lineTo(x2, y2);
+        targetCtx.lineTo(x3, y3);
+        targetCtx.closePath();
+        targetCtx.fillStyle = hillshadeColor;
+        targetCtx.fill();
+
+        if (showWireFrame) {
+            targetCtx.strokeStyle = "rgba(0, 0, 0, 0.16)";
+            targetCtx.lineWidth = 0.05;
+            targetCtx.stroke();
+        }
+
+        targetCtx.restore();
+        return;
+    }
     // Check if THIS surface is flat (using surface-specific min/max)
     if (surfaceMaxZ - surfaceMinZ < 0.001) {
         // Flat surface - use solid orange color
