@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250716.1100AWSTAWST"
-const buildVersion = "20250716.1100AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250717.2040AWSTAWST"
+const buildVersion = "20250717.2040AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,13 +54,16 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
+					<br><label class="labelWhite12c">✅ Selection and manipulation disabled on hidden entities       </label>
+					<br><label class="labelWhite12c">✅ Children Nodes inherit group node visibility                 </label>
+					<br><label class="labelWhite12c">✅ Export and Save only includes Visible holes all Entities     </label>
 					<br><label class="labelWhite12c">✅ Row and Position for holes added assists renaming            </label>
 					<br><label class="labelWhite12c">✅ Row detection for imported holes without row ids             </label>
 					<br><label class="labelWhite12c">✅ Holes along Lines/Polylines uses more reliable selection     </label>
 					<br><label class="labelWhite12c">✅ Implemented Show/Hide for Blasts, Blast holes, KAD Drawings  </label>
 					<br><label class="labelWhite12c">✅ Clear Database correctly and reordered the Popups            </label>
 					<br><label class="labelWhite12c">✅ Increased Colour Swatches in the jsColor picker              </label>
-					<br><label class="labelWhite12c">⭐ ⭐ May, June and July 2025 ⭐ ⭐                              </label>
+					<br><label class="labelWhite12c">⭐ ⭐ May, June and July 2025 ⭐ ⭐                             </label>
 					<br><label class="labelWhite12c">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
 					<br><label class="labelWhite12c">✅ Added a radii warning dialog                                 </label>
 					<br><label class="labelWhite12c">✅ Move and Z Leveling for KAD Drawings in Edit Popup           </label>
@@ -2859,8 +2862,19 @@ document.getElementById("saveMeasures").addEventListener("click", function () {
         document.body.removeChild(link);
     }
 });
+// Update the event listener to filter visible holes first
 document.getElementById("exportHolesDXF").addEventListener("click", function () {
-    const dxf = exportHolesDXF(points);
+    // ✅ Filter points to only include visible holes
+    const visiblePoints = points.filter((hole) => isHoleVisible(hole));
+
+    if (visiblePoints.length === 0) {
+        alert("No visible holes to export.");
+        return;
+    }
+
+    console.log(`Exporting ${visiblePoints.length} visible holes out of ${points.length} total holes`);
+
+    const dxf = exportHolesDXF(visiblePoints);
     const filename = "KIRRA_HOLES_DXF_" + new Date().toISOString().slice(0, 19).replace(/[-:]/g, "").replace("T", "_") + ".dxf";
     downloadDXF(dxf, filename);
 });
@@ -5016,6 +5030,11 @@ function exportKADFile() {
     try {
         // Directly iterate through the allKADDrawingsMap
         for (const [entityName, entityData] of allKADDrawingsMap.entries()) {
+            // ✅ ONLY ADD THIS LINE - check visibility using your existing function
+            if (!isEntityVisible(entityName)) {
+                console.log("Skipping hidden entity:", entityName);
+                continue;
+            }
             // Log each entity we're processing
             console.log(`Processing entity: ${entityName}, type: ${entityData.entityType}`);
 
@@ -5357,7 +5376,25 @@ document.getElementById("createRadiiFromBlastHoles").addEventListener("click", f
         debouncedUpdateTreeView(); // Use debounced version
     }
 });
+// Helper function to check if an entity is effectively visible (including parent groups)
+function isEntityEffectivelyVisible(entityName, entityType, entityVisible = true) {
+    // Check blast holes
+    if (entityType === "hole") {
+        return blastGroupVisible && entityVisible !== false;
+    }
 
+    // Check drawings
+    if (!drawingsGroupVisible) return false;
+
+    // Check specific drawing type groups
+    if (entityType === "points") return pointsGroupVisible && entityVisible !== false;
+    if (entityType === "lines") return linesGroupVisible && entityVisible !== false;
+    if (entityType === "polygons") return polygonsGroupVisible && entityVisible !== false;
+    if (entityType === "circles") return circlesGroupVisible && entityVisible !== false;
+    if (entityType === "texts") return textsGroupVisible && entityVisible !== false;
+
+    return entityVisible !== false;
+}
 // Helper function to process radii polygons
 function processRadiiPolygons(targetHoles, steps, radius, union, addToMaps, color, lineWidth, datasetDescription) {
     try {
@@ -5464,10 +5501,21 @@ function exportKADDXF() {
 
     for (const map of allMaps) {
         for (const [entityName, entityData] of map.entries()) {
+            // ✅ ADD: Check if entity is visible using existing visibility function
+            if (!isEntityVisible(entityName)) {
+                console.log("Skipping hidden entity for DXF export:", entityName);
+                continue;
+            }
+
             const type = entityData.entityType.trim();
             const data = entityData.data;
 
             data.forEach((item, index) => {
+                // ✅ ADD: Check individual element visibility
+                if (item.visible === false) {
+                    return; // Skip hidden elements
+                }
+
                 //get the first color of the first point in the item
                 let color = 1;
                 color = typeof item.color === "string" ? getColorInteger(item.color) : 1; // default to red if no color is provided
@@ -5478,6 +5526,10 @@ function exportKADDXF() {
                 } else if (type === "line") {
                     if (index < data.length - 1) {
                         const next = data[index + 1];
+                        // ✅ ADD: Check if next element is also visible
+                        if (next.visible === false) {
+                            return; // Skip if next point is hidden
+                        }
                         dxf += "0\nLINE\n8\n" + entityName + "\n";
                         dxf += "10\n" + item.pointXLocation + "\n20\n" + item.pointYLocation + "\n30\n" + item.pointZLocation + "\n";
                         dxf += "11\n" + next.pointXLocation + "\n21\n" + next.pointYLocation + "\n31\n" + next.pointZLocation + "\n";
@@ -5485,13 +5537,17 @@ function exportKADDXF() {
                     }
                 } else if (type === "poly") {
                     if (index === 0 && data.length > 1) {
-                        dxf += "0\nPOLYLINE\n8\n" + entityName + "\n66\n1\n70\n1\n";
-                        dxf += "62\n" + color + "\n";
-                        data.forEach((pt) => {
-                            dxf += "0\nVERTEX\n8\n" + entityName + "\n";
-                            dxf += "10\n" + pt.pointXLocation + "\n20\n" + pt.pointYLocation + "\n30\n" + pt.pointZLocation + "\n";
-                        });
-                        dxf += "0\nSEQEND\n8\n" + entityName + "\n";
+                        // ✅ ADD: Filter visible points for polyline
+                        const visiblePoints = data.filter((pt) => pt.visible !== false);
+                        if (visiblePoints.length > 1) {
+                            dxf += "0\nPOLYLINE\n8\n" + entityName + "\n66\n1\n70\n1\n";
+                            dxf += "62\n" + color + "\n";
+                            visiblePoints.forEach((pt) => {
+                                dxf += "0\nVERTEX\n8\n" + entityName + "\n";
+                                dxf += "10\n" + pt.pointXLocation + "\n20\n" + pt.pointYLocation + "\n30\n" + pt.pointZLocation + "\n";
+                            });
+                            dxf += "0\nSEQEND\n8\n" + entityName + "\n";
+                        }
                     }
                 } else if (type === "circle") {
                     dxf += "0\nCIRCLE\n8\n" + entityName + "\n";
@@ -5515,50 +5571,86 @@ function exportKADDXF() {
 }
 
 /**
- * Exports an array of hole objects as a DXF file, drawing a collar circle, track line, and point for each hole.
+ * Exports visible holes as a structured DXF file with proper layer organization
  *
- * For each point in the input array:
- * - Draws a circle at the start coordinates (if holeDiameter is provided and > 0) on the "Collar" layer named after the point's holeID.
- * - Draws a line from the start to end coordinates on the "Track" layer named after the point's holeID.
- * - Draws text at the start coordinates on a layer named after the point's holeID
- *
- * The resulting DXF content is offered as a file download in the browser.
- *
- * @param {Array<Object>} points - Array of hole objects to export. Each object should have the following properties:
- *   @param {number} points[].startXLocation - X coordinate of the hole start.
- *   @param {number} points[].startYLocation - Y coordinate of the hole start.
- *   @param {number} points[].startZLocation - Z coordinate of the hole start.
- *   @param {number} points[].endXLocation - X coordinate of the hole end.
- *   @param {number} points[].endYLocation - Y coordinate of the hole end.
- *   @param {number} points[].endZLocation - Z coordinate of the hole end.
- *   @param {number} [points[].holeDiameter] - Diameter of the collar circle (optional).
- *   @param {string} points[].holeID - Name of the layer for the point entity.
+ * Structure:
+ * - EntityName_HoleID_Collar: Green collar circle
+ * - EntityName_HoleID_Track: Grey hole track line (full length)
+ * - EntityName_HoleID_Grade: Orange grade circle
+ * - EntityName_HoleID_Toe: Red toe circle
+ * - EntityName_HoleID_Text: Grey hole ID text
  */
-function exportHolesDXF(points) {
+function exportHolesDXF(visiblePoints) {
     let dxf = "0\nSECTION\n2\nHEADER\n0\nENDSEC\n";
     dxf += "0\nSECTION\n2\nTABLES\n0\nENDSEC\n";
     dxf += "0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n";
     dxf += "0\nSECTION\n2\nENTITIES\n";
 
-    points.forEach((point) => {
-        const layerName = point.holeID;
+    visiblePoints.forEach((hole) => {
+        const entityName = hole.entityName || "Unknown";
+        const holeID = hole.holeID || "Unknown";
+        const baseLayerName = entityName + "_" + holeID;
 
-        if (point.holeDiameter && point.holeDiameter > 0) {
-            const radius = point.holeDiameter / 1000 / 2;
-            dxf += "0\nCIRCLE\n8\n" + layerName + "\n";
-            dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
-            dxf += "40\n" + radius + "\n";
+        // Calculate hole geometry
+        const startX = hole.startXLocation || 0;
+        const startY = hole.startYLocation || 0;
+        const startZ = hole.startZLocation || 0;
+
+        // Calculate end point based on hole parameters
+        const length = hole.holeLengthCalculated || 0;
+        const angle = (hole.holeAngle || 0) * (Math.PI / 180); // Convert to radians
+        const bearing = (hole.holeBearing || 0) * (Math.PI / 180); // Convert to radians
+        const subdrill = hole.subdrillAmount || 0;
+
+        // Calculate actual hole end (planned end without subdrill)
+        const plannedLength = length - subdrill;
+        const endX = startX + plannedLength * Math.sin(bearing) * Math.sin(angle);
+        const endY = startY + plannedLength * Math.cos(bearing) * Math.sin(angle);
+        const endZ = startZ - plannedLength * Math.cos(angle);
+
+        // Calculate toe point (actual end with subdrill)
+        const toeX = startX + length * Math.sin(bearing) * Math.sin(angle);
+        const toeY = startY + length * Math.cos(bearing) * Math.sin(angle);
+        const toeZ = startZ - length * Math.cos(angle);
+
+        // Circle sizes
+        const collarRadius = hole.holeDiameter ? hole.holeDiameter / 1000 / 2 : 0.1; // Convert mm to meters or default 0.1m
+        const gradeRadius = 0.08; // 8cm radius for grade circle
+        const toeRadius = 0.06; // 6cm radius for toe circle
+
+        // 1. COLLAR CIRCLE (Green)
+        dxf += "0\nCIRCLE\n8\n" + baseLayerName + "_Collar\n";
+        dxf += "10\n" + startX + "\n20\n" + startY + "\n30\n" + startZ + "\n";
+        dxf += "40\n" + collarRadius + "\n";
+        dxf += "420\n65280\n"; // Green (0,255,0)
+
+        // 2. HOLE TRACK LINE (Grey - full length from collar to toe)
+        dxf += "0\nLINE\n8\n" + baseLayerName + "_Track\n";
+        dxf += "10\n" + startX + "\n20\n" + startY + "\n30\n" + startZ + "\n"; // Start (collar)
+        dxf += "11\n" + toeX + "\n21\n" + toeY + "\n31\n" + toeZ + "\n"; // End (toe)
+        dxf += "420\n9868950\n"; // Grey (150,150,150)
+
+        // 3. GRADE CIRCLE (Orange - end of planned hole)
+        if (plannedLength > 0) {
+            dxf += "0\nCIRCLE\n8\n" + baseLayerName + "_Grade\n";
+            dxf += "10\n" + endX + "\n20\n" + endY + "\n30\n" + endZ + "\n";
+            dxf += "40\n" + gradeRadius + "\n";
+            dxf += "420\n16753920\n"; // Orange (255,165,0)
         }
 
-        dxf += "0\nLINE\n8\n" + layerName + "\n";
-        dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
-        dxf += "11\n" + point.endXLocation + "\n21\n" + point.endYLocation + "\n31\n" + point.endZLocation + "\n";
+        // 4. TOE CIRCLE (Red)
+        dxf += "0\nCIRCLE\n8\n" + baseLayerName + "_Toe\n";
+        dxf += "10\n" + toeX + "\n20\n" + toeY + "\n30\n" + toeZ + "\n";
+        dxf += "40\n" + toeRadius + "\n";
+        dxf += "420\n16711680\n"; // Red (255,0,0)
 
-        dxf += "0\nTEXT\n8\n" + layerName + "\n";
-        dxf += "10\n" + point.startXLocation + "\n20\n" + point.startYLocation + "\n30\n" + point.startZLocation + "\n";
+        // 5. HOLE ID TEXT (Grey)
+        dxf += "0\nTEXT\n8\n" + baseLayerName + "_Text\n";
+        dxf += "10\n" + startX + "\n20\n" + startY + "\n30\n" + startZ + "\n";
         dxf += "40\n0.5\n"; // Text height (0.5m)
         dxf += "50\n0.0\n"; // Text rotation (0°)
-        dxf += "1\n" + point.holeID + "\n";
+        dxf += "1\n" + holeID + "\n";
+        dxf += "420\n9868950\n"; // Grey (150,150,150)
     });
 
     dxf += "0\nENDSEC\n0\nEOF\n";
@@ -5566,53 +5658,44 @@ function exportHolesDXF(points) {
 }
 
 function convertPointsTo14ColumnCSV() {
+    // ✅ Filter to only visible holes
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
     let csv = "";
-
-    // Add the CSV header if needed
-    //const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
-    //csv += header + "\n";
-
-    // Iterate over the points array and convert each object to a CSV row
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
+    // Iterate over the visible points array
+    for (let i = 0; i < visiblePoints.length; i++) {
+        const point = visiblePoints[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal}`;
         csv += row + "\n";
     }
-
     return csv;
 }
 
 function convertPointsTo12ColumnCSV() {
+    // ✅ Filter to only visible holes
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
     let csv = "";
-
-    // Add the CSV header if needed
-    //const header = "holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,holeDiameter, holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing";
-    //csv += header + "\n";
-
-    // Iterate over the points array and convert each object to a CSV row
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
-        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal}`; //,${point.holeLengthCalculated},${point.holeAngle},${point.holeBearing}`;
+    for (let i = 0; i < visiblePoints.length; i++) {
+        const point = visiblePoints[i];
+        const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation},${point.startYLocation},${point.startZLocation},${point.endXLocation},${point.endYLocation},${point.endZLocation},${point.holeDiameter},${point.holeType},${point.fromHoleID},${point.timingDelayMilliseconds},${point.colorHexDecimal}`;
         csv += row + "\n";
     }
-
     return csv;
 }
 
 function convertPointsToAllDataCSV() {
+    // ✅ Filter to only visible holes
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
     let csv = "";
-    /* STRUCTURE OF THE POINTS ARRAY
-        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29
-        entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID
-    */
-    // Add the CSV header if needed
     const header =
         "entityName,entityType,holeID,startXLocation,startYLocation,startZLocation,endXLocation,endYLocation,endZLocation,gradeXLocation, gradeYLocation, gradeZLocation, subdrillAmount, subdrillLength, benchHeight, holeDiameter,holeType,fromHoleID,timingDelayMilliseconds,colorHexDecimal,holeLengthCalculated,holeAngle,holeBearing,initiationTime,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp, rowID, posID";
     csv += header + "\n";
     const decimalPlaces = 4;
-    // Iterate over the points array and convert each object to a CSV row
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
+
+    for (let i = 0; i < visiblePoints.length; i++) {
+        const point = visiblePoints[i];
         const row = `${point.entityName},${point.entityType},${point.holeID},${point.startXLocation.toFixed(decimalPlaces)},${point.startYLocation.toFixed(decimalPlaces)},${point.startZLocation},${point.endXLocation.toFixed(decimalPlaces)},${point.endYLocation.toFixed(decimalPlaces)},${point.endZLocation.toFixed(
             decimalPlaces
         )},${point.gradeXLocation.toFixed(decimalPlaces)},${point.gradeYLocation.toFixed(decimalPlaces)},${point.gradeZLocation.toFixed(decimalPlaces)},${point.subdrillAmount.toFixed(decimalPlaces)},${point.subdrillLength.toFixed(decimalPlaces)},${point.benchHeight.toFixed(decimalPlaces)},${point.holeDiameter.toFixed(decimalPlaces)},${
@@ -5622,31 +5705,32 @@ function convertPointsToAllDataCSV() {
         },${point.measuredMass.toFixed(decimalPlaces)},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp},${point.rowID},${point.posID}`;
         csv += row + "\n";
     }
-
     return csv;
 }
-//Exports the measured values to a CSV file
+
 function convertPointsToActualDataCSV() {
-    if (!points || !Array.isArray(points) || points.length === 0) return;
+    // ✅ Filter to only visible holes
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
+    if (!visiblePoints || !Array.isArray(visiblePoints) || visiblePoints.length === 0) return;
 
     let csv = "";
-
-    // Add the CSV header if needed
     const header = "entityName,entityType,holeID,measuredLength,measuredLengthTimeStamp,measuredMass,measuredMassTimeStamp,measuredComment,measuredCommentTimeStamp";
     csv += header + "\n";
 
-    // Iterate over the points array and convert each object to a CSV row
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
+    for (let i = 0; i < visiblePoints.length; i++) {
+        const point = visiblePoints[i];
         const row = `${point.entityName},${point.entityType},${point.holeID},${point.measuredLength},${point.measuredLengthTimeStamp},${point.measuredMass},${point.measuredMassTimeStamp},${point.measuredComment},${point.measuredCommentTimeStamp}`;
         csv += row + "\n";
     }
-
     return csv;
 }
 
 function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, materialType, instructionValue, useHoleTypeAsInstruction, writeIngoreColumn, columnOrderArray) {
-    if (!points || !Array.isArray(points) || points.length === 0) return;
+    // ✅ Filter input points to only visible ones
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
+    if (!visiblePoints || !Array.isArray(visiblePoints) || visiblePoints.length === 0) return;
 
     let aqm = "";
     let material = materialType;
@@ -5657,8 +5741,8 @@ function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, ma
     let columns = columnOrderArray; // 11 possible columns
 
     // Iterate over the points array and convert each object to an AQM row
-    for (let i = 0; i < points.length; i++) {
-        const point = points[i];
+    for (let i = 0; i < visiblePoints.length; i++) {
+        const point = visiblePoints[i];
 
         let columnOrder = []; // Initialize the column order for each row
 
@@ -5732,7 +5816,16 @@ function convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, ma
  * @returns {void}
  */
 function saveIREDESPopup() {
-    let blastName = points[0].entityName;
+    // ✅ Filter points first
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+
+    if (visiblePoints.length === 0) {
+        Swal.fire("No Visible Holes", "There are no visible holes to export.", "warning");
+        return;
+    }
+
+    let blastName = visiblePoints[0].entityName;
+
     //console.log("Points" + points);
     console.log("blastName: " + blastName);
     Swal.fire({
@@ -5836,7 +5929,7 @@ function saveIREDESPopup() {
             }
 
             // Generate the XML content using the convertPointsToIREDESXML function
-            const xmlContent = convertPointsToIREDESXML(points, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
+            const xmlContent = convertPointsToIREDESXML(visiblePoints, fileNameValue, planIDValue, siteIDValue, holeOptionsValue, mwdValue, chksumValue);
 
             if (isIOS()) {
                 // Create a Blob with the XML data
@@ -8660,6 +8753,8 @@ function getClickedHole(clickX, clickY) {
 
     for (let i = 0; i < points.length; i++) {
         let point = points[i];
+        // ✅ CHECK VISIBILITY FIRST - Skip hidden holes
+        if (!isHoleVisible(point)) continue;
         let holeX = point.startXLocation;
         let holeY = point.startYLocation;
         let currentEntity = point.entity;
@@ -10611,8 +10706,14 @@ async function addKADText() {
 //Ignore, Angle, Azimuth, Instruction, Diameter, Material Type, Name, Blast, Pattern, Easting, Northing, Elevation
 //Eleven Possible columns
 function saveAQMPopup() {
+    // ✅ Filter points first
+    const visiblePoints = points.filter((point) => blastGroupVisible && point.visible !== false);
+    if (visiblePoints.length === 0) {
+        Swal.fire("No Visible Holes", "There are no visible holes to export.", "warning");
+        return;
+    }
     const savedAQMPopupSettings = JSON.parse(localStorage.getItem("savedAQMPopupSettings")) || {};
-    let blastNameFromPoints = points[0].entityName;
+    let blastNameFromPoints = visiblePoints[0].entityName;
     console.log("blastName: " + blastNameFromPoints);
     Swal.fire({
         title: "Export AQM file?",
@@ -14935,12 +15036,102 @@ function toggleSurfaceVisibility(surfaceId) {
     }
 }
 
+// ✅ Function to remove hidden entities from current selections
+function clearHiddenFromSelections() {
+    // Clear hidden holes from single selection
+    if (selectedHole && !isHoleVisible(selectedHole)) {
+        selectedHole = null;
+    }
+
+    // Clear hidden holes from multiple selection
+    if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+        selectedMultipleHoles = selectedMultipleHoles.filter((hole) => isHoleVisible(hole));
+        if (selectedMultipleHoles.length === 0) {
+            selectedMultipleHoles = [];
+        }
+    }
+
+    // Clear hidden KAD objects from selection
+    if (selectedKADObject && !isEntityVisible(selectedKADObject.entityName)) {
+        selectedKADObject = null;
+    }
+
+    // Clear hidden polygons from selection
+    if (selectedKADPolygon && !isEntityVisible(selectedKADPolygon.entityName)) {
+        selectedKADPolygon = null;
+    }
+
+    // Clear from fromHoleStore if hidden
+    if (fromHoleStore && !isHoleVisible(fromHoleStore)) {
+        fromHoleStore = null;
+    }
+
+    // Clear move tool selections
+    if (moveToolSelectedHole && moveToolSelectedHole.length > 0) {
+        moveToolSelectedHole = moveToolSelectedHole.filter((hole) => isHoleVisible(hole));
+        if (moveToolSelectedHole.length === 0) {
+            moveToolSelectedHole = null;
+            isDraggingHole = false;
+        }
+    }
+}
+
+// ✅ Helper function to check if an entity/element is visible
+function isEntityVisible(entityName, elementId = null) {
+    // Check overall group visibility first
+    if (!drawingsGroupVisible) return false;
+
+    const entity = allKADDrawingsMap.get(entityName);
+    if (!entity) return false;
+
+    // Check entity-level visibility
+    if (entity.visible === false) return false;
+
+    // Check sub-group visibility based on entity type
+    switch (entity.entityType) {
+        case "point":
+            if (!pointsGroupVisible) return false;
+            break;
+        case "line":
+            if (!linesGroupVisible) return false;
+            break;
+        case "poly":
+            if (!polygonsGroupVisible) return false;
+            break;
+        case "circle":
+            if (!circlesGroupVisible) return false;
+            break;
+        case "text":
+            if (!textsGroupVisible) return false;
+            break;
+    }
+
+    // Check element-level visibility if specified
+    if (elementId !== null && entity.data) {
+        const element = entity.data.find((el) => el.pointID == elementId);
+        if (element && element.visible === false) return false;
+    }
+
+    return true;
+}
+
+// ✅ Helper function to check if a hole is visible
+function isHoleVisible(hole) {
+    if (!blastGroupVisible) return false;
+    if (hole.visible === false) return false;
+    return true;
+}
+
 //=== KAD Drawing Visibility Management ===
 function setKADEntityVisibility(entityName, visible) {
     const entity = allKADDrawingsMap.get(entityName);
     if (entity) {
         entity.visible = visible;
         console.log("👁️ KAD Entity " + entityName + " visibility: " + visible);
+
+        // ✅ Clear hidden entities from selections
+        clearHiddenFromSelections();
+
         drawData(points, selectedHole);
     }
 }
@@ -14952,6 +15143,9 @@ function setKADElementVisibility(entityName, pointID, visible) {
         if (element) {
             element.visible = visible;
             console.log("👁️ KAD Element " + entityName + ":" + pointID + " visibility: " + visible);
+
+            // ✅ Clear hidden entities from selections
+            clearHiddenFromSelections();
             drawData(points, selectedHole);
         }
     }
@@ -14971,6 +15165,9 @@ function setHoleVisibility(holeID, visible) {
     if (hole) {
         hole.visible = visible;
         console.log("👁️ Hole " + holeID + " visibility: " + visible);
+
+        // ✅ Clear hidden entities from selections
+        clearHiddenFromSelections();
         drawData(points, selectedHole);
     }
 }
@@ -14981,6 +15178,9 @@ function setEntityVisibility(entityName, visible) {
         hole.visible = visible;
     });
     console.log("👁️ Entity " + entityName + " visibility: " + visible + " (affecting " + entityHoles.length + " holes)");
+
+    // ✅ Clear hidden entities from selections
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
 }
 
@@ -14992,59 +15192,77 @@ function toggleHoleVisibility(holeID) {
     }
 }
 //=== Group Visibility Management ===
+// ✅ ADD: Update all group visibility functions to call updateTreeViewVisibilityStates()
 function setBlastGroupVisibility(visible) {
     blastGroupVisible = visible;
     console.log("👁️ Blast Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setDrawingsGroupVisibility(visible) {
     drawingsGroupVisible = visible;
     console.log("👁️ Drawings Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setSurfacesGroupVisibility(visible) {
     surfacesGroupVisible = visible;
     console.log("👁️ Surfaces Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setImagesGroupVisibility(visible) {
     imagesGroupVisible = visible;
     console.log("👁️ Images Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
-// Drawing sub-group visibility
 function setPointsGroupVisibility(visible) {
     pointsGroupVisible = visible;
     console.log("👁️ Points Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setLinesGroupVisibility(visible) {
     linesGroupVisible = visible;
     console.log("👁️ Lines Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setPolygonsGroupVisibility(visible) {
     polygonsGroupVisible = visible;
     console.log("👁️ Polygons Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setCirclesGroupVisibility(visible) {
     circlesGroupVisible = visible;
     console.log("👁️ Circles Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 function setTextsGroupVisibility(visible) {
     textsGroupVisible = visible;
     console.log("👁️ Texts Group visibility: " + visible);
+    clearHiddenFromSelections();
     drawData(points, selectedHole);
+    updateTreeViewVisibilityStates(); // ✅ ADD: Update tree visual states
 }
 
 // Delete surface from IndexedDB
@@ -16203,20 +16421,43 @@ moveToTool.addEventListener("change", function () {
         canvas.addEventListener("touchstart", handleTouchStart);
         canvas.addEventListener("touchend", handleTouchEnd);
 
-        // ** IMPORTANT - NEVER remove the mouseListeners
-        // canvas.removeEventListener("mousemove", handleMouseMove);
-        // canvas.removeEventListener("touchstart", handleTouchStart);
-        // canvas.addEventListener("mousemove", handleMouseMove);
-        // canvas.addEventListener("touchmove", handleTouchMove);
+        // ** IMPORTANT - NEVER remove the mouseListeners} else {
+        resetFloatingToolbarButtons("none");
+
+        // Remove move tool listeners
+        canvas.removeEventListener("mousedown", handleMoveToolMouseDown);
+        canvas.removeEventListener("touchstart", handleMoveToolMouseDown);
+        canvas.removeEventListener("mousemove", handleMoveToolMouseMove);
+        canvas.removeEventListener("touchmove", handleMoveToolMouseMove);
+        canvas.removeEventListener("mouseup", handleMoveToolMouseUp);
+        canvas.removeEventListener("touchend", handleMoveToolMouseUp);
+
+        // ✅ ADD: Clear move tool state
+        isMoveToolActive = false;
+        isDraggingHole = false;
+        moveToolSelectedHole = null;
+
+        // Remove the default canvas handlers to avoid conflicts
+        canvas.removeEventListener("mousedown", handleMouseDown);
+        canvas.removeEventListener("mouseup", handleMouseUp);
+        canvas.removeEventListener("touchstart", handleTouchStart);
+        canvas.removeEventListener("touchend", handleTouchEnd);
+
+        // Restore default canvas handlers so the tool works properly
+        canvas.addEventListener("mousedown", handleMouseDown);
+        canvas.addEventListener("mouseup", handleMouseUp);
+        canvas.addEventListener("touchstart", handleTouchStart);
+        canvas.addEventListener("touchend", handleTouchEnd);
 
         updateStatusMessage("");
-        // Restore selection tool listeners if they were active
-        if (previousToolState.isSelectionPointerActive) {
+
+        // ✅ ADD: Restore selection tool listeners if they were active
+        if (previousToolState && previousToolState.isSelectionPointerActive) {
             isSelectionPointerActive = true;
             canvas.addEventListener("click", handleSelection);
             canvas.addEventListener("touchstart", handleSelection);
         }
-        if (previousToolState.isPolygonSelectionActive) {
+        if (previousToolState && previousToolState.isPolygonSelectionActive) {
             isPolygonSelectionActive = true;
             canvas.addEventListener("click", selectInsidePolygon);
             canvas.addEventListener("touchstart", selectInsidePolygonTouch);
@@ -16231,9 +16472,10 @@ moveToTool.addEventListener("change", function () {
             canvas.addEventListener("click", handleRulerProtractorClick);
         }
 
-        // Restore previous tool state
-        isMultiHoleSelectionEnabled = previousToolState.selectionMode;
-
+        // ✅ ADD: Restore previous tool state
+        if (previousToolState) {
+            isMultiHoleSelectionEnabled = previousToolState.selectionMode;
+        }
         drawData(points, selectedHole);
     }
 });
@@ -16404,6 +16646,13 @@ bearingTool.addEventListener("change", function () {
         resetFloatingToolbarButtons("bearingTool");
         removeAllCanvasListenersKeepDefault();
 
+        // ✅ ADD: Store current state to restore later (was missing!)
+        previousToolState = {
+            isSelectionPointerActive: isSelectionPointerActive,
+            isPolygonSelectionActive: isPolygonSelectionActive,
+            selectionMode: isMultiHoleSelectionEnabled
+        };
+
         // Disable other tools
         isSelectionPointerActive = false;
         isPolygonSelectionActive = false;
@@ -16422,14 +16671,11 @@ bearingTool.addEventListener("change", function () {
         document.addEventListener("keydown", handleBearingToolKeyDown);
         document.addEventListener("keyup", handleBearingToolKeyUp);
     } else {
-        // REPLACE THIS ENTIRE ELSE BLOCK WITH THE NEW CODE:
         resetFloatingToolbarButtons("none");
 
         // Remove bearing tool listeners
         canvas.removeEventListener("mousedown", handleBearingToolMouseDown);
         canvas.removeEventListener("touchstart", handleBearingToolMouseDown);
-        // canvas.removeEventListener("mousemove", handleBearingToolMouseMove);
-        // canvas.removeEventListener("touchmove", handleBearingToolMouseMove);
         canvas.removeEventListener("mouseup", handleBearingToolMouseUp);
         canvas.removeEventListener("touchend", handleBearingToolMouseUp);
 
@@ -16437,21 +16683,54 @@ bearingTool.addEventListener("change", function () {
         document.removeEventListener("keydown", handleBearingToolKeyDown);
         document.removeEventListener("keyup", handleBearingToolKeyUp);
 
-        // Restore default canvas handlers for all tools to work properly
+        // ✅ ADD: Clear bearing tool state
+        isBearingToolActive = false;
+        isDraggingBearing = false;
+        bearingToolSelectedHole = null;
+
+        // ✅ ADD: Clear the focus mode flag
+        isFocusModeActive = false;
+
+        // Remove the default canvas handlers to avoid conflicts
+        canvas.removeEventListener("mousedown", handleMouseDown);
+        canvas.removeEventListener("mouseup", handleMouseUp);
+        canvas.removeEventListener("touchstart", handleTouchStart);
+        canvas.removeEventListener("touchend", handleTouchEnd);
+
+        // Restore default canvas handlers so other tools work properly
         canvas.addEventListener("mousedown", handleMouseDown);
-        // canvas.addEventListener("mousemove", handleMouseMove);
         canvas.addEventListener("mouseup", handleMouseUp);
         canvas.addEventListener("touchstart", handleTouchStart);
-        // canvas.addEventListener("touchmove", handleTouchMove);
         canvas.addEventListener("touchend", handleTouchEnd);
+
+        // ✅ ADD: Restore selection tool listeners if they were active
+        if (previousToolState && previousToolState.isSelectionPointerActive) {
+            isSelectionPointerActive = true;
+            canvas.addEventListener("click", handleSelection);
+            canvas.addEventListener("touchstart", handleSelection);
+        }
+        if (previousToolState && previousToolState.isPolygonSelectionActive) {
+            isPolygonSelectionActive = true;
+            canvas.addEventListener("click", selectInsidePolygon);
+            canvas.addEventListener("touchstart", selectInsidePolygonTouch);
+            canvas.addEventListener("mousemove", handlePolygonMouseMove);
+        }
+
+        // ✅ ADD: Restore previous tool state
+        if (previousToolState) {
+            isMultiHoleSelectionEnabled = previousToolState.selectionMode;
+        }
 
         // Restore ruler protractor click handler if it was active
         if (isRulerProtractorActive) {
             canvas.addEventListener("click", handleRulerProtractorClick);
         }
+        if (isRulerActive) {
+            canvas.addEventListener("click", handleRulerClick);
+        }
 
-        drawData(points, selectedHole);
         updateStatusMessage("");
+        drawData(points, selectedHole);
     }
 });
 
@@ -16844,12 +17123,14 @@ function getClickedKADObject(clickX, clickY) {
     const worldY = -(clickY - canvas.height / 2) / currentScale + centroidY;
 
     if (allKADDrawingsMap && allKADDrawingsMap.size > 0) {
-        const tolerance = 10 / (currentScale / 2);
+        const tolerance = getSnapToleranceInWorldUnits();
         let closestMatch = null;
         let minDistance = tolerance;
 
         // Iterate through all entities
         for (const [entityName, entity] of allKADDrawingsMap.entries()) {
+            // ✅ CHECK VISIBILITY FIRST - Skip hidden entities
+            if (!isEntityVisible(entityName)) continue;
             // For single-point entities (points, circles, text)
             if (entity.entityType === "point" || entity.entityType === "circle" || entity.entityType === "text") {
                 for (let i = 0; i < entity.data.length; i++) {
@@ -20759,6 +21040,9 @@ function getClickedKADEntity(worldX, worldY) {
 
     // Check each line or poly entity
     for (const [name, entity] of allKADDrawingsMap.entries()) {
+        // ✅ CHECK VISIBILITY FIRST - Skip hidden entities
+        if (!isEntityVisible(name)) continue;
+
         const points = entity.data;
         if (points.length < 1) continue;
 
@@ -27942,7 +28226,6 @@ class TreeView {
         }
     }
 
-    // Update TreeView hideSelected() function around line 26970
     hideSelected() {
         this.selectedNodes.forEach((nodeId) => {
             const element = this.container.querySelector('[data-node-id="' + nodeId + '"]');
@@ -27998,6 +28281,8 @@ class TreeView {
         });
 
         this.clearSelection();
+        // ✅ ADD: Update all tree visual states to cascade visibility indicators
+        updateTreeViewVisibilityStates();
     }
 
     showSelected() {
@@ -28055,6 +28340,8 @@ class TreeView {
         });
 
         this.clearSelection();
+        // ✅ ADD: Update all tree visual states to cascade visibility indicators
+        updateTreeViewVisibilityStates();
     }
 
     showProperties() {
@@ -28675,9 +28962,147 @@ function debouncedUpdateTreeView(delay = 100) {
         updateTreeView(); // ✅ Call updateTreeView(), not itself!
     }, delay);
 }
+// ✅ Function to update TreeView visual states based on actual visibility
+function updateTreeViewVisibilityStates() {
+    if (!treeView) return;
+
+    // Update group visibility states
+    const groupNodes = [
+        { nodeId: "blast", visible: blastGroupVisible },
+        { nodeId: "drawings", visible: drawingsGroupVisible },
+        { nodeId: "surfaces", visible: surfacesGroupVisible },
+        { nodeId: "images", visible: imagesGroupVisible },
+        { nodeId: "drawings⣿points", visible: pointsGroupVisible && drawingsGroupVisible },
+        { nodeId: "drawings⣿lines", visible: linesGroupVisible && drawingsGroupVisible },
+        { nodeId: "drawings⣿polygons", visible: polygonsGroupVisible && drawingsGroupVisible },
+        { nodeId: "drawings⣿circles", visible: circlesGroupVisible && drawingsGroupVisible },
+        { nodeId: "drawings⣿texts", visible: textsGroupVisible && drawingsGroupVisible }
+    ];
+
+    groupNodes.forEach(({ nodeId, visible }) => {
+        const element = treeView.container.querySelector('[data-node-id="' + nodeId + '"]');
+        if (element) {
+            if (visible) {
+                element.style.opacity = "1";
+                element.classList.remove("hidden-node");
+            } else {
+                element.style.opacity = "0.5";
+                element.classList.add("hidden-node");
+            }
+        }
+    });
+
+    // ✅ FIX: Update entity visibility states (inherit from parent group)
+    if (typeof allKADDrawingsMap !== "undefined" && allKADDrawingsMap) {
+        for (const [entityName, entity] of allKADDrawingsMap.entries()) {
+            const nodeId = entity.entityType + "⣿" + entityName;
+            const element = treeView.container.querySelector('[data-node-id="' + nodeId + '"]');
+            if (element) {
+                // Check both entity visibility AND parent group visibility
+                let isVisible = entity.visible !== false && drawingsGroupVisible;
+
+                // ✅ FIX: Also check specific subgroup visibility with correct entity types
+                if (entity.entityType === "point") isVisible = isVisible && pointsGroupVisible;
+                else if (entity.entityType === "line") isVisible = isVisible && linesGroupVisible;
+                else if (entity.entityType === "poly") isVisible = isVisible && polygonsGroupVisible;
+                else if (entity.entityType === "circle") isVisible = isVisible && circlesGroupVisible;
+                else if (entity.entityType === "text") isVisible = isVisible && textsGroupVisible;
+
+                if (isVisible) {
+                    element.style.opacity = "1";
+                    element.classList.remove("hidden-node");
+                } else {
+                    element.style.opacity = "0.5";
+                    element.classList.add("hidden-node");
+                }
+            }
+
+            // ✅ ADD: Update individual element visibility states
+            entity.data.forEach((elementData, index) => {
+                const elementNodeId = entity.entityType + "⣿" + entityName + "⣿element⣿" + (elementData.pointID || index + 1);
+                const elementElement = treeView.container.querySelector('[data-node-id="' + elementNodeId + '"]');
+                if (elementElement) {
+                    // Element inherits from entity and group visibility
+                    let isElementVisible = entity.visible !== false && drawingsGroupVisible;
+
+                    // Check specific subgroup visibility
+                    if (entity.entityType === "point") isElementVisible = isElementVisible && pointsGroupVisible;
+                    else if (entity.entityType === "line") isElementVisible = isElementVisible && linesGroupVisible;
+                    else if (entity.entityType === "poly") isElementVisible = isElementVisible && polygonsGroupVisible;
+                    else if (entity.entityType === "circle") isElementVisible = isElementVisible && circlesGroupVisible;
+                    else if (entity.entityType === "text") isElementVisible = isElementVisible && textsGroupVisible;
+
+                    // Check individual element visibility
+                    if (elementData.visible === false) isElementVisible = false;
+
+                    if (isElementVisible) {
+                        elementElement.style.opacity = "1";
+                        elementElement.classList.remove("hidden-node");
+                    } else {
+                        elementElement.style.opacity = "0.5";
+                        elementElement.classList.add("hidden-node");
+                    }
+                }
+            });
+        }
+    }
+
+    // ✅ FIX: Update hole visibility states with correct node ID pattern
+    if (typeof points !== "undefined" && points) {
+        points.forEach((hole) => {
+            const nodeId = "hole⣿" + hole.holeID; // ✅ FIX: Correct node ID pattern
+            const element = treeView.container.querySelector('[data-node-id="' + nodeId + '"]');
+            if (element) {
+                const isVisible = hole.visible !== false && blastGroupVisible;
+                if (isVisible) {
+                    element.style.opacity = "1";
+                    element.classList.remove("hidden-node");
+                } else {
+                    element.style.opacity = "0.5";
+                    element.classList.add("hidden-node");
+                }
+            }
+        });
+    }
+
+    // ✅ ADD: Update entity (blast) group visibility
+    const entityGroups = {};
+    if (typeof points !== "undefined" && points) {
+        points.forEach((hole) => {
+            const entityName = hole.entityName || "Unknown";
+            if (!entityGroups[entityName]) {
+                entityGroups[entityName] = [];
+            }
+            entityGroups[entityName].push(hole);
+        });
+
+        Object.keys(entityGroups).forEach((entityName) => {
+            const nodeId = "entity⣿" + entityName;
+            const element = treeView.container.querySelector('[data-node-id="' + nodeId + '"]');
+            if (element) {
+                // Check if any holes in this entity are visible and blast group is visible
+                const entityHoles = entityGroups[entityName];
+                const hasVisibleHoles = entityHoles.some((hole) => hole.visible !== false);
+                const isVisible = hasVisibleHoles && blastGroupVisible;
+
+                if (isVisible) {
+                    element.style.opacity = "1";
+                    element.classList.remove("hidden-node");
+                } else {
+                    element.style.opacity = "0.5";
+                    element.classList.add("hidden-node");
+                }
+            }
+        });
+    }
+}
+
 // Update tree when data changes
 function updateTreeView() {
     if (treeView) {
+        // ✅ Update tree visibility states first
+        updateTreeViewVisibilityStates();
+
         treeView.updateTreeData();
     }
 }

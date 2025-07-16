@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250713.1430AWST"
+    Last Modified: "20250717.2040AWST"
 */
 
 :root {
@@ -2175,7 +2175,20 @@ body.dark-mode .tree-panel {
 body.dark-mode .tree-item:hover {
     background-color: rgba(217, 217, 217, 0.1);
 }
+/* Hidden tree nodes styling */
+.tree-item.hidden-node {
+    opacity: 0.5 !important;
+    font-style: italic;
+}
 
+.tree-item.hidden-node .tree-label {
+    text-decoration: line-through;
+    color: #666;
+}
+
+body.dark-mode .tree-item.hidden-node .tree-label {
+    color: #999;
+}
 /* Tree Icons */
 .tree-icon {
     width: 18px;
