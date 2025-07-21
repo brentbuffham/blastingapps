@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250717.2040AWST"
+    Last Modified: "20250721.2140AWST"
 */
 
 :root {
@@ -1713,6 +1713,7 @@ body.dark-mode .file-import-btn:hover {
     background-color: #ff9d00;
     text-align: center;
 }
+
 .option1[type="button"] {
     width: 100px;
     height: 40px;
@@ -1720,6 +1721,7 @@ body.dark-mode .file-import-btn:hover {
     background-color: #42a4bf;
     text-align: center;
 }
+
 .option2[type="button"] {
     width: 100px;
     height: 40px;
@@ -2175,6 +2177,7 @@ body.dark-mode .tree-panel {
 body.dark-mode .tree-item:hover {
     background-color: rgba(217, 217, 217, 0.1);
 }
+
 /* Hidden tree nodes styling */
 .tree-item.hidden-node {
     opacity: 0.5 !important;
@@ -2189,6 +2192,7 @@ body.dark-mode .tree-item:hover {
 body.dark-mode .tree-item.hidden-node .tree-label {
     color: #999;
 }
+
 /* Tree Icons */
 .tree-icon {
     width: 18px;

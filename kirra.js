@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250717.2300AWST"
-const buildVersion = "20250717.2300AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250721.2140AWST"
+const buildVersion = "20250721.2140AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,6 +54,10 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
+					<br><label class="labelWhite12c">✅ Additional Hole properties on right click of selected holes  </label>
+					<br><label class="labelWhite12c">✅ Backspace or Delete when drawing to remove the last point    </label>
+					<br><label class="labelWhite12c">✅ Offset Line and Projection added to Floating Toolbar         </label>
+					<br><label class="labelWhite12c">✅ Radii Holes or KADs added to Floating Toolbar                </label>
 					<br><label class="labelWhite12c">✅ DXF 3DFace and Hillshade Gradient added                      </label>
 					<br><label class="labelWhite12c">✅ Selection and manipulation disabled on hidden entities       </label>
 					<br><label class="labelWhite12c">✅ Children Nodes inherit group node visibility                 </label>
@@ -321,6 +325,10 @@ let isDeletingKAD = false;
 let isModifyingPoint = false;
 //offset tool booleans
 let isOffsetLinePoly = false;
+//offset kad tool booleans
+let isOffsetKAD = false;
+//radii holes or kads tool booleans
+let isRadiiHolesOrKADs = false;
 //Record Measurements booleans
 let isMeasureRecording = false;
 // PolyLine select for use in tools
@@ -365,12 +373,7 @@ const addConnectorButton = document.getElementById("addConnectorButton");
 const addMultiConnectorButton = document.getElementById("addMultiConnectorButton");
 const addPatternSwitch = document.getElementById("addPatternSwitch");
 const addHoleSwitch = document.getElementById("addHoleSwitch");
-// const editAngleSwitch = document.getElementById("editAngleButton");
-// const editBearingSwitch = document.getElementById("editBearingButton");
-// const editEastingSwitch = document.getElementById("editEastingButton");
-// const editNorthingSwitch = document.getElementById("editNorthingButton");
-// const editElevationSwitch = document.getElementById("editElevationButton");
-// const editLengthSwitch = document.getElementById("editLengthButton");
+
 const editLengthPopupSwitch = document.getElementById("editLengthPopupButton");
 const editHoleTypePopupSwitch = document.getElementById("editHoleTypePopupButton");
 const editTypeSwitch = document.getElementById("editHoleTypePopupButton");
@@ -378,7 +381,8 @@ const editBlastNameSwitch = document.getElementById("editBlastNameButton");
 // const editDiameterSwitch = document.getElementById("editDiameterButton");
 const deleteHoleSwitch = document.getElementById("deleteHoleSwitch");
 const modifyKADSwitch = document.getElementById("modifyKADDraw");
-const offsetLinePolySwitch = document.getElementById("offsetLinePolyDraw");
+const offsetKADButton = document.getElementById("offsetKADTool");
+const radiiHolesOrKADsButton = document.getElementById("radiiHolesOrKADsTool");
 const selectionModeButton = document.getElementById("selectionModeButton");
 const editHolesToggle = document.getElementById("editHolesToggle"); //required to be true if holes are to be fine tuned
 
@@ -410,7 +414,6 @@ const switches = [
     editBlastNameSwitch,
     deleteHoleSwitch,
     modifyKADSwitch,
-    offsetLinePolySwitch,
     editHoleTypePopupSwitch,
     addPointDraw,
     addLineDraw,
@@ -7554,6 +7557,1035 @@ function offsetPolygonClipper(polygon, offsetMeters) {
     }));
 }
 
+// function to offset a selected KAD object. Uses clipper library to offset.
+// All KAD are allowed Points, lines, Poly, circle and text.
+// Projection at 0° inherits the existing KAD obje elevation
+// first select the kad object to offset.
+// then click the offsetKADButton.  The button cannot be on it can only be click.  There must be a selection from the selectPointer.
+// then show a popup with the amount to offset Positive or Negative. will define the direction.
+// the popup will allow for projection up at and angle or down at and angle.
+// 0° is horizontal, -ve° is down, +ve° is Up.  The distance is the amount from the orignal line.
+// the popup will allow for multiple offset. 1 - 100
+// the kad object will be offset by the amount positive expands and negative compresses.
+// ================================
+// OFFSET KAD FUNCTIONALITY
+// ================================
+
+// Update the offset button event listener with full functionality
+offsetKADButton.addEventListener("change", function () {
+    if (this.checked) {
+        // Reset other tools and activate offset mode
+        switches.forEach((switchElement) => {
+            if (switchElement && switchElement !== this) switchElement.checked = false;
+        });
+        setAllBoolsToFalse();
+        resetAllSelectedStores();
+        resetSwitchesTogglesOptionalDisplay(false);
+        setMultipleSelectionModeToFalse();
+        resetFloatingToolbarButtons("offsetKADTool");
+
+        isOffsetKAD = true;
+        offsetKADButton.checked = true;
+
+        // Check if there's already a selected KAD object
+        if (selectedKADObject && (selectedKADObject.entityType === "line" || selectedKADObject.entityType === "poly")) {
+            // Show offset popup immediately for the selected object
+            showOffsetKADPopup(selectedKADObject);
+        } else {
+            // Add click listener for offset operations
+            canvas.addEventListener("click", handleOffsetKADClick);
+            canvas.addEventListener("touchstart", handleOffsetKADClick);
+            updateStatusMessage("Offset Tool Activated\nClick on a KAD object (line/polygon) to offset\nThen configure offset parameters");
+        }
+    } else {
+        isOffsetKAD = false;
+        canvas.removeEventListener("click", handleOffsetKADClick);
+        canvas.removeEventListener("touchstart", handleOffsetKADClick);
+        updateStatusMessage("");
+        drawData(points, selectedHole);
+    }
+});
+
+// Handle clicks when offset tool is active
+function handleOffsetKADClick(event) {
+    if (!isOffsetKAD) return;
+
+    const rect = canvas.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+
+    if (isNaN(clickX) || isNaN(clickY)) {
+        clickX = event.changedTouches[0].clientX - rect.left;
+        clickY = event.changedTouches[0].clientY - rect.top;
+    }
+
+    // Find clicked KAD object
+    const clickedKADObject = getClickedKADObject(clickX, clickY);
+
+    if (clickedKADObject && (clickedKADObject.entityType === "line" || clickedKADObject.entityType === "poly")) {
+        // Show offset configuration popup
+        showOffsetKADPopup(clickedKADObject);
+    } else {
+        updateStatusMessage("Please click on a line or polygon to offset");
+        setTimeout(() => updateStatusMessage("Offset Tool Active - Click on a line or polygon"), 2000);
+    }
+}
+
+// Show the offset configuration popup
+function showOffsetKADPopup(kadObject) {
+    const entity = getEntityFromKADObject(kadObject);
+    if (!entity) return;
+
+    const htmlContent = `
+        <div class="button-container-2col">
+            <label class="labelWhite12">Offset Amount (m):</label>
+            <input type="number" id="offsetAmount" value="1.0" step="0.1" min="-100" max="100" class="swal2-input">
+            
+            <label class="labelWhite12">Projection Angle (°):</label>
+            <input type="number" id="projectionAngle" value="0" step="1" min="-90" max="90" class="swal2-input">
+            
+            <label class="labelWhite12">Number of Offsets:</label>
+            <input type="number" id="numberOfOffsets" value="1" step="1" min="1" max="10" class="swal2-input">
+            
+            <label class="labelWhite12">Priority Mode:</label>
+            <select id="priorityMode" class="swal2-input">
+                <option value="distance">Distance Priority (total distance)</option>
+                <option value="vertical">Vertical Priority (vertical distance)</option>
+            </select>
+            
+            <label class="labelWhite12">Offset Color:</label>
+            <input type="button" id="offsetColor" data-jscolor="{value:'#FF0000'}" class="swal2-input">
+            
+            <div style="grid-column: 1 / -1; margin-top: 10px;">
+                <label>
+                    <input type="checkbox" id="handleCrossovers" checked>
+                    Handle Crossovers (clean intersections)
+                </label>
+            </div>
+            
+            <div style="grid-column: 1 / -1; font-size: 12px; color: #aaa; margin-top: 10px;">
+                <strong>Notes:</strong><br>
+                • Lines: Positive values offset to the right, negative to the left<br>
+                • Polygons: Positive values offset outwards, negative to the left<br>
+                • 0° = horizontal, +° = up slope, -° = down slope<br>
+                • Distance Priority: 12m total distance from line<br>
+                • Vertical Priority: 12m vertical offset (may be >12m total distance)<br>
+                • Multiple offsets create lines at distance × 1, distance × 2, etc.<br>
+                • Handle Crossovers creates clean connections at intersections
+            </div>
+        </div>
+    `;
+
+    Swal.fire({
+        title: "Offset " + kadObject.entityType.toUpperCase() + ": " + kadObject.entityName,
+        html: htmlContent,
+        showCancelButton: true,
+        confirmButtonText: "Offset",
+        cancelButtonText: "Cancel",
+        customClass: {
+            container: "custom-popup-container",
+            popup: "swal2-popup",
+            title: "swal2-title",
+            content: "swal2-content",
+            confirmButton: "confirm",
+            cancelButton: "cancel"
+        },
+        didOpen: () => {
+            // Initialize JSColor after popup opens
+            jscolor.install();
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const offsetParams = {
+                baseAmount: parseFloat(document.getElementById("offsetAmount").value),
+                projectionAngle: parseFloat(document.getElementById("projectionAngle").value),
+                numberOfOffsets: parseInt(document.getElementById("numberOfOffsets").value),
+                priorityMode: document.getElementById("priorityMode").value,
+                color: document.getElementById("offsetColor").jscolor ? document.getElementById("offsetColor").jscolor.toHEXString() : "#FF0000",
+                handleCrossovers: document.getElementById("handleCrossovers").checked,
+                originalEntityName: kadObject.entityName
+            };
+
+            // Perform the offset operation
+            performKADOffset(entity, offsetParams);
+        }
+
+        // After popup closes, deactivate the offset tool
+        offsetKADButton.checked = false;
+        isOffsetKAD = false;
+        canvas.removeEventListener("click", handleOffsetKADClick);
+        canvas.removeEventListener("touchstart", handleOffsetKADClick);
+        updateStatusMessage("");
+        drawData(points, selectedHole);
+    });
+}
+
+// Enhanced custom line offset function with crossover handling - COMPLETE VERSION
+function createLineOffsetCustom(originalEntity, offsetAmount, projectionAngle, color, offsetIndex, handleCrossovers = true, priorityMode = "distance", originalEntityName = null) {
+    try {
+        const originalPoints = originalEntity.data;
+
+        // Fix Issue #2: Handle undefined entityName
+        const baseEntityName = originalEntityName || originalEntity.entityName || "unnamed_entity";
+
+        // Calculate offset components based on priority mode
+        let horizontalOffset, verticalOffset, zDelta;
+
+        if (priorityMode === "distance") {
+            // Distance Priority: Preserve the actual distance from the line at the projected angle
+            const angleRad = (projectionAngle * Math.PI) / 180;
+
+            // Horizontal component of the offset (2D plane)
+            horizontalOffset = offsetAmount * Math.cos(angleRad);
+
+            // Vertical component calculation
+            // For distance priority, the vertical offset is based on the sine of the angle
+            // and the ABSOLUTE value of the offset amount (distance is always positive)
+            verticalOffset = Math.abs(offsetAmount) * Math.sin(angleRad);
+
+            // Z Delta Calculation:
+            // - projectionAngle > 0: Going UP, so ADD to Z
+            // - projectionAngle < 0: Going DOWN, so SUBTRACT from Z
+            // - projectionAngle = 0: No vertical change
+            // Note: We use the signed value of verticalOffset (which includes angle sign)
+            zDelta = verticalOffset; // This already has the correct sign from sin(angle)
+        } else {
+            // Vertical Priority: The offset amount IS the vertical distance
+            // The sign of the projection angle determines up/down direction
+            // The sign of the offset amount only affects horizontal direction (left/right)
+
+            if (projectionAngle > 0) {
+                // Positive angle = going UP
+                // Z increases by the absolute offset amount
+                zDelta = Math.abs(offsetAmount);
+                verticalOffset = Math.abs(offsetAmount);
+            } else if (projectionAngle < 0) {
+                // Negative angle = going DOWN
+                // Z decreases by the absolute offset amount
+                zDelta = -Math.abs(offsetAmount);
+                verticalOffset = Math.abs(offsetAmount);
+            } else {
+                // Zero angle = pure horizontal, no Z change
+                zDelta = 0;
+                verticalOffset = 0;
+            }
+
+            // Calculate horizontal offset needed to achieve the vertical distance at the angle
+            if (projectionAngle !== 0) {
+                const angleRad = (projectionAngle * Math.PI) / 180;
+                const tanAngle = Math.tan(angleRad);
+                if (Math.abs(tanAngle) > 0.001) {
+                    // Horizontal offset maintains the left/right direction from offsetAmount sign
+                    // but adjusts magnitude based on the angle
+                    horizontalOffset = Math.sign(offsetAmount) * (Math.abs(verticalOffset) / Math.abs(tanAngle));
+                } else {
+                    horizontalOffset = offsetAmount; // Fallback for very small angles
+                }
+            } else {
+                // Pure horizontal offset when angle is 0
+                horizontalOffset = offsetAmount;
+            }
+        }
+
+        console.log("🔧 Offset calculation:");
+        console.log("  offsetAmount:", offsetAmount, "(direction:", offsetAmount > 0 ? "right" : "left", ")");
+        console.log("  projectionAngle:", projectionAngle, "°");
+        console.log("  priorityMode:", priorityMode);
+        console.log("  horizontalOffset:", horizontalOffset.toFixed(3));
+        console.log("  verticalOffset:", verticalOffset.toFixed(3));
+        console.log("  zDelta:", zDelta.toFixed(3));
+        console.log("  baseEntityName:", baseEntityName); // Debug log
+
+        if (!handleCrossovers) {
+            // Use the simple method without crossover handling
+            return createSimpleLineOffset(originalEntity, horizontalOffset, zDelta, color, offsetIndex, baseEntityName);
+        }
+
+        // Create offset segments with crossover handling
+        const offsetSegments = [];
+
+        // Generate offset segments for each original segment
+        for (let i = 0; i < originalPoints.length - 1; i++) {
+            const p1 = originalPoints[i];
+            const p2 = originalPoints[i + 1];
+
+            // Calculate segment direction vector
+            const dx = p2.pointXLocation - p1.pointXLocation;
+            const dy = p2.pointYLocation - p1.pointYLocation;
+            const length = Math.sqrt(dx * dx + dy * dy);
+
+            if (length === 0) continue; // Skip zero-length segments
+
+            // Calculate perpendicular vector (rotated 90 degrees) for horizontal offset
+            // Negative dy and positive dx gives us the right-hand perpendicular
+            const perpX = (-dy / length) * horizontalOffset;
+            const perpY = (dx / length) * horizontalOffset;
+
+            // Create offset segment with proper Z calculation
+            // IMPORTANT: Ensure all values are numbers, not strings
+            const offsetSeg = {
+                start: {
+                    x: p1.pointXLocation + perpX,
+                    y: p1.pointYLocation + perpY,
+                    z: parseFloat(p1.pointZLocation) + parseFloat(zDelta) // Fix string concatenation issue
+                },
+                end: {
+                    x: p2.pointXLocation + perpX,
+                    y: p2.pointYLocation + perpY,
+                    z: parseFloat(p2.pointZLocation) + parseFloat(zDelta) // Fix string concatenation issue
+                },
+                index: i
+            };
+
+            offsetSegments.push(offsetSeg);
+        }
+
+        // Handle single segment lines
+        if (originalPoints.length === 2 && offsetSegments.length === 0) {
+            const p1 = originalPoints[0];
+            const p2 = originalPoints[1];
+
+            const dx = p2.pointXLocation - p1.pointXLocation;
+            const dy = p2.pointYLocation - p1.pointYLocation;
+            const length = Math.sqrt(dx * dx + dy * dy);
+
+            if (length > 0) {
+                const perpX = (-dy / length) * horizontalOffset;
+                const perpY = (dx / length) * horizontalOffset;
+
+                offsetSegments.push({
+                    start: {
+                        x: p1.pointXLocation + perpX,
+                        y: p1.pointYLocation + perpY,
+                        z: parseFloat(p1.pointZLocation) + parseFloat(zDelta) // Fix string concatenation
+                    },
+                    end: {
+                        x: p2.pointXLocation + perpX,
+                        y: p2.pointYLocation + perpY,
+                        z: parseFloat(p2.pointZLocation) + parseFloat(zDelta) // Fix string concatenation
+                    },
+                    index: 0
+                });
+            }
+        }
+
+        // Handle crossovers by finding intersections and trimming/extending segments
+        const cleanedSegments = handleCrossovers ? handleSegmentCrossovers(offsetSegments) : offsetSegments;
+
+        // Convert cleaned segments to point array
+        const offsetPoints = [];
+        cleanedSegments.forEach((seg) => {
+            offsetPoints.push(
+                {
+                    pointXLocation: seg.start.x,
+                    pointYLocation: seg.start.y,
+                    pointZLocation: seg.start.z
+                },
+                {
+                    pointXLocation: seg.end.x,
+                    pointYLocation: seg.end.y,
+                    pointZLocation: seg.end.z
+                }
+            );
+        });
+
+        if (offsetPoints.length === 0) {
+            throw new Error("No valid segments after crossover handling");
+        }
+
+        // Create unique name with timestamp to avoid overwrites
+        const timestamp = Date.now();
+        const newEntityName = baseEntityName + "_offset_" + offsetIndex + "_" + timestamp;
+
+        const newEntityData = offsetPoints.map((pt, index) => ({
+            entityName: newEntityName,
+            entityType: "line",
+            pointID: index + 1,
+            pointXLocation: pt.pointXLocation,
+            pointYLocation: pt.pointYLocation,
+            pointZLocation: pt.pointZLocation,
+            lineWidth: originalPoints[0].lineWidth || 1,
+            color: color,
+            closed: false,
+            visible: true
+        }));
+
+        // Add to the map
+        allKADDrawingsMap.set(newEntityName, {
+            entityName: newEntityName,
+            entityType: "line",
+            data: newEntityData,
+            visible: true
+        });
+
+        console.log("✅ Created crossover-handled line offset:", newEntityName, "with", newEntityData.length, "points");
+        return newEntityName;
+    } catch (error) {
+        console.error("Error in createLineOffsetCustom:", error);
+        throw error;
+    }
+}
+
+// Simple line offset without crossover handling (updated with fixes)
+function createSimpleLineOffset(originalEntity, horizontalOffset, zDelta, color, offsetIndex, baseEntityName) {
+    const originalPoints = originalEntity.data;
+    const offsetPoints = [];
+
+    // Handle single segment and multi-segment lines
+    for (let i = 0; i < originalPoints.length - 1; i++) {
+        const p1 = originalPoints[i];
+        const p2 = originalPoints[i + 1];
+
+        const dx = p2.pointXLocation - p1.pointXLocation;
+        const dy = p2.pointYLocation - p1.pointYLocation;
+        const length = Math.sqrt(dx * dx + dy * dy);
+
+        if (length === 0) continue;
+
+        // Calculate perpendicular vector (rotated 90 degrees) for horizontal offset
+        const perpX = (-dy / length) * horizontalOffset;
+        const perpY = (dx / length) * horizontalOffset;
+
+        // Apply the correct Z delta
+        // IMPORTANT: Parse float to avoid string concatenation
+        const offsetP1 = {
+            pointXLocation: p1.pointXLocation + perpX,
+            pointYLocation: p1.pointYLocation + perpY,
+            pointZLocation: parseFloat(p1.pointZLocation) + parseFloat(zDelta) // Fix concatenation
+        };
+
+        const offsetP2 = {
+            pointXLocation: p2.pointXLocation + perpX,
+            pointYLocation: p2.pointYLocation + perpY,
+            pointZLocation: parseFloat(p2.pointZLocation) + parseFloat(zDelta) // Fix concatenation
+        };
+
+        offsetPoints.push(offsetP1, offsetP2);
+    }
+
+    const timestamp = Date.now();
+    const newEntityName = baseEntityName + "_offset_" + offsetIndex + "_" + timestamp;
+
+    const newEntityData = offsetPoints.map((pt, index) => ({
+        entityName: newEntityName,
+        entityType: "line",
+        pointID: index + 1,
+        pointXLocation: pt.pointXLocation,
+        pointYLocation: pt.pointYLocation,
+        pointZLocation: pt.pointZLocation,
+        lineWidth: originalPoints[0].lineWidth || 1,
+        color: color,
+        closed: false,
+        visible: true
+    }));
+
+    allKADDrawingsMap.set(newEntityName, {
+        entityName: newEntityName,
+        entityType: "line",
+        data: newEntityData,
+        visible: true
+    });
+
+    return newEntityName;
+}
+
+// Handle crossovers between offset segments
+function handleSegmentCrossovers(segments) {
+    if (segments.length < 2) return segments;
+
+    const cleanedSegments = [...segments];
+
+    // Find intersections between consecutive segments and extend/trim accordingly
+    for (let i = 0; i < cleanedSegments.length - 1; i++) {
+        const seg1 = cleanedSegments[i];
+        const seg2 = cleanedSegments[i + 1];
+
+        // Find intersection between the two line segments
+        const intersection = findLineIntersection(seg1.start.x, seg1.start.y, seg1.end.x, seg1.end.y, seg2.start.x, seg2.start.y, seg2.end.x, seg2.end.y);
+
+        if (intersection) {
+            // Extend/trim segments to meet at intersection
+            seg1.end.x = intersection.x;
+            seg1.end.y = intersection.y;
+            seg2.start.x = intersection.x;
+            seg2.start.y = intersection.y;
+        }
+    }
+
+    // Remove segments that became too short (less than 0.1m)
+    return cleanedSegments.filter((seg) => {
+        const length = Math.sqrt(Math.pow(seg.end.x - seg.start.x, 2) + Math.pow(seg.end.y - seg.start.y, 2));
+        return length > 0.1;
+    });
+}
+
+// Find intersection point between two line segments
+function findLineIntersection(x1, y1, x2, y2, x3, y3, x4, y4) {
+    const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+    if (Math.abs(denom) < 1e-10) {
+        return null; // Lines are parallel
+    }
+
+    const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
+    const u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom;
+
+    // Check if intersection is within reasonable extension range
+    if (t >= -0.5 && t <= 1.5 && u >= -0.5 && u <= 1.5) {
+        return {
+            x: x1 + t * (x2 - x1),
+            y: y1 + t * (y2 - y1)
+        };
+    }
+
+    return null; // No valid intersection
+}
+
+// Update the createOffsetEntity function for polygons
+function createOffsetEntity(originalEntity, offsetAmount, projectionAngle, color, offsetIndex, handleCrossovers = true, priorityMode = "distance", originalEntityName = null) {
+    try {
+        const scale = 100000;
+        const originalPoints = originalEntity.data;
+
+        if (originalPoints.length < 2) {
+            throw new Error("Need at least 2 points for offset");
+        }
+
+        /// Fix Issue #2: Handle undefined entityName - use passed name or fallback
+        const baseEntityName = originalEntityName || originalEntity.entityName || "undef";
+
+        // For lines, use custom offset method
+        if (originalEntity.entityType === "line") {
+            return createLineOffsetCustom(originalEntity, offsetAmount, projectionAngle, color, offsetIndex, handleCrossovers, priorityMode, baseEntityName);
+        }
+
+        // For polygons, use ClipperLib
+        const clipperPath = originalPoints.map((pt) => ({
+            X: Math.round(pt.pointXLocation * scale),
+            Y: Math.round(pt.pointYLocation * scale)
+        }));
+
+        const clipperOffset = new ClipperLib.ClipperOffset();
+        clipperOffset.AddPath(clipperPath, ClipperLib.JoinType.jtMiter, ClipperLib.EndType.etClosedPolygon);
+
+        // Calculate offset components based on priority mode
+        let horizontalOffset, verticalOffset, zDelta;
+
+        if (priorityMode === "distance") {
+            // Distance Priority: Preserve the actual distance at the projected angle
+            const angleRad = (projectionAngle * Math.PI) / 180;
+
+            // For polygons: offsetAmount controls expand(+) / contract(-)
+            horizontalOffset = offsetAmount * Math.cos(angleRad);
+
+            // Vertical offset uses sine of angle and absolute offset
+            verticalOffset = Math.abs(offsetAmount) * Math.sin(angleRad);
+
+            // Z Delta: Use the signed verticalOffset (sin includes angle sign)
+            zDelta = verticalOffset;
+        } else {
+            // Vertical Priority: Distance becomes the vertical amount
+            if (projectionAngle > 0) {
+                // Positive angle = going UP
+                zDelta = Math.abs(offsetAmount);
+                verticalOffset = Math.abs(offsetAmount);
+            } else if (projectionAngle < 0) {
+                // Negative angle = going DOWN
+                zDelta = -Math.abs(offsetAmount);
+                verticalOffset = Math.abs(offsetAmount);
+            } else {
+                // Zero angle = no vertical change
+                zDelta = 0;
+                verticalOffset = 0;
+            }
+
+            // Calculate horizontal offset for vertical priority
+            if (projectionAngle !== 0) {
+                const angleRad = (projectionAngle * Math.PI) / 180;
+                const tanAngle = Math.tan(angleRad);
+                if (Math.abs(tanAngle) > 0.001) {
+                    // For polygons, maintain expand/contract behavior
+                    horizontalOffset = Math.sign(offsetAmount) * (Math.abs(verticalOffset) / Math.abs(tanAngle));
+                } else {
+                    horizontalOffset = offsetAmount;
+                }
+            } else {
+                horizontalOffset = offsetAmount;
+            }
+        }
+
+        const offsetPaths = [];
+        clipperOffset.Execute(offsetPaths, horizontalOffset * scale);
+
+        if (offsetPaths.length === 0) {
+            throw new Error("Clipper offset returned no results - try a smaller offset amount");
+        }
+
+        const offsetPath = offsetPaths[0];
+        const timestamp = Date.now();
+        const newEntityName = baseEntityName + "_offset_" + offsetIndex + "_" + timestamp;
+
+        const newEntityData = offsetPath.map((pt, index) => {
+            const worldX = pt.X / scale;
+            const worldY = pt.Y / scale;
+
+            // Apply the correct Z delta
+            // IMPORTANT: Use the first point's Z as reference and parse as float
+            // to avoid string concatenation issues
+            const worldZ = parseFloat(originalPoints[0].pointZLocation) + parseFloat(zDelta);
+
+            return {
+                entityName: newEntityName,
+                entityType: originalEntity.entityType,
+                pointID: index + 1,
+                pointXLocation: worldX,
+                pointYLocation: worldY,
+                pointZLocation: worldZ, // This is now correctly calculated
+                lineWidth: originalPoints[0].lineWidth || 1,
+                color: color,
+                closed: originalEntity.entityType === "poly",
+                visible: true
+            };
+        });
+
+        allKADDrawingsMap.set(newEntityName, {
+            entityName: newEntityName,
+            entityType: originalEntity.entityType,
+            data: newEntityData,
+            visible: true
+        });
+
+        console.log("Created offset entity:", newEntityName, "with", newEntityData.length, "points");
+        console.log("  baseEntityName:", baseEntityName); // Debug log
+        console.log("  Original Z:", originalPoints[0].pointZLocation);
+        console.log("  Z Delta:", zDelta);
+        console.log("  New Z:", parseFloat(originalPoints[0].pointZLocation) + parseFloat(zDelta));
+
+        return newEntityName;
+    } catch (error) {
+        console.error("Error in createOffsetEntity:", error);
+        throw error;
+    }
+}
+
+// Update performKADOffset to pass the priority mode
+function performKADOffset(entity, params) {
+    try {
+        const results = [];
+
+        for (let i = 1; i <= params.numberOfOffsets; i++) {
+            const offsetAmount = params.baseAmount * i;
+
+            const offsetEntity = createOffsetEntity(entity, offsetAmount, params.projectionAngle, params.color, i, params.handleCrossovers, params.priorityMode, params.originalEntityName);
+
+            if (offsetEntity) {
+                results.push(offsetEntity);
+            }
+        }
+
+        if (results.length > 0) {
+            debouncedSaveKAD();
+            debouncedUpdateTreeView();
+            drawData(points, selectedHole);
+
+            updateStatusMessage("Created " + results.length + " offset(s) successfully");
+            setTimeout(() => updateStatusMessage(""), 3000);
+        } else {
+            updateStatusMessage("Failed to create offsets - check parameters");
+        }
+    } catch (error) {
+        console.error("Error in performKADOffset:", error);
+        updateStatusMessage("Error creating offsets: " + error.message);
+    }
+}
+// ================================
+// OFFSET KAD FUNCTIONALITY - ENDED
+// ================================
+
+// ================================
+// RADII HOLES OR KADs FUNCTIONALITY - STARTED
+// ================================
+
+radiiHolesOrKADsTool.addEventListener("change", function () {
+    if (this.checked) {
+        resetFloatingToolbarButtons("radiiHolesOrKADsTool");
+
+        // Get all selected entities (holes + KAD objects)
+        const selectedEntities = getSelectedEntitiesForRadii();
+
+        if (selectedEntities.length === 0) {
+            // No entities selected, show message and deactivate tool
+            Swal.fire({
+                title: "No Selection",
+                html: "Please select holes or KAD entities first, then activate the Radii tool.",
+                icon: "info",
+                customClass: {
+                    container: "custom-popup-container",
+                    popup: "swal2-popup",
+                    title: "swal2-title",
+                    content: "swal2-content",
+                    confirmButton: "confirm"
+                }
+            });
+            this.checked = false;
+            resetFloatingToolbarButtons("none");
+            return;
+        }
+
+        // Show radii configuration popup
+        showRadiiConfigPopup(selectedEntities);
+    } else {
+        resetFloatingToolbarButtons("none");
+        updateStatusMessage("");
+    }
+});
+
+// Show radii configuration popup
+function showRadiiConfigPopup(selectedEntities) {
+    const entityCount = selectedEntities.length;
+    const holeCount = selectedEntities.filter((e) => e.type === "hole").length;
+    const kadCount = selectedEntities.filter((e) => e.type.startsWith("kad")).length;
+
+    let entityDescription = "";
+    if (holeCount > 0 && kadCount > 0) {
+        entityDescription = holeCount + " hole(s) and " + kadCount + " KAD point(s)";
+    } else if (holeCount > 0) {
+        entityDescription = holeCount + " hole(s)";
+    } else {
+        entityDescription = kadCount + " KAD point(s)";
+    }
+
+    const htmlContent = `
+        <div class="button-container-2col">
+            <label class="labelWhite12">Radius (m):</label>
+            <input type="number" id="radiiRadius" value="5.0" step="0.1" min="0.1" max="100" class="swal2-input">
+            
+            <label class="labelWhite12">Circle Steps:</label>
+            <input type="number" id="radiiSteps" value="16" step="1" min="8" max="64" class="swal2-input">
+            
+            <label class="labelWhite12">Point Location:</label>
+            <select id="radiiLocation" class="swal2-input">
+                <option value="start">Start/Collar Location</option>
+                <option value="end">End/Toe Location</option>
+            </select>
+            
+            <label class="labelWhite12">Polygon Color:</label>
+            <input type="button" id="radiiColor" data-jscolor="{value:'#00FF00'}" class="swal2-input">
+            
+            <div style="grid-column: 1 / -1; margin-top: 10px;">
+                <label>
+                    <input type="checkbox" id="unionCircles" checked>
+                    Union overlapping circles
+                </label>
+            </div>
+            
+            <div style="grid-column: 1 / -1; font-size: 12px; color: #aaa; margin-top: 10px;">
+                <strong>Selected:</strong> ${entityDescription}<br>
+                • Creates circular polygons around each point<br>
+                • Union option combines overlapping circles<br>
+                • Higher steps create smoother circles
+            </div>
+        </div>
+    `;
+
+    Swal.fire({
+        title: "Create Radii Polygons",
+        html: htmlContent,
+        showCancelButton: true,
+        confirmButtonText: "Radii",
+        cancelButtonText: "Cancel",
+        customClass: {
+            container: "custom-popup-container",
+            popup: "swal2-popup",
+            title: "swal2-title",
+            content: "swal2-content",
+            confirmButton: "confirm",
+            cancelButton: "cancel"
+        },
+        didOpen: () => {
+            // Initialize JSColor after popup opens
+            jscolor.install();
+        },
+        preConfirm: () => {
+            const radius = parseFloat(document.getElementById("radiiRadius").value);
+            const steps = parseInt(document.getElementById("radiiSteps").value);
+            const location = document.getElementById("radiiLocation").value;
+            const unionCircles = document.getElementById("unionCircles").checked;
+            const color = document.getElementById("radiiColor").jscolor ? document.getElementById("radiiColor").jscolor.toHEXString() : "#00FF00";
+
+            if (isNaN(radius) || radius <= 0) {
+                Swal.showValidationMessage("Please enter a valid radius > 0");
+                return false;
+            }
+
+            if (isNaN(steps) || steps < 8 || steps > 64) {
+                Swal.showValidationMessage("Steps must be between 8 and 64");
+                return false;
+            }
+
+            return {
+                radius: radius,
+                steps: steps,
+                useToeLocation: location === "end",
+                unionCircles: unionCircles,
+                color: color
+            };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            createRadiiFromSelectedEntities(selectedEntities, result.value);
+        }
+
+        // Deactivate tool after use
+        radiiHolesOrKADsTool.checked = false;
+        resetFloatingToolbarButtons("none");
+        updateStatusMessage("");
+    });
+}
+
+// Get all selected entities for radii creation
+function getSelectedEntitiesForRadii() {
+    const selectedEntities = [];
+
+    // Add selected holes (handle both single and multiple selection)
+    if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
+        selectedMultipleHoles.forEach((hole) => {
+            selectedEntities.push({
+                type: "hole",
+                data: hole,
+                startXLocation: hole.startXLocation,
+                startYLocation: hole.startYLocation,
+                startZLocation: hole.startZLocation,
+                endXLocation: hole.endXLocation,
+                endYLocation: hole.endYLocation,
+                endZLocation: hole.endZLocation
+            });
+        });
+    } else if (selectedHole) {
+        // Handle single selected hole
+        selectedEntities.push({
+            type: "hole",
+            data: selectedHole,
+            startXLocation: selectedHole.startXLocation,
+            startYLocation: selectedHole.startYLocation,
+            startZLocation: selectedHole.startZLocation,
+            endXLocation: selectedHole.endXLocation,
+            endYLocation: selectedHole.endYLocation,
+            endZLocation: selectedHole.endZLocation
+        });
+    }
+
+    // Add selected KAD object (singular) - with comprehensive debugging
+    if (selectedKADObject) {
+        console.log("🔍 Processing selectedKADObject:", selectedKADObject);
+
+        // Check if data exists and is an array
+        if (selectedKADObject.data && Array.isArray(selectedKADObject.data)) {
+            console.log("📊 KAD object has data array with " + selectedKADObject.data.length + " items");
+
+            if (selectedKADObject.entityType === "point") {
+                // For points, use the point location
+                selectedKADObject.data.forEach((point, index) => {
+                    console.log("🔵 Processing point " + (index + 1) + ":", point);
+                    selectedEntities.push({
+                        type: "kad_point",
+                        data: selectedKADObject,
+                        startXLocation: point.pointXLocation,
+                        startYLocation: point.pointYLocation,
+                        startZLocation: point.pointZLocation || 0,
+                        endXLocation: point.pointXLocation,
+                        endYLocation: point.pointYLocation,
+                        endZLocation: point.pointZLocation || 0
+                    });
+                });
+            } else if (selectedKADObject.entityType === "line" || selectedKADObject.entityType === "poly") {
+                // For lines and polygons, use each vertex
+                selectedKADObject.data.forEach((point, index) => {
+                    console.log("📍 Processing vertex " + (index + 1) + ":", point);
+                    selectedEntities.push({
+                        type: "kad_vertex",
+                        data: selectedKADObject,
+                        startXLocation: point.pointXLocation,
+                        startYLocation: point.pointYLocation,
+                        startZLocation: point.pointZLocation || 0,
+                        endXLocation: point.pointXLocation,
+                        endYLocation: point.pointYLocation,
+                        endZLocation: point.pointZLocation || 0
+                    });
+                });
+            } else if (selectedKADObject.entityType === "text") {
+                // For text, use the text position
+                selectedKADObject.data.forEach((textPoint, index) => {
+                    console.log("📝 Processing text " + (index + 1) + ":", textPoint);
+                    selectedEntities.push({
+                        type: "kad_text",
+                        data: selectedKADObject,
+                        startXLocation: textPoint.pointXLocation,
+                        startYLocation: textPoint.pointYLocation,
+                        startZLocation: textPoint.pointZLocation || 0,
+                        endXLocation: textPoint.pointXLocation,
+                        endYLocation: textPoint.pointYLocation,
+                        endZLocation: textPoint.pointZLocation || 0
+                    });
+                });
+            } else if (selectedKADObject.entityType === "circle") {
+                // For circles, use the center point
+                selectedKADObject.data.forEach((circlePoint, index) => {
+                    console.log("⭕ Processing circle " + (index + 1) + ":", circlePoint);
+                    selectedEntities.push({
+                        type: "kad_circle",
+                        data: selectedKADObject,
+                        startXLocation: circlePoint.pointXLocation,
+                        startYLocation: circlePoint.pointYLocation,
+                        startZLocation: circlePoint.pointZLocation || 0,
+                        endXLocation: circlePoint.pointXLocation,
+                        endYLocation: circlePoint.pointYLocation,
+                        endZLocation: circlePoint.pointZLocation || 0
+                    });
+                });
+            }
+        } else {
+            // Alternative approach - try to extract from selectedKADObject itself
+            console.warn("⚠️ KAD object doesn't have proper data array, trying alternative extraction");
+            console.log("KAD Object structure:", selectedKADObject);
+
+            // Check if it's stored in allKADDrawingsMap
+            if (selectedKADObject.entityName) {
+                const entity = allKADDrawingsMap.get(selectedKADObject.entityName);
+                if (entity && entity.data && Array.isArray(entity.data)) {
+                    console.log("✅ Found entity in allKADDrawingsMap with " + entity.data.length + " points");
+
+                    entity.data.forEach((point, index) => {
+                        console.log("🔄 Processing entity point " + (index + 1) + ":", point);
+                        selectedEntities.push({
+                            type: "kad_entity_point",
+                            data: entity,
+                            startXLocation: point.pointXLocation,
+                            startYLocation: point.pointYLocation,
+                            startZLocation: point.pointZLocation || 0,
+                            endXLocation: point.pointXLocation,
+                            endYLocation: point.pointYLocation,
+                            endZLocation: point.pointZLocation || 0
+                        });
+                    });
+                }
+            }
+
+            // Last resort - use selectedKADObject directly if it has coordinates
+            if (selectedEntities.length === 0 && selectedKADObject.pointXLocation !== undefined && selectedKADObject.pointYLocation !== undefined) {
+                console.log("🆘 Using fallback direct coordinates");
+                selectedEntities.push({
+                    type: "kad_fallback",
+                    data: selectedKADObject,
+                    startXLocation: selectedKADObject.pointXLocation,
+                    startYLocation: selectedKADObject.pointYLocation,
+                    startZLocation: selectedKADObject.pointZLocation || 0,
+                    endXLocation: selectedKADObject.pointXLocation,
+                    endYLocation: selectedKADObject.pointYLocation,
+                    endZLocation: selectedKADObject.pointZLocation || 0
+                });
+            }
+        }
+    }
+
+    console.log("🎯 Final selectedEntities array has " + selectedEntities.length + " entities:");
+    selectedEntities.forEach((entity, index) => {
+        console.log("  " + (index + 1) + ". " + entity.type + " at (" + entity.startXLocation + ", " + entity.startYLocation + ", " + entity.startZLocation + ")");
+    });
+
+    return selectedEntities;
+}
+
+// Create radii polygons from selected entities
+function createRadiiFromSelectedEntities(selectedEntities, params) {
+    try {
+        updateStatusMessage("Creating radii polygons for " + selectedEntities.length + " selected entities...");
+
+        // Convert selectedEntities to the format expected by getRadiiPolygons
+        const pointsForRadii = selectedEntities.map((entity) => ({
+            startXLocation: entity.startXLocation,
+            startYLocation: entity.startYLocation,
+            startZLocation: entity.startZLocation,
+            endXLocation: entity.endXLocation,
+            endYLocation: entity.endYLocation,
+            endZLocation: entity.endZLocation
+        }));
+
+        console.log("🔥 Calling getRadiiPolygons with " + pointsForRadii.length + " points:");
+        pointsForRadii.forEach((point, index) => {
+            console.log("  Point " + (index + 1) + ": (" + point.startXLocation + ", " + point.startYLocation + ", " + point.startZLocation + ")");
+        });
+
+        // Use existing getRadiiPolygons function
+        const polygons = getRadiiPolygons(
+            pointsForRadii,
+            params.steps,
+            params.radius,
+            params.unionCircles,
+            true, // addToMaps = true
+            params.color,
+            2, // lineWidth
+            params.useToeLocation
+        );
+
+        console.log("✅ getRadiiPolygons returned " + polygons.length + " polygon(s)");
+
+        // Update display
+        drawData(points, selectedHole);
+        debouncedSaveKAD();
+        debouncedUpdateTreeView();
+
+        const resultMessage = params.unionCircles ? "Unioned radii polygon created successfully." : polygons.length + " radii polygon(s) created successfully.";
+
+        updateStatusMessage(resultMessage);
+
+        Swal.fire({
+            title: "Success",
+            html: `
+				<div style="text-align: center;">
+					<p><strong>${resultMessage}</strong></p>
+					<p><strong>Input:</strong> ${selectedEntities.length} entities</p>
+					<p><strong>Output:</strong> ${polygons.length} polygon(s)</p>
+					<p><strong>Radius:</strong> ${params.radius}m</p>
+					<p><strong>Location:</strong> ${params.useToeLocation ? "End/Toe" : "Start/Collar"}</p>
+					<p><strong>Zoom or scroll to see the results.</strong></p>
+				</div>
+			`,
+            icon: "success",
+            customClass: {
+                container: "custom-popup-container",
+                confirmButton: "confirm"
+            }
+        });
+    } catch (error) {
+        console.error("❌ Error creating radii polygons:", error);
+        updateStatusMessage("Error creating radii polygons.");
+
+        Swal.fire({
+            title: "Error",
+            html: `
+				<div style="text-align: center;">
+					<p><strong>Failed to create radii polygons.</strong></p>
+					<hr style="border-color: #555; margin: 15px 0;">
+					<p><strong>Error:</strong><br>${error.message || "Unknown error occurred"}</p>
+				</div>
+			`,
+            icon: "error",
+            customClass: {
+                container: "custom-popup-container",
+                confirmButton: "confirm"
+            }
+        });
+    }
+}
+// ================================
+// RADII HOLES OR KADs FUNCTIONALITY - ENDED
+// ================================
+
+// ================================
+// DRAW BLAST BOUNDARY FUNCTIONALITY - STARTED
+// ================================
+
 function drawBlastBoundary(polygon, strokeColor) {
     //convert wold coords to screen cords
     const screenCoords = polygon.map((point) => {
@@ -9014,6 +10046,9 @@ function getMultipleClickedHoles(clickX, clickY) {
     let holesWithinThreshold = [];
     for (let i = 0; i < points.length; i++) {
         let point = points[i];
+        // ✅ CHECK VISIBILITY FIRST - Skip hidden holes
+        if (!isHoleVisible(point)) continue;
+
         let distance = Math.sqrt((point.startXLocation - adjustedX) ** 2 + (point.startYLocation - adjustedY) ** 2);
         if (distance < threshold) {
             holesWithinThreshold.push(point);
@@ -9548,23 +10583,47 @@ function offsetObjectWithSelectedPoint(map, selectedPoint, direction, offsetAmou
 
 function deleteSelectedPoint() {
     if (selectedPoint && isDeletingKAD) {
+        // Check if the entity containing this point is visible
+        const entityName = getEntityNameFromSelectedPoint(selectedPoint);
+        if (entityName && !isEntityVisible(entityName)) {
+            console.log("❌ Cannot delete point from hidden entity: " + entityName);
+            return;
+        }
         deletePointInMap(allKADDrawingsMap, selectedPoint);
     }
 }
+
+// Helper function to get entity name from selected point
+function getEntityNameFromSelectedPoint(selectedPoint) {
+    for (const [entityName, entity] of allKADDrawingsMap.entries()) {
+        const foundPoint = entity.data.find((point) => point.pointID === selectedPoint.pointID && point.pointXLocation === selectedPoint.pointXLocation && point.pointYLocation === selectedPoint.pointYLocation);
+        if (foundPoint) {
+            return entityName;
+        }
+    }
+    return null;
+}
+
 // Helper function to determine entity type from selected point
 function getEntityTypeFromSelectedPoint(selectedPoint) {
     // Find which entity this point belongs to
     for (const [entityName, entity] of allKADDrawingsMap.entries()) {
         const foundPoint = entity.data.find((point) => point.pointID === selectedPoint.pointID && point.pointXLocation === selectedPoint.pointXLocation && point.pointYLocation === selectedPoint.pointYLocation);
-
         if (foundPoint) {
             return entity.entityType;
         }
     }
     return null;
 }
+
 function deleteSelectedObject() {
     if (selectedPoint && isDeletingKAD) {
+        // Check if the entity containing this point is visible
+        const entityName = getEntityNameFromSelectedPoint(selectedPoint);
+        if (entityName && !isEntityVisible(entityName)) {
+            console.log("❌ Cannot delete object from hidden entity: " + entityName);
+            return;
+        }
         deleteObjectInMap(allKADDrawingsMap, selectedPoint);
         // ADD THIS: Save after delete
         debouncedSaveKAD();
@@ -9576,7 +10635,25 @@ function deleteSelectedAll() {
         // Determine entity type from the selected point
         const entityType = getEntityTypeFromSelectedPoint(selectedPoint);
         if (entityType) {
-            deleteAllOfType(allKADDrawingsMap, entityType);
+            // Only delete visible entities of this type
+            const visibleEntitiesToDelete = [];
+            for (const [entityName, entity] of allKADDrawingsMap.entries()) {
+                if (entity.entityType === entityType && isEntityVisible(entityName)) {
+                    visibleEntitiesToDelete.push(entityName);
+                }
+            }
+
+            if (visibleEntitiesToDelete.length === 0) {
+                console.log("❌ No visible entities of type " + entityType + " to delete");
+                return;
+            }
+
+            // Delete only visible entities
+            visibleEntitiesToDelete.forEach((entityName) => {
+                allKADDrawingsMap.delete(entityName);
+            });
+
+            console.log("🗑️ Deleted " + visibleEntitiesToDelete.length + " visible " + entityType + " entities");
             // ADD THIS: Save after delete all of type
             debouncedSaveKAD();
         }
@@ -10209,6 +11286,83 @@ function handleHoleAddingClick(event) {
     }
 }
 
+//================================================
+//DRAWING FUNCTIONS ADD KAD DRAWING POINT - LINE - POLY - CIRCLE - TEXT
+//===============================================
+
+// Add these variables to track the current drawing state
+let currentDrawingEntityName = null;
+let deleteKeyPressed = false;
+let deleteKeyCount = 0;
+
+// Enhanced key listener for delete/backspace functionality
+function handleDrawingKeyEvents(event) {
+    // Check for Delete or Backspace keys
+    if (event.key === "Delete" || event.key === "Backspace") {
+        event.preventDefault(); // Prevent default browser behavior
+
+        // Only allow deletion if we have a current drawing entity
+        if (currentDrawingEntityName && allKADDrawingsMap.has(currentDrawingEntityName)) {
+            const entity = allKADDrawingsMap.get(currentDrawingEntityName);
+
+            if (entity.data.length > 0) {
+                // Remove the last point
+                const removedPoint = entity.data.pop();
+                deleteKeyCount++;
+
+                // Update the last draw point to the previous point (if any)
+                if (entity.data.length > 0) {
+                    const lastPoint = entity.data[entity.data.length - 1];
+                    updateLastKADDrawPoint(lastPoint.pointXLocation, lastPoint.pointYLocation);
+                } else {
+                    // If no points left, reset the last draw point
+                    lastKADDrawPoint = null;
+                }
+
+                // Show user feedback
+                const remainingPoints = entity.data.length;
+                const entityType = entity.entityType;
+                let message = "";
+
+                if (remainingPoints === 0) {
+                    message = "Removed last point. Entity is now empty.";
+                } else {
+                    message = "Removed last point. " + remainingPoints + " point" + (remainingPoints > 1 ? "s" : "") + " remaining in " + entityType + ".";
+                }
+
+                updateStatusMessage(message);
+                setTimeout(() => updateStatusMessage(""), 2000);
+
+                // Redraw the canvas
+                drawData(points, selectedHole);
+                debouncedSaveKAD();
+
+                console.log("🗑️ Removed point from " + currentDrawingEntityName + ". Points remaining: " + remainingPoints);
+            } else {
+                updateStatusMessage("No points to remove from current " + entity.entityType + ".");
+                setTimeout(() => updateStatusMessage(""), 1500);
+            }
+        } else {
+            updateStatusMessage("No active drawing to remove points from.");
+            setTimeout(() => updateStatusMessage(""), 1500);
+        }
+        return true; // Signal that we handled the key
+    }
+    return false; // Signal that we didn't handle the key
+}
+// Enhanced function to update the current drawing entity name
+function setCurrentDrawingEntity(entityName) {
+    currentDrawingEntityName = entityName;
+    deleteKeyCount = 0; // Reset delete count when starting new entity
+    console.log("🎨 Set current drawing entity: " + entityName);
+}
+// Function to clear current drawing entity when switching tools
+function clearCurrentDrawingEntity() {
+    currentDrawingEntityName = null;
+    deleteKeyCount = 0;
+    console.log("🧹 Cleared current drawing entity");
+}
+
 function handleKADPointClick(event) {
     if (isDrawingPoint) {
         // get the values from clicking in the canvas
@@ -10228,6 +11382,7 @@ function handleKADPointClick(event) {
         const snapResult = canvasToWorldWithSnap(clickX, clickY);
         worldX = snapResult.worldX;
         worldY = snapResult.worldY;
+        worldZ = snapResult.worldZ;
 
         // Show snap feedback if snapped
         if (snapResult.snapped) {
@@ -10239,6 +11394,7 @@ function handleKADPointClick(event) {
     } else {
         worldX = null;
         worldY = null;
+        worldZ = null;
         lastKADDrawPoint = null; // Reset when switching tools
         //save the drawing using douncedSave
         debouncedUpdateTreeView(); // Use debounced version
@@ -10254,13 +11410,14 @@ function addKADPoint() {
         const pointID = allKADDrawingsMap.has(entityName) ? allKADDrawingsMap.get(entityName).data.length + 1 : 1;
         const pointXLocation = worldX;
         const pointYLocation = worldY;
-        const pointZLocation = drawingZValue || document.getElementById("drawingElevation").value || 0;
+        const pointZLocation = worldZ || drawingZValue || document.getElementById("drawingElevation").value || 0;
         const lineWidth = document.getElementById("drawingLineWidth").value || 1;
 
         // Create new entity name if needed (like other tools)
         if (createNewEntity) {
             entityName = "pointObject" + (allKADDrawingsMap.size + 1);
             createNewEntity = false; // Set to false after creating new entity
+            setCurrentDrawingEntity(entityName);
         }
 
         // In addKADPoint() function around line 9720
@@ -10271,7 +11428,7 @@ function addKADPoint() {
             pointXLocation: pointXLocation,
             pointYLocation: pointYLocation,
             pointZLocation: pointZLocation,
-            lineWidth: document.getElementById("drawingLineWidth").value, // This is added for inter-changable types. points > lines > polys
+            lineWidth: lineWidth, // This is added for inter-changable types. points > lines > polys
             color: color,
             connected: false,
             closed: false,
@@ -10316,6 +11473,7 @@ function handleKADLineClick(event) {
         const snapResult = canvasToWorldWithSnap(clickX, clickY);
         worldX = snapResult.worldX;
         worldY = snapResult.worldY;
+        worldZ = snapResult.worldZ;
 
         // Show snap feedback if snapped
         if (snapResult.snapped) {
@@ -10327,6 +11485,7 @@ function handleKADLineClick(event) {
     } else {
         worldX = null;
         worldY = null;
+        worldZ = null;
         lastKADDrawPoint = null; // Reset when switching tools
         //save the drawing using douncedSave
         debouncedSaveKAD();
@@ -10339,13 +11498,14 @@ function addKADLine() {
         const pointID = allKADDrawingsMap.has(entityName) ? allKADDrawingsMap.get(entityName).data.length + 1 : 1; // Changed map
         const pointXLocation = worldX;
         const pointYLocation = worldY;
-        const pointZLocation = drawingZValue || document.getElementById("drawingElevation").value || 0;
-        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const pointZLocation = worldZ || drawingZValue || document.getElementById("drawingElevation").value || 0;
+        const lineWidth = document.getElementById("drawingLineWidth").value || 1;
         const color = getJSColorHexDrawing();
 
         if (createNewEntity) {
             entityName = "lineObject" + (allKADDrawingsMap.size + 1); // Changed map
             createNewEntity = false;
+            setCurrentDrawingEntity(entityName);
         }
 
         const lineObject = {
@@ -10397,7 +11557,7 @@ function handleKADPolyClick(event) {
         const snapResult = canvasToWorldWithSnap(clickX, clickY);
         worldX = snapResult.worldX;
         worldY = snapResult.worldY;
-
+        worldZ = snapResult.worldZ;
         // Show snap feedback if snapped
         if (snapResult.snapped) {
             updateStatusMessage("Snapped to " + snapResult.snapTarget.description);
@@ -10408,6 +11568,7 @@ function handleKADPolyClick(event) {
     } else {
         worldX = null;
         worldY = null;
+        worldZ = null;
         lastKADDrawPoint = null; // Reset when switching tools
         //save the drawing using douncedSave
         debouncedSaveKAD();
@@ -10422,14 +11583,15 @@ function addKADPoly() {
         const pointID = allKADDrawingsMap.has(entityName) ? allKADDrawingsMap.get(entityName).data.length + 1 : 1;
         const pointXLocation = worldX;
         const pointYLocation = worldY;
-        const pointZLocation = drawingZValue || document.getElementById("drawingElevation").value || 0;
-        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const pointZLocation = worldZ || drawingZValue || document.getElementById("drawingElevation").value || 0;
+        const lineWidth = document.getElementById("drawingLineWidth").value || 1;
         const color = getJSColorHexDrawing();
         const closed = true; // Default to closed polygon
 
         if (createNewEntity) {
             entityName = "polyObject" + (allKADDrawingsMap.size + 1);
             createNewEntity = false; // Set the flag to false after creating a new entity
+            setCurrentDrawingEntity(entityName);
         }
 
         const polyObject = {
@@ -10483,7 +11645,7 @@ function handleKADCircleClick(event) {
         const snapResult = canvasToWorldWithSnap(clickX, clickY);
         worldX = snapResult.worldX;
         worldY = snapResult.worldY;
-
+        worldZ = snapResult.worldZ;
         // Show snap feedback if snapped
         if (snapResult.snapped) {
             updateStatusMessage("Snapped to " + snapResult.snapTarget.description);
@@ -10494,6 +11656,7 @@ function handleKADCircleClick(event) {
     } else {
         worldX = null;
         worldY = null;
+        worldZ = null;
         lastKADDrawPoint = null; // Reset when switching tools
         //save the drawing using douncedSave
         debouncedSaveKAD();
@@ -10509,13 +11672,14 @@ function addKADCircle() {
         const pointID = allKADDrawingsMap.has(entityName) ? allKADDrawingsMap.get(entityName).data.length + 1 : 1;
         const pointXLocation = worldX;
         const pointYLocation = worldY;
-        const pointZLocation = drawingZValue || document.getElementById("drawingElevation").value || 0;
-        const lineWidth = document.getElementById("drawingLineWidth").value;
+        const pointZLocation = worldZ || drawingZValue || document.getElementById("drawingElevation").value || 0;
+        const lineWidth = document.getElementById("drawingLineWidth").value || 1;
 
         // Create new entity name if needed (like other tools)
         if (createNewEntity) {
             entityName = "circleObject" + (allKADDrawingsMap.size + 1);
             createNewEntity = false; // Set to false after creating new entity
+            setCurrentDrawingEntity(entityName);
         }
 
         const circleObject = {
@@ -10569,7 +11733,7 @@ function handleKADTextClick(event) {
         const snapResult = canvasToWorldWithSnap(clickX, clickY);
         worldX = snapResult.worldX;
         worldY = snapResult.worldY;
-
+        worldZ = snapResult.worldZ;
         // Show snap feedback if snapped
         if (snapResult.snapped) {
             updateStatusMessage("Snapped to " + snapResult.snapTarget.description);
@@ -10580,6 +11744,7 @@ function handleKADTextClick(event) {
     } else {
         worldX = null;
         worldY = null;
+        worldZ = null;
         lastKADDrawPoint = null; // Reset when switching tools
         //save the drawing using douncedSave
         debouncedSaveKAD();
@@ -10736,6 +11901,7 @@ async function addKADText() {
             console.log("Creating new entity...");
             entityName = "textObject" + (allKADDrawingsMap.size + 1);
             createNewEntity = false; // Set to false after creating new entity
+            setCurrentDrawingEntity(entityName);
             console.log("New entityName:", entityName);
         } else {
             console.log("Using existing entityName:", entityName);
@@ -11997,6 +13163,12 @@ function incrementLetter(str) {
 }
 
 function editHoleLengthPopup() {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     Swal.fire({
         title: `Edit the length of hole. Hole: ${selectedHole.holeID} ?`,
         showCancelButton: true,
@@ -12059,6 +13231,12 @@ function setMeasuredDate() {
 
 // measure tool for Length
 function measuredLengthPopup() {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     Swal.fire({
         title: `Record the measured length of hole. Hole: ${selectedHole.holeID} ?`,
         showCancelButton: true,
@@ -12102,6 +13280,12 @@ function measuredLengthPopup() {
 }
 // measure tool for Mass
 function measuredMassPopup() {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     Swal.fire({
         title: `Record the measured mass of hole (kg/lb) Hole: ${selectedHole.holeID} ?`,
         showCancelButton: true,
@@ -12145,6 +13329,12 @@ function measuredMassPopup() {
 }
 // measure tool for Mass
 function measuredCommentPopup() {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     if (selectedHole) {
         // Use the obtained values to add the hole
         const index = points.findIndex((point) => point === selectedHole);
@@ -12227,6 +13417,12 @@ function handleBlastNameClick(event) {
 }
 
 function editBlastNamePopup(selectedHole) {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     if (selectedHole) {
         const index = points.findIndex((point) => point === selectedHole);
         if (index !== -1) {
@@ -12366,6 +13562,12 @@ function editBlastNamePopup(selectedHole) {
 }
 // Using SweetAlert Library Create a popup that gets input from the user.
 function editHoleTypePopup() {
+    // ✅ CHECK VISIBILITY FIRST - Don't edit hidden holes
+    if (!selectedHole || !isHoleVisible(selectedHole)) {
+        console.log("❌ Cannot edit hidden hole: " + (selectedHole ? selectedHole.holeID : "none"));
+        return;
+    }
+
     if (selectedHole) {
         // Use the obtained values to add the hole
         const index = points.findIndex((point) => point === selectedHole);
@@ -13695,6 +14897,7 @@ function drawData(points, selectedHole) {
                             lineWidthForDisplay = 2;
                         }
                         drawKADPoints(screenX, screenY, point.pointZLocation, lineWidthForDisplay, point.color);
+                        drawKADCoordinates(point, screenX, screenY);
                     });
                 } else if (entity.entityType === "point") {
                     // Apply pixel distance simplification to points for performance
@@ -13708,6 +14911,7 @@ function drawData(points, selectedHole) {
                         }
                         const [x, y] = worldToCanvas(pointData.pointXLocation, pointData.pointYLocation);
                         drawKADPoints(x, y, pointData.pointZLocation, lineWidthForDisplay, pointData.color);
+                        drawKADCoordinates(pointData, x, y);
                     }
                 } else if (entity.entityType === "circle") {
                     // ✅ FIXED: Move visibility check inside forEach loop
@@ -13716,6 +14920,7 @@ function drawData(points, selectedHole) {
                         const screenX = (circle.pointXLocation - centroidX) * currentScale + canvas.width / 2;
                         const screenY = -(circle.pointYLocation - centroidY) * currentScale + canvas.height / 2;
                         drawKADCircles(screenX, screenY, circle.pointZLocation, circle.radius, circle.lineWidth, circle.color);
+                        drawKADCoordinates(circle, screenX, screenY);
                     });
                 } else if (entity.entityType === "text") {
                     entity.data.forEach((textData) => {
@@ -13724,6 +14929,7 @@ function drawData(points, selectedHole) {
                             const screenX = (textData.pointXLocation - centroidX) * currentScale + canvas.width / 2;
                             const screenY = -(textData.pointYLocation - centroidY) * currentScale + canvas.height / 2;
                             drawKADTexts(screenX, screenY, textData.pointZLocation, textData.text, textData.color);
+                            drawKADCoordinates(textData, screenX, screenY);
                         }
                     });
                 } else if (developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
@@ -13740,6 +14946,10 @@ function drawData(points, selectedHole) {
                         const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
 
                         drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
+                        drawKADCoordinates(currentPoint, sx, sy);
+                        if (nextPoint === visiblePoints[visiblePoints.length - 1]) {
+                            drawKADCoordinates(nextPoint, ex, ey);
+                        }
                     }
 
                     // Handle closing segment for polygons
@@ -13751,6 +14961,8 @@ function drawData(points, selectedHole) {
                         const [ex, ey] = worldToCanvas(firstPoint.pointXLocation, firstPoint.pointYLocation);
 
                         drawKADPolys(sx, sy, ex, ey, lastPoint.pointZLocation, firstPoint.pointZLocation, lastPoint.lineWidth, lastPoint.color, false);
+
+                        // drawKADCoordinates(lastPoint, ex, ey);
                     }
                 } else if (!developerModeEnabled && (entity.entityType === "line" || entity.entityType === "poly")) {
                     // --- Pixel-distance simplification for performance ---
@@ -13776,6 +14988,10 @@ function drawData(points, selectedHole) {
                         const [ex, ey] = worldToCanvas(nextPoint.pointXLocation, nextPoint.pointYLocation);
 
                         drawKADPolys(sx, sy, ex, ey, currentPoint.pointZLocation, nextPoint.pointZLocation, currentPoint.lineWidth, currentPoint.color, false);
+                        drawKADCoordinates(currentPoint, sx, sy);
+                        if (nextPoint === simplifiedPoints[simplifiedPoints.length - 1]) {
+                            drawKADCoordinates(nextPoint, ex, ey);
+                        }
                     }
 
                     // Handle closing segment for polygons
@@ -14245,6 +15461,35 @@ function drawData(points, selectedHole) {
     }
 }
 
+function drawKADCoordinates(kadPoint, screenX, screenY) {
+    const displayOptions = getDisplayOptions();
+
+    // Calculate text offset based on current scale and font size
+    const textOffset = Math.max(10, parseInt(currentFontSize * 0.5));
+    const leftSide = parseInt(screenX) - textOffset;
+    const rightSide = parseInt(screenX) + textOffset;
+    const topSide = parseInt(screenY - textOffset);
+    const middleSide = parseInt(screenY + parseInt(currentFontSize / 2));
+    const bottomSide = parseInt(screenY + textOffset + parseInt(currentFontSize));
+
+    // Set font for coordinate display
+    ctx.font = parseInt(currentFontSize * 0.5) + "px Arial";
+
+    // Display X coordinate (right side, top)
+    if (displayOptions.xValue) {
+        drawText(rightSide, topSide, parseFloat(kadPoint.pointXLocation).toFixed(2), textFillColor);
+    }
+
+    // Display Y coordinate (right side, middle)
+    if (displayOptions.yValue) {
+        drawText(rightSide, middleSide, parseFloat(kadPoint.pointYLocation).toFixed(2), textFillColor);
+    }
+
+    // Display Z coordinate (right side, bottom)
+    if (displayOptions.zValue) {
+        drawText(rightSide, bottomSide, parseFloat(kadPoint.pointZLocation).toFixed(2), textFillColor);
+    }
+}
 function drawVoronoiLegendAndCells(points, selectedVoronoiMetric, getColorForMetric, legendLabel, minValue, maxValue, step) {
     const legendX = 10,
         legendY = canvas.height / 2 - 70,
@@ -15208,6 +16453,8 @@ function setKADEntityVisibility(entityName, visible) {
 
         // ✅ Clear hidden entities from selections
         clearHiddenFromSelections();
+        // TODO FIX THE REMOVAL OF ENTITIES FROM SELECTIONS
+        //! Its not working you can still delete invisible entities. Which is undesirable.
 
         drawData(points, selectedHole);
     }
@@ -15933,7 +17180,7 @@ function endKadTools() {
         isDrawingCircle = false;
         isDrawingPoly = false;
         isDrawingText = false;
-
+        clearCurrentDrawingEntity(); // Clear current drawing entity
         updateStatusMessage("Drawing tools cancelled");
         setTimeout(() => {
             updateStatusMessage("");
@@ -16056,6 +17303,11 @@ window.onload = function () {
 
     // --- Key Listeners ---
     document.addEventListener("keydown", (event) => {
+        // Handle drawing key events (delete/backspace) when drawing tools are active
+        if (isDrawingPoint || isDrawingLine || isDrawingPoly || isDrawingCircle || isDrawingText) {
+            handleDrawingKeyEvents(event);
+        }
+
         // Escape Key to reset tools
         if (event.key === "Escape") {
             console.log("Escape pressed - resetting all");
@@ -17072,13 +18324,14 @@ canvas.addEventListener("contextmenu", function (e) {
 
     // If a KAD tool is active, handle new object creation
     if (anyKADToolActive) {
+        clearCurrentDrawingEntity();
         kadContextMenu(e);
         return;
     }
 
     // For holes: Check multiple selection first, then single hole
     if (selectedMultipleHoles && selectedMultipleHoles.length > 1) {
-        showMultipleHolePropertyEditor(selectedMultipleHoles);
+        showHolePropertyEditor(selectedMultipleHoles);
         debouncedUpdateTreeView(); // Use debounced version
         return;
     }
@@ -17317,138 +18570,6 @@ function isKADObjectSelected(clickedObject) {
 
     return false;
 }
-// Multiple Hole Property Editor
-function showMultipleHolePropertyEditor(holes) {
-    if (!holes || holes.length === 0) return;
-
-    // Calculate current averages with proper fallbacks
-    let delaySum = 0;
-    let uniqueDelays = new Set();
-    let uniqueDelayColors = new Set();
-    let uniqueHoleTypes = new Set();
-
-    holes.forEach((hole) => {
-        // Get current delay with fallback to connector delay
-        const currentDelay = hole.holeDelay !== undefined ? hole.holeDelay : hole.timingDelayMilliseconds || 0;
-        const currentColor = hole.holeDelayColor || hole.colorHexDecimal || "#FF0000";
-        const currentType = hole.holeType || "Production";
-
-        delaySum += parseFloat(currentDelay);
-        uniqueDelays.add(currentDelay);
-        uniqueDelayColors.add(currentColor);
-        uniqueHoleTypes.add(currentType);
-    });
-
-    const avgDelay = delaySum / holes.length;
-    const firstDelayColor = Array.from(uniqueDelayColors)[0];
-    const firstHoleType = Array.from(uniqueHoleTypes)[0];
-
-    // Show different values indicator if not all holes have the same value
-    const delayPlaceholder = uniqueDelays.size > 1 ? "Multiple values" : "";
-    const colorNote = uniqueDelayColors.size > 1 ? " (Multiple colors)" : "";
-    const typeNote = uniqueHoleTypes.size > 1 ? " (Multiple types)" : "";
-
-    Swal.fire({
-        title: `Edit Multiple Holes (${holes.length} selected)`,
-        html: `
-            <div class="button-container-2col">
-                <label class="labelWhite12">Delay:</label>
-                <input type="number" id="editMultipleHoleDelay" value="${avgDelay.toFixed(1)}" min="-1000" max="1000" step="1" class="swal2-input" placeholder="${delayPlaceholder}">
-                
-                <label class="labelWhite12">Delay Color${colorNote}:</label>
-                <input type="button" id="editMultipleHoleDelayColor" name="editMultipleHoleDelayColor" data-jscolor="{value:'${firstDelayColor}'}" title="Delay Color" class="swal2-input">
-                
-                <label class="labelWhite12">Hole Type${typeNote}:</label>
-                <select id="editMultipleHoleType" class="swal2-select">
-                    <option value="" ${uniqueHoleTypes.size > 1 ? "selected" : ""}>-- Keep current values --</option>
-                    <option value="Production" ${uniqueHoleTypes.size === 1 && firstHoleType === "Production" ? "selected" : ""}>Production</option>
-                    <option value="Trim" ${uniqueHoleTypes.size === 1 && firstHoleType === "Trim" ? "selected" : ""}>Trim</option>
-                    <option value="Buffer" ${uniqueHoleTypes.size === 1 && firstHoleType === "Buffer" ? "selected" : ""}>Buffer</option>
-                </select>
-                
-                <div style="grid-column: 1 / -1; margin-top: 10px; font-size: 0.9em; color: #888;">
-                    Note: Empty fields will preserve existing values for each hole.
-                </div>
-            </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: "Apply",
-        cancelButtonText: "Cancel",
-        customClass: {
-            container: "custom-popup-container",
-            popup: "swal2-popup",
-            title: "swal2-title",
-            content: "swal2-content",
-            confirmButton: "confirm",
-            cancelButton: "cancel"
-        },
-        didOpen: () => {
-            // Initialize JSColor after the dialog opens
-            jscolor.install();
-        }
-    }).then((result) => {
-        // Clear any dragging states when dialog closes
-        isDragging = false;
-        clearTimeout(longPressTimeout);
-
-        if (result.isConfirmed) {
-            const newDelay = document.getElementById("editMultipleHoleDelay").value;
-            const delayColorElement = document.getElementById("editMultipleHoleDelayColor");
-            const newDelayColor = delayColorElement.jscolor ? delayColorElement.jscolor.toHEXString() : delayColorElement.value;
-            const newHoleType = document.getElementById("editMultipleHoleType").value;
-
-            // Track if any timing-related properties were changed
-            let timingChanged = false;
-
-            holes.forEach((hole) => {
-                if (newDelay !== "") {
-                    hole.holeDelay = parseFloat(newDelay);
-                    // Also update connector property for backward compatibility
-                    if (hole.timingDelayMilliseconds !== undefined) {
-                        hole.timingDelayMilliseconds = hole.holeDelay;
-                    }
-                    timingChanged = true;
-                }
-                if (newDelayColor !== "") {
-                    hole.holeDelayColor = newDelayColor;
-                    // Also update connector property for backward compatibility
-                    if (hole.colorHexDecimal !== undefined) {
-                        hole.colorHexDecimal = newDelayColor;
-                    }
-                    timingChanged = true; // Color changes affect visual timing display
-                }
-                if (newHoleType !== "") {
-                    hole.holeType = newHoleType;
-                }
-            });
-
-            // ** RECALCULATE TIMING AND CONTOURS IF TIMING CHANGED **
-            if (timingChanged) {
-                // Always recalculate timing calculations after delay changes
-                holeTimes = calculateTimes(points);
-
-                // Update timing chart display
-                timeChart();
-
-                // Recalculate contours if they're being displayed
-                const result = recalculateContours(points, 0, 0);
-                if (result) {
-                    contourLinesArray = result.contourLinesArray;
-                    directionArrows = result.directionArrows;
-                }
-            }
-
-            // Update selection averages and sliders since we're editing the selected holes
-            updateSelectionAveragesAndSliders(holes);
-
-            drawData(points, selectedHole); // Redraw
-
-            const statusMessage = timingChanged ? `Updated ${holes.length} holes - Timings recalculated` : `Updated ${holes.length} holes`;
-            updateStatusMessage(statusMessage);
-            setTimeout(() => updateStatusMessage(""), 3000);
-        }
-    });
-}
 
 function jsColorPaletteForPicker() {
     // These options apply to all color pickers on the page
@@ -17457,18 +18578,18 @@ function jsColorPaletteForPicker() {
         palette: [
             "#770000",
             "#FF0000",
-            "#FF5500",
+            "#FF9900",
             "#FFFF00",
             "#00ff00",
             "#009900",
-            "#00AAFF",
-            "#0055CC",
+            "#00ffFF",
+            "#0099ff",
             "#0000FF",
             "#FF00FF", //10 per row
             "#550000",
             "#AA0000",
             "#883300",
-            "#999900",
+            "#bbbb00",
             "#33AA00",
             "#006600",
             "#007F7F",
@@ -17489,29 +18610,191 @@ function jsColorPaletteForPicker() {
     };
 }
 
-// Hole Property Editor
 function showHolePropertyEditor(hole) {
-    // Get current values with proper fallbacks
-    const currentDelay = hole.holeDelay !== undefined ? hole.holeDelay : hole.timingDelayMilliseconds || 0;
-    const currentColor = hole.holeDelayColor || hole.colorHexDecimal || "#FF0000";
-    const currentType = hole.holeType || "Production";
+    // ✅ CHECK VISIBILITY FIRST - Filter out hidden holes
+    const visibleHoles = holes.filter((hole) => isHoleVisible(hole));
+
+    if (visibleHoles.length === 0) {
+        console.log("❌ No visible holes to edit");
+        return;
+    }
+
+    if (visibleHoles.length !== holes.length) {
+        console.log("⚠️ Some holes are hidden and will not be edited");
+    }
+
+    // Determine if we're dealing with single hole or multiple holes
+    const holes = Array.isArray(hole) ? hole : selectedMultipleHoles && selectedMultipleHoles.length > 1 ? selectedMultipleHoles : [hole];
+    const isMultiple = holes.length > 1;
+    const isArrayInput = Array.isArray(hole);
+
+    if (holes.length === 0) return;
+
+    // Calculate current values and averages with proper fallbacks
+    let delaySum = 0,
+        diameterSum = 0,
+        bearingSum = 0,
+        angleSum = 0,
+        subdrillSum = 0;
+    let collarZSum = 0,
+        gradeZSum = 0;
+    let uniqueDelays = new Set(),
+        uniqueDelayColors = new Set(),
+        uniqueHoleTypes = new Set();
+    let uniqueRowIDs = new Set(),
+        uniquePosIDs = new Set();
+    let typeCounts = {};
+
+    holes.forEach((h) => {
+        // Basic properties
+        const currentDelay = h.holeDelay !== undefined ? h.holeDelay : h.timingDelayMilliseconds || 0;
+        const currentColor = h.holeDelayColor || h.colorHexDecimal || "#FF0000";
+        const currentType = h.holeType || "Production";
+
+        // Geometry properties
+        const diameter = h.holeDiameter || 0;
+        const bearing = h.holeBearing || 0;
+        const angle = h.holeAngle || 0;
+        const subdrill = h.subdrillAmount || 0;
+        const collarZ = h.startZLocation || 0;
+        const gradeZ = h.gradeZLocation || h.endZLocation || 0;
+        const rowID = h.rowID || "";
+        const posID = h.posID || "";
+
+        // Sum for averages
+        delaySum += parseFloat(currentDelay);
+        diameterSum += parseFloat(diameter);
+        bearingSum += parseFloat(bearing);
+        angleSum += parseFloat(angle);
+        subdrillSum += parseFloat(subdrill);
+        collarZSum += parseFloat(collarZ);
+        gradeZSum += parseFloat(gradeZ);
+
+        // Track unique values
+        uniqueDelays.add(currentDelay);
+        uniqueDelayColors.add(currentColor);
+        uniqueHoleTypes.add(currentType);
+        uniqueRowIDs.add(rowID);
+        uniquePosIDs.add(posID);
+
+        // Count hole types for most common
+        typeCounts[currentType] = (typeCounts[currentType] || 0) + 1;
+    });
+
+    // Calculate averages
+    const count = holes.length;
+    const avgDelay = delaySum / count;
+    const avgDiameter = diameterSum / count;
+    const avgBearing = bearingSum / count;
+    const avgAngle = angleSum / count;
+    const avgSubdrill = subdrillSum / count;
+    const avgCollarZ = collarZSum / count;
+    const avgGradeZ = gradeZSum / count;
+
+    // Find most common values
+    const firstDelayColor = Array.from(uniqueDelayColors)[0];
+    const firstRowID = Array.from(uniqueRowIDs)[0];
+    const firstPosID = Array.from(uniquePosIDs)[0];
+
+    // Find most common hole type
+    let mostCommonType = "Production";
+    let maxCount = 0;
+    for (const [type, typeCount] of Object.entries(typeCounts)) {
+        if (typeCount > maxCount) {
+            maxCount = typeCount;
+            mostCommonType = type;
+        }
+    }
+
+    // Create combined hole types list (standard + any custom types from selection)
+    const standardHoleTypes = ["Angled", "Batter", "Buffer", "Infill", "Production", "Stab", "Toe", "Trim"];
+    const customTypesFromSelection = Array.from(uniqueHoleTypes).filter((type) => !standardHoleTypes.includes(type));
+    const allHoleTypes = [...standardHoleTypes, ...customTypesFromSelection].sort();
+
+    // Store original values for change detection
+    const originalValues = {
+        delay: avgDelay.toFixed(1),
+        diameter: avgDiameter.toFixed(0),
+        bearing: avgBearing.toFixed(1),
+        angle: avgAngle.toFixed(0),
+        subdrill: avgSubdrill.toFixed(1),
+        collarZ: avgCollarZ.toFixed(2),
+        gradeZ: avgGradeZ.toFixed(2),
+        holeType: mostCommonType,
+        delayColor: firstDelayColor,
+        rowID: firstRowID,
+        posID: firstPosID
+    };
+
+    // Create display values with indicators for varying values
+    const displayDelay = isMultiple && uniqueDelays.size > 1 ? "varies (avg: " + avgDelay.toFixed(1) + ")" : avgDelay.toFixed(1);
+    const displayDiameter = isMultiple && new Set(holes.map((h) => h.holeDiameter)).size > 1 ? "varies (avg: " + avgDiameter.toFixed(0) + ")" : avgDiameter.toFixed(0);
+    const displayBearing = isMultiple && new Set(holes.map((h) => h.holeBearing)).size > 1 ? "varies (avg: " + avgBearing.toFixed(1) + ")" : avgBearing.toFixed(1);
+    const displayAngle = isMultiple && new Set(holes.map((h) => h.holeAngle)).size > 1 ? "varies (avg: " + avgAngle.toFixed(0) + ")" : avgAngle.toFixed(0);
+    const displaySubdrill = isMultiple && new Set(holes.map((h) => h.subdrillAmount)).size > 1 ? "varies (avg: " + avgSubdrill.toFixed(1) + ")" : avgSubdrill.toFixed(1);
+    const displayCollarZ = isMultiple && new Set(holes.map((h) => h.startZLocation)).size > 1 ? "varies (avg: " + avgCollarZ.toFixed(2) + ")" : avgCollarZ.toFixed(2);
+    const displayGradeZ = isMultiple && new Set(holes.map((h) => h.gradeZLocation || h.endZLocation)).size > 1 ? "varies (avg: " + avgGradeZ.toFixed(2) + ")" : avgGradeZ.toFixed(2);
+
+    // Create notes for multiple values
+    const delayNote = isMultiple && uniqueDelays.size > 1 ? " (varying)" : "";
+    const colorNote = isMultiple && uniqueDelayColors.size > 1 ? " (multiple)" : "";
+    const typeNote = isMultiple && uniqueHoleTypes.size > 1 ? " (most common: " + mostCommonType + ")" : "";
+
+    const title = isMultiple ? "Edit Multiple Holes (" + holes.length + " selected)" : "Edit Hole " + holes[0].holeID;
 
     Swal.fire({
-        title: `Edit Hole ${hole.holeID}`,
+        title: title,
         html: `
             <div class="button-container-2col">
-                <label class="labelWhite12">Delay:</label>
-                <input type="number" id="editHoleDelay" value="${currentDelay}" min="-1000" max="1000" step="1" class="swal2-input">
+                <label class="labelWhite12">Delay${delayNote}:</label>
+                <input type="text" id="editHoleDelay" value="${originalValues.delay}" class="swal2-input" placeholder="${displayDelay}">
                 
-                <label class="labelWhite12">Delay Color:</label>
-                <input type="button" id="editHoleDelayColor" name="editHoleDelayColor" data-jscolor="{value:'${currentColor}'}" title="Delay Color" class="swal2-input">
+                <label class="labelWhite12">Delay Color${colorNote}:</label>
+                <input type="button" id="editHoleDelayColor" name="editHoleDelayColor" data-jscolor="{value:'${firstDelayColor}'}" title="Delay Color" class="swal2-input">
                 
                 <label class="labelWhite12">Hole Type:</label>
                 <select id="editHoleType" class="swal2-select">
-                    <option value="Production" ${currentType === "Production" ? "selected" : ""}>Production</option>
-                    <option value="Trim" ${currentType === "Trim" ? "selected" : ""}>Trim</option>
-                    <option value="Buffer" ${currentType === "Buffer" ? "selected" : ""}>Buffer</option>
+                    <option value="">-- No Change --</option>
+                    ${allHoleTypes.map((holeType) => '<option value="' + holeType + '"' + (holeType === mostCommonType ? " selected" : "") + ">" + holeType + "</option>").join("")}
+                    <option value="__CUSTOM__">Other (custom)...</option>
                 </select>
+                
+                <label class="labelWhite12" id="customTypeLabel" style="opacity: 0.3;">Custom Type:</label>
+                <input type="text" id="editHoleTypeCustom" class="swal2-input" placeholder="Enter custom hole type" style="opacity: 0.3;" disabled>
+                
+                <label class="labelWhite12">Diameter (mm):</label>
+                <input type="text" id="editHoleDiameter" value="${originalValues.diameter}" class="swal2-input" placeholder="${displayDiameter}">
+                
+                <label class="labelWhite12">Bearing (°):</label>
+                <input type="text" id="editHoleBearing" value="${originalValues.bearing}" class="swal2-input" placeholder="${displayBearing}">
+                
+                <label class="labelWhite12">Dip/Angle (°):</label>
+                <input type="text" id="editHoleAngle" value="${originalValues.angle}" class="swal2-input" placeholder="${displayAngle}">
+                
+                <label class="labelWhite12">Subdrill (m):</label>
+                <input type="text" id="editHoleSubdrill" value="${originalValues.subdrill}" class="swal2-input" placeholder="${displaySubdrill}">
+                
+                <label class="labelWhite12">Collar Z RL (m):</label>
+                <input type="text" id="editHoleCollarZ" value="${originalValues.collarZ}" class="swal2-input" placeholder="${displayCollarZ}">
+                
+                <label class="labelWhite12">Grade Z RL (m):</label>
+                <input type="text" id="editHoleGradeZ" value="${originalValues.gradeZ}" class="swal2-input" placeholder="${displayGradeZ}">
+                
+                ${
+                    !isMultiple
+                        ? `
+                <label class="labelWhite12">Row ID:</label>
+                <input type="text" id="editHoleRowID" value="${firstRowID}" class="swal2-input" placeholder="Row identifier">
+                
+                <label class="labelWhite12">Pos ID:</label>
+                <input type="text" id="editHolePosID" value="${firstPosID}" class="swal2-input" placeholder="Position identifier">
+                `
+                        : ""
+                }
+                
+                <div style="grid-column: 1 / -1; margin-top: 10px; font-size: 0.9em; color: #888;">
+                    ${isMultiple ? "Note: Use +/- for relative changes (e.g., +0.3, -0.2). Only changed values will be applied." : "Note: Use +/- for relative changes (e.g., +0.3, -0.2). Select hole type from dropdown or choose 'Other' for custom."}
+                </div>
             </div>
         `,
         showCancelButton: true,
@@ -17528,6 +18811,27 @@ function showHolePropertyEditor(hole) {
         didOpen: () => {
             // Initialize JSColor after the dialog opens
             jscolor.install();
+
+            // Add event listener for hole type dropdown change
+            const holeTypeSelect = document.getElementById("editHoleType");
+            const holeTypeCustomInput = document.getElementById("editHoleTypeCustom");
+            const customTypeLabel = document.getElementById("customTypeLabel");
+
+            holeTypeSelect.addEventListener("change", function () {
+                if (this.value === "__CUSTOM__") {
+                    // Enable and highlight the custom input
+                    holeTypeCustomInput.style.opacity = "1";
+                    holeTypeCustomInput.disabled = false;
+                    customTypeLabel.style.opacity = "1";
+                    holeTypeCustomInput.focus();
+                } else {
+                    // Ghost and disable the custom input
+                    holeTypeCustomInput.style.opacity = "0.3";
+                    holeTypeCustomInput.disabled = true;
+                    customTypeLabel.style.opacity = "0.3";
+                    holeTypeCustomInput.value = "";
+                }
+            });
         }
     }).then((result) => {
         // Clear any dragging states when dialog closes
@@ -17537,48 +18841,153 @@ function showHolePropertyEditor(hole) {
         if (result.isConfirmed) {
             const delayColorElement = document.getElementById("editHoleDelayColor");
 
-            // Update hole properties
-            hole.holeDelay = parseFloat(document.getElementById("editHoleDelay").value);
-            hole.holeDelayColor = delayColorElement.jscolor ? delayColorElement.jscolor.toHEXString() : delayColorElement.value;
-            hole.holeType = document.getElementById("editHoleType").value;
+            // Get new values and check if they were changed
+            const newDelay = document.getElementById("editHoleDelay").value.trim();
+            const newDelayColor = delayColorElement.jscolor ? delayColorElement.jscolor.toHEXString() : delayColorElement.value;
 
-            // Also update connector properties if they exist (for backward compatibility)
-            if (hole.timingDelayMilliseconds !== undefined) {
-                hole.timingDelayMilliseconds = hole.holeDelay;
+            // Handle hole type: check if custom or standard
+            let newHoleType = document.getElementById("editHoleType").value;
+            if (newHoleType === "__CUSTOM__") {
+                newHoleType = document.getElementById("editHoleTypeCustom").value.trim();
             }
-            if (hole.colorHexDecimal !== undefined) {
-                hole.colorHexDecimal = hole.holeDelayColor;
+
+            const newDiameter = document.getElementById("editHoleDiameter").value.trim();
+            const newBearing = document.getElementById("editHoleBearing").value.trim();
+            const newAngle = document.getElementById("editHoleAngle").value.trim();
+            const newSubdrill = document.getElementById("editHoleSubdrill").value.trim();
+            const newCollarZ = document.getElementById("editHoleCollarZ").value.trim();
+            const newGradeZ = document.getElementById("editHoleGradeZ").value.trim();
+
+            // Only get Row ID and Pos ID values if editing single hole
+            const newRowID = !isMultiple && document.getElementById("editHoleRowID") ? document.getElementById("editHoleRowID").value.trim() : "";
+            const newPosID = !isMultiple && document.getElementById("editHolePosID") ? document.getElementById("editHolePosID").value.trim() : "";
+
+            // Helper function to handle relative/absolute value changes
+            function processNumericValue(inputValue, originalValue, currentHoleValue) {
+                if (inputValue === "" || inputValue === originalValue) {
+                    return null; // No change
+                }
+
+                if (inputValue.startsWith("+") || inputValue.startsWith("-")) {
+                    // Relative adjustment
+                    const delta = parseFloat(inputValue);
+                    if (!isNaN(delta)) {
+                        return currentHoleValue + delta;
+                    }
+                } else {
+                    // Absolute value
+                    const absoluteValue = parseFloat(inputValue);
+                    if (!isNaN(absoluteValue)) {
+                        return absoluteValue;
+                    }
+                }
+                return null; // Invalid input
             }
+
+            // Track if any timing-related properties were changed
+            let timingChanged = false;
+            let geometryChanged = false;
+
+            holes.forEach((h) => {
+                // Update basic properties only if changed
+                const processedDelay = processNumericValue(newDelay, originalValues.delay, h.holeDelay !== undefined ? h.holeDelay : h.timingDelayMilliseconds || 0);
+                if (processedDelay !== null) {
+                    h.holeDelay = processedDelay;
+                    if (h.timingDelayMilliseconds !== undefined) {
+                        h.timingDelayMilliseconds = processedDelay;
+                    }
+                    timingChanged = true;
+                }
+
+                if (newDelayColor !== "" && newDelayColor !== originalValues.delayColor) {
+                    h.holeDelayColor = newDelayColor;
+                    if (h.colorHexDecimal !== undefined) {
+                        h.colorHexDecimal = newDelayColor;
+                    }
+                    timingChanged = true;
+                }
+
+                if (newHoleType !== "" && newHoleType !== originalValues.holeType) {
+                    h.holeType = newHoleType;
+                }
+
+                // Update geometry properties only if changed
+                const processedDiameter = processNumericValue(newDiameter, originalValues.diameter, h.holeDiameter || 0);
+                if (processedDiameter !== null) {
+                    calculateHoleGeometry(h, processedDiameter, 7);
+                    geometryChanged = true;
+                }
+
+                const processedBearing = processNumericValue(newBearing, originalValues.bearing, h.holeBearing || 0);
+                if (processedBearing !== null) {
+                    calculateHoleGeometry(h, processedBearing, 3);
+                    geometryChanged = true;
+                }
+
+                const processedAngle = processNumericValue(newAngle, originalValues.angle, h.holeAngle || 0);
+                if (processedAngle !== null) {
+                    calculateHoleGeometry(h, processedAngle, 2);
+                    geometryChanged = true;
+                }
+
+                const processedSubdrill = processNumericValue(newSubdrill, originalValues.subdrill, h.subdrillAmount || 0);
+                if (processedSubdrill !== null) {
+                    calculateHoleGeometry(h, processedSubdrill, 8);
+                    geometryChanged = true;
+                }
+
+                const processedCollarZ = processNumericValue(newCollarZ, originalValues.collarZ, h.startZLocation || 0);
+                if (processedCollarZ !== null) {
+                    h.startZLocation = processedCollarZ;
+                    geometryChanged = true;
+                }
+
+                const processedGradeZ = processNumericValue(newGradeZ, originalValues.gradeZ, h.gradeZLocation || h.endZLocation || 0);
+                if (processedGradeZ !== null) {
+                    h.gradeZLocation = processedGradeZ;
+                    h.endZLocation = processedGradeZ;
+                    geometryChanged = true;
+                }
+
+                // Only update Row ID and Pos ID for single hole edits and if changed
+                if (!isMultiple) {
+                    if (newRowID !== "" && newRowID !== originalValues.rowID) {
+                        h.rowID = newRowID;
+                    }
+
+                    if (newPosID !== "" && newPosID !== originalValues.posID) {
+                        h.posID = newPosID;
+                    }
+                }
+            });
 
             // ** RECALCULATE TIMING AND CONTOURS **
-            // Always recalculate timing calculations after delay changes
-            holeTimes = calculateTimes(points);
+            if (timingChanged || geometryChanged) {
+                // Always recalculate timing calculations after changes
+                holeTimes = calculateTimes(points);
 
-            // Update timing chart display
-            timeChart();
+                // Update timing chart display
+                timeChart();
 
-            // Recalculate contours if they're being displayed
-            const result = recalculateContours(points, 0, 0);
-            if (result) {
-                contourLinesArray = result.contourLinesArray;
-                directionArrows = result.directionArrows;
+                // Recalculate contours if they're being displayed
+                const result = recalculateContours(points, 0, 0);
+                if (result) {
+                    contourLinesArray = result.contourLinesArray;
+                    directionArrows = result.directionArrows;
+                }
             }
 
-            // Update selection averages and sliders if hole is part of current selection
-            if (selectedMultipleHoles && selectedMultipleHoles.length > 0) {
-                // Check if this hole is in the current selection
-                const isInSelection = selectedMultipleHoles.some((selectedHole) => selectedHole.holeID === hole.holeID && selectedHole.entityName === hole.entityName);
-
-                if (isInSelection) {
-                    updateSelectionAveragesAndSliders(selectedMultipleHoles);
-                }
-            } else if (selectedHole === hole) {
-                // If this is the currently selected single hole, update its display
-                updateSelectionAveragesAndSliders([hole]);
+            // Update selection averages and sliders
+            if (isMultiple) {
+                updateSelectionAveragesAndSliders(holes);
+            } else if (selectedHole === holes[0]) {
+                updateSelectionAveragesAndSliders([holes[0]]);
             }
 
             drawData(points, selectedHole); // Redraw
-            updateStatusMessage(`Hole ${hole.holeID} updated - Timings recalculated`);
+
+            const statusMessage = isMultiple ? "Updated " + holes.length + " holes" + (timingChanged ? " - Timings recalculated" : "") : "Hole " + holes[0].holeID + " updated" + (timingChanged ? " - Timings recalculated" : "");
+            updateStatusMessage(statusMessage);
             setTimeout(() => updateStatusMessage(""), 3000);
         }
     });
@@ -17594,7 +19003,7 @@ function showKADPropertyEditorPopup(kadObject) {
     // Determine if this is a line/poly (they share the same dialog)
     const isLineOrPoly = kadObject.entityType === "line" || kadObject.entityType === "poly";
 
-    const title = hasMultipleElements ? `Edit ${kadObject.entityType.toUpperCase()} - Element ${kadObject.elementIndex + 1}` : `Edit ${kadObject.entityType.toUpperCase()}`;
+    const title = hasMultipleElements ? `Edit ${kadObject.entityType.toUpperCase()} - ${kadObject.entityName} - Element ${kadObject.elementIndex + 1}` : `Edit ${kadObject.entityType.toUpperCase()} - ${kadObject.entityName}`;
 
     const currentColor = kadObject.color || "#FF0000";
 
