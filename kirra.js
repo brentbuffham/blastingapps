@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250721.2140AWST"
-const buildVersion = "20250721.2140AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250721.2240AWST"
+const buildVersion = "20250721.2240AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -55,6 +55,7 @@ function updatePopup() {
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
 					<br><label class="labelWhite12c">✅ Additional Hole properties on right click of selected holes  </label>
+					<br><label class="labelWhite12c">✅ Z Interpolation Snap for Drawing - snap to segment           </label>
 					<br><label class="labelWhite12c">✅ Backspace or Delete when drawing to remove the last point    </label>
 					<br><label class="labelWhite12c">✅ Offset Line and Projection added to Floating Toolbar         </label>
 					<br><label class="labelWhite12c">✅ Radii Holes or KADs added to Floating Toolbar                </label>
@@ -17304,7 +17305,8 @@ window.onload = function () {
     // --- Key Listeners ---
     document.addEventListener("keydown", (event) => {
         // Handle drawing key events (delete/backspace) when drawing tools are active
-        if (isDrawingPoint || isDrawingLine || isDrawingPoly || isDrawingCircle || isDrawingText) {
+        // BUT only if user is not typing in an input field
+        if ((isDrawingPoint || isDrawingLine || isDrawingPoly || isDrawingCircle || isDrawingText) && !event.target.matches('input, textarea, [contenteditable="true"]')) {
             handleDrawingKeyEvents(event);
         }
 
@@ -22654,8 +22656,21 @@ function getClickedKADEntity(worldX, worldY) {
         clickedSegment: selected.clickedSegment
     };
 }
-// Helper function to get closest point on line segment (add if not exists)
-function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2) {
+// Helper function to get interpolation parameter (0 to 1) for Z interpolation
+function getInterpolationParameter(px, py, x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        return (px - x1) / dx;
+    } else if (dy !== 0) {
+        return (py - y1) / dy;
+    } else {
+        return 0; // Line segment is a point
+    }
+}
+// Enhanced helper function to get closest point on line segment (add Z support)
+function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2, z1 = null, z2 = null) {
     const A = px - x1;
     const B = py - y1;
     const C = x2 - x1;
@@ -22665,16 +22680,23 @@ function getClosestPointOnLineSegment(px, py, x1, y1, x2, y2) {
     const lenSq = C * C + D * D;
 
     if (lenSq === 0) {
-        return { x: x1, y: y1 };
+        return { x: x1, y: y1, z: z1 };
     }
 
     let t = dot / lenSq;
     t = Math.max(0, Math.min(1, t));
 
-    return {
+    const result = {
         x: x1 + t * C,
         y: y1 + t * D
     };
+
+    // Add Z interpolation if Z values are provided
+    if (z1 !== null && z2 !== null) {
+        result.z = z1 + t * (z2 - z1);
+    }
+
+    return result;
 }
 //Add this helper function for point-in-polygon detection
 function isPointInPolygonVertices(x, y, vertices) {
@@ -22718,8 +22740,8 @@ function getClickedLine(worldX, worldY, tolerance = getSnapToleranceInWorldUnits
 
     return null;
 }
-// Helper function for point-to-line-segment distance (add if not exists)
-function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
+// Enhanced helper function for point-to-line-segment distance (add Z support)
+function pointToLineSegmentDistance(px, py, x1, y1, x2, y2, z1 = null, z2 = null) {
     const A = px - x1;
     const B = py - y1;
     const C = x2 - x1;
@@ -22734,8 +22756,6 @@ function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
     }
 
     let t = dot / lenSq;
-
-    // Clamp t to [0, 1] to stay on the line segment
     t = Math.max(0, Math.min(1, t));
 
     const projection_x = x1 + t * C;
@@ -22744,7 +22764,15 @@ function pointToLineSegmentDistance(px, py, x1, y1, x2, y2) {
     const dx = px - projection_x;
     const dy = py - projection_y;
 
-    return Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // Add Z interpolation if Z values are provided
+    if (z1 !== null && z2 !== null) {
+        const interpolatedZ = z1 + t * (z2 - z1);
+        return { distance: distance, z: interpolatedZ };
+    }
+
+    return distance;
 }
 
 // Add this new function for the pattern in polygon popup
@@ -25641,13 +25669,13 @@ const SNAP_PRIORITIES = {
     SURFACE_POINT: 9 // Lowest priority
 };
 
-// Enhanced global snapping function
+// Enhanced global snapping function with segment support
 function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranceInWorldUnits()) {
     if (!snapEnabled) {
         return {
             worldX: rawWorldX,
             worldY: rawWorldY,
-            worldZ: drawingZValue || document.getElementById("drawingElevation")?.value || 0, // Use current drawing elevation
+            worldZ: drawingZValue || document.getElementById("drawingElevation")?.value || 0,
             snapped: false,
             snapTarget: null
         };
@@ -25700,6 +25728,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
     // 2. Search ALL KAD Objects in unified map
     if (allKADDrawingsMap && allKADDrawingsMap.size > 0) {
         allKADDrawingsMap.forEach((entity) => {
+            // First, check vertices (existing behavior)
             entity.data.forEach((dataPoint) => {
                 const dist = Math.sqrt(Math.pow(dataPoint.pointXLocation - rawWorldX, 2) + Math.pow(dataPoint.pointYLocation - rawWorldY, 2));
                 if (dist <= searchRadius) {
@@ -25730,30 +25759,54 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
                     });
                 }
             });
+
+            // NEW: Check segments for lines and polygons
+            if (entity.entityType === "line" || entity.entityType === "poly") {
+                const points = entity.data;
+                if (points.length >= 2) {
+                    const numSegments = entity.entityType === "poly" ? points.length : points.length - 1;
+
+                    for (let i = 0; i < numSegments; i++) {
+                        const p1 = points[i];
+                        const p2 = points[(i + 1) % points.length]; // Wrap for polygons
+
+                        // Calculate distance from point to line segment
+                        const segmentDistance = pointToLineSegmentDistance(rawWorldX, rawWorldY, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
+
+                        if (segmentDistance <= searchRadius) {
+                            // Find the closest point on the segment
+                            const closestPoint = getClosestPointOnLineSegment(rawWorldX, rawWorldY, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
+
+                            // Interpolate Z value between endpoints
+                            const t = getInterpolationParameter(closestPoint.x, closestPoint.y, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
+                            const interpolatedZ = p1.pointZLocation + t * (p2.pointZLocation - p1.pointZLocation);
+
+                            // Determine segment type and priority
+                            const segmentType = entity.entityType === "line" ? "KAD_LINE_SEGMENT" : "KAD_POLYGON_SEGMENT";
+                            const priority = entity.entityType === "line" ? SNAP_PRIORITIES.KAD_LINE_VERTEX - 0.5 : SNAP_PRIORITIES.KAD_POLYGON_VERTEX - 0.5; // Slightly lower priority than vertices
+
+                            snapCandidates.push({
+                                distance: segmentDistance,
+                                point: { x: closestPoint.x, y: closestPoint.y, z: interpolatedZ },
+                                type: segmentType,
+                                priority: priority,
+                                description: `${entity.entityType} segment ${i + 1}`,
+                                segmentInfo: {
+                                    entityName: entity.entityName,
+                                    segmentIndex: i,
+                                    startPoint: p1,
+                                    endPoint: p2,
+                                    interpolationT: t
+                                }
+                            });
+                        }
+                    }
+                }
+            }
         });
     }
 
     // 7. Search Surface Points (from all loaded surfaces)
-    if (loadedSurfaces && loadedSurfaces.size > 0) {
-        for (const [surfaceId, surface] of loadedSurfaces.entries()) {
-            if (surface.visible && surface.points && surface.points.length > 0) {
-                surface.points.forEach((surfacePoint, index) => {
-                    const dist = Math.sqrt(Math.pow(surfacePoint.x - rawWorldX, 2) + Math.pow(surfacePoint.y - rawWorldY, 2));
-                    if (dist <= searchRadius) {
-                        snapCandidates.push({
-                            distance: dist,
-                            point: { x: surfacePoint.x, y: surfacePoint.y, z: surfacePoint.z },
-                            type: "SURFACE_POINT",
-                            priority: SNAP_PRIORITIES.SURFACE_POINT,
-                            description: `${surface.name} point ${index}`
-                        });
-                    }
-                });
-            }
-        }
-    }
-
-    // 8. Surface Interpolation (if surface is available)
     if (loadedSurfaces && loadedSurfaces.size > 0) {
         for (const [surfaceId, surface] of loadedSurfaces.entries()) {
             if (surface.visible && surface.points && surface.points.length > 0) {
@@ -25787,7 +25840,7 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
         return {
             worldX: bestCandidate.point.x,
             worldY: bestCandidate.point.y,
-            worldZ: bestCandidate.point.z || drawingElevation || 0, // Use snapped point's Z or fallback
+            worldZ: bestCandidate.point.z || drawingElevation || 0,
             snapped: true,
             snapTarget: bestCandidate
         };
