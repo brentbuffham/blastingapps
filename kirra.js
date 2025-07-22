@@ -18614,19 +18614,29 @@ function jsColorPaletteForPicker() {
 
 function showHolePropertyEditor(hole) {
     // ✅ CHECK VISIBILITY FIRST - Filter out hidden holes
-    const visibleHoles = holes.filter((hole) => isHoleVisible(hole));
+    const visibleHoles = points.filter((hole) => isHoleVisible(hole));
 
     if (visibleHoles.length === 0) {
         console.log("❌ No visible holes to edit");
         return;
     }
 
-    if (visibleHoles.length !== holes.length) {
+    if (visibleHoles.length !== points.length) {
         console.log("⚠️ Some holes are hidden and will not be edited");
     }
 
     // Determine if we're dealing with single hole or multiple holes
-    const holes = Array.isArray(hole) ? hole : selectedMultipleHoles && selectedMultipleHoles.length > 1 ? selectedMultipleHoles : [hole];
+    let candidateHoles;
+	if (Array.isArray(hole)) {
+		candidateHoles = hole;
+	} else if (selectedMultipleHoles && selectedMultipleHoles.length > 1) {
+		candidateHoles = selectedMultipleHoles;
+	} else {
+		candidateHoles = [hole];
+	}
+	// ✅ Filter candidate holes to only include visible ones
+	const holes = candidateHoles.filter(h => isHoleVisible(h));
+
     const isMultiple = holes.length > 1;
     const isArrayInput = Array.isArray(hole);
 
