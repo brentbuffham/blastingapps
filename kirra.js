@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250721.2240AWST"
-const buildVersion = "20250721.2240AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250722.2258AWST"
+const buildVersion = "20250722.2258AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -54,11 +54,12 @@ function updatePopup() {
 					<hr>
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ July 2025 ⭐ ⭐                                            </label>
+					<br><label class="labelWhite12c">✅ Ruler Improved to 3D-Snap Dip, DeltaZ, Plan, Total Length    </label>
 					<br><label class="labelWhite12c">✅ Additional Hole properties on right click of selected holes  </label>
 					<br><label class="labelWhite12c">✅ Z Interpolation Snap for Drawing - snap to segment           </label>
 					<br><label class="labelWhite12c">✅ Backspace or Delete when drawing to remove the last point    </label>
 					<br><label class="labelWhite12c">✅ Offset Line and Projection added to Floating Toolbar         </label>
-					<br><label class="labelWhite12c">✅ Radii Holes or KADs added to Floating Toolbar                </label>
+					<br><label class="labelWhite12c">✅ Radiate Holes or KADs added to Floating Toolbar              </label>
 					<br><label class="labelWhite12c">✅ DXF 3DFace and Hillshade Gradient added                      </label>
 					<br><label class="labelWhite12c">✅ Selection and manipulation disabled on hidden entities       </label>
 					<br><label class="labelWhite12c">✅ Children Nodes inherit group node visibility                 </label>
@@ -71,7 +72,7 @@ function updatePopup() {
 					<br><label class="labelWhite12c">✅ Increased Colour Swatches in the jsColor picker              </label>
 					<br><label class="labelWhite12c">⭐ ⭐ May, June and July 2025 ⭐ ⭐                             </label>
 					<br><label class="labelWhite12c">✅ Pattern bug fixes, duplicate hole search, polygon selection  </label>
-					<br><label class="labelWhite12c">✅ Added a radii warning dialog                                 </label>
+					<br><label class="labelWhite12c">✅ Added a radiate warning dialog                               </label>
 					<br><label class="labelWhite12c">✅ Move and Z Leveling for KAD Drawings in Edit Popup           </label>
 					<br><label class="labelWhite12c">✅ Distance indicator between added to drawing tools            </label>
 					<br><label class="labelWhite12c">✅ Improved user interaction for drawing tools                  </label>
@@ -15411,18 +15412,43 @@ function drawData(points, selectedHole) {
         if (drawMouseLines) {
             drawMouseCrossHairs(mouseX, mouseY, snapRadiusPixels, true, true);
         }
-        // Draw active rulers (completed measurements)
-        if (isRulerActive && rulerStartPoint && rulerEndPoint) {
-            drawRuler(rulerStartPoint.x, rulerStartPoint.y, rulerEndPoint.x, rulerEndPoint.y);
-        }
-        // Draw live ruler while measuring (full ruler that follows mouse)
+
+        // Draw live ruler while measuring
         if (isRulerActive && rulerStartPoint && !rulerEndPoint) {
-            // Convert canvas mouse coordinates to world coordinates
-            const worldMouseX = (mouseX - canvas.width / 2) / currentScale + centroidX;
-            const worldMouseY = -(mouseY - canvas.height / 2) / currentScale + centroidY;
+            // Get current snap result at mouse position
+            const snapResult = canvasToWorldWithSnap(mouseX, mouseY);
+
+            // DEBUG: Log the actual values being used
+            console.log("Live Ruler Debug:");
+            console.log("  Start Point:", rulerStartPoint.x, rulerStartPoint.y, rulerStartPoint.z);
+            console.log("  Mouse Point:", snapResult.worldX, snapResult.worldY, snapResult.worldZ);
+            console.log("  Snap Result:", snapResult);
+
+            // Use the snapped coordinates
+            const worldMouseX = snapResult.worldX;
+            const worldMouseY = snapResult.worldY;
+            const worldMouseZ = snapResult.worldZ;
+
+            // Ensure we have valid Z values
+            const startZ = rulerStartPoint.z !== undefined && rulerStartPoint.z !== null ? rulerStartPoint.z : 0;
+            const endZ = worldMouseZ !== undefined && worldMouseZ !== null ? worldMouseZ : startZ;
+
+            console.log("  Final Z values - startZ:", startZ, "endZ:", endZ);
 
             // Draw the full ruler from start point to mouse position
-            drawRuler(rulerStartPoint.x, rulerStartPoint.y, worldMouseX, worldMouseY);
+            drawRuler(rulerStartPoint.x, rulerStartPoint.y, startZ, worldMouseX, worldMouseY, endZ);
+        }
+        // Draw active rulers (completed measurements)
+        if (isRulerActive && rulerStartPoint && rulerEndPoint) {
+            // Ensure Z values exist and are valid numbers
+            const startZ = rulerStartPoint.z !== undefined && rulerStartPoint.z !== null ? rulerStartPoint.z : 0;
+            const endZ = rulerEndPoint.z !== undefined && rulerEndPoint.z !== null ? rulerEndPoint.z : 0;
+
+            console.log("Completed Ruler Debug:");
+            console.log("  Start Point:", rulerStartPoint.x, rulerStartPoint.y, startZ);
+            console.log("  End Point:", rulerEndPoint.x, rulerEndPoint.y, endZ);
+
+            drawRuler(rulerStartPoint.x, rulerStartPoint.y, startZ, rulerEndPoint.x, rulerEndPoint.y, endZ);
         }
         // Draw completed bearing measurement
         if (isRulerProtractorActive && rulerProtractorPoints.length === 3) {
@@ -18627,15 +18653,15 @@ function showHolePropertyEditor(hole) {
 
     // Determine if we're dealing with single hole or multiple holes
     let candidateHoles;
-	if (Array.isArray(hole)) {
-		candidateHoles = hole;
-	} else if (selectedMultipleHoles && selectedMultipleHoles.length > 1) {
-		candidateHoles = selectedMultipleHoles;
-	} else {
-		candidateHoles = [hole];
-	}
-	// ✅ Filter candidate holes to only include visible ones
-	const holes = candidateHoles.filter(h => isHoleVisible(h));
+    if (Array.isArray(hole)) {
+        candidateHoles = hole;
+    } else if (selectedMultipleHoles && selectedMultipleHoles.length > 1) {
+        candidateHoles = selectedMultipleHoles;
+    } else {
+        candidateHoles = [hole];
+    }
+    // ✅ Filter candidate holes to only include visible ones
+    const holes = candidateHoles.filter((h) => isHoleVisible(h));
 
     const isMultiple = holes.length > 1;
     const isArrayInput = Array.isArray(hole);
@@ -20951,14 +20977,33 @@ function formatTo1Decimal(num) {
     return parseFloat(num).toFixed(1);
 }
 
-// Convert the Java paintRuler function
-function drawRuler(startX, startY, endX, endY) {
-    const xl = startX - endX;
-    const yl = startY - endY;
-    const d = Math.sqrt(Math.pow(xl, 2) + Math.pow(yl, 2));
+function drawRuler(startX, startY, startZ, endX, endY, endZ) {
+    // Handle undefined/null Z values - use 0 as fallback
+    const safeStartZ = startZ || 0;
+    const safeEndZ = endZ || 0;
 
-    // Calculate the angle of the line (bearing from start to end)
-    const lineAngle = (Math.atan2(endY - startY, endX - startX) * 180) / Math.PI;
+    // Calculate differences (following your formula exactly)
+    const deltaX = endX - startX; // ΔX
+    const deltaY = endY - startY; // ΔY
+    const deltaZ = safeEndZ - safeStartZ; // ΔZ
+
+    // Calculate 2D plan distance (horizontal distance, hypotenuse of blue triangle D)
+    // Plan Length = √(ΔX² + ΔY²)
+    const planDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+    // Calculate true 3D distance (hypotenuse of purple triangle C)
+    // Total Length = √(ΔX² + ΔY² + ΔZ²)
+    const totalDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
+
+    // Calculate bearing angle (horizontal direction)
+    const lineAngle = (Math.atan2(deltaY, deltaX) * 180) / Math.PI;
+
+    // Calculate elevation angle A (green angle from horizontal plane)
+    // Angle A = arctan(|ΔZ| / Plan Length)
+    const elevationAngle = planDistance > 0 ? (Math.atan(Math.abs(deltaZ) / planDistance) * 180) / Math.PI : 0;
+
+    // Calculate slope percentage for additional context
+    const slopePercent = planDistance > 0 ? (Math.abs(deltaZ) / planDistance) * 100 : 0;
 
     // Convert world coordinates to canvas coordinates
     const canvasStartX = (startX - centroidX) * currentScale + canvas.width / 2;
@@ -20970,69 +21015,129 @@ function drawRuler(startX, startY, endX, endY) {
     ctx.beginPath();
     ctx.moveTo(canvasStartX, canvasStartY);
     ctx.lineTo(canvasEndX, canvasEndY);
-    ctx.strokeStyle = "#008B8B";
+    ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    // Draw distance text
-    ctx.fillStyle = "#008B8B";
+    // Prepare text content with correct values
+    const distanceText = "Z1: " + formatTo2Decimals(safeStartZ) + "m, Z2: " + formatTo2Decimals(safeEndZ) + "m"; //formatTo2Decimals(planDistance) + "m";
+    const measurementsText = "Plan: " + formatTo2Decimals(planDistance) + "m, Total: " + formatTo2Decimals(totalDistance) + "m";
+    const deltaDipText = "ΔZ: " + formatTo2Decimals(deltaZ) + "m, Angle: " + formatTo2Decimals(elevationAngle) + "°";
+    const slopeText = "Slope: " + formatTo2Decimals(slopePercent) + "%";
+
+    // Set text properties
     ctx.font = "12px Arial";
-    ctx.fillText("   " + formatTo2Decimals(d) + "m", canvasEndX, canvasEndY - 5);
+    ctx.fillStyle = darkModeEnabled ? "#00cccc" : "#004444";
 
-    // Draw meter increments (perpendicular tick marks)
-    for (let i = 0; i <= d; i++) {
-        // Calculate position along the line
-        const ratio = i / d;
-        const tickX = startX + ratio * (endX - startX);
-        const tickY = startY + ratio * (endY - startY);
+    // Measure text dimensions
+    const distanceTextWidth = ctx.measureText(distanceText).width;
+    const measurementsTextWidth = ctx.measureText(measurementsText).width;
+    const deltaDipTextWidth = ctx.measureText(deltaDipText).width;
+    const slopeTextWidth = ctx.measureText(slopeText).width;
+    const textHeight = 14;
+    const padding = 6;
 
-        // Calculate perpendicular offset (0.2m each side)
-        const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
-        const tick1X = tickX + 0.2 * Math.cos(perpAngle);
-        const tick1Y = tickY + 0.2 * Math.sin(perpAngle);
-        const tick2X = tickX - 0.2 * Math.cos(perpAngle);
-        const tick2Y = tickY - 0.2 * Math.sin(perpAngle);
+    // Calculate background rectangle dimensions for 4 lines
+    const bgWidth = Math.max(distanceTextWidth, measurementsTextWidth, deltaDipTextWidth, slopeTextWidth) + padding * 2;
+    const bgHeight = textHeight * 4 + padding * 5; // FOUR lines of text with padding
 
-        // Convert to canvas coordinates
-        const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
-        const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
-        const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
-        const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+    // Calculate background position
+    const bgX = canvasEndX + 5;
+    const bgY = canvasEndY - bgHeight - 10;
 
-        ctx.beginPath();
-        ctx.moveTo(canvasTick1X, canvasTick1Y);
-        ctx.lineTo(canvasTick2X, canvasTick2Y);
-        ctx.strokeStyle = "#008B8B";
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
+    // Draw rounded rectangle background
+    ctx.fillStyle = darkModeEnabled ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 0, 0, 0.1)"; // Semi-transparent white
+    ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
+    ctx.lineWidth = 1;
 
-    // Draw half-meter increments (shorter tick marks)
-    for (let i = 0.5; i < d; i += 1) {
-        // Calculate position along the line
-        const ratio = i / d;
-        const tickX = startX + ratio * (endX - startX);
-        const tickY = startY + ratio * (endY - startY);
+    // Create rounded rectangle path
+    const radius = 4;
+    ctx.beginPath();
+    ctx.moveTo(bgX + radius, bgY);
+    ctx.lineTo(bgX + bgWidth - radius, bgY);
+    ctx.quadraticCurveTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + radius);
+    ctx.lineTo(bgX + bgWidth, bgY + bgHeight - radius);
+    ctx.quadraticCurveTo(bgX + bgWidth, bgY + bgHeight, bgX + bgWidth - radius, bgY + bgHeight);
+    ctx.lineTo(bgX + radius, bgY + bgHeight);
+    ctx.quadraticCurveTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - radius);
+    ctx.lineTo(bgX, bgY + radius);
+    ctx.quadraticCurveTo(bgX, bgY, bgX + radius, bgY);
+    ctx.closePath();
 
-        // Calculate perpendicular offset (0.1m each side)
-        const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
-        const tick1X = tickX + 0.1 * Math.cos(perpAngle);
-        const tick1Y = tickY + 0.1 * Math.sin(perpAngle);
-        const tick2X = tickX - 0.1 * Math.cos(perpAngle);
-        const tick2Y = tickY - 0.1 * Math.sin(perpAngle);
+    // Fill and stroke the background
+    ctx.fill();
+    ctx.stroke();
 
-        // Convert to canvas coordinates
-        const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
-        const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
-        const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
-        const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+    // Draw text with proper spacing for 4 lines
+    ctx.fillStyle = darkModeEnabled ? "#00cccc" : "#004444";
+    ctx.font = "12px Arial";
 
-        ctx.beginPath();
-        ctx.moveTo(canvasTick1X, canvasTick1Y);
-        ctx.lineTo(canvasTick2X, canvasTick2Y);
-        ctx.strokeStyle = "#008B8B";
-        ctx.lineWidth = 1;
-        ctx.stroke();
+    // Draw distance text (first line)
+    ctx.fillText(distanceText, bgX + padding, bgY + padding + textHeight);
+    // Draw measurements text (second line)
+    ctx.fillText(measurementsText, bgX + padding, bgY + padding + textHeight * 2 + 2);
+    // Draw delta and dip (third line)
+    ctx.fillText(deltaDipText, bgX + padding, bgY + padding + textHeight * 3 + 4);
+    // Draw slope percentage (fourth line)
+    ctx.fillText(slopeText, bgX + padding, bgY + padding + textHeight * 4 + 6);
+
+    // Draw meter increments (perpendicular tick marks) - use plan distance for tick spacing
+    if (planDistance > 0) {
+        for (let i = 0; i <= Math.floor(planDistance); i++) {
+            // Calculate position along the line
+            const ratio = i / planDistance;
+            const tickX = startX + ratio * (endX - startX);
+            const tickY = startY + ratio * (endY - startY);
+
+            // Calculate perpendicular offset (0.2m each side)
+            const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
+            const tick1X = tickX + 0.2 * Math.cos(perpAngle);
+            const tick1Y = tickY + 0.2 * Math.sin(perpAngle);
+            const tick2X = tickX - 0.2 * Math.cos(perpAngle);
+            const tick2Y = tickY - 0.2 * Math.sin(perpAngle);
+
+            // Convert to canvas coordinates
+            const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
+            const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
+            const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
+            const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+
+            ctx.beginPath();
+            ctx.moveTo(canvasTick1X, canvasTick1Y);
+            ctx.lineTo(canvasTick2X, canvasTick2Y);
+            ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+
+        // Draw half-meter increments (shorter tick marks)
+        for (let i = 0.5; i < planDistance; i += 1) {
+            // Calculate position along the line
+            const ratio = i / planDistance;
+            const tickX = startX + ratio * (endX - startX);
+            const tickY = startY + ratio * (endY - startY);
+
+            // Calculate perpendicular offset (0.1m each side)
+            const perpAngle = ((lineAngle + 90) * Math.PI) / 180;
+            const tick1X = tickX + 0.1 * Math.cos(perpAngle);
+            const tick1Y = tickY + 0.1 * Math.sin(perpAngle);
+            const tick2X = tickX - 0.1 * Math.cos(perpAngle);
+            const tick2Y = tickY - 0.1 * Math.sin(perpAngle);
+
+            // Convert to canvas coordinates
+            const canvasTick1X = (tick1X - centroidX) * currentScale + canvas.width / 2;
+            const canvasTick1Y = -(tick1Y - centroidY) * currentScale + canvas.height / 2;
+            const canvasTick2X = (tick2X - centroidX) * currentScale + canvas.width / 2;
+            const canvasTick2Y = -(tick2Y - centroidY) * currentScale + canvas.height / 2;
+
+            // Draw tick mark
+            ctx.beginPath();
+            ctx.moveTo(canvasTick1X, canvasTick1Y);
+            ctx.lineTo(canvasTick2X, canvasTick2Y);
+            ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
     }
 }
 // Convert the Java paintAngleMeasure function
@@ -21063,7 +21168,7 @@ function drawProtractor(p1X, p1Y, p2X, p2Y, p3X, p3Y) {
     const canvasP3Y = -(p3Y - centroidY) * currentScale + canvas.height / 2;
 
     // Draw lines
-    ctx.strokeStyle = "#008B8B";
+    ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
     ctx.lineWidth = 1;
 
     // First line (center to p2)
@@ -21074,20 +21179,20 @@ function drawProtractor(p1X, p1Y, p2X, p2Y, p3X, p3Y) {
         ctx.stroke();
 
         // Text for first line
-        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.fillStyle = darkModeEnabled ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)";
         ctx.font = "12px Arial";
         const text1 = formatTo2Decimals(d1) + "m " + formatTo1Decimal(bearing1) + "°";
         const textWidth1 = ctx.measureText(text1).width;
         ctx.fillRect(canvasP2X + 5, canvasP2Y - 20, textWidth1 + 4, 16);
-        ctx.strokeStyle = "#008B8B";
+        ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.strokeRect(canvasP2X + 5, canvasP2Y - 20, textWidth1 + 4, 16);
-        ctx.fillStyle = "#008B8B";
+        ctx.fillStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.fillText(text1, canvasP2X + 7, canvasP2Y - 8);
     }
 
     // Second line (center to p3) - only if p3 is different from p1
     if (d2 > 0 && !(p3X === p1X && p3Y === p1Y)) {
-        ctx.strokeStyle = "#008B8B";
+        ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(canvasP1X, canvasP1Y);
@@ -21095,24 +21200,24 @@ function drawProtractor(p1X, p1Y, p2X, p2Y, p3X, p3Y) {
         ctx.stroke();
 
         // Text for second line
-        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.fillStyle = darkModeEnabled ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)";
         ctx.font = "12px Arial";
         const text2 = formatTo2Decimals(d2) + "m " + formatTo1Decimal(bearing2) + "°";
         const textWidth2 = ctx.measureText(text2).width;
         ctx.fillRect(canvasP3X + 5, canvasP3Y - 20, textWidth2 + 4, 16);
-        ctx.strokeStyle = "#008B8B";
+        ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.strokeRect(canvasP3X + 5, canvasP3Y - 20, textWidth2 + 4, 16);
-        ctx.fillStyle = "#008B8B";
+        ctx.fillStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.fillText(text2, canvasP3X + 7, canvasP3Y - 8);
 
         // Angle text at center point (only when we have both lines)
         const text3 = formatTo1Decimal(angle) + "° / " + formatTo1Decimal(360 - angle) + "°";
         const textWidth3 = ctx.measureText(text3).width;
-        ctx.fillStyle = "rgba(95, 158, 160, 0.2)";
+        ctx.fillStyle = darkModeEnabled ? "rgba(255, 255, 255, 0.2)" : "rgba(0, 0, 0, 0.2)";
         ctx.fillRect(canvasP1X + 5, canvasP1Y - 40, textWidth3 + 4, 16);
-        ctx.strokeStyle = "#008B8B";
+        ctx.strokeStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.strokeRect(canvasP1X + 5, canvasP1Y - 40, textWidth3 + 4, 16);
-        ctx.fillStyle = "#008B8B";
+        ctx.fillStyle = darkModeEnabled ? "#00cccc" : "#004444";
         ctx.fillText(text3, canvasP1X + 7, canvasP1Y - 28);
 
         // Draw arc between the lines
@@ -21215,14 +21320,14 @@ function handleRulerClick(event) {
 
     if (!rulerStartPoint) {
         // First click - set start point, ruler will now follow mouse
-        rulerStartPoint = { x: worldX, y: worldY };
+        rulerStartPoint = { x: worldX, y: worldY, z: snapResult.worldZ };
         rulerEndPoint = null;
     } else if (!rulerEndPoint) {
         // Second click - lock in the end point, measurement is complete
-        rulerEndPoint = { x: worldX, y: worldY };
+        rulerEndPoint = { x: worldX, y: worldY, z: snapResult.worldZ };
     } else {
         // Third click - start new measurement
-        rulerStartPoint = { x: worldX, y: worldY };
+        rulerStartPoint = { x: worldX, y: worldY, z: snapResult.worldZ };
         rulerEndPoint = null;
     }
     drawData(points, selectedHole);
@@ -25676,9 +25781,10 @@ const SNAP_PRIORITIES = {
     KAD_POLYGON_VERTEX: 6,
     KAD_CIRCLE_CENTER: 7,
     KAD_TEXT_POSITION: 8,
-    KAD_LINE_SEGMENT: 9,     // Segments get lower priority
-    KAD_POLYGON_SEGMENT: 9,  // Segments get lower priority
-    SURFACE_POINT: 10        // Lowest priority
+    KAD_LINE_SEGMENT: 9, // Segments get lower priority
+    KAD_POLYGON_SEGMENT: 10, // Segments get lower priority
+    SURFACE_POINT: 11,
+    SURFACE_FACE: 12 // Lowest priority
 };
 
 // Enhanced global snapping function with segment support
@@ -25794,28 +25900,26 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
                             const interpolatedZ = p1.pointZLocation + t * (p2.pointZLocation - p1.pointZLocation);
 
                             // OLD CODE (problematic):
-				// const priority = entity.entityType === "line" ? SNAP_PRIORITIES.KAD_LINE_VERTEX - 0.5 : SNAP_PRIORITIES.KAD_POLYGON_VERTEX - 0.5;
-							
-				// NEW CODE (fixed):
-				const segmentType = entity.entityType === "line" ? "KAD_LINE_SEGMENT" : 
-					entity.entityType === "poly" ? "KAD_POLYGON_SEGMENT" : 
-					"KAD_LINE_SEGMENT"; // fallback
-				const priority = SNAP_PRIORITIES[segmentType]; // Use explicit segment priorities
-							
-				snapCandidates.push({
-					distance: segmentDistance,
-					point: { x: closestPoint.x, y: closestPoint.y, z: interpolatedZ },
-					type: segmentType,
-					priority: priority,
-					description: `${entity.entityType} segment ${i + 1}`,
-					segmentInfo: {
-						entityName: entity.entityName,
-						segmentIndex: i,
-						startPoint: p1,
-						endPoint: p2,
-						interpolationT: t
-					}
-				});
+                            // const priority = entity.entityType === "line" ? SNAP_PRIORITIES.KAD_LINE_VERTEX - 0.5 : SNAP_PRIORITIES.KAD_POLYGON_VERTEX - 0.5;
+
+                            // NEW CODE (fixed):
+                            const segmentType = entity.entityType === "line" ? "KAD_LINE_SEGMENT" : entity.entityType === "poly" ? "KAD_POLYGON_SEGMENT" : "KAD_LINE_SEGMENT"; // fallback
+                            const priority = SNAP_PRIORITIES[segmentType]; // Use explicit segment priorities
+
+                            snapCandidates.push({
+                                distance: segmentDistance,
+                                point: { x: closestPoint.x, y: closestPoint.y, z: interpolatedZ },
+                                type: segmentType,
+                                priority: priority,
+                                description: `${entity.entityType} segment ${i + 1}`,
+                                segmentInfo: {
+                                    entityName: entity.entityName,
+                                    segmentIndex: i,
+                                    startPoint: p1,
+                                    endPoint: p2,
+                                    interpolationT: t
+                                }
+                            });
                         }
                     }
                 }
