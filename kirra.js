@@ -25666,7 +25666,9 @@ const SNAP_PRIORITIES = {
     KAD_POLYGON_VERTEX: 6,
     KAD_CIRCLE_CENTER: 7,
     KAD_TEXT_POSITION: 8,
-    SURFACE_POINT: 9 // Lowest priority
+    KAD_LINE_SEGMENT: 9,     // Segments get lower priority
+    KAD_POLYGON_SEGMENT: 9,  // Segments get lower priority
+    SURFACE_POINT: 10        // Lowest priority
 };
 
 // Enhanced global snapping function with segment support
@@ -25781,24 +25783,29 @@ function snapToNearestPoint(rawWorldX, rawWorldY, searchRadius = getSnapToleranc
                             const t = getInterpolationParameter(closestPoint.x, closestPoint.y, p1.pointXLocation, p1.pointYLocation, p2.pointXLocation, p2.pointYLocation);
                             const interpolatedZ = p1.pointZLocation + t * (p2.pointZLocation - p1.pointZLocation);
 
-                            // Determine segment type and priority
-                            const segmentType = entity.entityType === "line" ? "KAD_LINE_SEGMENT" : "KAD_POLYGON_SEGMENT";
-                            const priority = entity.entityType === "line" ? SNAP_PRIORITIES.KAD_LINE_VERTEX - 0.5 : SNAP_PRIORITIES.KAD_POLYGON_VERTEX - 0.5; // Slightly lower priority than vertices
-
-                            snapCandidates.push({
-                                distance: segmentDistance,
-                                point: { x: closestPoint.x, y: closestPoint.y, z: interpolatedZ },
-                                type: segmentType,
-                                priority: priority,
-                                description: `${entity.entityType} segment ${i + 1}`,
-                                segmentInfo: {
-                                    entityName: entity.entityName,
-                                    segmentIndex: i,
-                                    startPoint: p1,
-                                    endPoint: p2,
-                                    interpolationT: t
-                                }
-                            });
+                            // OLD CODE (problematic):
+				// const priority = entity.entityType === "line" ? SNAP_PRIORITIES.KAD_LINE_VERTEX - 0.5 : SNAP_PRIORITIES.KAD_POLYGON_VERTEX - 0.5;
+							
+				// NEW CODE (fixed):
+				const segmentType = entity.entityType === "line" ? "KAD_LINE_SEGMENT" : 
+					entity.entityType === "poly" ? "KAD_POLYGON_SEGMENT" : 
+					"KAD_LINE_SEGMENT"; // fallback
+				const priority = SNAP_PRIORITIES[segmentType]; // Use explicit segment priorities
+							
+				snapCandidates.push({
+					distance: segmentDistance,
+					point: { x: closestPoint.x, y: closestPoint.y, z: interpolatedZ },
+					type: segmentType,
+					priority: priority,
+					description: `${entity.entityType} segment ${i + 1}`,
+					segmentInfo: {
+						entityName: entity.entityName,
+						segmentIndex: i,
+						startPoint: p1,
+						endPoint: p2,
+						interpolationT: t
+					}
+				});
                         }
                     }
                 }
