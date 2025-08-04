@@ -17677,6 +17677,32 @@ document.addEventListener("mouseup", () => {
     toolbar.style.transition = ""; // Re-enable smooth transition
 });
 
+// ADD THESE THREE TOUCH EVENT LISTENERS after your existing mouseup listener:
+toolbar.addEventListener("touchstart", (e) => {
+    const isButton = e.target.closest("label.icon-button") || e.target.closest('input[type="checkbox"]') || e.target.closest('input[type="button"]') || e.target.closest('input[type="number2"]') || e.target.closest('input[type="range"]');
+    if (!isButton) {
+        isDraggingTools = true;
+        offsetX = e.touches[0].clientX - toolbar.getBoundingClientRect().left;
+        offsetY = e.touches[0].clientY - toolbar.getBoundingClientRect().top;
+        toolbar.style.transition = "none";
+    }
+});
+
+document.addEventListener("touchmove", (e) => {
+    if (isDraggingTools) {
+        const x = e.touches[0].clientX - offsetX;
+        const y = e.touches[0].clientY - offsetY;
+        toolbar.style.left = `${x}px`;
+        toolbar.style.top = `${y}px`;
+    }
+});
+
+document.addEventListener("touchend", () => {
+    isDraggingTools = false;
+    toolbar.style.transition = "";
+});
+
+
 // Add event listeners for the floating toolbar buttons
 const selectPointerTool = document.getElementById("selectPointer");
 const selectByPolygonTool = document.getElementById("selectByPolygon");
