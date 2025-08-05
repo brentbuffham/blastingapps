@@ -12748,7 +12748,7 @@ function addPatternPopup(worldX, worldY) {
     //Retrieve the last entered values from local storage
     let savedAddPatternPopupSettings = JSON.parse(localStorage.getItem("savedAddPatternPopupSettings")) || {};
     let lastValues = {
-        blastName: savedAddPatternPopupSettings.blastName || blastNameValue,
+        blastName: savedAddPatternPopupSettings.blastName || "AddedPattern_" + Date.now(), //Look
         nameTypeIsNumerical: savedAddPatternPopupSettings.nameTypeIsNumerical !== undefined ? savedAddPatternPopupSettings.nameTypeIsNumerical : false,
         rowOrientation: savedAddPatternPopupSettings.rowOrientation || 90.0,
         x: savedAddPatternPopupSettings.x || worldX,
