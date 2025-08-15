@@ -22473,7 +22473,7 @@ function showKADPropertyEditorPopup(kadObject) {
 	}
 
 	// Create enhanced form content using the existing helper function
-	const formContent = createEnhancedFormContent(fields, hasMultipleElements);
+	const formContent = createEnhancedFormContent(fields, hasMultipleElements, false);
 
 	// Add info note
 	const noteDiv = document.createElement("div");
@@ -37992,7 +37992,7 @@ class FloatingDialog {
 
 //! FORM CONTENT HELPERS GO HERE
 // Updated helper function with proper checkbox handling and layout
-function createFormContent(fields) {
+function createFormContent(fields, centerCheckboxes = false) {
 	const container = document.createElement("div");
 	container.style.display = "flex";
 	container.style.flexDirection = "column";
@@ -39163,7 +39163,7 @@ function editBlastNamePopup(selectedHole) {
 		}
 	];
 
-	const formContent = createFormContent(fields);
+	const formContent = createFormContent(fields, true);
 
 	const dialog = new FloatingDialog({
 		title: "Edit Blast Name",
