@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
 // Last Modified: "20250815.1740AWST"
-const buildVersion = "20250815.1740AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+const buildVersion = "20250815.1800AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
