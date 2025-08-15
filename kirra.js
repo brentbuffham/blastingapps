@@ -1,7 +1,7 @@
 // Description: This file contains the main functions for the Kirra App
 // Author: Brent Buffham
-// Last Modified: "20250815.1740AWST"
-const buildVersion = "20250815.1800AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
+// Last Modified: "20250816.0140AWST"
+const buildVersion = "20250816.0140AWST"; //Backwards Compatible Date Format AWST = Australian Western Standard Time
 //-----------------------------------------
 // Using SweetAlert Library Create a popup that gets input from the user.
 function updatePopup() {
@@ -55,6 +55,8 @@ function updatePopup() {
 				<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
 					<label     class="labelWhite12c">⭐ ⭐ August 2025 ⭐ ⭐                                            </label>
 					<br><label class="labelWhite12c">✅ Delaunay Triangulation with Constrainautor - Surfaces/shells </label>
+					<br><label class="labelWhite12c">✅ Hillshade Lighting improvement - Better lighting and shadows </label>
+					<br><label class="labelWhite12c">✅ Three gradient style improvemts - Linear, Radial, Barycentric </label>
 					<br><label class="labelWhite12c">✅ Custom CSV importer improved and redesigned                  </label>
 					<br><label class="labelWhite12c">✅ Holes or KAD selection options                               </label>
 					<br><label class="labelWhite12c">---- Move tool moves holes no snap when "Holes" option true     </label>
@@ -7687,17 +7689,17 @@ function createDelaunayTriangulation(params) {
 		// Add blast hole vertices based on parameters
 		if (params.useCollars || params.useGrade || params.useToe || params.useMLength) {
 			// Step 1) Fix property name mismatch - use visibleHoles instead of visibleBlastHoles
-			const visibleHoles = visibleElements.visibleHoles || visibleElements.visibleBlastHoles || [];
+			const visibleHoles = visibleElements.visibleHoles || [];
 			visibleHoles.forEach((hole) => {
 				if (params.useCollars) {
 					// Step 2) Map collar coordinates correctly
 					elementVertices.push({
-						x: parseFloat(hole.startXLocation || hole.collarXLocation),
-						y: parseFloat(hole.startYLocation || hole.collarYLocation),
-						z: parseFloat(hole.startZLocation || hole.collarZLocation) || 0
+						x: parseFloat(hole.startXLocation),
+						y: parseFloat(hole.startYLocation),
+						z: parseFloat(hole.startZLocation) || 0
 					});
 				}
-				if (params.useGrade && (hole.gradeXLocation !== undefined || hole.gradeXLocation !== undefined)) {
+				if (params.useGrade && hole.gradeXLocation !== undefined) {
 					// Step 3) Map grade coordinates correctly
 					elementVertices.push({
 						x: parseFloat(hole.gradeXLocation),
@@ -7705,12 +7707,12 @@ function createDelaunayTriangulation(params) {
 						z: parseFloat(hole.gradeZLocation) || 0
 					});
 				}
-				if (params.useToe && (hole.endXLocation !== undefined || hole.toeXLocation !== undefined)) {
+				if (params.useToe && hole.endXLocation !== undefined) {
 					// Step 4) Map toe coordinates correctly
 					elementVertices.push({
-						x: parseFloat(hole.endXLocation || hole.toeXLocation),
-						y: parseFloat(hole.endYLocation || hole.toeYLocation),
-						z: parseFloat(hole.endZLocation || hole.toeZLocation) || 0
+						x: parseFloat(hole.endXLocation),
+						y: parseFloat(hole.endYLocation),
+						z: parseFloat(hole.endZLocation) || 0
 					});
 				}
 				if (params.useMLength && hole.mLengthXLocation !== undefined) {
@@ -8189,97 +8191,157 @@ function lineIntersectsPolygon(x1, y1, x2, y2, polygon) {
 }
 
 // ===================================================================
-/**
- * STEP 1: Replace your existing constrained triangulation function
- *
- * If your current function looks something like this:
- * function createConstrainedDelaunayTriangulation(params) { ... }
- *
- * Replace it with this new implementation:
- */
+// =============================================================================
+// STEP 1: REPLACE - New Constrained Delaunay Triangulation Function
+// =============================================================================
 
 async function createConstrainedDelaunayTriangulation(params) {
-	console.log("🔗 Using TRUE Constrained Delaunay Triangulation (Constrainautor)");
+	console.log("🔗 Using FIXED Constrained Delaunay Triangulation (Constrainautor)");
 
 	try {
-		// Extract your existing point collection logic using your actual function
+		// Get visible elements
 		const visibleElements = getVisibleHolesAndKADDrawings(allBlastHoles || [], allKADDrawingsMap ? Array.from(allKADDrawingsMap.values()) : []);
 
-		// Collect your data points using your existing logic
-		let elementVertices = [];
+		console.log("📊 Found " + (visibleElements.visibleHoles?.length || 0) + " visible holes, " + (visibleElements.visibleKADDrawings?.length || 0) + " visible KAD drawings");
 
-		// Add blast hole vertices based on parameters (your existing logic)
+		// Collect data points with source tracking
+		let elementVertices = [];
+		const kadSourceMap = new Map(); // Track which KAD entities contributed vertices
+
+		// *** FIX 1: Standardized blast hole coordinate access ***
 		if (params.useCollars || params.useGrade || params.useToe || params.useMLength) {
-			visibleElements.visibleBlastHoles.forEach((hole) => {
-				if (params.useCollars) {
-					elementVertices.push({
-						x: parseFloat(hole.collarXLocation),
-						y: parseFloat(hole.collarYLocation),
-						z: parseFloat(hole.collarZLocation) || 0,
-						id: hole.name || `collar_${elementVertices.length}`
-					});
+			const visibleHoles = visibleElements.visibleHoles || [];
+			console.log("🕳️ Processing " + visibleHoles.length + " blast holes");
+
+			visibleHoles.forEach((hole, index) => {
+				// Collar points (surface)
+				if (params.useCollars && hole.startXLocation !== undefined && hole.startYLocation !== undefined) {
+					const coords = {
+						x: parseFloat(hole.startXLocation),
+						y: parseFloat(hole.startYLocation),
+						z: parseFloat(hole.startZLocation) || 0,
+						id: "hole_" + (hole.holeID || index) + "_collar",
+						sourceType: "hole"
+					};
+					if (!isNaN(coords.x) && !isNaN(coords.y) && isFinite(coords.x) && isFinite(coords.y)) {
+						elementVertices.push(coords);
+					} else {
+						console.warn("⚠️ Invalid collar coordinates for hole " + (hole.holeID || index) + ":", coords);
+					}
 				}
-				if (params.useGrade && hole.gradeXLocation !== undefined) {
-					elementVertices.push({
+
+				// Grade points (mid-hole)
+				if (params.useGrade && hole.gradeXLocation !== undefined && hole.gradeYLocation !== undefined) {
+					const coords = {
 						x: parseFloat(hole.gradeXLocation),
 						y: parseFloat(hole.gradeYLocation),
 						z: parseFloat(hole.gradeZLocation) || 0,
-						id: hole.name || `grade_${elementVertices.length}`
-					});
+						id: "hole_" + (hole.holeID || index) + "_grade",
+						sourceType: "hole"
+					};
+					if (!isNaN(coords.x) && !isNaN(coords.y) && isFinite(coords.x) && isFinite(coords.y)) {
+						elementVertices.push(coords);
+					} else {
+						console.warn("⚠️ Invalid grade coordinates for hole " + (hole.holeID || index) + ":", coords);
+					}
 				}
-				if (params.useToe && hole.toeXLocation !== undefined) {
-					elementVertices.push({
-						x: parseFloat(hole.toeXLocation),
-						y: parseFloat(hole.toeYLocation),
-						z: parseFloat(hole.toeZLocation) || 0,
-						id: hole.name || `toe_${elementVertices.length}`
-					});
+
+				// Toe points (bottom)
+				if (params.useToe && hole.endXLocation !== undefined && hole.endYLocation !== undefined) {
+					const coords = {
+						x: parseFloat(hole.endXLocation),
+						y: parseFloat(hole.endYLocation),
+						z: parseFloat(hole.endZLocation) || 0,
+						id: "hole_" + (hole.holeID || index) + "_toe",
+						sourceType: "hole"
+					};
+					if (!isNaN(coords.x) && !isNaN(coords.y) && isFinite(coords.x) && isFinite(coords.y)) {
+						elementVertices.push(coords);
+					} else {
+						console.warn("⚠️ Invalid toe coordinates for hole " + (hole.holeID || index) + ":", coords);
+					}
 				}
-				if (params.useMLength && hole.mLengthXLocation !== undefined) {
-					elementVertices.push({
+
+				// Measured length points
+				if (params.useMLength && hole.mLengthXLocation !== undefined && hole.mLengthYLocation !== undefined) {
+					const coords = {
 						x: parseFloat(hole.mLengthXLocation),
 						y: parseFloat(hole.mLengthYLocation),
 						z: parseFloat(hole.mLengthZLocation) || 0,
-						id: hole.name || `mlength_${elementVertices.length}`
-					});
+						id: "hole_" + (hole.holeID || index) + "_mlength",
+						sourceType: "hole"
+					};
+					if (!isNaN(coords.x) && !isNaN(coords.y) && isFinite(coords.x) && isFinite(coords.y)) {
+						elementVertices.push(coords);
+					} else {
+						console.warn("⚠️ Invalid mLength coordinates for hole " + (hole.holeID || index) + ":", coords);
+					}
 				}
 			});
 		}
 
-		// Add KAD drawing vertices (your existing logic)
-		visibleElements.visibleKADDrawings.forEach((entity) => {
+		// *** FIX 2: KAD drawing vertices with constraint source tracking ***
+		visibleElements.visibleKADDrawings.forEach((entity, entityIndex) => {
 			if (entity.data && Array.isArray(entity.data)) {
-				entity.data.forEach((point) => {
-					elementVertices.push({
+				const entityName = entity.entityName || "entity_" + entityIndex;
+				console.log('📐 Processing entity "' + entityName + '" (' + entity.entityType + ") with " + entity.data.length + " points");
+
+				const entityVertices = [];
+
+				entity.data.forEach((point, pointIndex) => {
+					const coords = {
 						x: parseFloat(point.pointXLocation) || parseFloat(point.x),
 						y: parseFloat(point.pointYLocation) || parseFloat(point.y),
 						z: parseFloat(point.pointZLocation) || parseFloat(point.z) || 0,
-						id: point.id || `point_${elementVertices.length}`
-					});
+						id: "kad_" + entityName + "_" + pointIndex,
+						sourceType: "kad",
+						sourceEntityName: entityName,
+						sourcePointIndex: pointIndex,
+						originalPoint: point
+					};
+
+					if (!isNaN(coords.x) && !isNaN(coords.y) && isFinite(coords.x) && isFinite(coords.y)) {
+						elementVertices.push(coords);
+						entityVertices.push({
+							vertex: coords,
+							originalIndex: pointIndex,
+							originalPoint: point
+						});
+					} else {
+						console.warn("⚠️ Invalid KAD coordinates for " + entityName + " point " + pointIndex + ":", coords);
+					}
 				});
+
+				// Store for constraint extraction later
+				if (entityVertices.length > 0 && (entity.entityType === "line" || entity.entityType === "poly")) {
+					kadSourceMap.set(entityName, {
+						entity: entity,
+						vertices: entityVertices
+					});
+				}
 			}
 		});
 
-		// Remove duplicate vertices within tolerance using your existing function
+		console.log("📊 Collected " + elementVertices.length + " vertices before deduplication");
+
+		// *** FIX 3: Deduplicate vertices (this changes coordinates) ***
+		const originalVertexCount = elementVertices.length;
 		elementVertices = getUniqueElementVertices(elementVertices, params.tolerance || 0.001);
 
+		console.log("🔄 Deduplication: " + originalVertexCount + " → " + elementVertices.length + " vertices");
+
 		if (elementVertices.length < 3) {
-			throw new Error("Insufficient points for triangulation");
+			throw new Error(`Insufficient points for triangulation: ${elementVertices.length}`);
 		}
 
-		console.log(`Collected ${elementVertices.length} points for triangulation`);
+		// *** FIX 4: Extract constraints AFTER deduplication using deduplicated vertices ***
+		const constraintSegments = extractConstraintsFromDeduplicatedVertices(elementVertices, kadSourceMap, params.tolerance || 0.001);
 
-		// Extract constraint segments from visible KAD entities (lines/polygons only)
-		const visibleKADEntities = getVisibleKADEntitiesForConstraints(false); // false = no clipping filter
-		const constraintSegments = extractConstraintSegmentsFromKADEntities(visibleKADEntities);
-
-		console.log(`Found ${constraintSegments.length} constraint segments`);
+		console.log("🔗 Extracted " + constraintSegments.length + " constraints from deduplicated vertices");
 
 		// Create the constrained triangulation
 		const result = await createConstrainautorTriangulation(elementVertices, constraintSegments, {
-			tolerance: params.tolerance || 1e-10,
-			maxSteinerPoints: 1000,
-			conformingDelaunay: false
+			tolerance: params.tolerance || 1e-10
 		});
 
 		if (!result || !result.resultTriangles || result.resultTriangles.length === 0) {
@@ -8287,7 +8349,7 @@ async function createConstrainedDelaunayTriangulation(params) {
 			return createFallbackTriangulation(elementVertices);
 		}
 
-		console.log(`✅ CDT Success: ${result.resultTriangles.length} triangles created`);
+		console.log("✅ CDT Success: " + result.resultTriangles.length + " triangles created with " + (result.stats?.constraints || 0) + " constraints applied");
 
 		return {
 			resultTriangles: result.resultTriangles,
@@ -8297,16 +8359,186 @@ async function createConstrainedDelaunayTriangulation(params) {
 		};
 	} catch (error) {
 		console.error("❌ CDT Error:", error);
+		console.warn("⚠️ Falling back to basic Delaunay triangulation");
 
-		// Fallback to your existing basic triangulation
-		console.warn("⚠️ Constrainautor CDT failed, falling back to basic Delaunay");
+		// Fallback to basic triangulation
 		return createDelaunayTriangulation(params);
 	}
 }
 
-/**
- * STEP 2: Core Constrainautor implementation (corrected API)
- */
+// =============================================================================
+// STEP 2: ADD - New constraint extraction from deduplicated vertices
+// =============================================================================
+
+function extractConstraintsFromDeduplicatedVertices(elementVertices, kadSourceMap, tolerance) {
+	console.log("🔗 Extracting constraints from deduplicated vertices...");
+
+	const constraints = [];
+
+	// *** FIX 5: Create spatial index for efficient vertex lookup ***
+	const spatialIndex = createSpatialIndex(elementVertices, tolerance);
+
+	// Extract constraints from each KAD entity
+	kadSourceMap.forEach((entityData, entityName) => {
+		const entity = entityData.entity;
+
+		// Only process lines and polygons for constraints
+		if (entity.entityType !== "line" && entity.entityType !== "poly") {
+			return;
+		}
+
+		console.log("🔗 Processing constraints for " + entity.entityType + ' "' + entityName + '"');
+
+		const entityConstraints = [];
+
+		// Create segments between consecutive points
+		for (let i = 0; i < entity.data.length - 1; i++) {
+			const startPoint = entity.data[i];
+			const endPoint = entity.data[i + 1];
+
+			const startX = parseFloat(startPoint.pointXLocation) || parseFloat(startPoint.x);
+			const startY = parseFloat(startPoint.pointYLocation) || parseFloat(startPoint.y);
+			const endX = parseFloat(endPoint.pointXLocation) || parseFloat(endPoint.x);
+			const endY = parseFloat(endPoint.pointYLocation) || parseFloat(endPoint.y);
+
+			// Find corresponding deduplicated vertices
+			const startIdx = findClosestVertexIndex(spatialIndex, startX, startY, tolerance);
+			const endIdx = findClosestVertexIndex(spatialIndex, endX, endY, tolerance);
+
+			if (startIdx !== null && endIdx !== null && startIdx !== endIdx) {
+				const constraint = {
+					start: elementVertices[startIdx],
+					end: elementVertices[endIdx],
+					startIndex: startIdx,
+					endIndex: endIdx,
+					entityName: entityName,
+					segmentIndex: i
+				};
+
+				entityConstraints.push(constraint);
+				constraints.push(constraint);
+			} else {
+				console.warn("⚠️ Could not map constraint segment " + i + " for entity " + entityName);
+				console.warn("  Start: (" + startX.toFixed(3) + ", " + startY.toFixed(3) + ") → index " + startIdx);
+				console.warn("  End: (" + endX.toFixed(3) + ", " + endY.toFixed(3) + ") → index " + endIdx);
+			}
+		}
+
+		// Close polygon for poly entities
+		if (entity.entityType === "poly" && entity.data.length > 2) {
+			const firstPoint = entity.data[0];
+			const lastPoint = entity.data[entity.data.length - 1];
+
+			const firstX = parseFloat(firstPoint.pointXLocation) || parseFloat(firstPoint.x);
+			const firstY = parseFloat(firstPoint.pointYLocation) || parseFloat(firstPoint.y);
+			const lastX = parseFloat(lastPoint.pointXLocation) || parseFloat(lastPoint.x);
+			const lastY = parseFloat(lastPoint.pointYLocation) || parseFloat(lastPoint.y);
+
+			// Only add closing segment if points are different
+			if (Math.abs(firstX - lastX) > tolerance || Math.abs(firstY - lastY) > tolerance) {
+				const firstIdx = findClosestVertexIndex(spatialIndex, firstX, firstY, tolerance);
+				const lastIdx = findClosestVertexIndex(spatialIndex, lastX, lastY, tolerance);
+
+				if (firstIdx !== null && lastIdx !== null && firstIdx !== lastIdx) {
+					const closingConstraint = {
+						start: elementVertices[lastIdx],
+						end: elementVertices[firstIdx],
+						startIndex: lastIdx,
+						endIndex: firstIdx,
+						entityName: entityName,
+						segmentIndex: "closing"
+					};
+
+					entityConstraints.push(closingConstraint);
+					constraints.push(closingConstraint);
+				}
+			}
+		}
+
+		console.log("  ✅ Added " + entityConstraints.length + " constraints for entity " + entityName);
+	});
+
+	console.log("✅ Total constraints extracted: " + constraints.length);
+	return constraints;
+}
+
+// =============================================================================
+// STEP 3: ADD - Spatial indexing for vertex lookup
+// =============================================================================
+
+function createSpatialIndex(vertices, tolerance) {
+	console.log("🗺️ Creating spatial index for " + vertices.length + " vertices with tolerance " + tolerance);
+
+	const index = new Map();
+
+	vertices.forEach((vertex, vertexIndex) => {
+		// Create multiple grid keys around each vertex for tolerance-based lookup
+		const baseX = Math.floor(vertex.x / tolerance) * tolerance;
+		const baseY = Math.floor(vertex.y / tolerance) * tolerance;
+
+		// Add to multiple grid cells to handle boundary cases
+		for (let dx = -1; dx <= 1; dx++) {
+			for (let dy = -1; dy <= 1; dy++) {
+				const gridX = baseX + dx * tolerance;
+				const gridY = baseY + dy * tolerance;
+				const key = gridX.toFixed(10) + "_" + gridY.toFixed(10);
+
+				if (!index.has(key)) {
+					index.set(key, []);
+				}
+				index.get(key).push({ vertex, index: vertexIndex });
+			}
+		}
+
+		// Also add exact coordinate key
+		const exactKey = "exact_" + vertex.x.toFixed(10) + "_" + vertex.y.toFixed(10);
+		if (!index.has(exactKey)) {
+			index.set(exactKey, []);
+		}
+		index.get(exactKey).push({ vertex, index: vertexIndex });
+	});
+
+	console.log("🗺️ Spatial index created with " + index.size + " grid cells");
+	return index;
+}
+
+function findClosestVertexIndex(spatialIndex, targetX, targetY, tolerance) {
+	// Try exact match first
+	const exactKey = "exact_" + targetX.toFixed(10) + "_" + targetY.toFixed(10);
+	const exactCandidates = spatialIndex.get(exactKey) || [];
+
+	if (exactCandidates.length > 0) {
+		return exactCandidates[0].index;
+	}
+
+	// Try grid-based lookup
+	const gridX = Math.floor(targetX / tolerance) * tolerance;
+	const gridY = Math.floor(targetY / tolerance) * tolerance;
+	const gridKey = gridX.toFixed(10) + "_" + gridY.toFixed(10);
+	const gridCandidates = spatialIndex.get(gridKey) || [];
+
+	// Find closest candidate within tolerance
+	let bestMatch = null;
+	let bestDistance = Infinity;
+
+	for (const candidate of gridCandidates) {
+		const dx = candidate.vertex.x - targetX;
+		const dy = candidate.vertex.y - targetY;
+		const distance = Math.sqrt(dx * dx + dy * dy);
+
+		if (distance <= tolerance && distance < bestDistance) {
+			bestMatch = candidate;
+			bestDistance = distance;
+		}
+	}
+
+	return bestMatch ? bestMatch.index : null;
+}
+
+// =============================================================================
+// STEP 4: REPLACE - Updated Constrainautor implementation
+// =============================================================================
+
 function createConstrainautorTriangulation(points, constraintSegments, options = {}) {
 	return new Promise((resolve, reject) => {
 		try {
@@ -8314,9 +8546,9 @@ function createConstrainautorTriangulation(points, constraintSegments, options =
 				throw new Error("Constrainautor library not loaded");
 			}
 
-			console.log(`Starting Constrainautor with ${points.length} points, ${constraintSegments.length} constraint segments`);
+			console.log("🔺 Starting Constrainautor with " + points.length + " points, " + constraintSegments.length + " constraints");
 
-			// Step 1: Create basic Delaunay triangulation first using Delaunator
+			// Create basic Delaunay triangulation first
 			const coords = new Float64Array(points.length * 2);
 			for (let i = 0; i < points.length; i++) {
 				coords[i * 2] = points[i].x;
@@ -8324,319 +8556,102 @@ function createConstrainautorTriangulation(points, constraintSegments, options =
 			}
 
 			const delaunay = new Delaunator(coords);
-			console.log("Created initial Delaunay with " + delaunay.triangles.length / 3 + " triangles");
+			console.log("🔺 Initial Delaunay: " + delaunay.triangles.length / 3 + " triangles");
 
-			// Step 2: Build point index map with tolerance for constraint resolution
-			const pointMap = new Map();
-			const tolerance = 1e-6; // Slightly larger tolerance for point matching
-
-			// Use spatial hashing for efficient point lookup with tolerance
-			points.forEach((point, index) => {
-				// Create multiple keys around the point to handle small variations
-				const baseX = Math.round(point.x / tolerance) * tolerance;
-				const baseY = Math.round(point.y / tolerance) * tolerance;
-
-				for (let dx = -1; dx <= 1; dx++) {
-					for (let dy = -1; dy <= 1; dy++) {
-						const keyX = baseX + dx * tolerance;
-						const keyY = baseY + dy * tolerance;
-						const key = `${keyX.toFixed(8)},${keyY.toFixed(8)}`;
-
-						if (!pointMap.has(key)) {
-							pointMap.set(key, index);
-						}
-					}
-				}
-
-				// Also add the exact point
-				const exactKey = `${point.x.toFixed(8)},${point.y.toFixed(8)}`;
-				pointMap.set(exactKey, index);
-			});
-
-			// Step 3: Convert constraints to [startIndex, endIndex] format with validation
+			// *** FIX 6: Use pre-calculated indices from constraint extraction ***
 			const constraintEdges = [];
-			const unmappedConstraints = [];
+			const validConstraints = [];
 
 			constraintSegments.forEach((segment, segmentIndex) => {
-				const startKey = `${segment.start.x.toFixed(8)},${segment.start.y.toFixed(8)}`;
-				const endKey = `${segment.end.x.toFixed(8)},${segment.end.y.toFixed(8)}`;
+				const startIdx = segment.startIndex;
+				const endIdx = segment.endIndex;
 
-				const startIdx = pointMap.get(startKey);
-				const endIdx = pointMap.get(endKey);
-
-				if (startIdx !== undefined && endIdx !== undefined && startIdx !== endIdx) {
-					// Validate that indices are within bounds
-					if (startIdx >= 0 && startIdx < points.length && endIdx >= 0 && endIdx < points.length) {
-						constraintEdges.push([startIdx, endIdx]);
-					} else {
-						console.warn("⚠️ Invalid constraint indices: [" + startIdx + ", " + endIdx + "] for segment " + segmentIndex);
-					}
+				// Indices should already be validated during extraction
+				if (startIdx !== undefined && endIdx !== undefined && startIdx !== endIdx && startIdx >= 0 && startIdx < points.length && endIdx >= 0 && endIdx < points.length) {
+					constraintEdges.push([startIdx, endIdx]);
+					validConstraints.push(segment);
 				} else {
-					unmappedConstraints.push({
-						segmentIndex,
-						startKey,
-						endKey,
-						startIdx,
-						endIdx,
-						segment
-					});
+					console.warn("⚠️ Invalid constraint indices: [" + startIdx + ", " + endIdx + "] for segment " + segmentIndex);
 				}
 			});
 
-			if (unmappedConstraints.length > 0) {
-				console.warn("⚠️ Could not map " + unmappedConstraints.length + " constraint segments to point indices:");
-				unmappedConstraints.slice(0, 5).forEach((um) => {
-					console.warn("  Segment " + um.segmentIndex + ": " + um.startKey + " -> " + um.endKey + " (indices: " + um.startIdx + ", " + um.endIdx + ")");
-				});
-				if (unmappedConstraints.length > 5) {
-					console.warn(`  ... and ${unmappedConstraints.length - 5} more`);
-				}
-			}
+			console.log("🔗 Prepared " + constraintEdges.length + " valid constraint edges");
 
-			console.log(`Found ${constraintEdges.length} valid constraints from ${constraintSegments.length} segments`);
-
-			// Step 4: Create Constrainautor instance with the Delaunay triangulation
+			// Create Constrainautor instance
 			const constrainautor = new Constrainautor(delaunay);
 
-			// Step 5: Apply constraints with error handling
+			// Apply constraints one by one with error handling
+			let successfulConstraints = 0;
 			if (constraintEdges.length > 0) {
-				try {
-					console.log(`Applying ${constraintEdges.length} constraints...`);
+				console.log("🔧 Applying " + constraintEdges.length + " constraints...");
 
-					// Try applying constraints one by one to identify problematic ones
-					let successfulConstraints = 0;
-					for (let i = 0; i < constraintEdges.length; i++) {
-						try {
-							constrainautor.constrainOne(constraintEdges[i][0], constraintEdges[i][1]);
-							successfulConstraints++;
-						} catch (constraintError) {
-							console.warn("⚠️ Failed to apply constraint " + i + ": [" + constraintEdges[i][0] + ", " + constraintEdges[i][1] + "]", constraintError.message);
-							// Continue with other constraints
-						}
+				for (let i = 0; i < constraintEdges.length; i++) {
+					try {
+						constrainautor.constrainOne(constraintEdges[i][0], constraintEdges[i][1]);
+						successfulConstraints++;
+					} catch (constraintError) {
+						const constraint = validConstraints[i];
+						console.warn("⚠️ Failed to apply constraint " + i + " for entity " + constraint?.entityName + ": [" + constraintEdges[i][0] + ", " + constraintEdges[i][1] + "]");
+						console.warn("   Error: " + constraintError.message);
 					}
-
-					console.log("✅ Successfully applied " + successfulConstraints + "/" + constraintEdges.length + " constraints");
-				} catch (error) {
-					console.warn("⚠️ Constraint application failed: " + error.message);
-					console.log("Proceeding with unconstrained triangulation");
 				}
+
+				console.log("✅ Successfully applied " + successfulConstraints + "/" + constraintEdges.length + " constraints");
 			}
 
-			// Step 6: The triangulation is now modified in-place in the delaunay object
-			// Convert back to your format
+			// Convert result triangles
 			const resultTriangles = [];
-			const triangles = delaunay.triangles; // Modified by Constrainautor
+			const triangles = delaunay.triangles;
 
 			for (let i = 0; i < triangles.length; i += 3) {
 				const idx1 = triangles[i];
 				const idx2 = triangles[i + 1];
 				const idx3 = triangles[i + 2];
 
-				// All indices should be within the original points array
-				// (Constrainautor doesn't add Steiner points, it only flips edges)
 				const v1 = points[idx1];
 				const v2 = points[idx2];
 				const v3 = points[idx3];
 
 				if (v1 && v2 && v3) {
-					const triangle = {
+					resultTriangles.push({
 						vertices: [v1, v2, v3],
 						indices: [idx1, idx2, idx3],
 						minZ: Math.min(v1.z || 0, v2.z || 0, v3.z || 0),
 						maxZ: Math.max(v1.z || 0, v2.z || 0, v3.z || 0)
-					};
-
-					resultTriangles.push(triangle);
+					});
 				}
 			}
 
-			console.log("Constrainautor completed: " + resultTriangles.length + " triangles");
+			console.log("🎉 Constrainautor complete: " + resultTriangles.length + " triangles");
 
 			resolve({
 				resultTriangles,
-				points: points, // No new points added by Constrainautor
+				points: points,
 				stats: {
 					algorithm: "constrainautor",
 					originalPoints: points.length,
-					finalPoints: points.length,
-					steinerPoints: 0, // Constrainautor doesn't add Steiner points
 					triangles: resultTriangles.length,
-					constraints: constraintEdges.length
+					constraints: successfulConstraints,
+					constraintAttempts: constraintEdges.length
 				}
 			});
 		} catch (error) {
+			console.error("❌ Constrainautor error:", error);
 			reject(error);
 		}
 	});
 }
 
-/**
- * STEP 3: Extract and clean constraints from KAD entities
- */
-function extractConstraintSegmentsFromKADEntities(visibleKADEntities) {
-	const constraints = [];
+// =============================================================================
+// STEP 5: KEEP - Fallback triangulation function (unchanged)
+// =============================================================================
 
-	visibleKADEntities.forEach((entity) => {
-		if (entity.pointList2D && entity.pointList2D.length > 1) {
-			// Create segments between consecutive points using the pointList2D
-			for (let i = 0; i < entity.pointList2D.length - 1; i++) {
-				const start = {
-					x: entity.pointList2D[i].x,
-					y: entity.pointList2D[i].y,
-					z: entity.pointList3D && entity.pointList3D[i] ? entity.pointList3D[i].z : 0
-				};
-
-				const end = {
-					x: entity.pointList2D[i + 1].x,
-					y: entity.pointList2D[i + 1].y,
-					z: entity.pointList3D && entity.pointList3D[i + 1] ? entity.pointList3D[i + 1].z : 0
-				};
-
-				// Only add if points are different (with larger tolerance)
-				if (Math.abs(start.x - end.x) > 1e-6 || Math.abs(start.y - end.y) > 1e-6) {
-					constraints.push({ start, end });
-				}
-			}
-
-			// Close polygon for poly entities
-			if (entity.entityType === "poly" && entity.pointList2D.length > 2) {
-				const first = {
-					x: entity.pointList2D[0].x,
-					y: entity.pointList2D[0].y,
-					z: entity.pointList3D && entity.pointList3D[0] ? entity.pointList3D[0].z : 0
-				};
-
-				const last = {
-					x: entity.pointList2D[entity.pointList2D.length - 1].x,
-					y: entity.pointList2D[entity.pointList2D.length - 1].y,
-					z: entity.pointList3D && entity.pointList3D[entity.pointList2D.length - 1] ? entity.pointList3D[entity.pointList2D.length - 1].z : 0
-				};
-
-				if (Math.abs(first.x - last.x) > 1e-6 || Math.abs(first.y - last.y) > 1e-6) {
-					constraints.push({ start: last, end: first });
-				}
-			}
-		}
-	});
-
-	// Clean up constraints to prevent intersections
-	return cleanConstraintSegments(constraints);
-}
-
-/**
- * Clean constraint segments to prevent intersections and overlaps
- */
-function cleanConstraintSegments(constraints) {
-	console.log("🧹 Cleaning " + constraints.length + " constraint segments...");
-
-	const tolerance = 1e-5; // Tolerance for point merging
-	const cleanedConstraints = [];
-
-	// Step 1: Remove duplicate segments
-	const uniqueConstraints = [];
-	const segmentKeys = new Set();
-
-	constraints.forEach((constraint) => {
-		const key1 = `${constraint.start.x.toFixed(8)},${constraint.start.y.toFixed(8)}-${constraint.end.x.toFixed(8)},${constraint.end.y.toFixed(8)}`;
-		const key2 = `${constraint.end.x.toFixed(8)},${constraint.end.y.toFixed(8)}-${constraint.start.x.toFixed(8)},${constraint.start.y.toFixed(8)}`;
-
-		if (!segmentKeys.has(key1) && !segmentKeys.has(key2)) {
-			segmentKeys.add(key1);
-			uniqueConstraints.push(constraint);
-		}
-	});
-
-	console.log("Removed " + (constraints.length - uniqueConstraints.length) + " duplicate segments");
-
-	// Step 2: Check for intersections and remove problematic segments
-	for (let i = 0; i < uniqueConstraints.length; i++) {
-		const segment1 = uniqueConstraints[i];
-		let hasIntersection = false;
-
-		for (let j = i + 1; j < uniqueConstraints.length; j++) {
-			const segment2 = uniqueConstraints[j];
-
-			// Skip if segments share endpoints
-			if (pointsEqual(segment1.start, segment2.start, tolerance) || pointsEqual(segment1.start, segment2.end, tolerance) || pointsEqual(segment1.end, segment2.start, tolerance) || pointsEqual(segment1.end, segment2.end, tolerance)) {
-				continue;
-			}
-
-			// Check for intersection
-			if (segmentsIntersect(segment1, segment2, tolerance)) {
-				console.warn("⚠️ Intersection detected between segments, removing segment " + j);
-				hasIntersection = true;
-				// Remove the later segment to avoid the intersection
-				uniqueConstraints.splice(j, 1);
-				j--; // Adjust index after removal
-			}
-		}
-
-		if (!hasIntersection) {
-			cleanedConstraints.push(segment1);
-		}
-	}
-
-	console.log("✅ Cleaned constraints: " + cleanedConstraints.length + " segments remaining");
-	return cleanedConstraints;
-}
-
-/**
- * Check if two points are equal within tolerance
- */
-function pointsEqual(p1, p2, tolerance = 1e-10) {
-	return Math.abs(p1.x - p2.x) < tolerance && Math.abs(p1.y - p2.y) < tolerance;
-}
-
-/**
- * Check if two line segments intersect
- */
-function segmentsIntersect(seg1, seg2, tolerance = 1e-10) {
-	const p1 = seg1.start;
-	const q1 = seg1.end;
-	const p2 = seg2.start;
-	const q2 = seg2.end;
-
-	// Calculate the orientation of the triplet (p, q, r)
-	const orientation = (p, q, r) => {
-		const val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-		if (Math.abs(val) < tolerance) return 0; // Collinear
-		return val > 0 ? 1 : 2; // Clockwise or Counterclockwise
-	};
-
-	// Check if point q lies on line segment pr
-	const onSegment = (p, q, r) => {
-		return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) && q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y);
-	};
-
-	const o1 = orientation(p1, q1, p2);
-	const o2 = orientation(p1, q1, q2);
-	const o3 = orientation(p2, q2, p1);
-	const o4 = orientation(p2, q2, q1);
-
-	// General case - segments intersect if orientations are different
-	if (o1 !== o2 && o3 !== o4) {
-		return true;
-	}
-
-	// Special cases for collinear points
-	if (o1 === 0 && onSegment(p1, p2, q1)) return true;
-	if (o2 === 0 && onSegment(p1, q2, q1)) return true;
-	if (o3 === 0 && onSegment(p2, p1, q2)) return true;
-	if (o4 === 0 && onSegment(p2, q1, q2)) return true;
-
-	return false;
-}
-
-/**
- * STEP 4: Fallback function (uses your existing basic Delaunay)
- */
 function createFallbackTriangulation(points) {
 	if (points.length < 3) {
 		return { resultTriangles: [], points: [], stats: {} };
 	}
 
 	try {
-		// Use Delaunator for basic triangulation
 		const getX = (p) => p.x;
 		const getY = (p) => p.y;
 
@@ -30393,7 +30408,9 @@ document.getElementById("gradientStyle").addEventListener("change", function () 
 // Step #) Function to handle gradient style changes
 function changeGradientStyle() {
 	gradientMethod = document.getElementById("gradientStyle").value;
-	console.log("Gradient style changed to: " + gradientMethod);
+	if (developerModeEnabled) {
+		console.log("Gradient style changed to: " + gradientMethod);
+	}
 	drawData(allBlastHoles, selectedHole);
 }
 
@@ -30402,7 +30419,9 @@ document.getElementById("lightBearingSlider").addEventListener("input", function
 	lightBearing = parseInt(document.getElementById("lightBearingSlider").value);
 	// change the slider labelto u
 	document.getElementById("lightBearingLabel").textContent = "Light Bearing (deg): " + lightBearing + "°";
-	console.log("Light bearing changed to: " + lightBearing);
+	if (developerModeEnabled) {
+		console.log("Light bearing changed to: " + lightBearing);
+	}
 	drawData(allBlastHoles, selectedHole);
 });
 
@@ -30411,7 +30430,9 @@ document.getElementById("lightElevationSlider").addEventListener("input", functi
 	lightElevation = parseInt(document.getElementById("lightElevationSlider").value);
 	// change the slider labelto use the new value
 	document.getElementById("lightElevationLabel").textContent = "Light Elevation (deg): " + lightElevation + "°";
-	console.log("Light elevation changed to: " + lightElevation);
+	if (developerModeEnabled) {
+		console.log("Light elevation changed to: " + lightElevation);
+	}
 	drawData(allBlastHoles, selectedHole);
 });
 
