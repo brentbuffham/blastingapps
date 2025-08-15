@@ -21902,6 +21902,7 @@ selectPointerTool.addEventListener("change", function () {
 	if (this.checked) {
 		isSelectionPointerActive = true;
 		isPolygonSelectionActive = false;
+		isMultiHoleSelectionEnabled = false;
 		//selectedKADPolygon = null;
 		// Uncheck the other buttons
 		resetFloatingToolbarButtons("selectPointerTool");
@@ -21935,6 +21936,7 @@ selectPointerTool.addEventListener("change", function () {
 		drawData(allBlastHoles, selectedHole);
 	} else {
 		isSelectionPointerActive = false;
+		isMultiHoleSelectionEnabled = false;
 		// Disable point selection mode
 		canvas.removeEventListener("click", handleSelection);
 		canvas.removeEventListener("touchstart", handleSelection);
