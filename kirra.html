@@ -3,7 +3,7 @@
 	<!--
     Description: This file contains the main UI for the Kirra App
 	Author: Brent Buffham
-	Last Modified: "20250713.1430AWST"
+	Last Modified: "20250815.1740AWST"
 -->
 
 	<head>
@@ -35,58 +35,82 @@
 		</script>
 
 		<!-- Triangulation libraies -->
+		<!-- D3 Delaunay -->
 		<script src="https://unpkg.com/d3-delaunay@6.0.1"></script>
+		<!-- <script src="libs/d3-delaunay.min.js"></script> -->
+		<!-- Delaunator -->
 		<script src="https://unpkg.com/delaunator@5.0.0/delaunator.min.js"></script>
-		<!-- Include the dxf-parser library via CDN -->
-		<!--<script src="kirraDXFParser.js"></script>-->
+		<!-- <script src="libs/delaunator.min.js"></script> -->
+		<!-- Poly2Tri -->
+		<!-- <script src="http://r3mi.github.io/poly2tri.js/dist/poly2tri.js"></script> -->
+		<script src="libs/poly2tri.js"></script>
+		<!-- Triangle -->
+		<!-- <script src="https://unpkg.com/triangle-wasm@1.0.0/triangle.js"></script> -->
+		<!-- <script src="libs/triangle.js"></script> -->
+		<!-- earcut -->
+		<script src="https://cdn.jsdelivr.net/npm/earcut/dist/earcut.min.js"></script>
+		<!-- <script src="libs/earcut.min.js"></script> -->
+		<!-- Constrainautor -->
+		<script src="https://cdn.jsdelivr.net/npm/@kninnug/constrainautor@4.0.1/lib/Constrainautor.min.js"></script>
+		<!-- DXF Parser -->
 		<script src="https://cdn.jsdelivr.net/npm/dxf-data-parser@1.3.8/dist/dxf-parser.min.js"></script>
-		<!-- Customise the showPopups-->
+		<!-- <script src="libs/dxf-data-parser.min.js"></script> -->
+		<!-- SweetAlert2 -->
+		<!-- Customise the showPopups - Eventually will be replaced with the Floating Dialog -->
 		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.19/dist/sweetalert2.all.min.js"></script>
+		<!-- <script src="libs/sweetalert2.all.min.js"></script> -->
 		<!-- Include Plotly.js -->
 		<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
-
+		<!-- <script src="libs/plotly-2.27.0.min.js"></script> -->
+		<!-- Note: PapaParse not found in libs directory - keeping CDN for now -->
+		<!-- <script src="libs/papaparse.min.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
 		<!-- CryptoJS Core -->
+		<!-- <script src="libs/crypto-js.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/crypto-js.js"></script>
-
 		<!-- CryptoJS MD5 -->
+		<!-- <script src="libs/md5.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/md5.js"></script>
-
 		<!-- CryptoJS SHA-1 -->
+		<!-- <script src="libs/sha1.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/sha1.js"></script>
-
 		<!-- CryptoJS SHA-256 -->
+		<!-- <script src="libs/sha256.js"></script> -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.3.0/sha256.js"></script>
-
 		<!-- Include the latest JSColor script from jsDelivr CDN -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
-
+		<!-- <script src="libs/jscolor.min.js"></script> -->
 		<!-- Include DXFParser from jsDeliver-->
 		<script src="https://cdn.jsdelivr.net/npm/@turf/turf@6.5.0/turf.min.js"></script>
-
+		<!-- <script src="libs/turf.min.js"></script> -->
 		<!-- D3 Polygon -->
 		<script src="https://cdn.jsdelivr.net/npm/d3-polygon@3"></script>
-
+		<!-- <script src="libs/d3-polygon.min.js"></script> -->
 		<!-- Clipper -->
 		<script src="https://cdn.jsdelivr.net/npm/clipper-lib@1.0.0/clipper.js"></script>
-
+		<!-- <script src="libs/clipper.js"></script> -->
 		<!-- Geotiff -->
 		<script src="https://cdn.jsdelivr.net/npm/geotiff@2.0.7/dist-browser/geotiff.js"></script>
-
+		<!-- <script src="libs/geotiff.js"></script> -->
 		<!-- Proj4 -->
 		<script src="https://unpkg.com/proj4@2.9.1/dist/proj4.js"></script>
-
+		<!-- <script src="libs/proj4.js"></script> -->
 		<!-- PrintJS -->
 		<script src="https://cdn.jsdelivr.net/npm/print-js@1.6.0/dist/print.min.js"></script>
+		<!-- <script src="libs/print.min.js"></script> -->
 		<!-- JsPDF -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<!-- <script src="libs/jspdf.umd.min.js"></script> -->
 		<!-- HTML2Canvas -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+		<!-- <script src="libs/html2canvas.min.js"></script> -->
 		<!-- PDF Make -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+		<!-- <script src="libs/pdfmake.min.js"></script> -->
 		<!-- PDF Make Fonts -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+		<!-- <script src="libs/vfs_fonts.js"></script> -->
+
 
 		<!-- Load all the scripts before the stylesheet -->
 		<link rel="stylesheet" href="kirra.css">
@@ -97,18 +121,18 @@
 				palette: [
 					"#770000",
 					"#FF0000",
-					"#FF5500",
+					"#FF9900",
 					"#FFFF00",
 					"#00ff00",
 					"#009900",
-					"#00AAFF",
-					"#0055CC",
+					"#00ffFF",
+					"#0099ff",
 					"#0000FF",
 					"#FF00FF", //10 per row
 					"#550000",
 					"#AA0000",
 					"#883300",
-					"#999900",
+					"#bbbb00",
 					"#33AA00",
 					"#006600",
 					"#007F7F",
@@ -355,11 +379,21 @@
 						"pattern_in_polygon": "Pattern in Polygon",
 						"holes_along_line": "Holes Along Line",
 						"holes_along_polyline": "Holes Along PolyLine",
+						"triangulate_label": "Surface",
+						"triangulate_tooltip": "Triangulate",
+						"draw_label": "Draw",
+						"add_kad_points_tooltip": "Add Drawing Points",
+						"add_kad_line_tooltip": "Add Drawing Line",
+						"add_kad_polygon_tooltip": "Add Drawing Polygon",
+						"add_kad_circle_tooltip": "Add Drawing Circle",
+						"add_kad_text_tooltip": "Add Drawing Text",
 						"modify_label": "Modify",
 						"move_to": "Move To",
 						"hole_bearing": "Hole Bearing",
 						"assign_surface": "Assign Surface",
 						"assign_grade": "Assign Grade",
+						"offset_kad_tooltip": "Offset Drawing",
+						"radii_holes_or_kad_tooltip": "Radii Holes or Drawing",
 						"connect_label": "Connect",
 						"tie_connect": "Tie Connect",
 						"tie_connect_multi": "Tie Connect Multi",
@@ -574,11 +608,21 @@
 						"pattern_in_polygon": "多边形内模式",
 						"holes_along_line": "沿线炮孔",
 						"holes_along_polyline": "沿多线炮孔",
+						"triangulate_label": "表面",
+						"triangulate_tooltip": "三角剖分",
+						"draw_label": "绘制",
+						"add_kad_points_tooltip": "添加绘图点",
+						"add_kad_line_tooltip": "添加绘图线",
+						"add_kad_polygon_tooltip": "添加绘图多边形",
+						"add_kad_circle_tooltip": "添加绘图圆",
+						"add_kad_text_tooltip": "添加绘图文本",
 						"modify_label": "修改",
 						"move_to": "移动到",
 						"hole_bearing": "炮孔方位角",
 						"assign_surface": "分配地表",
 						"assign_grade": "分配坡度",
+						"offset_kad_tooltip": "偏移绘图",
+						"radii_holes_or_kad_tooltip": "炮孔或绘图半径",
 						"connect_label": "连接",
 						"tie_connect": "连接",
 						"tie_connect_multi": "多重连接",
@@ -794,11 +838,21 @@
 						"pattern_in_polygon": "Motif dans polygone",
 						"holes_along_line": "Trous le long d'une ligne",
 						"holes_along_polyline": "Trous le long d'une polyligne",
+						"triangulate_label": "Surface",
+						"triangulate_tooltip": "Trianguler",
+						"draw_label": "Dessiner",
+						"add_kad_points_tooltip": "Ajouter des points de dessin",
+						"add_kad_line_tooltip": "Ajouter une ligne de dessin",
+						"add_kad_polygon_tooltip": "Ajouter un polygone de dessin",
+						"add_kad_circle_tooltip": "Ajouter un cercle de dessin",
+						"add_kad_text_tooltip": "Ajouter du texte de dessin",
 						"modify_label": "Modifier",
 						"move_to": "Déplacer vers",
 						"hole_bearing": "Azimut du trou",
 						"assign_surface": "Assigner surface",
 						"assign_grade": "Assigner pente",
+						"offset_kad_tooltip": "Décaler le dessin",
+						"radii_holes_or_kad_tooltip": "Rayons trous ou dessin",
 						"connect_label": "Connecter",
 						"tie_connect": "Connexion de liaison",
 						"tie_connect_multi": "Connexion de liaison multiple",
@@ -1013,11 +1067,21 @@
 						"pattern_in_polygon": "Олон өнцөгт доторх загвар",
 						"holes_along_line": "Шугамын дагуух цооног",
 						"holes_along_polyline": "Олон шугамын дагуух цооног",
+						"triangulate_label": "Гадаргуу",
+						"triangulate_tooltip": "Гурвалжин",
+						"draw_label": "Зурах",
+						"add_kad_points_tooltip": "Зургийн цэг нэмэх",
+						"add_kad_line_tooltip": "Зургийн шугам нэмэх",
+						"add_kad_polygon_tooltip": "Зургийн олон өнцөгт нэмэх",
+						"add_kad_circle_tooltip": "Зургийн тойрог нэмэх",
+						"add_kad_text_tooltip": "Зургийн текст нэмэх",
 						"modify_label": "Өөрчлөх",
 						"move_to": "Шилжүүлэх",
 						"hole_bearing": "Цооногийн чиглэл",
 						"assign_surface": "Гадаргуу оноох",
 						"assign_grade": "Зэрэглэл оноох",
+						"offset_kad_tooltip": "Зургийн шилжилт",
+						"radii_holes_or_kad_tooltip": "Цооног эсвэл зургийн радиус",
 						"connect_label": "Холбох",
 						"tie_connect": "Холболт холбох",
 						"tie_connect_multi": "Олон холболт холбох",
@@ -1232,11 +1296,21 @@
 						"pattern_in_polygon": "Шаблон в полигоне",
 						"holes_along_line": "Скважины вдоль линии",
 						"holes_along_polyline": "Скважины вдоль полилинии",
+						"triangulate_label": "Поверхность",
+						"triangulate_tooltip": "Триангуляция",
+						"draw_label": "Рисовать",
+						"add_kad_points_tooltip": "Добавить точки чертежа",
+						"add_kad_line_tooltip": "Добавить линию чертежа",
+						"add_kad_polygon_tooltip": "Добавить полигон чертежа",
+						"add_kad_circle_tooltip": "Добавить окружность чертежа",
+						"add_kad_text_tooltip": "Добавить текст чертежа",
 						"modify_label": "Изменить",
 						"move_to": "Переместить в",
 						"hole_bearing": "Азимут скважины",
 						"assign_surface": "Назначить поверхность",
 						"assign_grade": "Назначить уклон",
+						"offset_kad_tooltip": "Сместить чертеж",
+						"radii_holes_or_kad_tooltip": "Радиусы скважин или чертежа",
 						"connect_label": "Соединить",
 						"tie_connect": "Соединение связи",
 						"tie_connect_multi": "Множественное соединение связи",
@@ -1451,11 +1525,21 @@
 						"pattern_in_polygon": "Patrón en polígono",
 						"holes_along_line": "Barrenos a lo largo de línea",
 						"holes_along_polyline": "Barrenos a lo largo de polilínea",
+						"triangulate_label": "Superficie",
+						"triangulate_tooltip": "Triangular",
+						"draw_label": "Dibujar",
+						"add_kad_points_tooltip": "Agregar puntos de dibujo",
+						"add_kad_line_tooltip": "Agregar línea de dibujo",
+						"add_kad_polygon_tooltip": "Agregar polígono de dibujo",
+						"add_kad_circle_tooltip": "Agregar círculo de dibujo",
+						"add_kad_text_tooltip": "Agregar texto de dibujo",
 						"modify_label": "Modificar",
 						"move_to": "Mover a",
 						"hole_bearing": "Azimut del barreno",
 						"assign_surface": "Asignar superficie",
 						"assign_grade": "Asignar pendiente",
+						"offset_kad_tooltip": "Desplazar dibujo",
+						"radii_holes_or_kad_tooltip": "Radios de barrenos o dibujo",
 						"connect_label": "Conectar",
 						"tie_connect": "Conexión de enlace",
 						"tie_connect_multi": "Conexión de enlace múltiple",
@@ -1908,18 +1992,36 @@
 					<div class="button-container-1col">
 						<div class="label2" id="fontLabel">Font Size (pt): 10pt</div>
 						<input type="range" id="fontSlider" min="1" max="100" value="10" step="1" placeholder="Select font size">
+						<div class="label2" id="fontLockLabel">Font Size Locked? <input type="checkbox" id="fontLock" placeholder="fontLock"></div>
+						<!-- Lock the font size with a nornal checkbox not a switch with round to the fontSlider setting and disable adjustments of the slider. -->
+						<hr class="button-container-divider">
 						<div class="label2" id="connLabel">Tie Size (units): 3.0</div>
 						<input type="range" id="connSlider" min="0.001" max="15" value="3" step="0.1" placeholder="Select connector size">
 						<div class="label2" id="toeLabel">Toe Size (m): 0.5m</div>
 						<input type="range" id="toeSlider" min="0.001" max="30" value=".5" step="0.1" placeholder="Select toe circle size">
 						<div class="label2" id="holeLabel">Hole Adjust (units): 2.0</div>
 						<input type="range" id="holeSlider" min="1" max="10" value="2" step="0.1" placeholder="Select hole circle size">
+						<hr class="button-container-divider">
 						<div class="label2" id="intervalLabel">Interval (ms): 100ms</div>
 						<input type="range" id="intervalSlider" min="5" max="1000" value="100" step="5" placeholder="Adjust the Interval">
 						<div class="label2" id="firstMovementLabel">First Movement Size (units): 2.0</div>
 						<input type="range" id="firstMovementSlider" min="0" max="5" value="2" step="0.1" placeholder="Adjust the First Movement">
+						<hr class="button-container-divider">
 						<div class="label2" id="snapToleranceLabel">Snap Tolerance (px): 15px </div>
 						<input type="range" id="snapToleranceSlider" min="0" max="100" value="15" step="1" placeholder="Adjust the Snap Tolerance">
+						<hr class="button-container-divider">
+						<!-- Hill Shade Settings -->
+						<div class="label2" id="lightBearingLabel">Hillshade Light Bearing (deg): 135°</div>
+						<input type="range" id="lightBearingSlider" min="0" max="360" value="135" step="1" placeholder="Adjust the Light Bearing">
+						<div class="label2" id="lightElevationLabel">Hillshade Light Elevation (deg): 15°</div>
+						<input type="range" id="lightElevationSlider" min="0" max="180" value="15" step="1" placeholder="Adjust the Light Elevation">
+						<!-- Triangle Gradient style dropdown-->
+						<div class="label2" id="gradientStyleLabel">Surface Colour Gradient Style:</div>
+						<select id="gradientStyle" title="Select the gradient style">
+							<option value="radial">Radial</option>
+							<option value="default">Default</option>
+							<option value="baycentric">Baycentric</option>
+						</select>
 					</div>
 				</div>
 				<!-- OUTPUT FILES -->
@@ -2003,6 +2105,9 @@
 					<!-- add a developer mode button-->
 					<input type="checkbox" id="developerMode"> <label for="developerMode">Developer Mode</label>
 					<br>
+					<input type="checkbox" id="rowAndPosDisplay"> <label for="rowAndPosDisplay">Row and Position Display</label>
+					<br>
+
 					<font size="1"><i>Created by Brent Buffham &#169; 2023. <br>
 							<hr> <br>
 							Importing a CSV files: NO HEADERS
@@ -2057,11 +2162,12 @@
 							<label class="label2" id="delayLabel">Delay:</label>
 							<input type="number2" step="1" min="-1000" max="1000" id="delay" name="delay" value="25" placeholder="Delay Amount">
 						</div>
-						<div class="button-norm" id="connectorColor" name="connectorColor" data-jscolor="{value:'#FF0000'}">Color</div>
+						<div class="button-norm" id="connectorColor" name="connectorColor" data-jscolor="{value:'#FF0000'}">
+							Color</div>
 					</div>
 					<br>
 					<div class="label2" id="connectLabel">Connect Distance : </div>
-					<input type="range" id="connectSlider" min="0.1" max="20" value="1" step=".1" placeholder="Adjust the Connection Distance">
+					<input type="range" id="connectSlider" min="0" max="100" value="50" step="1" placeholder="Adjust the Connection Distance">
 				</div>
 				<button class="accordion" id="animateAcc">
 					<span>Animate Firing</span></button>
@@ -2069,7 +2175,7 @@
 					<button class="button-norm" id="play">PLAY @ 1.0x</button>
 					<button class="button-norm" id="stop">STOP</button>
 					<br>
-					<input type="range" step="0.05" min="0.01" max="5" value="1.0" id="playSpeed" placeholder="Select play speed">
+					<input type="range" step="1" min="0" max="100" value="50" id="playSpeed" placeholder="Select play speed">
 				</div>
 				<button class="accordion" id="timeWindowAcc">
 					<span>Time Window</span></button>
@@ -2283,88 +2389,137 @@
 
 		</div>
 		<!--END CANVAS AND MODE DISPLY BUTTONS-->
-		<div id="floating-toolbar">
-			<label class="label2" id="dragLabel">═════</label>
-			<label class="label2" id="selectLabel">Select</label>
-			<input type="checkbox" id="selectPointer" name="selectPointer" value="selectPointer">
-			<label for="selectPointer" class="toggle-buttons-custom icon-button" title="selectPointer">
-				<img src="icons/pointer.png" alt="selectPointer">
-			</label>
-			<input type="checkbox" id="selectByPolygon" name="selectByPolygon" value="selectByPolygon">
-			<label for="selectByPolygon" class="toggle-buttons-custom icon-button" title="selectByPolygon">
-				<img src="icons/pointer-select-polygon.png" alt="selectByPolygon">
-			</label>
-			<label class="label2" id="createLabel">Create</label>
-			<input type="checkbox" id="patternInPolygonTool" name="patternInPolygonTool" value="patternInPolygonTool">
-			<label for="patternInPolygonTool" class="toggle-buttons-custom icon-button" title="Pattern in Polygon">
-				<img src="icons/pattern.png" alt="Pattern in Polygon">
-			</label>
-			<input type="checkbox" id="holesAlongLineTool" name="holesAlongLineTool" value="holesAlongLineTool">
-			<label for="holesAlongLineTool" class="toggle-buttons-custom icon-button" title="Holes Along Line">
-				<img src="icons/line.png" alt="Holes Along Line">
-			</label>
-			<!-- this is a single icon button that spans both columns -->
-			<input type="checkbox" id="holesAlongPolyLineTool" name="holesAlongPolyLineTool" value="holesAlongPolyLineTool">
-			<label for="holesAlongPolyLineTool" class="toggle-buttons-custom icon-button single" title="Holes Along PolyLine">
-				<img src="icons/shape-2.png" alt="Holes Along PolyLine">
-			</label>
+		<!-- TOOLBAR PANEL - Tree Panel Style with ORIGINAL TOOL IDs -->
+		<div id="toolbarPanel" class="tree-panel toolbar-panel">
+			<div class="tree-panel-header" id="toolbarPanelHeader">
+				<span>Tools</span>
+				<div class="tree-panel-controls">
+					<button class="tree-panel-btn" id="toolbarCollapseBtn" title="Collapse/Expand">−</button>
+					<!-- <button class="tree-panel-btn" id="toolbarCloseBtn" title="Close">×</button> -->
+				</div>
+			</div>
+			<div class="tree-panel-content toolbar-panel-content" id="toolbarPanelContent">
+				<div class="toolbar-grid">
+					<label class="label2" id="selectLabel">Select</label>
+					<input type="checkbox" id="selectPointer" name="selectPointer" value="selectPointer">
+					<label for="selectPointer" class="toggle-buttons-custom icon-button" title="selectPointer">
+						<img src="icons/pointer.png" alt="selectPointer">
+					</label>
+					<input type="checkbox" id="selectByPolygon" name="selectByPolygon" value="selectByPolygon">
+					<label for="selectByPolygon" class="toggle-buttons-custom icon-button" title="selectByPolygon">
+						<img src="icons/pointer-select-polygon.png" alt="selectByPolygon">
+					</label>
+					<input type="radio" id="selectHoles" name="selectType" value="holes" checked>
+					<label for="selectHoles" class="toggle-buttons-custom" title="Select Holes">
+						Holes
+					</label>
+					<input type="radio" id="selectKAD" name="selectType" value="kad">
+					<label for="selectKAD" class="toggle-buttons-custom" title="Select KAD">
+						KAD
+					</label>
+					<label class="label2" id="createLabel">Create</label>
+					<input type="checkbox" id="patternInPolygonTool" name="patternInPolygonTool" value="patternInPolygonTool">
+					<label for="patternInPolygonTool" class="toggle-buttons-custom icon-button" title="Pattern in Polygon">
+						<img src="icons/pattern.png" alt="Pattern in Polygon">
+					</label>
+					<input type="checkbox" id="holesAlongLineTool" name="holesAlongLineTool" value="holesAlongLineTool">
+					<label for="holesAlongLineTool" class="toggle-buttons-custom icon-button" title="Holes Along Line">
+						<img src="icons/line.png" alt="Holes Along Line">
+					</label>
+					<input type="checkbox" id="holesAlongPolyLineTool" name="holesAlongPolyLineTool" value="holesAlongPolyLineTool">
+					<label for="holesAlongPolyLineTool" class="toggle-buttons-custom icon-button single" title="Holes Along PolyLine">
+						<img src="icons/shape-2.png" alt="Holes Along PolyLine">
+					</label>
 
-			<label class="label2" id="modifyLabel">Modify</label>
-			<input type="checkbox" id="moveToTool" name="moveToTool" value="moveToTool">
-			<label for="moveToTool" class="toggle-buttons-custom icon-button" title="Move To">
-				<img src="icons/arrows-move.png" alt="Move">
-			</label>
-			<input type="checkbox" id="bearingTool" name="bearingTool" value="bearingTool">
-			<label for="bearingTool" class="toggle-buttons-custom icon-button" title="Hole Bearing">
-				<img src="icons/rotate-dot.png" alt="Hole Bearing">
-			</label>
-			<input type="checkbox" id="assignSurfaceTool" name="assignSurfaceTool" value="assignSurfaceTool">
-			<label for="assignSurfaceTool" class="toggle-buttons-custom icon-button" title="Assign Surface">
-				<img src="icons/adjustments-up.png" alt="Assign Surface">
-			</label>
-			<input type="checkbox" id="assignGradeTool" name="assignGradeTool" value="assignGradeTool">
-			<label for="assignGradeTool" class="toggle-buttons-custom icon-button" title="Assign Grade">
-				<img src="icons/adjustments-down.png" alt="Assign Grade">
-			</label>
+					<label class="label2" id="triangulateLabel">Surface</label>
+					<input type="checkbox" id="triangulateTool" name="triangulateTool" value="triangulateTool">
+					<label for="triangulateTool" class="toggle-buttons-custom icon-button single" title="Triangulate">
+						<img src="icons/triangulation.png" alt="Triangulate">
+					</label>
 
-			<label class="label2" id="connectLabel">Connect</label>
-			<input type="checkbox" id="tieConnectTool" name="tieConnectTool" value="tieConnectTool">
-			<label for="tieConnectTool" class="toggle-buttons-custom icon-button" title="Tie Connect">
-				<img src="icons/tieconnect.png" alt="Tie Connect">
-			</label>
-			<input type="checkbox" id="tieConnectMultiTool" name="tieConnectMultiTool" value="tieConnectMultiTool">
-			<label for="tieConnectMultiTool" class="toggle-buttons-custom icon-button" title="Tie Connect Multi">
-				<img src="icons/tieconnectmulti.png" alt="Tie Connect Multi">
-			</label>
-			<!-- this is a single icon button that spans both columns -->
-			<input type="number2" step="1" min="-1000" max="1000" id="floatingDelay" name="floatingDelay" value="25" placeholder="Delay Amount" class="single">
-			<!-- this is a single icon button that spans both columns -->
-			<input type="button" id="floatingConnectorColor" name="floatingConnectorColor" data-jscolor="{value:'#FF0000'}" title="Connector Color" placeholder="Connector Color" class="single">
+					<label class="label2" id="addKADLabel">Draw</label>
+					<input type="checkbox" id="addKADPointsTool" name="addKADPointsTool" value="addKADPointsTool">
+					<label for="addKADPointsTool" class="toggle-buttons-custom icon-button" title="Add KAD Points">
+						<img src="icons/add-kad-points.png" alt="Add KAD Points">
+					</label>
+					<input type="checkbox" id="addKADLineTool" name="addKADLineTool" value="addKADLineTool">
+					<label for="addKADLineTool" class="toggle-buttons-custom icon-button" title="Add KAD Line">
+						<img src="icons/add-kad-line.png" alt="Add KAD Line">
+					</label>
+					<input type="checkbox" id="addKADPolygonTool" name="addKADPolygonTool" value="addKADPolygonTool">
+					<label for="addKADPolygonTool" class="toggle-buttons-custom icon-button" title="Add KAD Polygon">
+						<img src="icons/add-kad-poly.png" alt="Add KAD Polygon">
+					</label>
+					<input type="checkbox" id="addKADCircleTool" name="addKADCircleTool" value="addKADCircleTool">
+					<label for="addKADCircleTool" class="toggle-buttons-custom icon-button" title="Add KAD Circle">
+						<img src="icons/add-kad-circle.png" alt="Add KAD Circle">
+					</label>
+					<input type="checkbox" id="addKADTextTool" name="addKADTextTool" value="addKADTextTool">
+					<label for="addKADTextTool" class="toggle-buttons-custom icon-button single" title="Add KAD Text">
+						<img src="icons/add-kad-text.png" alt="Add KAD Text">
+					</label>
 
-			<label class="label2" id="measureLabel">Measure</label>
-			<input type="checkbox" id="rulerTool" name="rulerTool" value="rulerTool">
-			<label for="rulerTool" class="toggle-buttons-custom icon-button" title="Ruler">
-				<img src="icons/ruler-measure.png" alt="Ruler">
-			</label>
-			<input type="checkbox" id="rulerProtractorTool" name="rulerProtractorTool" value="rulerProtractorTool">
-			<label for="rulerProtractorTool" class="toggle-buttons-custom icon-button" title="Ruler Protractor">
-				<img src="icons/ruler-bearing.png" alt="Ruler Protractor">
-			</label>
-			<label class="label2" id="viewLabel">View</label>
-			<!-- Add class="toggle-buttons-custom icon-button single" to make it a single icon button-->
-			<input type="checkbox" id="resetViewTool" name="resetViewTool" value="resetViewTool">
-			<label for="resetViewTool" class="toggle-buttons-custom icon-button" title="Reset View">
-				<img src="icons/circle-letter-r.png" alt="Reset View">
-			</label>
-			<!-- Add class="toggle-buttons-custom icon-button single" to make it a single icon button-->
-			<input type="checkbox" id="showTreeBtn" name="showTreeBtn" value="showTreeBtn">
-			<label for="showTreeBtn" class="toggle-buttons-custom icon-button" title="Show Data Explorer">
-				<img src="icons/article.png" alt="Data Explorer">
-			</label>
+					<label class="label2" id="modifyLabel">Modify</label>
+					<input type="checkbox" id="moveToTool" name="moveToTool" value="moveToTool">
+					<label for="moveToTool" class="toggle-buttons-custom icon-button" title="Move To">
+						<img src="icons/arrows-move.png" alt="Move">
+					</label>
+					<input type="checkbox" id="bearingTool" name="bearingTool" value="bearingTool">
+					<label for="bearingTool" class="toggle-buttons-custom icon-button" title="Hole Bearing">
+						<img src="icons/rotate-dot.png" alt="Hole Bearing">
+					</label>
+					<input type="checkbox" id="assignSurfaceTool" name="assignSurfaceTool" value="assignSurfaceTool">
+					<label for="assignSurfaceTool" class="toggle-buttons-custom icon-button" title="Assign Surface">
+						<img src="icons/adjustments-up.png" alt="Assign Surface">
+					</label>
+					<input type="checkbox" id="assignGradeTool" name="assignGradeTool" value="assignGradeTool">
+					<label for="assignGradeTool" class="toggle-buttons-custom icon-button" title="Assign Grade">
+						<img src="icons/adjustments-down.png" alt="Assign Grade">
+					</label>
+					<input type="checkbox" id="offsetKADTool" name="offsetKADTool" value="offsetKADTool">
+					<label for="offsetKADTool" class="toggle-buttons-custom icon-button" title="Offset Kad">
+						<img src="icons/arrow-bar-both.png" alt="Offset Kad">
+					</label>
+					<input type="checkbox" id="radiiHolesOrKADsTool" name="radiiHolesOrKADsTool" value="radiiHolesOrKADsTool">
+					<label for="radiiHolesOrKADsTool" class="toggle-buttons-custom icon-button" title="Radii Holes or KADs">
+						<img src="icons/atom-2.png" alt="Radii Holes or KADs">
+					</label>
 
-			<!-- </div> -->
-			<!-- Add more buttons as needed -->
+					<label class="label2" id="connectLabel">Connect</label>
+					<input type="checkbox" id="tieConnectTool" name="tieConnectTool" value="tieConnectTool">
+					<label for="tieConnectTool" class="toggle-buttons-custom icon-button" title="Tie Connect">
+						<img src="icons/tieconnect.png" alt="Tie Connect">
+					</label>
+					<input type="checkbox" id="tieConnectMultiTool" name="tieConnectMultiTool" value="tieConnectMultiTool">
+					<label for="tieConnectMultiTool" class="toggle-buttons-custom icon-button" title="Tie Connect Multi">
+						<img src="icons/tieconnectmulti.png" alt="Tie Connect Multi">
+					</label>
+					<input type="number2" step="1" min="-1000" max="1000" id="floatingDelay" name="floatingDelay" value="25" placeholder="Delay Amount" class="single">
+					<input type="button" id="floatingConnectorColor" name="floatingConnectorColor" data-jscolor="{value:'#FF0000'}" title="Connector Color" placeholder="Connector Color" class="single">
+
+					<label class="label2" id="measureLabel">Measure</label>
+					<input type="checkbox" id="rulerTool" name="rulerTool" value="rulerTool">
+					<label for="rulerTool" class="toggle-buttons-custom icon-button" title="Ruler">
+						<img src="icons/ruler-measure.png" alt="Ruler">
+					</label>
+					<input type="checkbox" id="rulerProtractorTool" name="rulerProtractorTool" value="rulerProtractorTool">
+					<label for="rulerProtractorTool" class="toggle-buttons-custom icon-button" title="Ruler Protractor">
+						<img src="icons/ruler-bearing.png" alt="Ruler Protractor">
+					</label>
+
+					<label class="label2" id="viewLabel">View</label>
+					<input type="checkbox" id="resetViewTool" name="resetViewTool" value="resetViewTool">
+					<label for="resetViewTool" class="toggle-buttons-custom icon-button" title="Reset View">
+						<img src="icons/circle-letter-r.png" alt="Reset View">
+					</label>
+					<input type="checkbox" id="showTreeBtn" name="showTreeBtn" value="showTreeBtn">
+					<label for="showTreeBtn" class="toggle-buttons-custom icon-button" title="Show Data Explorer">
+						<img src="icons/article.png" alt="Data Explorer">
+					</label>
+				</div>
+			</div>
 		</div>
+		<!-- END TOOLBAR PANEL -->
 		<!-- END - FLOATING TOOLBAR -->
 		<!-- Add this to your HTML body, preferably near the end -->
 		<div id="treePanel" class="tree-panel">

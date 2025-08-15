@@ -1,7 +1,7 @@
 /*
     Description: This file contains the CSS for the Kirra App
     Author: Brent Buffham
-    Last Modified: "20250713.1430AWST"
+    Last Modified: "20250815.1740AWST"
 */
 
 :root {
@@ -31,7 +31,7 @@
     /* Selected Color */
     --disabled-color: #736363;
     /* Disabled Color */
-    --default-font: Roboto-Regular, sans-serif;
+    --default-font: Arial, Helvetica, sans-serif;
     /* Default Font */
     --default-font-size: 14px;
     /* Default Font Size */
@@ -179,6 +179,18 @@ body.dark-mode .dark-mode-toggle-icon {
     transition: filter 0.3s;
 }
 
+/* Step #) Button container divider styling */
+.button-container-divider {
+    width: 100%;
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid var(--light-mode-border);
+}
+
+body.dark-mode .button-container-divider {
+    border-top-color: var(--dark-mode-border);
+}
+
 body.dark-mode .light-mode-toggle-icon {
     filter: invert(1);
     opacity: 0.8;
@@ -233,150 +245,7 @@ body.dark-mode #dark-mode-toggle::after {
 }
 
 /* TOOLBAR */
-#floating-toolbar input[type="checkbox"] {
-    display: none;
-}
-
-#floating-toolbar input[type="button"].single {
-    grid-column: 1 / -1;
-    width: 90%;
-    height: 20px;
-    border: 1px solid var(--light-mode-border);
-    border-radius: 3px;
-    margin: 1px 2px;
-    justify-self: center;
-}
-
-#floating-toolbar input[type="number2"].single {
-    grid-column: 1 / -1;
-    width: calc(80%);
-    margin: 1px 2px;
-    text-align: center;
-    border: 1px solid var(--light-mode-border);
-    border-radius: 3px;
-    color: var(--light-mode-text);
-    background-color: var(--default-background-color);
-    justify-self: center;
-}
-
-#floating-toolbar {
-    position: absolute;
-    top: 100px;
-    left: 15px;
-    padding: 3px 3px 3px 3px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2px;
-    width: 70px;
-    align-items: center;
-    background-color: var(--default-background-color);
-    border: 1px solid var(--light-mode-border);
-    border-radius: 6px;
-    box-shadow: 0 4px 4px rgba(50, 50, 50, 0.5);
-    z-index: 1000;
-    cursor: move;
-    transition: left 0.5s ease;
-}
-
-/* Make labels span both columns */
-#floating-toolbar .label2 {
-    grid-column: 1 / -1;
-    text-align: center;
-}
-
-/* Center any icon with the 'single' class */
-#floating-toolbar .icon-button.single {
-    grid-column: 1 / -1;
-    justify-self: center;
-}
-
-/* Styles for the labels which act as buttons */
-#floating-toolbar label.icon-button {
-    display: flex;
-    /* Change from inline-flex to flex */
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    background-color: var(--primary-color);
-    border: 1px solid var(--light-mode-border);
-    border-radius: 4px;
-    margin-top: 2px;
-    margin-bottom: 2px;
-    font-size: 0;
-    /* Add this to eliminate any text spacing */
-    line-height: 0;
-    /* Add this to eliminate line-height spacing */
-    cursor: pointer;
-    /* transition: background-color 0.2s, border-color 0.2s; */
-}
-
-#floating-toolbar label.icon-button img {
-    width: 26px;
-    height: 26px;
-    object-fit: contain;
-    display: block;
-    border-radius: 4px;
-    border: 1px solid var(--dark-mode-border);
-    /* border: 2px solid var(--dark-mode-border); */
-
-    /* Add this */
-}
-
-/* Hover state for the icon buttons within the toolbar */
-#floating-toolbar label.icon-button:hover {
-    background-color: var(--mouseover-color);
-    /* Your desired hover color */
-    border-color: #ffff00;
-}
-
-/* Checked/Selected state for the icon buttons within the toolbar */
-#floating-toolbar input[type="checkbox"]:checked+label.icon-button {
-    background-color: red;
-    /* Your desired selected color */
-    border-color: #440000;
-    /* Or a darker shade of red */
-}
-
-/* Dark mode adjustments for toolbar buttons */
-body.dark-mode #floating-toolbar {
-    background-color: var(--dark-mode-color);
-    border: 1px solid var(--dark-mode-border);
-}
-
-body.dark-mode #floating-toolbar input[type="number2"].single {
-    color: var(--dark-mode-text);
-    background-color: var(--dark-mode-color);
-}
-
-body.dark-mode #floating-toolbar label.icon-button {
-    background-color: var(--primary-color);
-    /* Default dark mode background */
-    border: 1px solid var(--dark-mode-border);
-    /* If icons need inversion for dark mode, you might need: */
-    /* filter: invert(1) opacity(0.95); */
-}
-
-body.dark-mode #floating-toolbar label.icon-button:hover {
-    background-color: var(--mouseover-color);
-    /* Or a dark mode specific hover */
-    /* Consider if text/icon color needs to change on hover in dark mode */
-}
-
-body.dark-mode #floating-toolbar input[type="checkbox"]:checked+label.icon-button {
-    background-color: red;
-    /* Selected color can be the same */
-    border-color: darkred;
-    /* filter: none; */
-    /* Reset filter if icons were inverted for default dark mode state */
-}
-
-/* Remove or comment out these as they are not directly used by the current HTML structure for labels */
-/*
-#floating-toolbar .toolbar-btn { ... }
-#floating-toolbar .toolbar-btn:hover { ... }
-...etc. for .toolbar-btn
-*/
+/* TOOLBAR END */
 
 /* MODAL */
 .modal-content {
@@ -1714,6 +1583,22 @@ body.dark-mode .file-import-btn:hover {
     text-align: center;
 }
 
+.option1[type="button"] {
+    width: 100px;
+    height: 40px;
+    color: #1f1f1f;
+    background-color: #42a4bf;
+    text-align: center;
+}
+
+.option2[type="button"] {
+    width: 100px;
+    height: 40px;
+    color: #1f1f1f;
+    background-color: #6c52a5;
+    text-align: center;
+}
+
 .custom-popup-container {
     background-color: #333;
     border: 1px solid #555;
@@ -1728,7 +1613,6 @@ body.dark-mode .file-import-btn:hover {
     margin: 4px;
     width: 100%;
     box-sizing: border-box;
-
 }
 
 .slider-container {
@@ -2047,7 +1931,7 @@ label {
     right: 20px;
     width: 300px;
     height: 400px;
-    background-color: var(--light-mode-canvas);
+    background-color: rgba(255, 255, 255, 0.9);
     border: 1px solid var(--light-mode-border);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -2058,12 +1942,12 @@ label {
     flex-direction: column;
     resize: both;
     overflow: hidden;
-    min-width: 250px;
-    min-height: 200px;
+    min-width: 150px;
+    min-height: 40px;
 }
 
 body.dark-mode .tree-panel {
-    background-color: var(--dark-mode-color);
+    background-color: rgba(50, 50, 50, 0.9);
     border-color: var(--dark-mode-border);
     color: var(--dark-mode-text);
 }
@@ -2163,6 +2047,21 @@ body.dark-mode .tree-item:hover {
     background-color: rgba(217, 217, 217, 0.1);
 }
 
+/* Hidden tree nodes styling */
+.tree-item.hidden-node {
+    opacity: 0.5 !important;
+    font-style: italic;
+}
+
+.tree-item.hidden-node .tree-label {
+    text-decoration: line-through;
+    color: #666;
+}
+
+body.dark-mode .tree-item.hidden-node .tree-label {
+    color: #999;
+}
+
 /* Tree Icons */
 .tree-icon {
     width: 18px;
@@ -2194,12 +2093,10 @@ body.dark-mode .tree-expand {
 .tree-expand:before {
     content: "▶";
     transition: transform 0.2s;
-
 }
 
 .tree-expand.expanded:before {
     transform: rotate(90deg);
-
 }
 
 /* Reduce expand button size for leaf nodes to save space */
@@ -2210,7 +2107,7 @@ body.dark-mode .tree-expand {
 
 /* Improved tree label spacing */
 .tree-label {
-    flex: 1;
+    flex: 1 1 auto;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -2229,10 +2126,20 @@ body.dark-mode .tree-expand {
     /* ✅ PREVENT: Meta from shrinking */
     margin-left: auto;
     /* ✅ PUSH: To the right */
+    margin-right: 1px;
+    text-align: right;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 body.dark-mode .tree-meta {
     color: #999;
+}
+
+.tree-item {
+    padding-right: 16px;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 /* Tighter hierarchy indentation */
@@ -2409,7 +2316,6 @@ body.dark-mode .tree-meta {
     background-image: url("icons/TIF-image.png");
 }
 
-
 /* Context Menu */
 .tree-context-menu {
     position: fixed;
@@ -2471,8 +2377,8 @@ body.dark-mode .tree-context-separator {
 
 /* Collapsed State */
 .tree-panel.collapsed {
-    width: 120px;
-    height: 40px;
+    width: 60px;
+    height: 26px;
     resize: none;
 }
 
@@ -2532,8 +2438,6 @@ body.dark-mode .color-swatch:hover {
     border-color: #bbb !important;
 }
 
-
-
 /* STRICT MOBILE CONSTRAINTS */
 /* Universal mobile support */
 @media (max-width: 1024px) {
@@ -2585,14 +2489,6 @@ body.dark-mode .color-swatch:hover {
         overflow: hidden;
     }
 
-    #floating-toolbar {
-        transform: scale(0.8);
-        top: 70px;
-        left: 15px;
-        position: fixed;
-        z-index: 1000;
-    }
-
     .toggle-buttons-container {
         position: fixed;
         bottom: 0;
@@ -2617,16 +2513,703 @@ body.dark-mode .color-swatch:hover {
     }
 }
 
-@media (min-width: 1024px) {
-    #floating-toolbar.sidebar-open {
-        left: 315px;
-        transition: left 0.5s ease;
+
+.floating-dialog {
+    position: fixed;
+    background-color: var(--light-mode-canvas);
+    border: 1px solid var(--light-mode-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    color: var(--light-mode-text);
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    font-size: 12px;
+    z-index: 10000;
+    min-width: 300px;
+    min-height: 150px;
+    max-height: 90vh;
+    resize: both;
+    overflow: hidden;
+    /* ✅ FIX: Remove !important declarations */
+}
+
+/* Dark mode */
+body.dark-mode .floating-dialog {
+    background-color: var(--dark-mode-color);
+    border-color: var(--dark-mode-border);
+    color: var(--dark-mode-text);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Header, footer, and button styles remain the same... */
+.floating-dialog-header {
+    background-color: var(--primary-color);
+    border-bottom: 1px solid var(--light-mode-border);
+    padding: 4px 8px;
+    border-radius: 4px 4px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--dark-mode-text);
+    flex-shrink: 0 !important;
+    /* Don't shrink header */
+}
+
+body.dark-mode .floating-dialog-header {
+    background-color: var(--dark-mode-border);
+    border-bottom-color: var(--dark-mode-border);
+    color: var(--dark-mode-text);
+}
+
+
+/* ✅ FIX: Simplify content area */
+.floating-dialog-content {
+    padding: 8px;
+    flex: 1;
+    overflow-y: auto;
+    font-size: 12px;
+    min-height: 60px;
+    /* ✅ FIX: Remove conflicting properties and !important */
+}
+
+/* ✅ FIX: Simplify footer */
+.floating-dialog-footer {
+    padding: 4px 8px;
+    border-top: 1px solid var(--light-mode-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    font-size: 12px;
+    background-color: transparent;
+    min-height: 32px;
+    flex-shrink: 0;
+    /* ✅ FIX: Remove margin-top: auto and !important */
+}
+
+body.dark-mode .floating-dialog-footer {
+    border-top-color: var(--dark-mode-border);
+}
+
+/* Button styles remain the same as before... */
+.floating-dialog-btn {
+    padding: 4px 8px;
+    border: 1px solid var(--light-mode-border);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 11px;
+    min-width: 60px;
+    transition: all 0.2s ease;
+    background-color: transparent;
+    color: var(--light-mode-text) !important;
+}
+
+body.dark-mode .floating-dialog-btn {
+    border-color: var(--dark-mode-border) !important;
+    color: var(--dark-mode-text) !important;
+}
+
+.floating-dialog-btn.confirm {
+    background-color: #00a91c !important;
+    color: #ffffff !important;
+    border-color: #00a91c !important;
+}
+
+.floating-dialog-btn.confirm:hover {
+    background-color: #008f17 !important;
+}
+
+.floating-dialog-btn.cancel {
+    background-color: transparent !important;
+}
+
+.floating-dialog-btn.cancel:hover {
+    background-color: #ff0000 !important;
+    color: #ffffff !important;
+}
+
+/* DEFAULT LAYOUT - Standard forms like editBlastName */
+.floating-dialog .button-container-2col {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    column-gap: 8px;
+    row-gap: 4px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.floating-dialog .button-container-2col>*:nth-child(odd) {
+    justify-self: start;
+}
+
+.floating-dialog .button-container-2col>*:nth-child(even) {
+    justify-self: stretch;
+    width: 100%;
+    margin-right: 4px;
+}
+
+/* Fix the grid container for better control */
+.floating-dialog-compact .button-container-2col {
+    grid-template-columns: 120px minmax(0, 1fr) !important;
+    /* Use minmax to prevent overflow */
+    row-gap: 6px !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    /* Prevent overflow */
+}
+
+/* Ensure the second column doesn't overflow */
+.floating-dialog-compact .button-container-2col>*:nth-child(even) {
+    margin-right: 8px !important;
+    min-width: 0 !important;
+    /* Allow shrinking */
+    max-width: 100% !important;
+    /* Prevent overflow */
+    overflow: hidden !important;
+}
+
+/* WIDE LAYOUT - For forms with very long labels */
+.floating-dialog-wide .button-container-2col {
+    grid-template-columns: 180px 1fr !important;
+    row-gap: 6px !important;
+}
+
+.floating-dialog-wide .button-container-2col>*:nth-child(even) {
+    margin-right: 6px !important;
+}
+
+/* Label styles for all layouts */
+.floating-dialog .labelWhite15 {
+    font-size: 12px;
+    font-family: sans-serif;
+    color: var(--light-mode-text) !important;
+    line-height: 1.2;
+    margin: 0;
+    white-space: nowrap;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 4px;
+}
+
+body.dark-mode .floating-dialog .labelWhite15 {
+    color: var(--dark-mode-text) !important;
+}
+
+.floating-dialog .labelWhite12 {
+    font-size: 11px;
+    font-family: sans-serif;
+    color: var(--light-mode-text) !important;
+    line-height: 1.2;
+    margin: 0;
+    white-space: nowrap;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 4px;
+}
+
+body.dark-mode .floating-dialog .labelWhite12 {
+    color: var(--dark-mode-text) !important;
+}
+
+/* Input styles for all layouts */
+.floating-dialog input[type="text"],
+.floating-dialog input[type="number"],
+.floating-dialog-select {
+    font-size: 11px !important;
+    height: 20px !important;
+    padding: 2px 4px !important;
+    width: calc(100% - 8px) !important;
+    max-width: 200px !important;
+    min-width: 80px !important;
+    border-radius: 3px !important;
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #999 !important;
+    appearance: none !important;
+    box-sizing: border-box !important;
+    margin-right: 4px !important;
+}
+
+/* Compact layout gets more padding for readability */
+.floating-dialog-compact input[type="text"],
+.floating-dialog-compact input[type="number"],
+.floating-dialog-compact .floating-dialog-select {
+    padding: 2px 6px !important;
+    width: calc(100% - 12px) !important;
+    max-width: 180px !important;
+    margin-right: 8px !important;
+}
+
+/* JSColor swatch styling */
+.floating-dialog input[type="button"][data-jscolor] {
+    width: 24px !important;
+    height: 20px !important;
+    border: 1px solid #666 !important;
+    border-radius: 3px !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    appearance: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.2s, transform 0.1s !important;
+}
+
+.floating-dialog input[type="button"][data-jscolor]:hover {
+    border-color: #999 !important;
+    transform: scale(1.05) !important;
+}
+
+body.dark-mode .floating-dialog input[type="button"][data-jscolor] {
+    border-color: #888 !important;
+}
+
+body.dark-mode .floating-dialog input[type="button"][data-jscolor]:hover {
+    border-color: #bbb !important;
+}
+
+/* Force JSColor popup to appear in front */
+.jscolor-picker-wrap {
+    z-index: 20000 !important;
+}
+
+.jscolor-picker {
+    z-index: 20000 !important;
+}
+
+/* Checkbox styles remain the same for all layouts */
+.floating-dialog input[type="checkbox"] {
+    width: 14px !important;
+    height: 14px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid #999 !important;
+    border-radius: 2px !important;
+    background-color: #fff !important;
+    -moz-appearance: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    position: relative !important;
+    cursor: pointer !important;
+}
+
+.floating-dialog input[type="checkbox"]:checked {
+    background-color: var(--selected-color) !important;
+    border-color: var(--selected-color) !important;
+}
+
+.floating-dialog input[type="checkbox"]:checked::after {
+    content: "✓" !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    color: white !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    line-height: 1 !important;
+}
+
+.floating-dialog .checkbox-row {
+    display: grid !important;
+    grid-template-columns: 60% 40% !important;
+    column-gap: 8px !important;
+    row-gap: 4px !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin-top: 4px !important;
+}
+
+.floating-dialog .checkbox-row label {
+    font-size: 11px !important;
+    font-family: sans-serif !important;
+    color: var(--light-mode-text) !important;
+    line-height: 1.2 !important;
+    margin: 0 !important;
+    text-align: left !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    padding-right: 0 !important;
+}
+
+body.dark-mode .floating-dialog .checkbox-row label {
+    color: var(--dark-mode-text) !important;
+}
+
+.floating-dialog .checkbox-row input[type="checkbox"] {
+    justify-self: center !important;
+    margin-left: 0 !important;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .floating-dialog {
+        width: 90vw !important;
+        left: 5vw !important;
+        right: 5vw !important;
+    }
+
+    .floating-dialog .button-container-2col,
+    .floating-dialog .checkbox-row {
+        grid-template-columns: 1fr;
+        row-gap: 4px;
+    }
+
+    .floating-dialog input[type="text"],
+    .floating-dialog input[type="number"],
+    .floating-dialog select {
+        width: 100%;
     }
 }
 
-@media (min-width: 1024px) {
-    #floating-toolbar {
-        left: 15px;
-        transition: left 0.5s ease;
+/* ===== TOOLBAR PANEL (Tree-Panel Style) ===== */
+.toolbar-panel {
+    position: fixed;
+    top: 70px;
+    left: 20px;
+    width: 90px;
+    /* Match original floating toolbar width */
+    height: auto;
+    max-height: 80vh;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--light-mode-border);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-family: var(--default-font);
+    font-size: 11px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    resize: both;
+    overflow: hidden;
+    min-width: 90px;
+    min-height: 40px;
+}
+
+body.dark-mode .toolbar-panel {
+    background-color: rgba(50, 50, 50, 0.95);
+    border-color: var(--dark-mode-border);
+    color: var(--dark-mode-text);
+}
+
+/* Content area */
+/* Fix icon alignment when no scrollbar */
+.toolbar-panel-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 3px;
+    /* Always reserve space for scrollbar to prevent layout shift */
+    overflow-y: scroll;
+}
+
+/* Grid layout matching original toolbar */
+.toolbar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    align-items: center;
+}
+
+/* Hide scrollbar but keep its space */
+.toolbar-panel-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.toolbar-panel-content::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.toolbar-panel-content::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+.toolbar-panel-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .toolbar-panel-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body.dark-mode .toolbar-panel-content:hover::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Keep original label2 styling */
+.toolbar-grid .label2 {
+    grid-column: 1 / -1;
+    text-align: center;
+}
+
+/* Keep original icon-button styling */
+.toolbar-grid .icon-button {
+    width: 26px;
+    height: 26px;
+}
+
+/* Single column items */
+.toolbar-grid .single {
+    grid-column: 1 / -1;
+    justify-self: center;
+}
+
+/* Keep original input[type="number2"] styling */
+.toolbar-grid input[type="number2"] {
+    width: calc(80%);
+    text-align: center;
+}
+
+.toolbar-grid input[type="number2"]:hover {
+    border-color: #ff0000;
+    border-width: 2px;
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+/* Fix color button styling */
+.toolbar-grid input[type="button"][data-jscolor],
+#floatingConnectorColor {
+    grid-column: 1 / -1;
+    width: calc(80%);
+    height: 24px;
+    border: 1px solid var(--light-mode-border);
+    border-radius: 4px !important;
+    /* 4px rounded corners */
+    margin: 2px auto;
+    cursor: pointer;
+    justify-self: center;
+    transition: all 0.2s ease;
+}
+
+.toolbar-grid input[type="button"][data-jscolor]:hover,
+#floatingConnectorColor:hover {
+    border-color: #ff0000;
+    border-width: 2px;
+    box-shadow: 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+/* Hide checkboxes */
+.toolbar-panel input[type="checkbox"] {
+    display: none;
+}
+
+/* Collapsed State - Simple like tree-panel */
+.toolbar-panel.collapsed {
+    width: 60px !important;
+    height: 40px !important;
+    resize: none;
+}
+
+.toolbar-panel.collapsed .toolbar-panel-content {
+    display: none;
+}
+
+/* Hide the old floating toolbar */
+#floating-toolbar {
+    display: none !important;
+}
+
+/* When checkbox is checked, style the associated label */
+.toolbar-grid input[type="checkbox"]:checked+.icon-button,
+.toolbar-grid input[type="checkbox"]:checked+.toggle-buttons-custom {
+    background-color: var(--selected-colour, #ff4444) !important;
+    border-width: 2px;
+    border-color: #FF0000 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Add hover state for checked buttons */
+.toolbar-grid input[type="checkbox"]:checked+.icon-button:hover,
+.toolbar-grid input[type="checkbox"]:checked+.toggle-buttons-custom:hover {
+    background-color: var(--selected-colour, #ff4444) !important;
+    border-width: 2x;
+    border-color: #ff0000 !important;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 4px rgba(255, 0, 0, 0.5);
+}
+
+/* Dark mode checked state */
+body.dark-mode .toolbar-grid input[type="checkbox"]:checked+.icon-button,
+body.dark-mode .toolbar-grid input[type="checkbox"]:checked+.toggle-buttons-custom {
+    background-color: var(--selected-colour, #ff4444) !important;
+    border-width: 2px;
+    border-color: #FF0000 !important;
+}
+
+body.dark-mode .toolbar-grid input[type="checkbox"]:checked+.icon-button:hover,
+body.dark-mode .toolbar-grid input[type="checkbox"]:checked+.toggle-buttons-custom:hover {
+    background-color: var(--selected-colour, #ff4444) !important;
+    border-width: 2px;
+    border-color: #ff0000 !important;
+}
+
+/* Ensure grid items are properly centered */
+.toolbar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    align-items: center;
+    justify-items: center;
+    /* Center all grid items */
+    padding: 0 4px;
+    /* Add small padding to prevent edge touching */
+}
+
+/* Fix single column items */
+.toolbar-grid .single {
+    grid-column: 1 / -1;
+    width: calc(100% - 8px);
+    /* Account for padding */
+    max-width: 70px;
+    /* Prevent them from getting too wide */
+}
+
+/* Ensure consistent icon button sizing */
+.toolbar-grid .icon-button {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-grid .icon-button:hover {
+    border-color: #ff0000 !important;
+    border-width: 2px;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+}
+
+.toolbar-grid .icon-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* Step 1) Radio button styling for toolbar with labels below */
+.toolbar-grid input[type="radio"] {
+    display: none;
+}
+
+/* Step 2) Radio button label styling with horizontal alignment */
+.toolbar-grid input[type="radio"]+.toggle-buttons-custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 10px;
+    padding: 2px;
+    border: 1px solid #666;
+    border-radius: 4px;
+    background-color: #333;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 10px;
+    line-height: 1;
+    text-align: center;
+}
+
+/* Step 3) Radio button checked state */
+.toolbar-grid input[type="radio"]:checked+.toggle-buttons-custom {
+    background-color: var(--selected-colour, #ff4444);
+    border-color: #ff0000;
+    border-width: 1px;
+    color: #fff;
+}
+
+/* Step 4) Radio button hover states */
+.toolbar-grid input[type="radio"]+.toggle-buttons-custom:hover {
+    border-color: #999;
+    background-color: #444;
+}
+
+.toolbar-grid input[type="radio"]:checked+.toggle-buttons-custom:hover {
+    background-color: var(--selected-colour, #ff4444);
+    border-color: #ff0000;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+}
+
+/* Step 5) Dark mode radio button styling */
+body.dark-mode .toolbar-grid input[type="radio"]+.toggle-buttons-custom {
+    background-color: #2a2a2a;
+    border-color: #555;
+    color: #ddd;
+}
+
+body.dark-mode .toolbar-grid input[type="radio"]:checked+.toggle-buttons-custom {
+    background-color: var(--selected-colour, #ff4444);
+    border-color: #ff0000;
+    color: #fff;
+}
+
+body.dark-mode .toolbar-grid input[type="radio"]+.toggle-buttons-custom:hover {
+    background-color: #3a3a3a;
+    border-color: #777;
+}
+
+body.dark-mode .toolbar-grid input[type="radio"]:checked+.toggle-buttons-custom:hover {
+    background-color: var(--selected-colour, #ff4444);
+    border-color: #ff0000;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+}
+
+
+/* Ensure grid items are properly centered */
+.toolbar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    align-items: center;
+    justify-items: center;
+    /* Center all grid items */
+    padding: 0 4px;
+    /* Add small padding to prevent edge touching */
+}
+
+/* Fix single column items */
+.toolbar-grid .single {
+    grid-column: 1 / -1;
+    width: calc(100% - 8px);
+    /* Account for padding */
+    max-width: 70px;
+    /* Prevent them from getting too wide */
+}
+
+/* Ensure consistent icon button sizing */
+.toolbar-grid .icon-button {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toolbar-grid .icon-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+/* When left sidebar is open, shift toolbar to the right */
+.toolbar-panel.sidebar-open {
+    left: 350px !important;
+    /* Adjust this value based on your sidebar width */
+    transition: left 0.5s ease;
+}
+
+/* Mobile - don't shift toolbar */
+@media (max-width: 1024px) {
+    .toolbar-panel.sidebar-open {
+        left: 20px !important;
+        /* Keep original position on mobile */
     }
+}
+
+/* Smooth transition when sidebar opens/closes */
+.toolbar-panel {
+    transition: left 0.5s ease, width 0.5s ease, height 0.5s ease;
 }
