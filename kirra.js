@@ -4603,7 +4603,7 @@ function parseK2Dcsv(data) {
 
 	// In parseCSV and processCsvData:
 	entitiesForRowDetection.forEach((holes, entityName) => {
-		enhancedSmartRowDetection(holes, entityName); //
+		improvedSmartRowDetection(holes, entityName);// This should be improvedSmartRowDetection 
 	});
 
 	// Auto-assign rowID/posID for holes that still don't have them
