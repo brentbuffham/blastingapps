@@ -15966,7 +15966,7 @@ function addHolePopup() {
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
 			// PROXIMITY CHECK: Check for nearby holes before adding
-			const proximityHoles = checkHoleProximity(parseFloat(worldX), parseFloat(worldY), parseFloat(diameterValue), points);
+			const proximityHoles = checkHoleProximity(parseFloat(worldX), parseFloat(worldY), parseFloat(diameterValue), allBlastHoles);
 
 			if (proximityHoles.length > 0) {
 				const newHoleInfo = {
