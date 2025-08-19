@@ -15989,7 +15989,7 @@ function addHolePopup() {
 				});
 			} else {
 				// No proximity issues - add the hole normally
-				addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : points.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue), parseFloat(burdenValue), parseFloat(spacingValue));
+				addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : allBlastHoles.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue), parseFloat(burdenValue), parseFloat(spacingValue));
 			}
 		} else {
 			worldX = null;
