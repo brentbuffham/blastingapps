@@ -22319,6 +22319,15 @@ canvas.addEventListener("contextmenu", function (e) {
 			debouncedUpdateTreeView();
 			return;
 		}
+	} else if (selectedMultipleHoles && selectedMultipleHoles.length === 1) {
+		// Handle single hole in selectedMultipleHoles array
+		const hole = selectedMultipleHoles[0];
+		const distance = Math.sqrt(Math.pow(hole.startXLocation - worldCoords[0], 2) + Math.pow(hole.startYLocation - worldCoords[1], 2));
+		if (distance <= snapRadius) {
+			showHolePropertyEditor(hole); // or selectedMultipleHoles, depending on what showHolePropertyEditor expects
+			debouncedUpdateTreeView();
+			return;
+		}
 	}
 
 	if (clickedHole) {
