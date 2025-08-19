@@ -437,7 +437,8 @@ let strokeColor = darkModeEnabled ? "white" : "black";
 let textFillColor = darkModeEnabled ? "white" : "black";
 let depthColor = darkModeEnabled ? "blue" : "cyan";
 let angleDipColor = darkModeEnabled ? "darkcyan" : "orange";
-
+// Add this global flag at the top of your file (near other globals like snapEnabled)
+let isSelfSnapEnabled = false; // Tracks if 'S' is held down
 ///////////////////////////
 //DEVELOPER MODE BUTTON
 const developerModeCheckbox = document.getElementById("developerMode");
@@ -18998,7 +18999,7 @@ function drawHoleMainShape(hole, x, y, selectedHole) {
 		highlightType = "selected";
 		highlightColor1 = "rgba(255, 0, 150, 0.2)";
 		highlightColor2 = "rgba(255, 0, 150, .8)";
-		highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \nEscape key to clear Selection";
+		highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \n key to clear Selection";
 	}
 	// Multiple selection highlighting
 	else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === hole.entityName && p.holeID === hole.holeID)) {
@@ -19006,7 +19007,7 @@ function drawHoleMainShape(hole, x, y, selectedHole) {
 		highlightColor1 = "rgba(255, 0, 150, 0.2)";
 		highlightColor2 = "rgba(255, 0, 150, .8)";
 		if (hole === selectedMultipleHoles[0]) {
-			highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \nEscape key to clear Selection";
+			highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \n key to clear Selection";
 		} else {
 			highlightText = "";
 		}
@@ -20738,7 +20739,7 @@ function endKadTools() {
 		drawData(allBlastHoles, selectedHole);
 	}
 
-	// Also handle polygon selection escape
+	// Also handle polygon selection 
 	if (isPolygonSelectionActive) {
 		// isPolygonSelectionActive = false;
 		polyPointsX = [];
@@ -20856,7 +20857,12 @@ window.onload = function () {
 		if ((isDrawingPoint || isDrawingLine || isDrawingPoly || isDrawingCircle || isDrawingText) && !event.target.matches('input, textarea, [contenteditable="true"]')) {
 			handleDrawingKeyEvents(event);
 		}
-
+		
+		// Add these listeners in your init function (e.g., DOMContentLoaded or initialize function)
+		if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
+			isSelfSnapEnabled = true;
+		}
+		
 		// Escape Key to reset tools
 		if (event.key === "Escape") {
 			console.log("Escape pressed - resetting all");
@@ -20926,6 +20932,11 @@ window.onload = function () {
 			document.getElementById("selectionModeButton").checked = false;
 			isMultiHoleSelectionEnabled = false;
 		}
+
+		if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
+			isSelfSnapEnabled = false;
+		}
+
 	});
 
 	///-------CRITICAL IMPORTANT --------///
@@ -21755,21 +21766,8 @@ function handleMoveToolMouseDown(event) {
 	}
 }
 
-// Add this global flag at the top of your file (near other globals like snapEnabled)
-let isSelfSnapEnabled = false; // Tracks if 'S' is held down
 
-// Add these listeners in your init function (e.g., DOMContentLoaded or initialize function)
-document.addEventListener("keydown", (event) => {
-	if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
-		isSelfSnapEnabled = true;
-	}
-});
 
-document.addEventListener("keyup", (event) => {
-	if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
-		isSelfSnapEnabled = false;
-	}
-});
 
 // Handle move tool mouse move - move holes
 function handleMoveToolMouseMove(event) {
