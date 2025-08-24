@@ -445,7 +445,8 @@ let strokeColor = darkModeEnabled ? "white" : "black";
 let textFillColor = darkModeEnabled ? "white" : "black";
 let depthColor = darkModeEnabled ? "blue" : "cyan";
 let angleDipColor = darkModeEnabled ? "darkcyan" : "orange";
-
+// Add this global flag at the top of your file (near other globals like snapEnabled)
+let isSelfSnapEnabled = false; // Tracks if 'S' is held down
 ///////////////////////////
 //DEVELOPER MODE BUTTON
 const developerModeCheckbox = document.getElementById("developerMode");
@@ -4334,6 +4335,262 @@ function generateUniqueHoleID(entityName, baseID) {
 	}
 }
 
+// ===================================================================
+// MISSING HDBSCAN FUNCTIONS - DROP-IN CODE
+// ===================================================================
+// Add these functions to kirra.js to complete the sequence-weighted HDBSCAN implementation
+
+/**
+ * SIMPLIFIED HDBSCAN WITH PRE-CALCULATED DISTANCE MATRIX
+ * 
+ * Step 1) This function implements HDBSCAN clustering using a pre-calculated distance matrix,
+ * which is needed for sequence-weighted row detection.
+ * 
+ * @param {Array<Array<number>>} distanceMatrix - Pre-calculated n×n distance matrix
+ * @param {number} minClusterSize - Minimum number of points required to form a cluster
+ * @returns {Array<Array<number>>} Array of clusters, where each cluster is an array of point indices
+ */
+function simplifiedHDBSCANWithDistanceMatrix(distanceMatrix, minClusterSize) {
+    // Step 2) Validate input parameters
+    if (!distanceMatrix || !Array.isArray(distanceMatrix) || distanceMatrix.length === 0) {
+        console.warn("Invalid distance matrix provided to simplifiedHDBSCANWithDistanceMatrix");
+        return [];
+    }
+    
+    const n = distanceMatrix.length;
+    
+    // Step 3) Validate that distance matrix is square
+    if (distanceMatrix.some(row => !Array.isArray(row) || row.length !== n)) {
+        console.warn("Distance matrix is not square or properly formatted");
+        return [];
+    }
+    
+    console.log("Running HDBSCAN with pre-calculated " + n + "×" + n + " distance matrix");
+    
+    // Step 4) Build minimum spanning tree using the provided distance matrix
+    const mst = buildMinimumSpanningTreeFromMatrix(distanceMatrix, minClusterSize);
+    
+    // Step 5) Build cluster hierarchy using existing function
+    const hierarchy = buildClusterHierarchy(mst);
+    
+    // Step 6) Extract stable clusters using existing function
+    const clusters = extractStableClusters(hierarchy, minClusterSize);
+    
+    console.log("HDBSCAN with distance matrix detected " + clusters.length + " clusters");
+    return clusters;
+}
+
+/**
+ * BUILD MINIMUM SPANNING TREE FROM DISTANCE MATRIX
+ * 
+ * Step 1) This is a variant of the existing buildMinimumSpanningTree function
+ * that works with a pre-calculated distance matrix instead of calculating distances.
+ * 
+ * @param {Array<Array<number>>} distanceMatrix - Pre-calculated n×n distance matrix
+ * @param {number} minPts - Minimum points parameter for core distance calculation
+ * @returns {Array<Object>} Minimum spanning tree edges with {from, to, weight} structure
+ */
+function buildMinimumSpanningTreeFromMatrix(distanceMatrix, minPts) {
+    const n = distanceMatrix.length;
+    const edges = [];
+    
+    // Step 2) Calculate core distances (distance to k-th nearest neighbor)
+    const coreDistances = [];
+    for (let i = 0; i < n; i++) {
+        // Step 3) Get all distances for point i and sort them
+        const dists = distanceMatrix[i].slice(); // Copy the row
+        dists.sort((a, b) => a - b);
+        
+        // Step 4) Use k-th nearest neighbor distance as core distance
+        // Ensure we don't exceed array bounds
+        const kIndex = Math.min(minPts, dists.length - 1);
+        coreDistances[i] = dists[kIndex];
+    }
+    
+    // Step 5) Calculate mutual reachability distances and create edges
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            // Step 6) Mutual reachability is the maximum of:
+            // - Core distance of point i
+            // - Core distance of point j  
+            // - Direct distance between points i and j
+            const mutualReachability = Math.max(
+                coreDistances[i], 
+                coreDistances[j], 
+                distanceMatrix[i][j]
+            );
+            
+            edges.push({ 
+                from: i, 
+                to: j, 
+                weight: mutualReachability 
+            });
+        }
+    }
+    
+    // Step 7) Sort edges by weight (Kruskal's algorithm)
+    edges.sort((a, b) => a.weight - b.weight);
+    
+    // Step 8) Build MST using Union-Find algorithm
+    const parent = Array(n).fill().map((_, i) => i);
+    const mst = [];
+    
+    // Step 9) Union-Find helper functions
+    function find(x) {
+        if (parent[x] !== x) {
+            parent[x] = find(parent[x]); // Path compression
+        }
+        return parent[x];
+    }
+    
+    function union(x, y) {
+        const px = find(x);
+        const py = find(y);
+        if (px !== py) {
+            parent[px] = py;
+            return true;
+        }
+        return false;
+    }
+    
+    // Step 10) Build MST by adding edges that don't create cycles
+    for (const edge of edges) {
+        if (union(edge.from, edge.to)) {
+            mst.push(edge);
+            // Step 11) Stop when we have n-1 edges (complete spanning tree)
+            if (mst.length === n - 1) break;
+        }
+    }
+    
+    console.log("Built MST from distance matrix with " + mst.length + " edges");
+    return mst;
+}
+
+/**
+ * CALCULATE SEQUENCE-WEIGHTED DISTANCES
+ *
+ * Step 1) Modifies spatial distances to give preference to holes that are close
+ * in the numbering sequence, making them more likely to cluster together
+ * 
+ * @param {Array<Object>} holesData - Array of hole objects with startXLocation, startYLocation, holeID
+ * @param {Object} sequenceInfo - Object containing sequenceMap and hasValidSequence
+ * @returns {Array<Array<number>>} Weighted distance matrix
+ */
+function calculateSequenceWeightedDistances(holesData, sequenceInfo) {
+    const n = holesData.length;
+    const distances = Array(n).fill().map(() => Array(n).fill(0));
+    
+    // Step 2) Get sequence numbers for all holes
+    const sequences = holesData.map((hole) => sequenceInfo.sequenceMap.get(hole.holeID) || 0);
+    const maxSequenceDiff = Math.max(...sequences) - Math.min(...sequences);
+    
+    // Step 3) Prevent division by zero
+    const normalizedMaxDiff = maxSequenceDiff > 0 ? maxSequenceDiff : 1;
+    
+    console.log("Calculating sequence-weighted distances for " + n + " holes");
+    console.log("Sequence range: " + Math.min(...sequences) + " to " + Math.max(...sequences));
+    
+    for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+            // Step 4) Calculate spatial distance
+            const dx = holesData[i].startXLocation - holesData[j].startXLocation;
+            const dy = holesData[i].startYLocation - holesData[j].startYLocation;
+            const spatialDistance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Step 5) Calculate sequence distance (normalized)
+            const sequenceDiff = Math.abs(sequences[i] - sequences[j]);
+            const normalizedSequenceDiff = sequenceDiff / normalizedMaxDiff;
+            
+            // Step 6) SEQUENCE WEIGHTING FORMULA:
+            // - If holes are close in sequence (low sequenceDiff), reduce distance
+            // - If holes are far in sequence (high sequenceDiff), increase distance
+            // - Weight factor controls how much sequence matters vs spatial distance
+            const sequenceWeight = 0.3; // 30% influence from sequence
+            const sequencePenalty = 1 + sequenceWeight * normalizedSequenceDiff;
+            const sequenceBonus = Math.max(0.5, 1 - sequenceWeight * Math.exp(-sequenceDiff / 5));
+            
+            // Step 7) Apply sequence weighting
+            let weightedDistance;
+            if (sequenceDiff <= 3) {
+                // Step 8) Holes very close in sequence get a distance bonus
+                weightedDistance = spatialDistance * sequenceBonus;
+            } else {
+                // Step 9) Holes far in sequence get a distance penalty
+                weightedDistance = spatialDistance * sequencePenalty;
+            }
+            
+            distances[i][j] = distances[j][i] = weightedDistance;
+        }
+    }
+    
+    console.log("Applied sequence weighting with max penalty factor: " + (1 + 0.3));
+    return distances;
+}
+
+/**
+ * ORDER CLUSTERS BY SEQUENCE
+ *
+ * Step 1) After clustering, ensure holes within each cluster are ordered by sequence
+ * 
+ * @param {Array<Array<number>>} clusters - Array of clusters, each containing point indices
+ * @param {Array<Object>} holesData - Array of hole objects
+ * @param {Object} sequenceInfo - Object containing sequenceMap
+ * @returns {Array<Array<number>>} Clusters with holes ordered by sequence within each cluster
+ */
+function orderClustersbySequence(clusters, holesData, sequenceInfo) {
+    console.log("Ordering " + clusters.length + " clusters by sequence");
+    
+    return clusters.map((cluster, clusterIndex) => {
+        // Step 2) Get holes in this cluster with their sequence information
+        const clusterHoles = cluster.map((index) => ({
+            hole: holesData[index],
+            index: index,
+            sequence: sequenceInfo.sequenceMap.get(holesData[index].holeID) || 0
+        }));
+        
+        // Step 3) Sort by sequence number
+        clusterHoles.sort((a, b) => a.sequence - b.sequence);
+        
+        console.log("Cluster " + clusterIndex + ": ordered " + clusterHoles.length + " holes by sequence (" + 
+                   clusterHoles[0].sequence + " to " + clusterHoles[clusterHoles.length - 1].sequence + ")");
+        
+        // Step 4) Return just the indices in sequence order
+        return clusterHoles.map((item) => item.index);
+    });
+}
+
+/**
+ * ASSIGN ORDERED CLUSTERS TO ROWS
+ *
+ * Step 1) Assigns cluster results to rows while preserving sequence order
+ * 
+ * @param {Array<Object>} holesData - Array of hole objects to assign row/position IDs
+ * @param {Array<Array<number>>} orderedClusters - Clusters with holes ordered by sequence
+ * @param {string} entityName - Entity name for generating row IDs
+ */
+function assignOrderedClustersToRows(holesData, orderedClusters, entityName) {
+    const startingRowID = getNextRowID(entityName);
+    
+    console.log("Assigning " + orderedClusters.length + " ordered clusters to rows starting from ID " + startingRowID);
+    
+    orderedClusters.forEach((cluster, clusterIndex) => {
+        const rowID = startingRowID + clusterIndex;
+        
+        // Step 2) Assign row and position IDs in sequence order
+        cluster.forEach((holeIndex, positionInRow) => {
+            const hole = holesData[holeIndex];
+            hole.rowID = rowID;
+            hole.posID = positionInRow + 1; // Position respects sequence order
+        });
+        
+        console.log("Row " + rowID + " assigned " + cluster.length + " holes in sequence order");
+    });
+    
+    console.log("Completed sequence-ordered row assignment for entity: " + entityName);
+}
+
+
+
 function parseK2Dcsv(data) {
 	if (!allBlastHoles || !Array.isArray(allBlastHoles)) allBlastHoles = [];
 	randomHex = Math.floor(Math.random() * 16777215).toString(16);
@@ -4613,7 +4870,7 @@ function parseK2Dcsv(data) {
 
 	// In parseCSV and processCsvData:
 	entitiesForRowDetection.forEach((holes, entityName) => {
-		enhancedSmartRowDetection(holes, entityName); //
+		improvedSmartRowDetection(holes, entityName);// This should be improvedSmartRowDetection 
 	});
 
 	// Auto-assign rowID/posID for holes that still don't have them
@@ -15758,7 +16015,7 @@ function addHolePopup() {
 			localStorage.setItem("savedAddHolePopupSettings", JSON.stringify(lastValues));
 
 			// PROXIMITY CHECK: Check for nearby holes before adding
-			const proximityHoles = checkHoleProximity(parseFloat(worldX), parseFloat(worldY), parseFloat(diameterValue), points);
+			const proximityHoles = checkHoleProximity(parseFloat(worldX), parseFloat(worldY), parseFloat(diameterValue), allBlastHoles);
 
 			if (proximityHoles.length > 0) {
 				const newHoleInfo = {
@@ -15781,7 +16038,7 @@ function addHolePopup() {
 				});
 			} else {
 				// No proximity issues - add the hole normally
-				addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : points.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue), parseFloat(burdenValue), parseFloat(spacingValue));
+				addHole(useCustomHoleID, useGradeZ, blastNameValue, useCustomHoleID ? customHoleID : allBlastHoles.length + 1, parseFloat(worldX), parseFloat(worldY), parseFloat(elevationValue), parseFloat(gradeZValue), parseFloat(diameterValue), typeValue, parseFloat(lengthValue), parseFloat(subdrillValue), parseFloat(angleValue), parseFloat(bearingValue), parseFloat(burdenValue), parseFloat(spacingValue));
 			}
 		} else {
 			worldX = null;
@@ -18790,7 +19047,7 @@ function drawHoleMainShape(hole, x, y, selectedHole) {
 		highlightType = "selected";
 		highlightColor1 = "rgba(255, 0, 150, 0.2)";
 		highlightColor2 = "rgba(255, 0, 150, .8)";
-		highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \nEscape key to clear Selection";
+		highlightText = "Editing Selected Hole: " + selectedHole.holeID + " in: " + selectedHole.entityName + " with Single Selection Mode \n key to clear Selection";
 	}
 	// Multiple selection highlighting
 	else if (selectedMultipleHoles != null && selectedMultipleHoles.find((p) => p.entityName === hole.entityName && p.holeID === hole.holeID)) {
@@ -18798,7 +19055,7 @@ function drawHoleMainShape(hole, x, y, selectedHole) {
 		highlightColor1 = "rgba(255, 0, 150, 0.2)";
 		highlightColor2 = "rgba(255, 0, 150, .8)";
 		if (hole === selectedMultipleHoles[0]) {
-			highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \nEscape key to clear Selection";
+			highlightText = "Editing Selected Holes: {" + selectedMultipleHoles.map((h) => h.holeID).join(",") + "} \n key to clear Selection";
 		} else {
 			highlightText = "";
 		}
@@ -20530,7 +20787,7 @@ function endKadTools() {
 		drawData(allBlastHoles, selectedHole);
 	}
 
-	// Also handle polygon selection escape
+	// Also handle polygon selection 
 	if (isPolygonSelectionActive) {
 		// isPolygonSelectionActive = false;
 		polyPointsX = [];
@@ -20648,7 +20905,12 @@ window.onload = function () {
 		if ((isDrawingPoint || isDrawingLine || isDrawingPoly || isDrawingCircle || isDrawingText) && !event.target.matches('input, textarea, [contenteditable="true"]')) {
 			handleDrawingKeyEvents(event);
 		}
-
+		
+		// Add these listeners in your init function (e.g., DOMContentLoaded or initialize function)
+		if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
+			isSelfSnapEnabled = true;
+		}
+		
 		// Escape Key to reset tools
 		if (event.key === "Escape") {
 			console.log("Escape pressed - resetting all");
@@ -20718,6 +20980,11 @@ window.onload = function () {
 			document.getElementById("selectionModeButton").checked = false;
 			isMultiHoleSelectionEnabled = false;
 		}
+
+		if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
+			isSelfSnapEnabled = false;
+		}
+
 	});
 
 	///-------CRITICAL IMPORTANT --------///
@@ -21547,21 +21814,8 @@ function handleMoveToolMouseDown(event) {
 	}
 }
 
-// Add this global flag at the top of your file (near other globals like snapEnabled)
-let isSelfSnapEnabled = false; // Tracks if 'S' is held down
 
-// Add these listeners in your init function (e.g., DOMContentLoaded or initialize function)
-document.addEventListener("keydown", (event) => {
-	if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
-		isSelfSnapEnabled = true;
-	}
-});
 
-document.addEventListener("keyup", (event) => {
-	if (event.key.toLowerCase() === "s" || event.key.toUpperCase() === "S") {
-		isSelfSnapEnabled = false;
-	}
-});
 
 // Handle move tool mouse move - move holes
 function handleMoveToolMouseMove(event) {
@@ -22110,6 +22364,15 @@ canvas.addEventListener("contextmenu", function (e) {
 
 		if (clickedOnSelected) {
 			showHolePropertyEditor(selectedMultipleHoles);
+			debouncedUpdateTreeView();
+			return;
+		}
+	} else if (selectedMultipleHoles && selectedMultipleHoles.length === 1) {
+		// Handle single hole in selectedMultipleHoles array
+		const hole = selectedMultipleHoles[0];
+		const distance = Math.sqrt(Math.pow(hole.startXLocation - worldCoords[0], 2) + Math.pow(hole.startYLocation - worldCoords[1], 2));
+		if (distance <= snapRadius) {
+			showHolePropertyEditor(hole); // or selectedMultipleHoles, depending on what showHolePropertyEditor expects
 			debouncedUpdateTreeView();
 			return;
 		}
