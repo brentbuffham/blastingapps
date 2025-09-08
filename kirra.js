@@ -24632,34 +24632,34 @@ function setupCsvDialogEventListeners(csvData, fieldGroups) {
 
 	// Auto-mapping keywords
 	const mappingKeywords = {
-		entityName: ["blast", "pattern", "blastname", "patternname"],
-		holeID: ["id", "holeid", "holeno", "name", "holename", "pointid", "no"],
-		startXLocation: ["x", "cx", "easting", "startx", "start easting", "start east", "start x"],
-		startYLocation: ["y", "cy", "northing", "starty", "start northing", "start north", "start y"],
-		startZLocation: ["z", "cz", "rl", "collar", "elevation", "zcoord", "startz", "start elevation", "start z"],
-		endXLocation: ["endx", "toex", "end easting", "end east", "tx", "end x", "toex"],
-		endYLocation: ["endy", "toey", "end northing", "end north", "ty", "end y", "toey"],
-		endZLocation: ["endz", "toerl", "end elevation", "tz", "end z", "toez"],
-		gradeXLocation: ["gradex", "grade easting", "grade east", "gx", "grade x"],
-		gradeYLocation: ["gradey", "grade northing", "grade north", "gy", "grade y"],
-		gradeZLocation: ["gradez", "grade elevation", "gz", "grade z"],
-		holeDiameter: ["diameter", "dia", "diam", "holediameter", "hole diameter"],
-		subdrillAmount: ["subdrill", "subdrill amount", "sub drill amount", "sub drill"],
-		benchHeight: ["bench", "benchheight", "bench height"],
-		holeType: ["type", "holetype", "hole type", "material type", "materialtype"],
-		holeLengthCalculated: ["length", "holelength", "hole length"],
-		holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
-		holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
-		rowID: ["rowid", "row id", "row", "echelon", "rowno", "row number"],
-		posID: ["posid", "pos id", "position", "pos", "position id", "pos number", "posno"],
-		initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"],
-		fromHoleID: ["from", "fromhole", "from hole", "tie from", "tiefrom"],
-		timingDelayMilliseconds: ["delay", "timing", "timingdelay", "timing delay", "ms", "milliseconds"],
-		colorHexDecimal: ["color", "colour", "tie color", "tiecolor"],
-		measuredLength: ["measured length", "measuredlength", "actual length", "actuallength"],
-		measuredMass: ["measured mass", "measuredmass", "actual mass", "actualmass", "kg", "weight"],
-		measuredComment: ["comment", "comments", "note", "notes", "measured comment"],
-	};
+        entityName: ["blast", "pattern", "blast name", "pattern name", "blastid"],
+        holeID: ["id", "holeid", "holeno", "name", "holename", "pointid", "no", "hole id"],
+        startXLocation: ["x", "cx", "easting", "collar x", "startx", "start easting", "start east", "start x"],
+        startYLocation: ["y", "cy", "northing", "collar y", "starty", "start northing", "start north", "start y"],
+        startZLocation: ["z", "cz", "rl", "collar z", "elevation", "zcoord", "startz", "start elevation", "start z"],
+        endXLocation: ["endx", "toex", "end easting", "end east", "tx", "end x", "toe x"],
+        endYLocation: ["endy", "toey", "end northing", "end north", "ty", "end y", "toe y"],
+        endZLocation: ["endz", "toerl", "end elevation", "tz", "end z", "toe z"],
+        gradeXLocation: ["gradex", "grade easting", "grade east", "gx", "grade x"],
+        gradeYLocation: ["gradey", "grade northing", "grade north", "gy", "grade y"],
+        gradeZLocation: ["gradez", "grade elevation", "gz", "grade z"],
+        holeDiameter: ["diameter", "dia", "diam", "holediameter", "hole diameter"],
+        subdrillAmount: ["subdrill", "subdrill amount", "sub drill amount", "sub drill"],
+        benchHeight: ["bench", "benchheight", "bench height"],
+        holeType: ["type", "holetype", "hole type", "material type", "materialtype"],
+        holeLengthCalculated: ["length", "holelength", "hole length"],
+        holeBearing: ["bearing", "azimuth", "azi", "bea", "heading", "holebearing", "hole bearing"],
+        holeAngle: ["angle", "dip", "mast angle", "holeangle", "hole angle"],
+        rowID: ["rowid", "row id", "row", "echelon", "rowno", "row number"],
+        posID: ["posid", "pos id", "position", "pos", "position id", "pos number", "posno"],
+        initiationTime: ["initiation", "initiationtime", "initiation time", "firing time", "firingtime"],
+        fromHoleID: ["from", "fromhole", "from hole", "tie from", "tiefrom"],
+        timingDelayMilliseconds: ["delay", "timing", "timingdelay", "timing delay", "ms", "milliseconds"],
+        colorHexDecimal: ["color", "colour", "tie color", "tiecolor"],
+        measuredLength: ["measured length", "measuredlength", "actual length", "actuallength"],
+        measuredMass: ["measured mass", "measuredmass", "actual mass", "actualmass", "kg", "weight"],
+        measuredComment: ["comment", "comments", "note", "notes", "measured comment"]
+    };
 
 	const headerRow = csvData[0].map(function (h) {
 		return String(h || "")
@@ -24919,10 +24919,10 @@ function getColumnOrderFromForm() {
 
 	// Save the column order to localStorage for future use
 	try {
-		saveHolesToLocalStorage(allBlastHoles);
-	} catch (e) {
-		console.warn("Error saving column order to localStorage:", e);
-	}
+        localStorage.setItem("csvColumnOrder", JSON.stringify(order));
+    } catch (e) {
+        console.warn("Error saving column order to localStorage:", e);
+    }
 
 	return order;
 }
