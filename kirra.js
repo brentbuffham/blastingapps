@@ -15332,7 +15332,7 @@ async function addKADText() {
 //Eleven Possible columns
 function saveAQMPopup() {
 	// ✅ Filter points first
-	const visibleBlastHoles = points.filter((point) => blastGroupVisible && point.visible !== false);
+	const visibleBlastHoles = allBlastHoles.filter((hole) => blastGroupVisible && hole.visible !== false);
 	if (visibleBlastHoles.length === 0) {
 		showModalMessage("No Visible Holes", "There are no visible holes to export.", "warning");
 		return;
