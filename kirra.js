@@ -15338,8 +15338,8 @@ function saveAQMPopup() {
 		return;
 	}
 	const savedAQMPopupSettings = JSON.parse(localStorage.getItem("savedAQMPopupSettings")) || {};
-	let blastNameFromPoints = visibleBlastHoles[0].entityName;
-	console.log("blastName: " + blastNameFromPoints);
+	let blastNameFromVisibleBlastHoles = visibleBlastHoles[0].entityName;
+	console.log("blastName: " + blastNameFromVisibleBlastHoles);
 	Swal.fire({
 		title: "Export AQM file?",
 		showCancelButton: true,
@@ -15348,11 +15348,11 @@ function saveAQMPopup() {
 		html: `
             <div class="button-container-2col">
                 <label class="labelWhite15" for="fileName">File Name</label>
-                <input type="text" id="fileName" value="${blastNameFromPoints}_AQM" placeholder="File Name"/>
+                <input type="text" id="fileName" value="${blastNameFromVisibleBlastHoles}_AQM" placeholder="File Name"/>
 				<label class="labelWhite15" for="blastName">Blast Name</label>
-                <input type="text" id="blastName" value="${blastNameFromPoints}" placeholder="Blast Name"/>
+                <input type="text" id="blastName" value="${blastNameFromVisibleBlastHoles}" placeholder="Blast Name"/>
 				<label class="labelWhite15" for="patternName">Pattern Name</label>
-                <input type="text" id="patternName" value="${blastNameFromPoints}" placeholder="Pattern Name"/>
+                <input type="text" id="patternName" value="${blastNameFromVisibleBlastHoles}" placeholder="Pattern Name"/>
 				<label class="labelWhite15" for="materialType">Material Type</label>
 				<input type="text" id="materialType" placeholder="Material Type" value="Material"/>
 				<label class="labelWhite15" for="Instruction">Instruction</label>
@@ -15653,7 +15653,7 @@ function saveAQMPopup() {
 			// Create the column order array
 			let columnOrderArray = [column1Value, column2Value, column3Value, column4Value, column5Value, column6Value, column7Value, column8Value, column9Value, column10Value, column11Value];
 			// Convert the points to a CSV string using the selected column orders
-			let aqm = convertPointsToAQMCSV(points, fileNameValue, blastName, patternName, materialType, instruction, useHoleTypeAsInstruction, writeIgnoreColumn, columnOrderArray);
+			let aqm = convertPointsToAQMCSV(visibleBlastHoles, fileNameValue, blastName, patternName, materialType, instruction, useHoleTypeAsInstruction, writeIgnoreColumn, columnOrderArray);
 			if (isIOS()) {
 				// Create a Blob with the XML data
 				const blob = new Blob([aqm], {
