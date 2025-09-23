@@ -6243,6 +6243,7 @@ function exportKADDXF() {
 	dxf += "0\nSECTION\n2\nENTITIES\n";
 
 	const allMaps = [allKADDrawingsMap];
+	console.log("All KAD Drawings: \n", allMaps);
 
 	for (const map of allMaps) {
 		for (const [entityName, entityData] of map.entries()) {
