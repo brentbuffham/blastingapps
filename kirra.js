@@ -20011,7 +20011,7 @@ function toggleKADEntityVisibility(entityName) {
 
 //=== Blast Hole Visibility Management ===
 function setHoleVisibility(holeID, visible) {
-	const hole = points.find((h) => h.holeID === holeID);
+	const hole = allBlastHoles.find((h) => h.holeID === holeID);
 	if (hole) {
 		hole.visible = visible;
 		console.log("👁️ Hole " + holeID + " visibility: " + visible);
@@ -20023,7 +20023,7 @@ function setHoleVisibility(holeID, visible) {
 }
 
 function setEntityVisibility(entityName, visible) {
-	const entityHoles = points.filter((h) => h.entityName === entityName);
+	const entityHoles = allBlastHoles.filter((h) => h.entityName === entityName);
 	entityHoles.forEach((hole) => {
 		hole.visible = visible;
 	});
@@ -20035,7 +20035,7 @@ function setEntityVisibility(entityName, visible) {
 }
 
 function toggleHoleVisibility(holeID) {
-	const hole = points.find((h) => h.holeID === holeID);
+	const hole = allBlastHoles.find((h) => h.holeID === holeID);
 	if (hole) {
 		hole.visible = !hole.visible;
 		setHoleVisibility(holeID, hole.visible);
