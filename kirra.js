@@ -7959,8 +7959,8 @@ function getUniqueElementVertices(xyzVertices, tolerance = 0.001) {
 			const existing = uniqueVertices[i];
 			const dx = vertex.x - existing.x;
 			const dy = vertex.y - existing.y;
-			const dz = vertex.z - existing.z;
-			const distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+			//const dz = vertex.z - existing.z; //3D Dedupliction causes failed constraints in trianglation use 2D
+			const distance = Math.sqrt(dx * dx + dy * dy);// + dz * dz);
 
 			if (distance <= tolerance) {
 				isDuplicate = true;
