@@ -25,6 +25,13 @@
 		<meta name="twitter:image" content="https://blastingapps.com/Kirra%20Head%20Shot%20Water%20colour.png">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<!-- Prevent FOUC with basic styles -->
+		<style>
+			body { background: #d9d9d9; margin: 0; font-family: Arial, sans-serif; }
+			#loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; }
+		</style>
+
 		<!-- Device Dynamic Screens -->
 		<script>
 			// Fix 100vh on mobile: set a custom --vh unit
@@ -37,7 +44,7 @@
 		<script src="libs/jscolor.min.js"></script>
 		<script src="libs/d3.min.js"></script>
 
-		<!-- Load all the scripts before the stylesheet -->
+		<!-- Load CSS synchronously -->
 		<script>
 			jscolor.presets.default = {
 				format: "rgb",
@@ -1458,11 +1465,14 @@
 			}
 		</script>
 
-		<script type="module" crossorigin src="/assets/main-selmFghN.js"></script>
-		<link rel="stylesheet" crossorigin href="/assets/main-YK2qkezl.css">
+		<script type="module" crossorigin src="/assets/main-BF4ifqiO.js"></script>
+		<link rel="stylesheet" crossorigin href="/assets/main-D7AkLhhi.css">
 	</head>
 
 	<body>
+		<!-- Loading screen to prevent FOUC -->
+		<div id="loading">Loading Kirra...</div>
+
 		<input type="hidden" id="htmlUIVersion" value="2">
 		<!-- this is used to track the version of the html UI - for scaling issues-->
 		<div class="menubar">
