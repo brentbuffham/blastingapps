@@ -25,13 +25,6 @@
 		<meta name="twitter:image" content="https://blastingapps.com/Kirra%20Head%20Shot%20Water%20colour.png">
 
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-
-		<!-- Prevent FOUC with basic styles -->
-		<style>
-			body { background: #d9d9d9; margin: 0; font-family: Arial, sans-serif; }
-			#loading { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 18px; }
-		</style>
-
 		<!-- Device Dynamic Screens -->
 		<script>
 			// Fix 100vh on mobile: set a custom --vh unit
@@ -41,10 +34,10 @@
 			window.dispatchEvent(new Event('resize'));
 		</script>
 
-		<script src="./libs/jscolor.min.js"></script>
-		<script src="./libs/d3.min.js"></script>
+		<script src="libs/jscolor.min.js"></script>
+		<script src="libs/d3.min.js"></script>
 
-		<!-- Load CSS synchronously -->
+		<!-- Load all the scripts before the stylesheet -->
 		<script>
 			jscolor.presets.default = {
 				format: "rgb",
@@ -1465,14 +1458,11 @@
 			}
 		</script>
 
-		<script type="module" crossorigin src="./assets/main-B0wcKCrg.js"></script>
-		<link rel="stylesheet" crossorigin href="./assets/main-uOCg64p5.css">
+		<script type="module" crossorigin src="./assets/main-Bclp2c6r.js"></script>
+		<link rel="stylesheet" crossorigin href="./assets/main-D8B7Q0RK.css">
 	</head>
 
 	<body>
-		<!-- Loading screen to prevent FOUC -->
-		<div id="loading">Loading Kirra...</div>
-
 		<input type="hidden" id="htmlUIVersion" value="2">
 		<!-- this is used to track the version of the html UI - for scaling issues-->
 		<div class="menubar">
@@ -2523,24 +2513,11 @@
 
 		<!-- Link to your JavaScript file -->
 		<!-- REMOVED: FloatingDialog.js - now imported as ES6 module in kirra.js (line 77) -->
-		<!-- Context Menu Scripts -->
-		<script src="src/dialog/contextMenu/HolesContextMenu.js"></script>
-		<script src="src/dialog/contextMenu/KADContextMenu.js"></script>
-		<script src="src/dialog/contextMenu/SurfacesContextMenu.js"></script>
-		<script src="src/dialog/contextMenu/ImagesContextMenu.js"></script>
-		<script src="src/dialog/contextMenu/ContextMenuManager.js"></script>
-		<!-- Settings Dialogs -->
-		<script src="src/dialog/settings/ThreeDSettingsDialog.js"></script>
-		<!-- Popup Dialogs -->
-		<script src="src/dialog/popups/confirm/ConfirmDialogs.js"></script>
-		<script src="src/dialog/popups/error/ErrorDialogs.js"></script>
-		<script src="src/dialog/popups/info/InfoDialogs.js"></script>
-		<script src="src/dialog/popups/generic/PatternGenerationDialogs.js"></script>
-		<script src="src/dialog/popups/generic/AddHoleDialog.js"></script>
-		<script src="src/dialog/popups/generic/HolePatternDialogs.js"></script>
-		<script src="src/dialog/popups/generic/HolePropertyDialogs.js"></script>
-		<script src="src/dialog/popups/generic/ExportDialogs.js"></script>
-		<script src="src/dialog/popups/generic/KADDialogs.js"></script>
+		<!-- REMOVED 2025-12-26: All dialog scripts converted to ES modules and imported in kirra.js
+		     - Context Menu Scripts (5 files)
+		     - Settings Dialogs (1 file)
+		     - Popup Dialogs (9 files)
+		     These are now bundled by Vite for production builds -->
 
 	</body>
 
