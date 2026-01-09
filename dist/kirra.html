@@ -3,7 +3,6 @@
 	<!--
     Description: This file contains the main UI for the Kirra App
 	Author: Brent Buffham
-	Last Modified: "20250816.0140AWST"
 -->
 
 	<head>
@@ -1458,8 +1457,8 @@
 			}
 		</script>
 
-		<script type="module" crossorigin src="./assets/main-C9kY04eE.js"></script>
-		<link rel="stylesheet" crossorigin href="./assets/main-DDEz_MDR.css">
+		<script type="module" crossorigin src="./assets/main-iFiMc-mc.js"></script>
+		<link rel="stylesheet" crossorigin href="./assets/main-DEu-A6Z1.css">
 	</head>
 
 	<body>
@@ -1642,7 +1641,7 @@
 				</button>
 
 				<div class="panel">
-					OLD - Input Methods (Keep until File Manager is implemented)
+					<!-- OLD - Input Methods (Keep until File Manager is implemented) -->
 					<!-- Hidden file inputs -->
 					<input type="file" name="fileInput" id="fileInput" accept=".csv,.kad,.txt" class="hidden-file-input" placeholder="fileInput" title="File Holes and KAD Input">
 					<input type="file" name="fileInputCustomCSV" id="fileInputCustomCSV" accept=".csv,.txt" class="hidden-file-input" placeholder="fileInputCustomCSV" title="Custom CSV Import">
@@ -1652,27 +1651,27 @@
 					<input type="file" name="fileInputGeotiff" id="fileInputGeotiff" accept=".tif,.tiff" class="hidden-file-input" placeholder="fileInputGeotiff" title="File Geotiff Input">
 
 					<!-- Icon buttons grid -->
-					<div class="file-import-grid">
+					<!-- <div class="file-import-grid">
 						<label class="icon-button file-import-btn" data-target="fileInput" title="File Holes and KAD Input">
-							<img src="./assets/k2D-file-import-DdHsCa91.png" alt="Load Holes & KAD">
+							<img src="icons/k2D-file-import.png" alt="Load Holes & KAD">
 						</label>
 						<label class="icon-button file-import-btn" data-target="fileInputCustomCSV" title="Custom CSV Import">
-							<img src="./assets/load-holes-csv-Bqy_L_pz.png" alt="Load CSV">
+							<img src="icons/load-holes-csv.png" alt="Load CSV">
 						</label>
 						<label class="icon-button file-import-btn" data-target="fileInputDXF" title="File DXF Input">
-							<img src="./assets/load-dxf-DKxrKF21.png" alt="Load DXF">
+							<img src="icons/load-dxf.png" alt="Load DXF">
 						</label>
 						<label class="icon-button file-import-btn" data-target="fileInputMeasured" title="Measured Values Input">
-							<img src="data:image/png;base64,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" alt="Load Measured Values">
+							<img src="icons/measured-import.png" alt="Load Measured Values">
 						</label>
 						<label class="icon-button file-import-btn" data-target="fileInputSurface" title="File Surface Input (3 columns {X,Y,Z})">
-							<img src="./assets/load-obj-BB6kilr8.png" alt="Load Surface">
+							<img src="icons/load-obj.png" alt="Load Surface">
 						</label>
 						<label class="icon-button file-import-btn" data-target="fileInputGeotiff" title="File Geotiff Input">
-							<img src="data:image/png;base64,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" alt="Load Geotiff">
+							<img src="icons/TIF-image.png" alt="Load Geotiff">
 						</label>
 
-					</div><br>
+					</div><br> -->
 					<!-- Icon buttons grid -->
 					<hr>
 					Files (Import / Export)
@@ -1734,9 +1733,11 @@
 									<option value="dxf-kad" selected>DXF (KAD)</option>
 									<option value="dxf-3dfaces">DXF (3DFaces)</option>
 									<option value="vulcan-tagged">Vulcan (Holes)</option>
-									<option value="dwg-kad">DWG (KAD)</option>
+									<!-- DWG export is not supported yet-->
+									<!-- <option value="dwg-kad">DWG (KAD)</option>
 									<option value="dwg-holes">DWG (Holes)</option>
 									<option value="dwg-3dfaces">DWG (3DFaces)</option>
+								-->
 								</select>
 								<label class="icon-button dxf-input-btn" data-target="fileInputDXF" title="Import DXF/DWG">
 									<img src="data:image/png;base64,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" alt="Import">
@@ -1748,12 +1749,18 @@
 						</div>
 
 						<!-- Surpac STR/DTM -->
-						<div class="label2" id="label_Surpac" style="display: flex; align-items: center;">Surpac STR/DTM
+						<div class="label2" id="label_Surpac" style="display: flex; align-items: center;">Surpac (Text Only)
 							<span style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
 								<select id="surpacFormat" title="Select Surpac format">
-									<option value="kad-string">KAD String</option>
-									<option value="holes-string" selected>Holes String</option>
-									<option value="surfaces-dtm">Surfaces DTM</option>
+									<option value="str-blastholes">STR holes</option>
+									<option value="str-kad-text">STR</option>
+									<option value="dtm-text">DTM & STR</option>
+									<!-- BINARY PARSING Has been disabled for now as it is not supported by the parser too difficult at the moment-->
+									<!--
+									<option value="str-kad">STR holes (binary)</option>
+									<option value="str-kad-binary">STR (binary)</option>
+									<option value="dtm-binary">DTM (binary)</option>
+									-->
 								</select>
 								<label class="icon-button surpac-input-btn" data-target="fileInputSurpac" title="Import Surpac">
 									<img src="data:image/png;base64,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" alt="Import">
@@ -1768,9 +1775,12 @@
 						<div class="label2" id="label_Image" style="display: flex; align-items: center;">GeoTIFF/Image
 							<span style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
 								<select id="imageFormat" title="Select Image format">
-									<option value="geo-tiff" selected>GeoTIFF</option>
-									<option value="elevation-tiff">Elevation TIFF</option>
+									<option value="geo-tiff" selected>GeoTIFF</option> <!--  Export the cached canvas and stored Geotiff/Images as RGB GeoTIFF -->
+									<option value="elevation-tiff">Elev.GeoTIFF</option> <!--   Export the cached canvas and stored Surfaces as elevation GeoTIFF -->
+									<!-- JPG export is not supported yet -->
+									<!--
 									<option value="jpg">JPG</option>
+									-->
 								</select>
 								<label class="icon-button image-input-btn" data-target="fileInputImage" title="Import Image">
 									<img src="data:image/png;base64,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" alt="Import">
@@ -1858,9 +1868,13 @@
 						<!-- Minestar AQM -->
 						<div class="label2" id="label_AQM" style="display: flex; align-items: center;">Minestar AQM
 							<span style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+								<!-- Minestar AQM import is not supported yet it is a target omly drill feature and therefore not supported in Kirra2D
+								     but the export is supported. -->
+								<!--
 								<label class="icon-button aqm-input-btn" data-target="fileInputAQM" title="Import AQM">
-									<img src="data:image/png;base64,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" alt="Import">
+									<img src="icons/file-import.png" alt="Import">
 								</label>
+							-->
 								<label class="icon-button aqm-output-btn" data-target="fileOutputAQM" title="Export AQM">
 									<img src="data:image/png;base64,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" alt="Export">
 								</label>
@@ -2134,87 +2148,78 @@
 						</select>
 					</div>
 				</div>
-				<!-- OUTPUT FILES -->
+				<!--
+				OUTPUT FILES
 				<button class="accordion" id="outputfilesAcc">
 					<span>Output Files</span></button>
 				<div class="panel">
-
-
-					<!-- Save Holes CSV -->
 					<div class="label2" id="label_saveHoles">Save Holes to a File (importable)</div>
 					<button class="button-save1" id="saveHoles">
 						KIRRA - Outputs a 14-column *.csv file for saving blasts with names
 					</button>
-
-					<!-- Save KAD Drawing -->
 					<div class="label2" id="label_saveKAD">Save Drawing to a File (importable)</div>
 					<button class="button-save1" id="saveKAD">
 						KAD - Outputs a Kirra App Drawing *.kad file for saving drawings
 					</button>
-
-					<!-- Save All Aspects -->
 					<div class="label2" id="label_saveAll">Save All Hole Aspects to a File (shareable)</div>
 					<button class="button-save3" id="saveAll">
 						EXTRA - Includes Length, Dip, Angle, Bearing, and Initiation Time
 					</button>
-
-					<!-- Save Measured Data -->
 					<div class="label2" id="label_saveMeasures">Save Actual Values to a File (shareable)</div>
 					<button class="button-save3" id="saveMeasures">
 						EXTRA - Outputs measured depth and charge kilograms
 					</button>
-
-					<!-- DXF Exports -->
 					<div class="label2" id="label_exportHolesDXF">Export Holes to DXF</div>
 					<button class="button-save2" id="exportHolesDXF">Export Holes to DXF, Collar, Track and Hole Id
 						as Text
 						Object</button>
-
 					<div class="label2" id="label_exportDrawingDXF">Export Drawing to DXF</div>
 					<button class="button-save2" id="exportDrawingDXF">Export Drawing to DXF, points, lines, poly,
 						circles,
 						text</button>
-
-					<!-- IREDES and AQM -->
 					<div class="label2" id="label_saveIREDES">Export for Epiroc Surface Manager</div>
 					<button class="button-save2" id="saveIREDES">
 						EPIROC - XML - IREDES XML including diameter and hole type
 					</button>
-
 					<div class="label2" id="label_saveAQM">Export for MineStar AQM</div>
 					<button class="button-save2" id="saveAQM">
 						MINESTAR - AQM - Outputs up to 11 columns (Angle, Azimuth, Diameter, etc.)
 					</button>
-
+				</div>
+				-->
+				<!-- Output Files section commented out to hide UI, but panel/button DIVs may be referenced in JS.
+				     We keep placeholder elements to avoid breaking ID lookups in JS. -->
+				<div style="display:none">
+					<button class="accordion" id="outputfilesAcc" style="display:none">
+						<span>Output Files</span></button>
+					<div class="panel" style="display:none">
+						<div class="label2" id="label_saveHoles"></div>
+						<button class="button-save1" id="saveHoles"></button>
+						<div class="label2" id="label_saveKAD"></div>
+						<button class="button-save1" id="saveKAD"></button>
+						<div class="label2" id="label_saveAll"></div>
+						<button class="button-save3" id="saveAll"></button>
+						<div class="label2" id="label_saveMeasures"></div>
+						<button class="button-save3" id="saveMeasures"></button>
+						<div class="label2" id="label_exportHolesDXF"></div>
+						<button class="button-save2" id="exportHolesDXF"></button>
+						<div class="label2" id="label_exportDrawingDXF"></div>
+						<button class="button-save2" id="exportDrawingDXF"></button>
+						<div class="label2" id="label_saveIREDES"></div>
+						<button class="button-save2" id="saveIREDES"></button>
+						<div class="label2" id="label_saveAQM"></div>
+						<button class="button-save2" id="saveAQM"></button>
+					</div>
 				</div>
 
-				<!--EXAMPLES FILE-->
-				<!-- <button class="accordion" id="exampleFilesAcc">
-					<span>Example and Helper Files</span></button>
-				<div class="panel">
-					<br><a href="/tieintest1.csv" id="testfile1"> Download test tie in file 1</a>
-					<br><a href="/tieintest2.csv" id="testfile2"> Download test tie in file 2</a>
-					<br><a href="/tieintest3.csv" id="testfile3" font-size="12px"> Download test tie in file 3</a>
-					<br><a href="/KAD2023_PITSHELL.kad" id="testfile4" font-size="12px"> Download KAD PITSHELL
-						drawing file</a>
-					<br><a href="/KAD2023_PITSHELL.txt" id="testfile5" font-size="12px" download="KAD2023_PITSHELL.txt">
-						Download mobile iOS PITSHELL
-						version</a>
-					<br><a href="/KAD2023_BLASTMASTER.kad" id="testfile6" font-size="12px"> Download KAD BLASTMASTER
-						drawing
-						file</a>
-					<br><a href="/KAD2023_BLASTMASTER.txt" id="testfile7" font-size="12px" download="KAD2023_BLASTMASTER.txt">
-						Download mobile iOS
-						BLASTMASTER version</a>
-					<br><a href="/blastingapps-xyz-converter.xlsx" id="testfile8" font-size="12px"> Download the
-						conversion
-						excel tool</a><br><br>
-				</div> -->
 				<button class="accordion" id="aboutAcc">
 					<span>About</span></button>
 				<div class="panel" id="aboutPanel">
 					<!-- add a developer mode button-->
 					<input type="checkbox" id="developerMode"> <label for="developerMode">Developer Mode</label>
+					<br>
+					<!-- add a 3D screen space Snapping on/off mode button-->
+					<input type="checkbox" id="screenSpaceSnapping" checked> <label for="screenSpaceSnapping">Screen Space Snapping</label>
 					<br>
 					<input type="checkbox" id="rowAndPosDisplay"> <label for="rowAndPosDisplay">Row and Position
 						Display</label>
@@ -2226,6 +2231,12 @@
 					<input type="checkbox" id="use3DSimplification" checked> <label for="use3DSimplification">Use 3D Simplification</label>
 					<br>
 					<input type="checkbox" id="useInstancedHoles"> <label for="useInstancedHoles">Use Instanced Holes</label> <!--unchecked by default-->
+					<br>
+					<hr>
+					GPU Memory Management:
+					<br>
+					<button class="button-norm" id="freeGPUMemoryButton" title="Free GPU memory used by CAD drawings">Free CAD GPU Memory</button>
+					<br>
 					<br>
 					<!-- Other optional options should go here for developemnt testing and checks-->
 					<!-- These should be stored in the local storage so that they are remembered between sessions in developerOptionsStore.-->
