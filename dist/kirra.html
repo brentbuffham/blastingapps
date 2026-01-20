@@ -1457,8 +1457,8 @@
 			}
 		</script>
 
-		<script type="module" crossorigin src="./assets/main-DMHJRuLN.js"></script>
-		<link rel="stylesheet" crossorigin href="./assets/main-DEu-A6Z1.css">
+		<script type="module" crossorigin src="./assets/main-DkaoKFZ1.js"></script>
+		<link rel="stylesheet" crossorigin href="./assets/main-BmRebEF1.css">
 	</head>
 
 	<body>
@@ -2200,6 +2200,9 @@
 						<!-- add a developer mode button-->
 						<input type="checkbox" id="developerMode"> <label for="developerMode">Developer Mode</label>
 						<br>
+						<!-- Performance Monitor overlay toggle -->
+						<input type="checkbox" id="perfMonitorEnabled"> <label for="perfMonitorEnabled">Performance Monitor</label>
+						<br>
 						<!-- add a 3D screen space Snapping on/off mode button-->
 						<input type="checkbox" id="screenSpaceSnapping" checked> <label for="screenSpaceSnapping">Screen Space Snapping</label>
 						<br>
@@ -2212,7 +2215,16 @@
 						<br>
 						<input type="checkbox" id="use3DSimplification" checked> <label for="use3DSimplification">Use 3D Simplification</label>
 						<br>
-						<input type="checkbox" id="useInstancedHoles" checked> <label for="useInstancedHoles">Use Instanced Holes</label> <!--unchecked by default-->
+						<input type="checkbox" id="useInstancedHoles" checked> <label for="useInstancedHoles">Use Instanced Holes</label>
+						<br>
+						<label for="rendererSelect" style="margin-right: 8px;">3D Renderer:</label>
+						<select id="rendererSelect" style="padding: 4px 8px; border-radius: 4px;">
+							<option value="v2">V2 - Stable (Default)</option>
+							<option value="perf">Performance - Dirty Flags + Budget</option>
+							<option value="v1">V1 - Legacy</option>
+						</select>
+						<br>
+						<small style="color: #888;">Requires page reload to take effect.</small>
 						<br>
 						<hr>
 						GPU Memory Management:
@@ -2670,6 +2682,14 @@
 
 		<!-- Context Menu -->
 		<div id="treeContextMenu" class="tree-context-menu" title="Context Menu">
+			<div class="tree-context-item" data-action="add-layer">
+				<span class="tree-icon"></span>
+				<span>Add Layer</span>
+			</div>
+			<div class="tree-context-item" data-action="make-active">
+				<span class="tree-icon"></span>
+				<span>Make Active</span>
+			</div>
 			<div class="tree-context-item" data-action="rename">
 				<span class="tree-icon"></span>
 				<span>Rename</span>
