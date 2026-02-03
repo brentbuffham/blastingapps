@@ -1,1 +1,3 @@
 fonts/Python-2D-viewer
+echo ".DS_Store" >> .gitignore
+echo "dist/.DS_Store" >> .gitignore
