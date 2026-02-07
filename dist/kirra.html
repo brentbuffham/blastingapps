@@ -1461,8 +1461,8 @@
 		}
 	</script>
 
-  <script type="module" crossorigin src="./assets/main-Bhw0mBm4.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/main-dE574Idv.css">
+  <script type="module" crossorigin src="./assets/main-9vdPYUsk.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/main-Cyrv6Jqq.css">
 </head>
 
 <body>
@@ -1862,6 +1862,7 @@
 								<option value="csv" selected>CSV</option>
 								<option value="ply">PLY</option>
 								<option value="pts">PTS</option>
+								<option value="ptx">PTX</option>
 							</select>
 							<label class="icon-button pointcloud-input-btn" data-target="fileInputPointCloud"
 								title="Import Point Cloud">
@@ -2645,14 +2646,14 @@
 				<label for="selectByPolygon" class="toggle-buttons-custom icon-button" title="Polygon Select">
 					<img src="./assets/pointer-select-polygon-Bb5M7Nix.png" alt="Polygon Select">
 				</label>
-				<input type="radio" id="selectHoles" name="selectType" value="holes" checked>
-				<label for="selectHoles" class="toggle-buttons-custom" title="Select Holes">
-					Holes
-				</label>
-				<input type="radio" id="selectKAD" name="selectType" value="kad">
-				<label for="selectKAD" class="toggle-buttons-custom" title="Select KAD">
-					KAD
-				</label>
+				<div class="segmented-control single">
+					<input type="radio" id="selectHoles" name="selectType" value="holes" checked>
+					<label for="selectHoles" title="Select Holes">H</label>
+					<input type="radio" id="selectKAD" name="selectType" value="kad">
+					<label for="selectKAD" title="Select KAD">K</label>
+					<input type="radio" id="selectVertices" name="selectType" value="vertices">
+					<label for="selectVertices" title="Select KAD Vertices">V</label>
+				</div>
 				<input type="checkbox" id="rulerTool" name="rulerTool" value="rulerTool">
 				<label for="rulerTool" class="toggle-buttons-custom icon-button" title="Ruler">
 					<img src="data:image/png;base64,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" alt="Ruler">
